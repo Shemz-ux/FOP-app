@@ -1,0 +1,241 @@
+{
+  "api_documentation": {
+    "title": "CRUD API Documentation",
+    "description": "RESTful API for user management with Mailchimp integration",
+    "base_url": "/api",
+    "version": "1.0.0"
+  },
+  "endpoints": {
+    "GET /api/users": {
+      "description": "Retrieve all users",
+      "method": "GET",
+      "parameters": "None",
+      "request_body": "None",
+      "success_response": {
+        "status": 200,
+        "body": {
+          "users": [
+            {
+              "user_id": 1,
+              "firstName": "John",
+              "lastName": "Doe",
+              "email": "john.doe@example.com",
+              "number": "+1234567890",
+              "industry": "Technology",
+              "message": "Hello world!",
+              "created_at": "2025-01-10T18:00:00.000Z"
+            }
+          ]
+        }
+      },
+      "error_responses": {
+        "500": "Internal server error"
+      }
+    },
+    "POST /api/users": {
+      "description": "Create a new user and add to Mailchimp",
+      "method": "POST",
+      "parameters": "None",
+      "request_body": {
+        "firstName": "string (required)",
+        "lastName": "string (required)", 
+        "email": "string (required)",
+        "number": "string (optional)",
+        "industry": "string (optional)",
+        "message": "string (optional)"
+      },
+      "example_request": {
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "email": "jane.smith@example.com",
+        "number": "+0987654321",
+        "industry": "Healthcare",
+        "message": "Looking forward to connecting!"
+      },
+      "success_response": {
+        "status": 201,
+        "body": {
+          "newUser": {
+            "user_id": 2,
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "email": "jane.smith@example.com",
+            "number": "+0987654321",
+            "industry": "Healthcare",
+            "message": "Looking forward to connecting!",
+            "created_at": "2025-01-10T18:00:00.000Z"
+          }
+        }
+      },
+      "success_with_mailchimp_warning": {
+        "status": 201,
+        "body": {
+          "newUser": {
+            "user_id": 2,
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "email": "invalid-email",
+            "number": "+0987654321",
+            "industry": "Healthcare",
+            "message": "Looking forward to connecting!",
+            "created_at": "2025-01-10T18:00:00.000Z"
+          },
+          "warning": {
+            "message": "Invalid email address provided. Please check the email format.",
+            "details": "invalid-email is not a valid email address"
+          }
+        }
+      },
+      "error_responses": {
+        "400": "Bad request - missing required fields",
+        "500": "Internal server error"
+      }
+    },
+    "GET /api/users/:user_id": {
+      "description": "Retrieve a specific user by ID",
+      "method": "GET",
+      "parameters": {
+        "user_id": "integer (required) - The ID of the user"
+      },
+      "request_body": "None",
+      "example_url": "/api/users/1",
+      "success_response": {
+        "status": 200,
+        "body": {
+          "user": {
+            "user_id": 1,
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john.doe@example.com",
+            "number": "+1234567890",
+            "industry": "Technology",
+            "message": "Hello world!",
+            "created_at": "2025-01-10T18:00:00.000Z"
+          }
+        }
+      },
+      "error_responses": {
+        "404": {
+          "status": 404,
+          "body": {
+            "msg": "User not found"
+          }
+        },
+        "500": "Internal server error"
+      }
+    },
+    "PATCH /api/users/:user_id": {
+      "description": "Update a specific user by ID",
+      "method": "PATCH",
+      "parameters": {
+        "user_id": "integer (required) - The ID of the user"
+      },
+      "request_body": {
+        "firstName": "string (optional)",
+        "lastName": "string (optional)",
+        "email": "string (optional)",
+        "number": "string (optional)",
+        "industry": "string (optional)",
+        "message": "string (optional)"
+      },
+      "example_request": {
+        "firstName": "John Updated",
+        "industry": "Finance"
+      },
+      "example_url": "/api/users/1",
+      "success_response": {
+        "status": 201,
+        "body": {
+          "user": {
+            "user_id": 1,
+            "firstName": "John Updated",
+            "lastName": "Doe",
+            "email": "john.doe@example.com",
+            "number": "+1234567890",
+            "industry": "Finance",
+            "message": "Hello world!",
+            "created_at": "2025-01-10T18:00:00.000Z"
+          }
+        }
+      },
+      "error_responses": {
+        "400": {
+          "status": 400,
+          "body": {
+            "msg": "Invalid field provided"
+          }
+        },
+        "404": {
+          "status": 404,
+          "body": {
+            "msg": "User not found"
+          }
+        },
+        "500": "Internal server error"
+      }
+    },
+    "DELETE /api/users/:user_id": {
+      "description": "Delete a specific user by ID",
+      "method": "DELETE",
+      "parameters": {
+        "user_id": "integer (required) - The ID of the user"
+      },
+      "request_body": "None",
+      "example_url": "/api/users/1",
+      "success_response": {
+        "status": 200,
+        "body": {
+          "msg": "User deleted!"
+        }
+      },
+      "error_responses": {
+        "404": {
+          "status": 404,
+          "body": {
+            "msg": "User not found"
+          }
+        },
+        "500": "Internal server error"
+      }
+    }
+  },
+  "database_schema": {
+    "users_table": {
+      "user_id": "SERIAL PRIMARY KEY",
+      "firstName": "VARCHAR(255) NOT NULL",
+      "lastName": "VARCHAR(255) NOT NULL", 
+      "email": "VARCHAR(255) NOT NULL",
+      "number": "VARCHAR(20)",
+      "industry": "VARCHAR(255)",
+      "message": "TEXT",
+      "created_at": "TIMESTAMP DEFAULT NOW()"
+    }
+  },
+  "mailchimp_integration": {
+    "description": "All user creations are automatically synced to Mailchimp",
+    "merge_fields": {
+      "FNAME": "firstName",
+      "LNAME": "lastName", 
+      "PHONE": "number",
+      "INDUSTRY": "industry",
+      "MESSAGE": "message"
+    },
+    "validation_errors": [
+      "Invalid email address provided. Please check the email format.",
+      "This email is already subscribed to the mailing list.",
+      "Failed to subscribe to mailing list. Please try again."
+    ]
+  },
+  "environment_variables": {
+    "required": [
+      "DB_USER",
+      "DB_HOST", 
+      "DB_DATABASE",
+      "DB_PASSWORD",
+      "DB_PORT",
+      "MAILCHIMP_API_KEY",
+      "MAILCHIMP_SERVER_PREFIX",
+      "MAILCHIMP_AUDIENCE_ID"
+    ]
+  }
+}
