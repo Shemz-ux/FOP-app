@@ -1,22 +1,26 @@
 import dotenv from 'dotenv';
-import { connectToDatabase } from '../connection.js';
+import db from '../db/db.js';
 
-// Load test environment variables
+// Load test environment variables first
 dotenv.config({ path: '.env.test' });
 
 // Global test setup
 beforeAll(async () => {
-  await connectToDatabase();
+  try {
+    // Test database connection without starting server
+    await db.query("SELECT 1");
+    console.log("✅ Test database connection successful!");
+  } catch (err) {
+    console.error("❌ Test database connection failed:", err.message);
+    throw err;
+  }
 });
 
 afterAll(async () => {
   // Close database connections to prevent hanging
-  if (global.db) {
-    await global.db.end();
+  try {
+    await db.end();
+  } catch (err) {
+    // Ignore cleanup errors
   }
-  
-  // Force exit after a short delay if needed
-  setTimeout(() => {
-    process.exit(0);
-  }, 100);
 });
