@@ -1,4 +1,4 @@
-import seed from "./seed.js";
+import seed from "./tables.js";
 import db from "../db/db.js";
 
 const runSeed = () => {
