@@ -1,53 +1,139 @@
 import app from "../../app.js";
 import supertest from "supertest";
 import bcrypt from "bcrypt";
-import User from "../../models/user.js";
+import { createJobseeker, removeJobseeker } from "../../models/jobseekers.js";
+import { createSociety, removeSociety } from "../../models/societies.js";
 import "../setup.js";
 
-describe.skip("/tokens", () => {
+describe("/tokens", () => {
+  let testJobseekerId;
+  let testSocietyId;
+  const testPassword = "Password123";
+  let hashedPassword;
+
   beforeAll(async () => {
-    await User.deleteMany({});
-    const hashedPassword = await bcrypt.hash("Password123", 10);
-    const user = new User({
+    // Hash password for testing
+    hashedPassword = await bcrypt.hash(testPassword, 10);
+    
+    // Create test jobseeker
+    const jobseeker = await createJobseeker({
       first_name: "John",
       last_name: "Doe",
-      username: "johndoe",
-      dob: "1990-01-01",
-      email: "auth-test@test.com",
-      password: hashedPassword
+      email: "jobseeker-auth@test.com",
+      password_hash: hashedPassword,
+      phone_number: "+1234567890"
     });
-    await user.save();
+    testJobseekerId = jobseeker.jobseeker_id;
+
+    // Create test society
+    const society = await createSociety({
+      name: "Tech Society",
+      university: "Test University",
+      description: "A test society",
+      email: "society-auth@test.com",
+      password_hash: hashedPassword
+    });
+    testSocietyId = society.society_id;
   });
+
   afterAll(async () => {
-    await User.deleteMany({})
+    // Clean up test data
+    try {
+      if (testJobseekerId) {
+        await removeJobseeker(testJobseekerId);
+      }
+      if (testSocietyId) {
+        await removeSociety(testSocietyId);
+      }
+    } catch (error) {
+      // Ignore cleanup errors
+    }
   });
 
-  it("returns a token when credentials are valid", async () => {
-    const response = await supertest(app)
-      .post('/tokens')
-      .send({ email: "auth-test@test.com", password: "Password123" });
-    expect(response.status).toEqual(201);
-    expect(response.body.token).toBeDefined();
-    expect(response.body.user_id).toBeDefined();
-    expect(response.body.message).toEqual("OK");
+  describe("Jobseeker Authentication", () => {
+    it("returns a token when jobseeker credentials are valid", async () => {
+      const response = await supertest(app)
+        .post('/api/tokens')
+        .send({ email: "jobseeker-auth@test.com", password: testPassword });
+      
+      expect(response.status).toEqual(201);
+      expect(response.body.token).toBeDefined();
+      expect(response.body.user_id).toBe(testJobseekerId);
+      expect(response.body.user_type).toBe("jobseeker");
+      expect(response.body.message).toEqual("OK");
+    });
+
+    it("doesn't return a token when jobseeker password is wrong", async () => {
+      const response = await supertest(app)
+        .post("/api/tokens")
+        .send({ email: "jobseeker-auth@test.com", password: "WrongPassword123" });
+
+      expect(response.status).toEqual(401);
+      expect(response.body.token).toBeUndefined();
+      expect(response.body.message).toEqual("Password incorrect");
+    });
   });
 
-  it("doesn't return a token when the user doesn't exist", async () => {
-    const response = await supertest(app)
-      .post("/tokens")
-      .send({ email: "non-existent@test.com", password: "Password123" });
-    expect(response.status).toEqual(401);
-    expect(response.body.token).toBeUndefined();
-    expect(response.body.message).toEqual("User not found");
+  describe("Society Authentication", () => {
+    it("returns a token when society credentials are valid", async () => {
+      const response = await supertest(app)
+        .post('/api/tokens')
+        .send({ email: "society-auth@test.com", password: testPassword });
+      
+      expect(response.status).toEqual(201);
+      expect(response.body.token).toBeDefined();
+      expect(response.body.user_id).toBe(testSocietyId);
+      expect(response.body.user_type).toBe("society");
+      expect(response.body.message).toEqual("OK");
+    });
+
+    it("doesn't return a token when society password is wrong", async () => {
+      const response = await supertest(app)
+        .post("/api/tokens")
+        .send({ email: "society-auth@test.com", password: "WrongPassword123" });
+
+      expect(response.status).toEqual(401);
+      expect(response.body.token).toBeUndefined();
+      expect(response.body.message).toEqual("Password incorrect");
+    });
   });
 
-  it("doesn't return a token when the wrong password is given", async () => {
-    const response = await supertest(app)
-      .post("/tokens")
-      .send({ email: "auth-test@test.com", password: "WrongPassword123" });
+  describe("General Authentication", () => {
+    it("doesn't return a token when the user doesn't exist", async () => {
+      const response = await supertest(app)
+        .post("/api/tokens")
+        .send({ email: "non-existent@test.com", password: testPassword });
+      
+      expect(response.status).toEqual(401);
+      expect(response.body.token).toBeUndefined();
+      expect(response.body.message).toEqual("User not found");
+    });
 
-    expect(response.status).toEqual(401);
-    expect(response.body.token).toBeUndefined();
-    expect(response.body.message).toEqual("Password incorrect");
+    it("returns 400 when email is missing", async () => {
+      const response = await supertest(app)
+        .post("/api/tokens")
+        .send({ password: testPassword });
+      
+      expect(response.status).toEqual(400);
+      expect(response.body.message).toEqual("Email and password are required");
+    });
+
+    it("returns 400 when password is missing", async () => {
+      const response = await supertest(app)
+        .post("/api/tokens")
+        .send({ email: "test@test.com" });
+      
+      expect(response.status).toEqual(400);
+      expect(response.body.message).toEqual("Email and password are required");
+    });
+
+    it("returns 400 when both email and password are missing", async () => {
+      const response = await supertest(app)
+        .post("/api/tokens")
+        .send({});
+      
+      expect(response.status).toEqual(400);
+      expect(response.body.message).toEqual("Email and password are required");
+    });
   });
 });

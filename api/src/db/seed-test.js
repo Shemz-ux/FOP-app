@@ -39,13 +39,31 @@ const createJobseekersTable = () => {
         });
 };
 
+const createSocietiesTable = () => {
+    return testDb.query(`CREATE TABLE societies (
+        society_id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        university VARCHAR(255) NOT NULL,
+        description TEXT,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+        )`).then(()=>{
+            console.log("Society table created!✅")
+        });
+};
+
 const runTestSeed = async () => {
     console.log('Seeding test database...');
     
     try {
-        // Drop and recreate jobseekers table
+        // Drop and recreate tables
+        await testDb.query('DROP TABLE IF EXISTS societies CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobseekers CASCADE');
+        
         await createJobseekersTable();
+        await createSocietiesTable();
         
         console.log('✅ Test database seeded successfully!');
         await testDb.end();

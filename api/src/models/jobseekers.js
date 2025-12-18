@@ -16,6 +16,16 @@ export const fetchJobseekerById = (id) => {
     });
 };
 
+export const fetchJobseekerByEmail = (email) => {
+    return db.query(`SELECT * FROM jobseekers WHERE email = $1`, [email])
+    .then(({rows}) => {
+        if (rows.length === 0) {
+            return Promise.reject({status: 404, msg: 'Jobseeker not found'});
+        }
+        return rows[0];
+    });
+};
+
 export const createJobseeker = (newJobseeker) => {
     const {
         first_name, 
