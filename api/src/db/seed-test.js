@@ -54,16 +54,65 @@ const createSocietiesTable = () => {
         });
 };
 
+const createJobsTable = () => {
+    return testDb.query(`CREATE TABLE jobs (
+        job_id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        company VARCHAR(255) NOT NULL,
+        description TEXT,
+        industry VARCHAR(255),
+        location VARCHAR(255),
+        job_level VARCHAR(255),
+        role_type VARCHAR(255),
+        contact_email VARCHAR(255),
+        job_link VARCHAR(255),
+        salary VARCHAR(255),
+        deadline DATE,
+        is_active BOOLEAN DEFAULT TRUE,
+        applicant_count INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+        )`).then(()=>{
+            console.log("Job table created!✅")
+        });
+};
+
+const createEventsTable = () => {
+    return testDb.query(`CREATE TABLE events (
+        event_id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        event_date DATE NOT NULL,
+        event_time TIME,
+        location VARCHAR(255),
+        event_type VARCHAR(255),
+        organizer VARCHAR(255),
+        contact_email VARCHAR(255),
+        event_link VARCHAR(255),
+        capacity INT,
+        is_active BOOLEAN DEFAULT TRUE,
+        attendee_count INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+        )`).then(()=>{
+            console.log("Event table created!✅")
+        });
+};
+
 const runTestSeed = async () => {
     console.log('Seeding test database...');
     
     try {
         // Drop and recreate tables
+        await testDb.query('DROP TABLE IF EXISTS events CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS jobs CASCADE');
         await testDb.query('DROP TABLE IF EXISTS societies CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobseekers CASCADE');
         
         await createJobseekersTable();
         await createSocietiesTable();
+        await createJobsTable();
+        await createEventsTable();
         
         console.log('✅ Test database seeded successfully!');
         await testDb.end();

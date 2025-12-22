@@ -92,7 +92,6 @@ const jobs = () => {
         location VARCHAR(255),
         job_level VARCHAR(255),
         role_type VARCHAR(255),
-        contact VARCHAR(255),
         contact_email VARCHAR(255),
         job_link VARCHAR(255),
         salary VARCHAR(255),
