@@ -19,29 +19,29 @@ export const fetchEventById = (id) => {
 export const createEvent = (newEvent) => {
     const {
         title,
+        company,
         description,
+        industry,
+        location,
+        event_link,
+        contact_email,
         event_date,
         event_time,
-        location,
-        event_type,
-        organizer,
-        contact_email,
-        event_link,
-        capacity,
+        applicant_count,
         is_active = true
     } = newEvent;
     
     return db.query(`
         INSERT INTO events (
-            title, description, event_date, event_time, location, 
-            event_type, organizer, contact_email, event_link, 
-            capacity, is_active
+            title, company, description, industry, location, 
+            event_link, contact_email, event_date, event_time, 
+            applicant_count, is_active
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
         RETURNING *`, 
-        [title, description, event_date, event_time, location, 
-         event_type, organizer, contact_email, event_link, 
-         capacity, is_active]
+        [title, company, description, industry, location, 
+         event_link, contact_email, event_date, event_time, 
+         applicant_count, is_active]
     ).then(({rows}) => {
         return rows[0];
     });
@@ -51,9 +51,9 @@ export const updateEvent = (updateEvent, id) => {
     const fields = [];
     const values = [];
     const validFields = [
-        "title", "description", "event_date", "event_time", "location", 
-        "event_type", "organizer", "contact_email", "event_link", 
-        "capacity", "is_active"
+        "title", "company", "description", "industry", "location", 
+        "event_link", "contact_email", "event_date", "event_time", 
+        "applicant_count", "is_active"
     ];
     let index = 1;
 

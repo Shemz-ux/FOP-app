@@ -43,15 +43,14 @@ describe('Events API Endpoints', () => {
             const timestamp = Date.now();
             const newEvent = {
                 title: 'Tech Conference 2024',
+                company: `TechOrg ${timestamp}`,
                 description: 'Annual technology conference',
+                industry: 'Technology',
+                location: 'London Convention Center',
+                event_link: 'https://techorg.com/conference',
+                contact_email: `contact.${timestamp}@techorg.com`,
                 event_date: '2024-12-15',
                 event_time: '09:00:00',
-                location: 'London Convention Center',
-                event_type: 'Conference',
-                organizer: `TechOrg ${timestamp}`,
-                contact_email: `contact.${timestamp}@techorg.com`,
-                event_link: 'https://techorg.com/conference',
-                capacity: 500,
                 is_active: true
             };
 
@@ -63,7 +62,7 @@ describe('Events API Endpoints', () => {
             expect(response.body).toHaveProperty('newEvent');
             expect(response.body.newEvent).toHaveProperty('event_id');
             expect(response.body.newEvent.title).toBe('Tech Conference 2024');
-            expect(response.body.newEvent.organizer).toBe(`TechOrg ${timestamp}`);
+            expect(response.body.newEvent.company).toBe(`TechOrg ${timestamp}`);
             expect(response.body.newEvent.contact_email).toBe(`contact.${timestamp}@techorg.com`);
 
             // Store the event ID for other tests
@@ -74,7 +73,7 @@ describe('Events API Endpoints', () => {
             const incompleteEvent = {
                 description: 'Test description',
                 location: 'Test Location',
-                // Missing title and event_date (required fields)
+                // Missing title, company, contact_email, and event_date (required fields)
             };
 
             const response = await request(app)
@@ -89,6 +88,9 @@ describe('Events API Endpoints', () => {
             const timestamp = Date.now();
             const minimalEvent = {
                 title: 'Minimal Event',
+                company: `MinimalCorp ${timestamp}`,
+                location: 'Test Location',
+                contact_email: `minimal.${timestamp}@test.com`,
                 event_date: '2024-12-20'
             };
 
@@ -109,8 +111,10 @@ describe('Events API Endpoints', () => {
                 const timestamp = Date.now();
                 const newEvent = {
                     title: 'Test Event',
-                    event_date: '2024-12-25',
-                    organizer: `GetTestOrg ${timestamp}`
+                    company: `GetTestOrg ${timestamp}`,
+                    location: 'Test Location',
+                    contact_email: `get.test.${timestamp}@test.com`,
+                    event_date: '2024-12-25'
                 };
                 const response = await request(app)
                     .post('/api/events')
@@ -126,7 +130,7 @@ describe('Events API Endpoints', () => {
             expect(response.body).toHaveProperty('event');
             expect(response.body.event).toHaveProperty('event_id');
             expect(response.body.event.title).toBe('Test Event');
-            expect(response.body.event.organizer).toContain('GetTestOrg');
+            expect(response.body.event.company).toContain('GetTestOrg');
         });
 
         test('should return 404 if event not found', async () => {
@@ -152,8 +156,10 @@ describe('Events API Endpoints', () => {
                 const timestamp = Date.now();
                 const newEvent = {
                     title: 'Update Test Event',
-                    event_date: '2024-12-30',
-                    organizer: `UpdateTestOrg ${timestamp}`
+                    company: `UpdateTestOrg ${timestamp}`,
+                    location: 'Test Location',
+                    contact_email: `update.test.${timestamp}@test.com`,
+                    event_date: '2024-12-30'
                 };
                 const response = await request(app)
                     .post('/api/events')
@@ -167,7 +173,7 @@ describe('Events API Endpoints', () => {
                 title: 'Updated Event Title',
                 description: 'Updated event description',
                 location: 'Updated Location',
-                capacity: 1000,
+                applicant_count: 1000,
                 contact_email: `updated.contact.${updateTimestamp}@org.com`
             };
 
@@ -181,7 +187,7 @@ describe('Events API Endpoints', () => {
             expect(response.body.event.title).toBe('Updated Event Title');
             expect(response.body.event.description).toBe('Updated event description');
             expect(response.body.event.location).toBe('Updated Location');
-            expect(response.body.event.capacity).toBe(1000);
+            expect(response.body.event.applicant_count).toBe(1000);
             expect(response.body.event.contact_email).toBe(`updated.contact.${updateTimestamp}@org.com`);
         });
 
@@ -234,8 +240,10 @@ describe('Events API Endpoints', () => {
                 const timestamp = Date.now();
                 const newEvent = {
                     title: 'Delete Test Event',
-                    event_date: '2024-12-31',
-                    organizer: `DeleteTestOrg ${timestamp}`
+                    company: `DeleteTestOrg ${timestamp}`,
+                    location: 'Test Location',
+                    contact_email: `delete.test.${timestamp}@test.com`,
+                    event_date: '2024-12-31'
                 };
                 
                 const createResponse = await request(app)
@@ -322,10 +330,12 @@ describe('Events API Endpoints', () => {
             const timestamp = Date.now();
             const validationTestEvent = {
                 title: 'Validation Test Event',
+                company: `ValidationTestOrg ${timestamp}`,
+                location: 'Test Location',
+                contact_email: `validation.${timestamp}@test.com`,
                 event_date: '2024-12-31',
-                capacity: 250,
-                is_active: false,
-                organizer: `ValidationTestOrg ${timestamp}`
+                applicant_count: 250,
+                is_active: false
             };
 
             const response = await request(app)
@@ -333,7 +343,7 @@ describe('Events API Endpoints', () => {
                 .send(validationTestEvent)
                 .expect(201);
 
-            expect(response.body.newEvent.capacity).toBe(250);
+            expect(response.body.newEvent.applicant_count).toBe(250);
             expect(response.body.newEvent.is_active).toBe(false);
         });
     });

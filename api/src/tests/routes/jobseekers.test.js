@@ -32,13 +32,18 @@ describe.only('Jobseekers API Endpoints', () => {
         password_hash: hashedPassword,
         phone_number: '+1234567890',
         date_of_birth: '1995-01-15',
-        gender: 'Male',
+        gender: 'male',
         ethnicity: 'White British',
-        school_meal_eligible: 'No',
-        first_gen_to_go_uni: 'No',
-        education_level: 'Undergraduate',
+        school_meal_eligible: false,
+        first_gen_to_go_uni: false,
+        education_level: 'undergraduate',
+        institution_name: 'University of London - King\'s College',
+        uni_year: '2nd',
+        degree_type: 'bsc',
         area_of_study: 'Computer Science',
-        role_of_interest: 'Software Developer',
+        // No subjects required for university students
+        role_interest_option_one: 'Software Developer',
+        role_interest_option_two: 'Data Scientist',
         society: 'Tech Society'
       };
 
@@ -154,8 +159,8 @@ describe.only('Jobseekers API Endpoints', () => {
 
       const updateData = {
         first_name: 'Updated John',
-        role_of_interest: 'Senior Software Developer',
-        education_level: 'Postgraduate'
+        role_interest_option_one: 'Senior Software Developer',
+        education_level: 'postgraduate'
       };
 
       const response = await request(app)
@@ -166,8 +171,8 @@ describe.only('Jobseekers API Endpoints', () => {
       expect(response.body).toHaveProperty('jobseeker');
       expect(response.body.jobseeker).toHaveProperty('jobseeker_id', testJobseekerId);
       expect(response.body.jobseeker.first_name).toBe('Updated John');
-      expect(response.body.jobseeker.role_of_interest).toBe('Senior Software Developer');
-      expect(response.body.jobseeker.education_level).toBe('Postgraduate');
+      expect(response.body.jobseeker.role_interest_option_one).toBe('Senior Software Developer');
+      expect(response.body.jobseeker.education_level).toBe('postgraduate');
     });
 
     test('should handle non-existent jobseeker update', async () => {
@@ -287,6 +292,57 @@ describe.only('Jobseekers API Endpoints', () => {
       expect([400, 500]).toContain(response.status);
     });
 
+    test('should allow A-level student without university details', async () => {
+      const timestamp = Date.now();
+      const alevelStudent = {
+        first_name: 'Alex',
+        last_name: 'Johnson',
+        email: `alevel.${timestamp}@test.com`,
+        password_hash: hashedPassword,
+        education_level: 'a_level_or_btec',
+        institution_name: 'Harris Academy Barking',
+        subject_one: 'Mathematics',
+        subject_two: 'Physics',
+        subject_three: 'Chemistry',
+        subject_four: 'Further Mathematics'
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(alevelStudent)
+        .expect(201);
+
+      expect(response.body.newJobseeker.education_level).toBe('a_level_or_btec');
+      expect(response.body.newJobseeker.subject_one).toBe('Mathematics');
+    });
+
+    test('should allow university student without A-level subjects', async () => {
+      const timestamp = Date.now();
+      const universityStudent = {
+        first_name: 'Sarah',
+        last_name: 'Wilson',
+        email: `university.${timestamp}@test.com`,
+        password_hash: hashedPassword,
+        education_level: 'undergraduate',
+        institution_name: 'Cambridge University',
+        uni_year: '3rd',
+        degree_type: 'ba',
+        area_of_study: 'Economics'
+        // No A-level subjects required for university students
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(universityStudent)
+        .expect(201);
+
+      expect(response.body.newJobseeker.education_level).toBe('undergraduate');
+      expect(response.body.newJobseeker.institution_name).toBe('Cambridge University');
+      expect(response.body.newJobseeker.area_of_study).toBe('Economics');
+      // Subjects should be null/undefined for university students
+      expect(response.body.newJobseeker.subject_one).toBeNull();
+    });
+
     test('should handle empty string values', async () => {
       const emptyStringJobseeker = {
         first_name: '',
@@ -302,16 +358,33 @@ describe.only('Jobseekers API Endpoints', () => {
       // Should either succeed with empty strings or fail validation
       expect([201, 400, 500]).toContain(response.status);
     });
-  });
 
-  // Cleanup after all tests
-  afterAll(async () => {
-    if (testJobseekerId) {
-      try {
-        await request(app).delete(`/api/jobseekers/${testJobseekerId}`);
-      } catch (error) {
-        // Ignore cleanup errors
-      }
-    }
+    test('should reject jobseeker with missing first_name', async () => {
+      const jobseekerWithoutFirstName = {
+        last_name: 'Doe',
+        email: 'missing.firstname@test.com',
+        password_hash: hashedPassword
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(jobseekerWithoutFirstName);
+
+      expect([400, 500]).toContain(response.status);
+    });
+
+    test('should reject jobseeker with missing last_name', async () => {
+      const jobseekerWithoutLastName = {
+        first_name: 'John',
+        email: 'missing.lastname@test.com',
+        password_hash: hashedPassword
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(jobseekerWithoutLastName);
+
+      expect([400, 500]).toContain(response.status);
+    });
   });
 });

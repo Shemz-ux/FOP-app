@@ -39,8 +39,16 @@ export const createJobseeker = (newJobseeker) => {
         school_meal_eligible, 
         first_gen_to_go_uni, 
         education_level, 
+        institution_name,
+        uni_year,
+        degree_type,
         area_of_study, 
-        role_of_interest, 
+        subject_one,
+        subject_two,
+        subject_three,
+        subject_four,
+        role_interest_option_one, 
+        role_interest_option_two,
         society
     } = newJobseeker;
     
@@ -48,15 +56,19 @@ export const createJobseeker = (newJobseeker) => {
         INSERT INTO jobseekers (
             first_name, last_name, email, password_hash, phone_number, 
             date_of_birth, gender, ethnicity, school_meal_eligible, 
-            first_gen_to_go_uni, education_level, area_of_study, 
-            role_of_interest, society
+            first_gen_to_go_uni, education_level, institution_name, 
+            uni_year, degree_type, area_of_study, 
+            subject_one, subject_two, subject_three, subject_four,
+            role_interest_option_one, role_interest_option_two, society
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) 
         RETURNING *`, 
         [first_name, last_name, email, password_hash, phone_number, 
          date_of_birth, gender, ethnicity, school_meal_eligible, 
-         first_gen_to_go_uni, education_level, area_of_study, 
-         role_of_interest, society]
+         first_gen_to_go_uni, education_level, institution_name,
+         uni_year, degree_type, area_of_study,
+         subject_one, subject_two, subject_three, subject_four,
+         role_interest_option_one, role_interest_option_two, society]
     ).then(({rows}) => {
         return rows[0];
     });
@@ -68,7 +80,9 @@ export const updateJobseeker = (updateJobseeker, id) => {
     const validFields = [
         "first_name", "last_name", "email", "phone_number", "date_of_birth", 
         "gender", "ethnicity", "school_meal_eligible", "first_gen_to_go_uni", 
-        "education_level", "area_of_study", "role_of_interest", "society"
+        "education_level", "institution_name", "uni_year", 
+        "degree_type", "area_of_study", "subject_one", "subject_two", 
+        "subject_three", "subject_four", "role_interest_option_one", "role_interest_option_two", "society"
     ];
     let index = 1;
 
