@@ -169,11 +169,83 @@ const createEventsTable = () => {
         });
 };
 
+const createJobApplicationsTable = () => {
+    return testDb.query(`CREATE TABLE job_applications (
+        jobseeker_id INT NOT NULL,
+        job_id INT NOT NULL,
+        applied_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (jobseeker_id, job_id),
+        FOREIGN KEY (jobseeker_id)
+            REFERENCES jobseekers(jobseeker_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (job_id)
+            REFERENCES jobs(job_id)
+            ON DELETE CASCADE
+        )`).then(()=>{
+            console.log("Job application table created!✅")
+        });
+};
+
+const createJobsSavedTable = () => {
+    return testDb.query(`CREATE TABLE jobs_saved (
+        jobseeker_id INT NOT NULL,
+        job_id INT NOT NULL,
+        saved_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (jobseeker_id, job_id),
+        FOREIGN KEY (jobseeker_id)
+            REFERENCES jobseekers(jobseeker_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (job_id)
+            REFERENCES jobs(job_id)
+            ON DELETE CASCADE
+        )`).then(()=>{
+            console.log("Jobs saved table created!✅")
+        });
+};
+
+const createEventApplicationsTable = () => {
+    return testDb.query(`CREATE TABLE event_applications (
+        jobseeker_id INT NOT NULL,
+        event_id INT NOT NULL,
+        applied_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (jobseeker_id, event_id),
+        FOREIGN KEY (jobseeker_id)
+            REFERENCES jobseekers(jobseeker_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (event_id)
+            REFERENCES events(event_id)
+            ON DELETE CASCADE
+        )`).then(()=>{
+            console.log("Event application table created!✅")
+        });
+};
+
+const createEventsSavedTable = () => {
+    return testDb.query(`CREATE TABLE events_saved (
+        jobseeker_id INT NOT NULL,
+        event_id INT NOT NULL,
+        saved_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (jobseeker_id, event_id),
+        FOREIGN KEY (jobseeker_id)
+            REFERENCES jobseekers(jobseeker_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (event_id)
+            REFERENCES events(event_id)
+            ON DELETE CASCADE
+        )`).then(()=>{
+            console.log("Events saved table created!✅")
+        });
+};
+
 const runTestSeed = async () => {
     console.log('Seeding test database...');
     
     try {
-        // Drop and recreate tables
+        // Drop tables in reverse order of dependencies (child tables first)
+        await testDb.query('DROP TABLE IF EXISTS job_applications CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS jobs_saved CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS event_applications CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS events_saved CASCADE');
         await testDb.query('DROP TABLE IF EXISTS events CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobs CASCADE');
         await testDb.query('DROP TABLE IF EXISTS societies CASCADE');
@@ -183,6 +255,10 @@ const runTestSeed = async () => {
         await createSocietiesTable();
         await createJobsTable();
         await createEventsTable();
+        await createJobApplicationsTable();
+        await createJobsSavedTable();
+        await createEventApplicationsTable();
+        await createEventsSavedTable();
         
         console.log('✅ Test database seeded successfully!');
         await testDb.end();
