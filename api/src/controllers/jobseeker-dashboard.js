@@ -12,7 +12,10 @@ import {
     applyForEvent,
     saveEvent,
     unsaveEvent
-} from "../models/dashboard.js";
+} from "../models/jobseeker-dashboard.js";
+
+// This file contains JOBSEEKER dashboard controllers
+// For society dashboard controllers, see society-dashboard.js
 
 /**
  * Get complete dashboard data for a jobseeker

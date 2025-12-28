@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../../app.js';
 import bcrypt from 'bcrypt';
+import db from '../../db/db.js';
 
 describe('Societies API Endpoints', () => {
     let testSocietyId;
@@ -341,4 +342,8 @@ describe('Societies API Endpoints', () => {
         }
     });
 
-}) 
+    afterAll(async () => {
+        // Close database connection to prevent Jest from hanging
+        await db.end();
+    });
+});

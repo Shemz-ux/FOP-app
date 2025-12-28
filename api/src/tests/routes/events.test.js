@@ -1,5 +1,6 @@
  import request from 'supertest';
 import app from '../../app.js';
+import db from '../../db/db.js';
 
 describe('Events API Endpoints', () => {
     let testEventId;
@@ -356,5 +357,10 @@ describe('Events API Endpoints', () => {
                 // Ignore cleanup errors
             }
         }
+    });
+
+    afterAll(async () => {
+        // Close database connection to prevent Jest from hanging
+        await db.end();
     });
 });

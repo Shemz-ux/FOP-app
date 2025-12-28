@@ -1,5 +1,8 @@
 import db from "../db/db.js";
 
+// This file contains JOBSEEKER dashboard functions
+// For society dashboard functions, see society-dashboard.js
+
 /**
  * Get jobseeker's applied jobs with job details in a single query
  * Uses JOIN to prevent N+1 problem
@@ -21,7 +24,7 @@ export const fetchJobseekerAppliedJobs = (jobseeker_id) => {
             j.created_at as job_created_at,
             j.updated_at as job_updated_at,
             ja.applied_at
-        FROM job_applications ja
+        FROM jobseekers_jobs_applied ja
         JOIN jobs j ON ja.job_id = j.job_id
         WHERE ja.jobseeker_id = $1
         ORDER BY ja.applied_at DESC
@@ -52,7 +55,7 @@ export const fetchJobseekerSavedJobs = (jobseeker_id) => {
             j.created_at as job_created_at,
             j.updated_at as job_updated_at,
             js.saved_at
-        FROM jobs_saved js
+        FROM jobseekers_jobs_saved js
         JOIN jobs j ON js.job_id = j.job_id
         WHERE js.jobseeker_id = $1
         ORDER BY js.saved_at DESC
@@ -113,7 +116,7 @@ export const fetchJobseekerDashboardPaginated = (jobseeker_id, options = {}) => 
             j.created_at as job_created_at,
             j.updated_at as job_updated_at,
             ja.applied_at
-        FROM job_applications ja
+        FROM jobseekers_jobs_applied ja
         JOIN jobs j ON ja.job_id = j.job_id
         WHERE ja.jobseeker_id = $1
         ORDER BY ja.applied_at DESC
@@ -136,7 +139,7 @@ export const fetchJobseekerDashboardPaginated = (jobseeker_id, options = {}) => 
             j.created_at as job_created_at,
             j.updated_at as job_updated_at,
             js.saved_at
-        FROM jobs_saved js
+        FROM jobseekers_jobs_saved js
         JOIN jobs j ON js.job_id = j.job_id
         WHERE js.jobseeker_id = $1
         ORDER BY js.saved_at DESC
@@ -146,13 +149,13 @@ export const fetchJobseekerDashboardPaginated = (jobseeker_id, options = {}) => 
     // Get total counts for pagination metadata
     const appliedCountQuery = db.query(`
         SELECT COUNT(*) as total
-        FROM job_applications 
+        FROM jobseekers_jobs_applied 
         WHERE jobseeker_id = $1
     `, [jobseeker_id]);
 
     const savedCountQuery = db.query(`
         SELECT COUNT(*) as total
-        FROM jobs_saved 
+        FROM jobseekers_jobs_saved 
         WHERE jobseeker_id = $1
     `, [jobseeker_id]);
 
@@ -199,7 +202,7 @@ export const fetchJobseekerDashboardPaginated = (jobseeker_id, options = {}) => 
  */
 export const applyForJob = (jobseeker_id, job_id) => {
     return db.query(`
-        INSERT INTO job_applications (jobseeker_id, job_id)
+        INSERT INTO jobseekers_jobs_applied (jobseeker_id, job_id)
         VALUES ($1, $2)
         ON CONFLICT (jobseeker_id, job_id) DO NOTHING
         RETURNING *
@@ -217,7 +220,7 @@ export const applyForJob = (jobseeker_id, job_id) => {
  */
 export const saveJob = (jobseeker_id, job_id) => {
     return db.query(`
-        INSERT INTO jobs_saved (jobseeker_id, job_id)
+        INSERT INTO jobseekers_jobs_saved (jobseeker_id, job_id)
         VALUES ($1, $2)
         ON CONFLICT (jobseeker_id, job_id) DO NOTHING
         RETURNING *
@@ -235,7 +238,7 @@ export const saveJob = (jobseeker_id, job_id) => {
  */
 export const unsaveJob = (jobseeker_id, job_id) => {
     return db.query(`
-        DELETE FROM jobs_saved 
+        DELETE FROM jobseekers_jobs_saved 
         WHERE jobseeker_id = $1 AND job_id = $2
         RETURNING *
     `, [jobseeker_id, job_id])
@@ -270,7 +273,7 @@ export const fetchJobseekerAppliedEvents = (jobseeker_id) => {
             e.created_at as event_created_at,
             e.updated_at as event_updated_at,
             ea.applied_at
-        FROM event_applications ea
+        FROM jobseekers_events_applied ea
         JOIN events e ON ea.event_id = e.event_id
         WHERE ea.jobseeker_id = $1
         ORDER BY ea.applied_at DESC
@@ -301,7 +304,7 @@ export const fetchJobseekerSavedEvents = (jobseeker_id) => {
             e.created_at as event_created_at,
             e.updated_at as event_updated_at,
             es.saved_at
-        FROM events_saved es
+        FROM jobseekers_events_saved es
         JOIN events e ON es.event_id = e.event_id
         WHERE es.jobseeker_id = $1
         ORDER BY es.saved_at DESC
@@ -316,7 +319,7 @@ export const fetchJobseekerSavedEvents = (jobseeker_id) => {
  */
 export const applyForEvent = (jobseeker_id, event_id) => {
     return db.query(`
-        INSERT INTO event_applications (jobseeker_id, event_id)
+        INSERT INTO jobseekers_events_applied (jobseeker_id, event_id)
         VALUES ($1, $2)
         ON CONFLICT (jobseeker_id, event_id) DO NOTHING
         RETURNING *
@@ -334,7 +337,7 @@ export const applyForEvent = (jobseeker_id, event_id) => {
  */
 export const saveEvent = (jobseeker_id, event_id) => {
     return db.query(`
-        INSERT INTO events_saved (jobseeker_id, event_id)
+        INSERT INTO jobseekers_events_saved (jobseeker_id, event_id)
         VALUES ($1, $2)
         ON CONFLICT (jobseeker_id, event_id) DO NOTHING
         RETURNING *
@@ -352,7 +355,7 @@ export const saveEvent = (jobseeker_id, event_id) => {
  */
 export const unsaveEvent = (jobseeker_id, event_id) => {
     return db.query(`
-        DELETE FROM events_saved 
+        DELETE FROM jobseekers_events_saved 
         WHERE jobseeker_id = $1 AND event_id = $2
         RETURNING *
     `, [jobseeker_id, event_id])

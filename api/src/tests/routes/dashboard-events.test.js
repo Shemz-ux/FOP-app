@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../../app.js';
 import bcrypt from 'bcrypt';
+import db from '../../db/db.js';
 
 describe('Dashboard Events API Endpoints', () => {
     let testJobseekerId;
@@ -288,5 +289,10 @@ describe('Dashboard Events API Endpoints', () => {
                 // Ignore cleanup errors
             }
         }
+    });
+
+    afterAll(async () => {
+        // Close database connection to prevent Jest from hanging
+        await db.end();
     });
 });

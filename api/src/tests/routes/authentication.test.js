@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { createJobseeker, removeJobseeker } from "../../models/jobseekers.js";
 import { createSociety, removeSociety } from "../../models/societies.js";
 import "../setup.js";
+import db from '../../db/db.js';
 
 describe("/tokens", () => {
   let testJobseekerId;
@@ -135,5 +136,10 @@ describe("/tokens", () => {
       expect(response.status).toEqual(400);
       expect(response.body.message).toEqual("Email and password are required");
     });
+  });
+
+  afterAll(async () => {
+    // Close database connection to prevent Jest from hanging
+    await db.end();
   });
 });

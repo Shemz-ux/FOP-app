@@ -2,15 +2,21 @@ import db from "./db.js"
 
 const seed = () => {
     // Drop tables in reverse order of dependencies (child tables first)
-    return db.query('DROP TABLE IF EXISTS job_applications CASCADE')
+    return db.query('DROP TABLE IF EXISTS jobseekers_jobs_applied CASCADE')
     .then(()=>{
-        return db.query('DROP TABLE IF EXISTS jobs_saved CASCADE')
+        return db.query('DROP TABLE IF EXISTS jobseekers_jobs_saved CASCADE')
     })
     .then(()=>{
-        return db.query('DROP TABLE IF EXISTS events_saved CASCADE')
+        return db.query('DROP TABLE IF EXISTS jobseekers_events_saved CASCADE')
     })
     .then(()=>{
-        return db.query('DROP TABLE IF EXISTS event_applications CASCADE')
+        return db.query('DROP TABLE IF EXISTS jobseekers_events_applied CASCADE')
+    })
+    .then(()=>{
+        return db.query('DROP TABLE IF EXISTS society_jobs_saved CASCADE')
+    })
+    .then(()=>{
+        return db.query('DROP TABLE IF EXISTS society_events_saved CASCADE')
     })
     .then(()=>{
         return db.query('DROP TABLE IF EXISTS jobs CASCADE')
@@ -25,25 +31,29 @@ const seed = () => {
         return db.query('DROP TABLE IF EXISTS jobseekers CASCADE')
     })
     .then(()=>{
-        return users()
+        return createJobseekersTable()
     }).then(()=>{
-        return societies()
+        return createSocietiesTable()
     }).then(()=>{
-        return jobs()
+        return createJobsTable()
     }).then(()=>{
-        return events()
+        return createEventsTable()
     }).then(()=>{
-        return job_applications()
+        return createJobseekerJobApplicationsTable()
     }).then(()=>{
-        return jobs_saved()
+        return createJobseekerJobsSavedTable()
     }).then(()=>{
-        return events_saved()
+        return createJobseekerEventApplicationsTable()
     }).then(()=>{
-        return event_applications()
+        return createJobseekerEventsSavedTable()
+    }).then(()=>{
+        return createSocietyJobsSavedTable()
+    }).then(()=>{
+        return createSocietyEventsSavedTable()
     })
 }
 
-const users = () => {
+const createJobseekersTable = () => {
     return db.query(`
         -- Create ENUM types first
         DO $$ BEGIN
@@ -138,7 +148,7 @@ const users = () => {
         })
 }
 
-const societies = () => {
+const createSocietiesTable = () => {
     return db.query(`CREATE TABLE societies (
         society_id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -153,7 +163,7 @@ const societies = () => {
         })
 }
 
-const jobs = () => {
+const createJobsTable = () => {
     return db.query(`CREATE TABLE jobs (
         job_id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -176,7 +186,7 @@ const jobs = () => {
         })
 }
 
-const events = () => {
+const createEventsTable = () => {
     return db.query(`CREATE TABLE events (
         event_id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -197,8 +207,8 @@ const events = () => {
         })
 }
 
-const job_applications = () => {
-    return db.query(`CREATE TABLE job_applications (
+const createJobseekerJobApplicationsTable = () => {
+    return db.query(`CREATE TABLE jobseekers_jobs_applied (
     jobseeker_id INT NOT NULL,
     job_id INT NOT NULL,
     applied_at TIMESTAMP DEFAULT NOW(),
@@ -210,12 +220,12 @@ const job_applications = () => {
         REFERENCES jobs(job_id)
         ON DELETE CASCADE
     )`).then(()=>{
-            console.log("Job application table created!✅")
+            console.log("Jobseekers jobs applied table created!✅")
         })
 }
 
-const jobs_saved = () => {
-    return db.query(`CREATE TABLE jobs_saved (
+const createJobseekerJobsSavedTable = () => {
+    return db.query(`CREATE TABLE jobseekers_jobs_saved (
     jobseeker_id INT NOT NULL,
     job_id INT NOT NULL,
     saved_at TIMESTAMP DEFAULT NOW(),
@@ -227,12 +237,12 @@ const jobs_saved = () => {
         REFERENCES jobs(job_id)
         ON DELETE CASCADE
     )`).then(()=>{
-            console.log("Job saved table created!✅")
+            console.log("Jobseekers jobs saved table created!✅")
         })
 }
 
-const event_applications = () => {
-    return db.query(`CREATE TABLE event_applications (
+const createJobseekerEventApplicationsTable = () => {
+    return db.query(`CREATE TABLE jobseekers_events_applied (
     jobseeker_id INT NOT NULL,
     event_id INT NOT NULL,
     applied_at TIMESTAMP DEFAULT NOW(),
@@ -244,12 +254,12 @@ const event_applications = () => {
         REFERENCES events(event_id)
         ON DELETE CASCADE
     )`).then(()=>{
-            console.log("Event application table created!✅")
+            console.log("Jobseekers events applied table created!✅")
         })
 }
 
-const events_saved = () => {
-    return db.query(`CREATE TABLE events_saved (
+const createJobseekerEventsSavedTable = () => {
+    return db.query(`CREATE TABLE jobseekers_events_saved (
     jobseeker_id INT NOT NULL,
     event_id INT NOT NULL,
     saved_at TIMESTAMP DEFAULT NOW(),
@@ -261,10 +271,42 @@ const events_saved = () => {
         REFERENCES events(event_id)
         ON DELETE CASCADE
     )`).then(()=>{
-            console.log("Event saved table created!✅")
+            console.log("Jobseekers events saved table created!✅")
         })
 }
 
+const createSocietyJobsSavedTable = () => {
+    return db.query(`CREATE TABLE society_jobs_saved (
+    society_id INT NOT NULL,
+    job_id INT NOT NULL,
+    saved_at TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (society_id, job_id),
+    FOREIGN KEY (society_id)
+        REFERENCES societies(society_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (job_id)
+        REFERENCES jobs(job_id)
+        ON DELETE CASCADE
+    )`).then(()=>{
+            console.log("Society jobs saved table created!✅")
+        })
+}
 
+const createSocietyEventsSavedTable = () => {
+    return db.query(`CREATE TABLE society_events_saved (
+    society_id INT NOT NULL,
+    event_id INT NOT NULL,
+    saved_at TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (society_id, event_id),
+    FOREIGN KEY (society_id)
+        REFERENCES societies(society_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (event_id)
+        REFERENCES events(event_id)
+        ON DELETE CASCADE
+    )`).then(()=>{
+            console.log("Society events saved table created!✅")
+        })
+}
 
 export default seed;

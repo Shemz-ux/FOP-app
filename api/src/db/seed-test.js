@@ -169,8 +169,8 @@ const createEventsTable = () => {
         });
 };
 
-const createJobApplicationsTable = () => {
-    return testDb.query(`CREATE TABLE job_applications (
+const createJobseekerJobApplicationsTable = () => {
+    return testDb.query(`CREATE TABLE jobseekers_jobs_applied (
         jobseeker_id INT NOT NULL,
         job_id INT NOT NULL,
         applied_at TIMESTAMP DEFAULT NOW(),
@@ -182,12 +182,12 @@ const createJobApplicationsTable = () => {
             REFERENCES jobs(job_id)
             ON DELETE CASCADE
         )`).then(()=>{
-            console.log("Job application table created!✅")
+            console.log("Jobseekers jobs applied table created!✅")
         });
 };
 
-const createJobsSavedTable = () => {
-    return testDb.query(`CREATE TABLE jobs_saved (
+const createJobseekerJobsSavedTable = () => {
+    return testDb.query(`CREATE TABLE jobseekers_jobs_saved (
         jobseeker_id INT NOT NULL,
         job_id INT NOT NULL,
         saved_at TIMESTAMP DEFAULT NOW(),
@@ -199,12 +199,12 @@ const createJobsSavedTable = () => {
             REFERENCES jobs(job_id)
             ON DELETE CASCADE
         )`).then(()=>{
-            console.log("Jobs saved table created!✅")
+            console.log("Jobseekers jobs saved table created!✅")
         });
 };
 
-const createEventApplicationsTable = () => {
-    return testDb.query(`CREATE TABLE event_applications (
+const createJobseekerEventApplicationsTable = () => {
+    return testDb.query(`CREATE TABLE jobseekers_events_applied (
         jobseeker_id INT NOT NULL,
         event_id INT NOT NULL,
         applied_at TIMESTAMP DEFAULT NOW(),
@@ -216,12 +216,12 @@ const createEventApplicationsTable = () => {
             REFERENCES events(event_id)
             ON DELETE CASCADE
         )`).then(()=>{
-            console.log("Event application table created!✅")
+            console.log("Jobseekers events applied table created!✅")
         });
 };
 
-const createEventsSavedTable = () => {
-    return testDb.query(`CREATE TABLE events_saved (
+const createJobseekerEventsSavedTable = () => {
+    return testDb.query(`CREATE TABLE jobseekers_events_saved (
         jobseeker_id INT NOT NULL,
         event_id INT NOT NULL,
         saved_at TIMESTAMP DEFAULT NOW(),
@@ -233,7 +233,41 @@ const createEventsSavedTable = () => {
             REFERENCES events(event_id)
             ON DELETE CASCADE
         )`).then(()=>{
-            console.log("Events saved table created!✅")
+            console.log("Jobseekers events saved table created!✅")
+        });
+};
+
+const createSocietyJobsSavedTable = () => {
+    return testDb.query(`CREATE TABLE society_jobs_saved (
+        society_id INT NOT NULL,
+        job_id INT NOT NULL,
+        saved_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (society_id, job_id),
+        FOREIGN KEY (society_id)
+            REFERENCES societies(society_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (job_id)
+            REFERENCES jobs(job_id)
+            ON DELETE CASCADE
+        )`).then(()=>{
+            console.log("Society jobs saved table created!✅")
+        });
+};
+
+const createSocietyEventsSavedTable = () => {
+    return testDb.query(`CREATE TABLE society_events_saved (
+        society_id INT NOT NULL,
+        event_id INT NOT NULL,
+        saved_at TIMESTAMP DEFAULT NOW(),
+        PRIMARY KEY (society_id, event_id),
+        FOREIGN KEY (society_id)
+            REFERENCES societies(society_id)
+            ON DELETE CASCADE,
+        FOREIGN KEY (event_id)
+            REFERENCES events(event_id)
+            ON DELETE CASCADE
+        )`).then(()=>{
+            console.log("Society events saved table created!✅")
         });
 };
 
@@ -242,10 +276,12 @@ const runTestSeed = async () => {
     
     try {
         // Drop tables in reverse order of dependencies (child tables first)
-        await testDb.query('DROP TABLE IF EXISTS job_applications CASCADE');
-        await testDb.query('DROP TABLE IF EXISTS jobs_saved CASCADE');
-        await testDb.query('DROP TABLE IF EXISTS event_applications CASCADE');
-        await testDb.query('DROP TABLE IF EXISTS events_saved CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS jobseekers_jobs_applied CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS jobseekers_jobs_saved CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS jobseekers_events_applied CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS jobseekers_events_saved CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS society_jobs_saved CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS society_events_saved CASCADE');
         await testDb.query('DROP TABLE IF EXISTS events CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobs CASCADE');
         await testDb.query('DROP TABLE IF EXISTS societies CASCADE');
@@ -255,10 +291,12 @@ const runTestSeed = async () => {
         await createSocietiesTable();
         await createJobsTable();
         await createEventsTable();
-        await createJobApplicationsTable();
-        await createJobsSavedTable();
-        await createEventApplicationsTable();
-        await createEventsSavedTable();
+        await createJobseekerJobApplicationsTable();
+        await createJobseekerJobsSavedTable();
+        await createJobseekerEventApplicationsTable();
+        await createJobseekerEventsSavedTable();
+        await createSocietyJobsSavedTable();
+        await createSocietyEventsSavedTable();
         
         console.log('✅ Test database seeded successfully!');
         await testDb.end();

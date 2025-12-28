@@ -12,7 +12,10 @@ import {
     postEventApplication,
     postSaveEvent,
     deleteSavedEvent
-} from '../controllers/dashboard.js';
+} from '../controllers/jobseeker-dashboard.js';
+
+// This file contains JOBSEEKER dashboard routes
+// For society dashboard routes, see society-dashboard.js
 
 const router = express.Router();
 
