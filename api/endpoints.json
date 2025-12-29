@@ -1,241 +1,264 @@
 {
   "api_documentation": {
-    "title": "CRUD API Documentation",
-    "description": "RESTful API for user management with Mailchimp integration",
+    "title": "FOP Job Platform API Documentation",
+    "description": "RESTful API for job seekers, societies, jobs, events, and dashboard functionality with secure authentication",
     "base_url": "/api",
-    "version": "1.0.0"
+    "version": "2.0.0"
   },
-  "endpoints": {
-    "GET /api/users": {
-      "description": "Retrieve all users",
-      "method": "GET",
-      "parameters": "None",
-      "request_body": "None",
-      "success_response": {
-        "status": 200,
-        "body": {
-          "users": [
-            {
-              "user_id": 1,
-              "firstName": "John",
-              "lastName": "Doe",
-              "email": "john.doe@example.com",
-              "number": "+1234567890",
-              "industry": "Technology",
-              "message": "Hello world!",
-              "created_at": "2025-01-10T18:00:00.000Z"
-            }
-          ]
-        }
-      },
-      "error_responses": {
-        "500": "Internal server error"
-      }
-    },
-    "POST /api/users": {
-      "description": "Create a new user and add to Mailchimp",
-      "method": "POST",
-      "parameters": "None",
+  "authentication": {
+    "POST /api/tokens": {
+      "description": "Authenticate user and get JWT token",
+      "methods": ["POST"],
       "request_body": {
-        "firstName": "string (required)",
-        "lastName": "string (required)", 
         "email": "string (required)",
-        "number": "string (optional)",
-        "industry": "string (optional)",
-        "message": "string (optional)"
-      },
-      "example_request": {
-        "firstName": "Jane",
-        "lastName": "Smith",
-        "email": "jane.smith@example.com",
-        "number": "+0987654321",
-        "industry": "Healthcare",
-        "message": "Looking forward to connecting!"
+        "password": "string (required)"
       },
       "success_response": {
         "status": 201,
         "body": {
-          "newUser": {
-            "user_id": 2,
-            "firstName": "Jane",
-            "lastName": "Smith",
-            "email": "jane.smith@example.com",
-            "number": "+0987654321",
-            "industry": "Healthcare",
-            "message": "Looking forward to connecting!",
-            "created_at": "2025-01-10T18:00:00.000Z"
-          }
-        }
-      },
-      "success_with_mailchimp_warning": {
-        "status": 201,
-        "body": {
-          "newUser": {
-            "user_id": 2,
-            "firstName": "Jane",
-            "lastName": "Smith",
-            "email": "invalid-email",
-            "number": "+0987654321",
-            "industry": "Healthcare",
-            "message": "Looking forward to connecting!",
-            "created_at": "2025-01-10T18:00:00.000Z"
-          },
-          "warning": {
-            "message": "Invalid email address provided. Please check the email format.",
-            "details": "invalid-email is not a valid email address"
-          }
-        }
-      },
-      "error_responses": {
-        "400": "Bad request - missing required fields",
-        "500": "Internal server error"
-      }
-    },
-    "GET /api/users/:user_id": {
-      "description": "Retrieve a specific user by ID",
-      "method": "GET",
-      "parameters": {
-        "user_id": "integer (required) - The ID of the user"
-      },
-      "request_body": "None",
-      "example_url": "/api/users/1",
-      "success_response": {
-        "status": 200,
-        "body": {
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
           "user": {
-            "user_id": 1,
-            "firstName": "John",
-            "lastName": "Doe",
-            "email": "john.doe@example.com",
-            "number": "+1234567890",
+            "id": 1,
+            "email": "user@example.com",
+            "type": "jobseeker"
+          }
+        }
+      }
+    }
+  },
+  "jobseekers": {
+    "description": "Manage job seeker profiles with secure password handling",
+    "methods": ["GET", "POST", "PATCH", "DELETE"],
+    "endpoints": {
+      "GET /api/jobseekers": "Get all jobseekers",
+      "POST /api/jobseekers": "Create new jobseeker",
+      "GET /api/jobseekers/:id": "Get specific jobseeker",
+      "PATCH /api/jobseekers/:id": "Update jobseeker",
+      "DELETE /api/jobseekers/:id": "Delete jobseeker"
+    },
+    "example_response": {
+      "status": 201,
+      "body": {
+        "newJobseeker": {
+          "jobseeker_id": 1,
+          "first_name": "John",
+          "last_name": "Doe",
+          "email": "john.doe@example.com",
+          "phone_number": "+1234567890",
+          "education_level": "undergraduate",
+          "institution_name": "University College London",
+          "uni_year": "3rd",
+          "degree_type": "bsc",
+          "area_of_study": "Computer Science",
+          "role_interest_option_one": "Software Developer",
+          "role_interest_option_two": "Data Scientist",
+          "created_at": "2025-01-10T18:00:00.000Z"
+        }
+      }
+    }
+  },
+  "societies": {
+    "description": "Manage university society profiles",
+    "methods": ["GET", "POST", "PATCH", "DELETE"],
+    "endpoints": {
+      "GET /api/societies": "Get all societies",
+      "POST /api/societies": "Create new society",
+      "GET /api/societies/:id": "Get specific society",
+      "PATCH /api/societies/:id": "Update society",
+      "DELETE /api/societies/:id": "Delete society"
+    },
+    "example_response": {
+      "status": 201,
+      "body": {
+        "newSociety": {
+          "society_id": 1,
+          "name": "Tech Society",
+          "university": "University College London",
+          "description": "A community for technology enthusiasts",
+          "email": "tech@ucl.ac.uk",
+          "created_at": "2025-01-10T18:00:00.000Z"
+        }
+      }
+    }
+  },
+  "jobs": {
+    "description": "Job listings with advanced filtering and search capabilities",
+    "methods": ["GET", "POST", "PATCH", "DELETE"],
+    "endpoints": {
+      "GET /api/jobs": "Get all jobs",
+      "POST /api/jobs": "Create new job",
+      "GET /api/jobs/:id": "Get specific job",
+      "PATCH /api/jobs/:id": "Update job",
+      "DELETE /api/jobs/:id": "Delete job",
+      "GET /api/jobs/search": "Advanced job search with filters",
+      "GET /api/jobs/filters": "Get available filter options"
+    },
+    "example_response": {
+      "status": 200,
+      "body": {
+        "jobs": [
+          {
+            "job_id": 1,
+            "title": "Software Engineer",
+            "company": "TechCorp",
+            "description": "Join our innovative team...",
             "industry": "Technology",
-            "message": "Hello world!",
+            "location": "London",
+            "job_level": "Junior",
+            "role_type": "Full-time",
+            "salary": "£35,000 - £45,000",
+            "deadline": "2025-02-15",
+            "applicant_count": 25,
             "created_at": "2025-01-10T18:00:00.000Z"
           }
-        }
-      },
-      "error_responses": {
-        "404": {
-          "status": 404,
-          "body": {
-            "msg": "User not found"
-          }
-        },
-        "500": "Internal server error"
-      }
-    },
-    "PATCH /api/users/:user_id": {
-      "description": "Update a specific user by ID",
-      "method": "PATCH",
-      "parameters": {
-        "user_id": "integer (required) - The ID of the user"
-      },
-      "request_body": {
-        "firstName": "string (optional)",
-        "lastName": "string (optional)",
-        "email": "string (optional)",
-        "number": "string (optional)",
-        "industry": "string (optional)",
-        "message": "string (optional)"
-      },
-      "example_request": {
-        "firstName": "John Updated",
-        "industry": "Finance"
-      },
-      "example_url": "/api/users/1",
-      "success_response": {
-        "status": 201,
-        "body": {
-          "user": {
-            "user_id": 1,
-            "firstName": "John Updated",
-            "lastName": "Doe",
-            "email": "john.doe@example.com",
-            "number": "+1234567890",
-            "industry": "Finance",
-            "message": "Hello world!",
-            "created_at": "2025-01-10T18:00:00.000Z"
-          }
-        }
-      },
-      "error_responses": {
-        "400": {
-          "status": 400,
-          "body": {
-            "msg": "Invalid field provided"
-          }
-        },
-        "404": {
-          "status": 404,
-          "body": {
-            "msg": "User not found"
-          }
-        },
-        "500": "Internal server error"
-      }
-    },
-    "DELETE /api/users/:user_id": {
-      "description": "Delete a specific user by ID",
-      "method": "DELETE",
-      "parameters": {
-        "user_id": "integer (required) - The ID of the user"
-      },
-      "request_body": "None",
-      "example_url": "/api/users/1",
-      "success_response": {
-        "status": 200,
-        "body": {
-          "msg": "User deleted!"
-        }
-      },
-      "error_responses": {
-        "404": {
-          "status": 404,
-          "body": {
-            "msg": "User not found"
-          }
-        },
-        "500": "Internal server error"
+        ]
       }
     }
   },
-  "database_schema": {
-    "users_table": {
-      "user_id": "SERIAL PRIMARY KEY",
-      "firstName": "VARCHAR(255) NOT NULL",
-      "lastName": "VARCHAR(255) NOT NULL", 
-      "email": "VARCHAR(255) NOT NULL",
-      "number": "VARCHAR(20)",
-      "industry": "VARCHAR(255)",
-      "message": "TEXT",
-      "created_at": "TIMESTAMP DEFAULT NOW()"
+  "events": {
+    "description": "Event listings with advanced filtering and search capabilities",
+    "methods": ["GET", "POST", "PATCH", "DELETE"],
+    "endpoints": {
+      "GET /api/events": "Get all events",
+      "POST /api/events": "Create new event",
+      "GET /api/events/:id": "Get specific event",
+      "PATCH /api/events/:id": "Update event",
+      "DELETE /api/events/:id": "Delete event",
+      "GET /api/events/search": "Advanced event search with filters",
+      "GET /api/events/filters": "Get available filter options"
+    },
+    "example_response": {
+      "status": 200,
+      "body": {
+        "events": [
+          {
+            "event_id": 1,
+            "title": "Tech Networking Event",
+            "company": "Tech Society",
+            "description": "Connect with industry professionals...",
+            "industry": "Technology",
+            "location": "London",
+            "event_date": "2025-02-20",
+            "event_time": "18:00:00",
+            "applicant_count": 45,
+            "created_at": "2025-01-10T18:00:00.000Z"
+          }
+        ]
+      }
     }
   },
-  "mailchimp_integration": {
-    "description": "All user creations are automatically synced to Mailchimp",
-    "merge_fields": {
-      "FNAME": "firstName",
-      "LNAME": "lastName", 
-      "PHONE": "number",
-      "INDUSTRY": "industry",
-      "MESSAGE": "message"
+  "jobseeker_dashboard": {
+    "description": "Personalized dashboard for job seekers to manage applications and saved items",
+    "methods": ["GET", "POST", "DELETE"],
+    "endpoints": {
+      "GET /api/jobseekers/:id/dashboard": "Get jobseeker dashboard with applied and saved jobs",
+      "GET /api/jobseekers/:id/full-dashboard": "Get full dashboard with jobs and events",
+      "GET /api/jobseekers/:id/applied-jobs": "Get applied jobs only",
+      "GET /api/jobseekers/:id/saved-jobs": "Get saved jobs only",
+      "GET /api/jobseekers/:id/applied-events": "Get applied events only",
+      "GET /api/jobseekers/:id/saved-events": "Get saved events only",
+      "POST /api/jobseekers/:id/apply/:job_id": "Apply for a job",
+      "POST /api/jobseekers/:id/save/:job_id": "Save a job",
+      "POST /api/jobseekers/:id/apply-event/:event_id": "Apply for an event",
+      "POST /api/jobseekers/:id/save-event/:event_id": "Save an event",
+      "DELETE /api/jobseekers/:id/save/:job_id": "Remove saved job",
+      "DELETE /api/jobseekers/:id/save-event/:event_id": "Remove saved event"
     },
-    "validation_errors": [
-      "Invalid email address provided. Please check the email format.",
-      "This email is already subscribed to the mailing list.",
-      "Failed to subscribe to mailing list. Please try again."
-    ]
+    "example_response": {
+      "status": 200,
+      "body": {
+        "appliedJobs": [
+          {
+            "job_id": 1,
+            "title": "Software Engineer",
+            "company": "TechCorp",
+            "location": "London",
+            "applied_at": "2025-01-08T10:30:00.000Z"
+          }
+        ],
+        "savedJobs": [
+          {
+            "job_id": 2,
+            "title": "Data Analyst",
+            "company": "DataCorp",
+            "location": "Manchester",
+            "saved_at": "2025-01-09T14:20:00.000Z"
+          }
+        ],
+        "appliedEvents": [
+          {
+            "event_id": 1,
+            "title": "Tech Networking Event",
+            "company": "Tech Society",
+            "location": "London",
+            "event_date": "2025-02-20",
+            "applied_at": "2025-01-08T15:45:00.000Z"
+          }
+        ],
+        "savedEvents": [
+          {
+            "event_id": 2,
+            "title": "Career Fair 2025",
+            "company": "Business Society",
+            "location": "Manchester",
+            "event_date": "2025-03-15",
+            "saved_at": "2025-01-09T11:30:00.000Z"
+          }
+        ],
+        "totalAppliedJobs": 1,
+        "totalSavedJobs": 1,
+        "totalAppliedEvents": 1,
+        "totalSavedEvents": 1,
+        "pagination": {
+          "currentPage": 1,
+          "totalPages": 1,
+          "totalCount": 4
+        }
+      }
+    }
   },
-  "environment_variables": {
-    "required": [
-      "DB_USER",
-      "DB_HOST", 
-      "DB_DATABASE",
-      "DB_PASSWORD",
-      "DB_PORT",
-      "MAILCHIMP_API_KEY",
-      "MAILCHIMP_SERVER_PREFIX",
-      "MAILCHIMP_AUDIENCE_ID"
-    ]
+  "society_dashboard": {
+    "description": "Dashboard for societies to manage saved jobs and events (posting is admin-only)",
+    "methods": ["GET", "POST", "DELETE"],
+    "endpoints": {
+      "GET /api/societies/:id/dashboard": "Get society dashboard with saved jobs and events",
+      "GET /api/societies/:id/saved-jobs": "Get jobs saved by society",
+      "GET /api/societies/:id/saved-events": "Get events saved by society",
+      "POST /api/societies/:id/save-job/:job_id": "Save a job to society favorites",
+      "POST /api/societies/:id/save-event/:event_id": "Save an event to society favorites",
+      "DELETE /api/societies/:id/save-job/:job_id": "Remove saved job",
+      "DELETE /api/societies/:id/save-event/:event_id": "Remove saved event"
+    },
+    "example_response": {
+      "status": 200,
+      "body": {
+        "saved_jobs": [
+          {
+            "job_id": 1,
+            "title": "Software Engineer",
+            "company": "TechCorp",
+            "location": "London",
+            "salary": "£35,000 - £45,000",
+            "saved_at": "2025-01-08T14:30:00.000Z"
+          }
+        ],
+        "saved_events": [
+          {
+            "event_id": 2,
+            "title": "Career Fair 2025",
+            "company": "Business Society",
+            "location": "Manchester",
+            "event_date": "2025-03-15",
+            "saved_at": "2025-01-09T16:20:00.000Z"
+          }
+        ],
+        "stats": {
+          "total_saved_jobs": 1,
+          "total_saved_events": 1,
+          "active_saved_jobs": 1,
+          "active_saved_events": 1
+        }
+      }
+    }
   }
 }
