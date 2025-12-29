@@ -49,9 +49,9 @@ jobs:
     - name: Set up test environment
       working-directory: ./api
       run: |
-        echo "PORT=5002" > .env.test
-        echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/fop_test_db" >> .env.test
-        echo "JWT_SECRET=test_jwt_secret_key_for_testing_only" >> .env.test
+        echo "PORT=5002" > .env
+        echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/fop_test_db" >> .env
+        echo "JWT_SECRET=test_jwt_secret_key_for_testing_only" >> .env
     
     - name: Initialize database
       working-directory: ./api
