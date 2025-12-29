@@ -78,7 +78,7 @@ export const updateJobseeker = (updateJobseeker, id) => {
     const fields = [];
     const values = [];
     const validFields = [
-        "first_name", "last_name", "email", "phone_number", "date_of_birth", 
+        "first_name", "last_name", "email", "password_hash", "phone_number", "date_of_birth", 
         "gender", "ethnicity", "school_meal_eligible", "first_gen_to_go_uni", 
         "education_level", "institution_name", "uni_year", 
         "degree_type", "area_of_study", "subject_one", "subject_two", 

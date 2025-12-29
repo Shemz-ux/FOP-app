@@ -26,11 +26,12 @@ describe.only('Jobseekers API Endpoints', () => {
 
   describe('POST /api/jobseekers', () => {
     test('should create a new jobseeker with valid data', async () => {
+      const timestamp = Date.now();
       const newJobseeker = {
         first_name: 'John',
         last_name: 'Doe',
-        email: 'john.doe@test.com',
-        password_hash: hashedPassword,
+        email: `john.doe.${timestamp}@test.com`,
+        password: testPassword, // Use plaintext password
         phone_number: '+1234567890',
         date_of_birth: '1995-01-15',
         gender: 'male',
@@ -57,7 +58,7 @@ describe.only('Jobseekers API Endpoints', () => {
       expect(response.body.newJobseeker).toHaveProperty('jobseeker_id');
       expect(response.body.newJobseeker.first_name).toBe('John');
       expect(response.body.newJobseeker.last_name).toBe('Doe');
-      expect(response.body.newJobseeker.email).toBe('john.doe@test.com');
+      expect(response.body.newJobseeker.email).toBe(`john.doe.${timestamp}@test.com`);
       
       // Store the jobseeker ID for other tests
       testJobseekerId = response.body.newJobseeker.jobseeker_id;
@@ -66,7 +67,7 @@ describe.only('Jobseekers API Endpoints', () => {
     test('should handle missing required fields', async () => {
       const incompleteJobseeker = {
         first_name: 'Jane'
-        // Missing email and password_hash (required fields)
+        // Missing email and password (required fields)
       };
 
       const response = await request(app)
@@ -78,12 +79,28 @@ describe.only('Jobseekers API Endpoints', () => {
     });
 
     test('should handle duplicate email', async () => {
-      const duplicateJobseeker = {
+      // First create a jobseeker
+      const timestamp = Date.now();
+      const firstJobseeker = {
         first_name: 'Jane',
         last_name: 'Smith',
-        email: 'john.doe@test.com', // Same email as previous test
-        password_hash: hashedPassword,
+        email: `duplicate.test.${timestamp}@test.com`,
+        password: testPassword,
         phone_number: '+0987654321'
+      };
+
+      await request(app)
+        .post('/api/jobseekers')
+        .send(firstJobseeker)
+        .expect(201);
+
+      // Then try to create another with the same email
+      const duplicateJobseeker = {
+        first_name: 'John',
+        last_name: 'Duplicate',
+        email: `duplicate.test.${timestamp}@test.com`, // Same email
+        password: testPassword,
+        phone_number: '+1111111111'
       };
 
       const response = await request(app)
@@ -281,7 +298,7 @@ describe.only('Jobseekers API Endpoints', () => {
         first_name: 'Date',
         last_name: 'Test',
         email: 'datetest@test.com',
-        password_hash: hashedPassword,
+        password: testPassword,
         date_of_birth: 'invalid-date'
       };
 
@@ -299,7 +316,7 @@ describe.only('Jobseekers API Endpoints', () => {
         first_name: 'Alex',
         last_name: 'Johnson',
         email: `alevel.${timestamp}@test.com`,
-        password_hash: hashedPassword,
+        password: testPassword,
         education_level: 'a_level_or_btec',
         institution_name: 'Harris Academy Barking',
         subject_one: 'Mathematics',
@@ -323,7 +340,7 @@ describe.only('Jobseekers API Endpoints', () => {
         first_name: 'Sarah',
         last_name: 'Wilson',
         email: `university.${timestamp}@test.com`,
-        password_hash: hashedPassword,
+        password: testPassword,
         education_level: 'undergraduate',
         institution_name: 'Cambridge University',
         uni_year: '3rd',

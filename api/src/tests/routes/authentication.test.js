@@ -13,10 +13,10 @@ describe("/tokens", () => {
   let hashedPassword;
 
   beforeAll(async () => {
-    // Hash password for testing
+    // Hash password for direct database insertion (bypassing controller validation)
     hashedPassword = await bcrypt.hash(testPassword, 10);
     
-    // Create test jobseeker
+    // Create test jobseeker directly in database with hashed password
     const jobseeker = await createJobseeker({
       first_name: "John",
       last_name: "Doe",
@@ -26,7 +26,7 @@ describe("/tokens", () => {
     });
     testJobseekerId = jobseeker.jobseeker_id;
 
-    // Create test society
+    // Create test society directly in database with hashed password
     const society = await createSociety({
       name: "Tech Society",
       university: "Test University",

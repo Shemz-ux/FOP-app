@@ -37,7 +37,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: `test.society.${timestamp}@test.com`,
-                password_hash: hashedPassword
+                password: testPassword
             };
 
             const response = await request(app)
@@ -61,7 +61,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: 'test.society@test.com',
-                // Missing password_hash (required field)
+                // Missing password (required field)
             };
 
             const response = await request(app)
@@ -80,7 +80,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: `duplicate.test.${timestamp}@test.com`,
-                password_hash: hashedPassword
+                password: testPassword
             };
 
             await request(app)
@@ -94,7 +94,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: `duplicate.test.${timestamp}@test.com`, // Same email as previous
-                password_hash: hashedPassword
+                password: testPassword
             };
 
             const response = await request(app)
@@ -115,7 +115,7 @@ describe('Societies API Endpoints', () => {
                     university: 'Test University',
                     description: 'Test description',
                     email: `get.society.${timestamp}@test.com`,
-                    password_hash: hashedPassword
+                    password: testPassword
                 };
                 const response = await request(app)
                     .post('/api/societies')
@@ -161,7 +161,7 @@ describe('Societies API Endpoints', () => {
                     university: 'Test University',
                     description: 'Test description',
                     email: `patch.society.${timestamp}@test.com`,
-                    password_hash: hashedPassword
+                    password: testPassword
                 };
                 const response = await request(app)
                     .post('/api/societies')
@@ -176,7 +176,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Updated University',
                 description: 'Updated description',
                 email: `updated.society.${updateTimestamp}@test.com`,
-                password_hash: hashedPassword
+                password: testPassword
             };
 
             const response = await request(app)
@@ -243,7 +243,7 @@ describe('Societies API Endpoints', () => {
                     university: 'Test University',
                     description: 'Test description',
                     email: `delete.society.${timestamp}@test.com`,
-                    password_hash: hashedPassword
+                    password: testPassword
                 };
                 
                 const createResponse = await request(app)
@@ -283,7 +283,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: 'longstring@test.com',
-                password_hash: hashedPassword
+                password: testPassword
             };
 
             const response = await request(app)
@@ -301,7 +301,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: `invalidfield.${timestamp}@test.com`,
-                password_hash: hashedPassword,
+                password: testPassword,
                 invalid_field: 'should not be accepted'
             };
 
@@ -320,7 +320,7 @@ describe('Societies API Endpoints', () => {
                 university: 'Test University',
                 description: 'Test description',
                 email: `empty.${timestamp}@test.com`,
-                password_hash: hashedPassword
+                password: testPassword
             };
 
             const response = await request(app)

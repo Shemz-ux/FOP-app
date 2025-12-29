@@ -42,7 +42,7 @@ export const createSociety = (newSociety) => {
 export const updateSociety = (updateSociety, id) => {
     const fields = [];
     const values = [];
-    const validFields = ["name", "university", "description", "email"];
+    const validFields = ["name", "university", "description", "email", "password_hash"];
     let index = 1;
 
     for (const [key, value] of Object.entries(updateSociety)) {

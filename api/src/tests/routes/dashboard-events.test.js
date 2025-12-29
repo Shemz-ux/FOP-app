@@ -5,12 +5,13 @@ import db from '../../db/db.js';
 
 describe('Dashboard Events API Endpoints', () => {
     let testJobseekerId;
-    let testEventId1, testEventId2, testEventId3;
+    let testEventIds = [];
     let hashedPassword;
+    const testPassword = 'TestPassword123';
 
     beforeAll(async () => {
         // Create hashed password for test users
-        hashedPassword = await bcrypt.hash('testpassword', 10);
+        hashedPassword = await bcrypt.hash(testPassword, 10);
     });
 
     beforeEach(async () => {
@@ -21,7 +22,7 @@ describe('Dashboard Events API Endpoints', () => {
                 first_name: 'Event',
                 last_name: 'Tester',
                 email: `event.tester.${Date.now()}@test.com`,
-                password_hash: hashedPassword,
+                password: testPassword,
                 education_level: 'undergraduate',
                 institution_name: 'Test University',
                 uni_year: '3rd',
