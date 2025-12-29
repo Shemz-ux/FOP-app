@@ -6,8 +6,13 @@ import jobRouter from "./jobs.js";
 import eventRouter from "./events.js";
 import jobseekerDashboardRouter from "./jobseeker-dashboard.js";
 import societyDashboardRouter from "./society-dashboard.js";
+import jobsAdvancedRouter from "./jobs-advanced.js";
+import eventsAdvancedRouter from "./events-advanced.js";
 
 const apiRouter = express.Router();
+// Advanced filtering routes
+apiRouter.use("/jobs", jobsAdvancedRouter);     // Handles /jobs/search, /jobs/filters
+apiRouter.use("/events", eventsAdvancedRouter); // Handles /events/search, /events/filters
 
 // Core entity routes
 apiRouter.use("/jobseekers", jobseekerRouter);
@@ -18,7 +23,7 @@ apiRouter.use("/events", eventRouter);
 // Authentication routes
 apiRouter.use("/", authRouter);
 
-// Dashboard routes (clearly separated by user type)
+// Dashboard routes 
 apiRouter.use("/", jobseekerDashboardRouter);  // Handles /jobseekers/:id/dashboard, etc.
 apiRouter.use("/", societyDashboardRouter);    // Handles /societies/:id/dashboard, etc.
 
