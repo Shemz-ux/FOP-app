@@ -1,9 +1,11 @@
 import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
+import '../setup.js';
 
 describe('Jobs Advanced Filtering API Endpoints', () => {
     let testJobIds = [];
+    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
 
     beforeAll(async () => {
         // Create test jobs with diverse data for filtering
@@ -59,9 +61,10 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
         for (const job of testJobs) {
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(job);
-            if (response.body.job) {
-                testJobIds.push(response.body.job.job_id);
+            if (response.body.newJob) {
+                testJobIds.push(response.body.newJob.job_id);
             }
         }
     });
@@ -70,7 +73,9 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
         // Clean up test jobs
         for (const jobId of testJobIds) {
             try {
-                await request(app).delete(`/api/jobs/${jobId}`);
+                await request(app)
+                    .delete(`/api/jobs/${jobId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }

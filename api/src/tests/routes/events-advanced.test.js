@@ -1,9 +1,11 @@
 import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
+import '../setup.js';
 
 describe('Events Advanced Filtering API Endpoints', () => {
     let testEventIds = [];
+    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
 
     beforeAll(async () => {
         // Create test events with diverse data for filtering
@@ -64,9 +66,10 @@ describe('Events Advanced Filtering API Endpoints', () => {
         for (const event of testEvents) {
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(event);
-            if (response.body.event) {
-                testEventIds.push(response.body.event.event_id);
+            if (response.body.newEvent) {
+                testEventIds.push(response.body.newEvent.event_id);
             }
         }
     });
@@ -75,7 +78,9 @@ describe('Events Advanced Filtering API Endpoints', () => {
         // Clean up test events
         for (const eventId of testEventIds) {
             try {
-                await request(app).delete(`/api/events/${eventId}`);
+                await request(app)
+                    .delete(`/api/events/${eventId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }

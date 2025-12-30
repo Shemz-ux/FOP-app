@@ -1,9 +1,11 @@
- import request from 'supertest';
+import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
+import '../setup.js';
 
 describe('Events API Endpoints', () => {
     let testEventId;
+    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
     
     beforeEach(() => {
         // Reset testEventId before each test
@@ -57,6 +59,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(newEvent)
                 .expect(201);
 
@@ -79,6 +82,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(incompleteEvent);
 
             // Accept either 400 (validation error) or 500 (database error)
@@ -97,6 +101,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(minimalEvent)
                 .expect(201);
 
@@ -119,6 +124,7 @@ describe('Events API Endpoints', () => {
                 };
                 const response = await request(app)
                     .post('/api/events')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
                     .send(newEvent)
                     .expect(201);
                 testEventId = response.body.newEvent.event_id;
@@ -164,6 +170,7 @@ describe('Events API Endpoints', () => {
                 };
                 const response = await request(app)
                     .post('/api/events')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
                     .send(newEvent)
                     .expect(201);
                 testEventId = response.body.newEvent.event_id;
@@ -180,6 +187,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .patch(`/api/events/${testEventId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(updateData)
                 .expect(200);
 
@@ -197,6 +205,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .patch('/api/events/99999')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(updateData)
                 .expect(404);
 
@@ -210,6 +219,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .patch(`/api/events/${testEventId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(invalidData)
                 .expect(400);
 
@@ -225,6 +235,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .patch(`/api/events/${testEventId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(partialUpdate)
                 .expect(200);
 
@@ -249,6 +260,7 @@ describe('Events API Endpoints', () => {
                 
                 const createResponse = await request(app)
                     .post('/api/events')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
                     .send(newEvent);
                 
                 testEventId = createResponse.body.newEvent.event_id;
@@ -256,6 +268,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .delete(`/api/events/${testEventId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
             expect(response.body).toHaveProperty('msg', 'Event deleted!');
@@ -271,6 +284,7 @@ describe('Events API Endpoints', () => {
         test('should return 404 for non-existent event', async () => {
             const response = await request(app)
                 .delete('/api/events/99999')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(404);
 
             expect(response.body).toHaveProperty('msg', 'Event not found');
@@ -288,6 +302,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(longStringEvent);
 
             // Should fail due to field length constraints
@@ -304,6 +319,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(invalidDateEvent);
 
             // Should fail due to invalid date format
@@ -321,6 +337,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(invalidTimeEvent);
 
             // Should fail due to invalid time format
@@ -341,6 +358,7 @@ describe('Events API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/events')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(validationTestEvent)
                 .expect(201);
 
@@ -352,7 +370,9 @@ describe('Events API Endpoints', () => {
     afterAll(async () => {
         if (testEventId) {
             try {
-                await request(app).delete(`/api/events/${testEventId}`);
+                await request(app)
+                    .delete(`/api/events/${testEventId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }

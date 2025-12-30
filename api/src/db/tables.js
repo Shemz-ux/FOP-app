@@ -50,6 +50,8 @@ const seed = () => {
         return createSocietyJobsSavedTable()
     }).then(()=>{
         return createSocietyEventsSavedTable()
+    }).then(()=>{
+        return createAdminUsersTable()
     })
 }
 
@@ -306,6 +308,24 @@ const createSocietyEventsSavedTable = () => {
         ON DELETE CASCADE
     )`).then(()=>{
             console.log("Society events saved table created!✅")
+        })
+}
+
+const createAdminUsersTable = () => {
+    return db.query(`CREATE TABLE IF NOT EXISTS admin_users (
+        admin_id SERIAL PRIMARY KEY,
+        first_name VARCHAR(255) NOT NULL,
+        last_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
+        is_active BOOLEAN DEFAULT TRUE,
+        created_by INT REFERENCES admin_users(admin_id),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        last_login TIMESTAMP
+    )`).then(()=>{
+            console.log("Admin users table created!✅")
         })
 }
 

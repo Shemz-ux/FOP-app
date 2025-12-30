@@ -2,12 +2,14 @@ import request from 'supertest';
 import app from '../../app.js';
 import bcrypt from 'bcrypt';
 import db from '../../db/db.js';
+import '../setup.js';
 
 describe('Dashboard Jobs API Endpoints', () => {
     let testJobseekerId;
     let testJobIds = [];
     let hashedPassword;
     const testPassword = 'TestPassword123';
+    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
 
     beforeAll(async () => {
         // Create hashed password for test users
@@ -35,6 +37,7 @@ describe('Dashboard Jobs API Endpoints', () => {
         // Create test jobs
         const job1Response = await request(app)
             .post('/api/jobs')
+            .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Software Developer',
                 company: 'TechCorp',
@@ -46,6 +49,7 @@ describe('Dashboard Jobs API Endpoints', () => {
 
         const job2Response = await request(app)
             .post('/api/jobs')
+            .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Data Analyst',
                 company: 'DataCorp',
@@ -57,6 +61,7 @@ describe('Dashboard Jobs API Endpoints', () => {
 
         const job3Response = await request(app)
             .post('/api/jobs')
+            .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Product Manager',
                 company: 'ProductCorp',
@@ -308,7 +313,9 @@ describe('Dashboard Jobs API Endpoints', () => {
         
         if (testJobId1) {
             try {
-                await request(app).delete(`/api/jobs/${testJobId1}`);
+                await request(app)
+                    .delete(`/api/jobs/${testJobId1}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }
@@ -316,7 +323,9 @@ describe('Dashboard Jobs API Endpoints', () => {
         
         if (testJobId2) {
             try {
-                await request(app).delete(`/api/jobs/${testJobId2}`);
+                await request(app)
+                    .delete(`/api/jobs/${testJobId2}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }
@@ -324,7 +333,9 @@ describe('Dashboard Jobs API Endpoints', () => {
         
         if (testJobId3) {
             try {
-                await request(app).delete(`/api/jobs/${testJobId3}`);
+                await request(app)
+                    .delete(`/api/jobs/${testJobId3}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }

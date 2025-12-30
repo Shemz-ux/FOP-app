@@ -1,9 +1,11 @@
 import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
+import '../setup.js';
 
 describe('Jobs API Endpoints', () => {
     let testJobId;
+    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
     
     beforeEach(() => {
         // Reset testJobId before each test
@@ -59,6 +61,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(newJob)
                 .expect(201);
 
@@ -81,6 +84,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(incompleteJob);
 
             // Accept either 400 (validation error) or 500 (database error)
@@ -96,6 +100,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(minimalJob)
                 .expect(201);
 
@@ -116,6 +121,7 @@ describe('Jobs API Endpoints', () => {
                 };
                 const response = await request(app)
                     .post('/api/jobs')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
                     .send(newJob)
                     .expect(201);
                 testJobId = response.body.newJob.job_id;
@@ -159,6 +165,7 @@ describe('Jobs API Endpoints', () => {
                 };
                 const response = await request(app)
                     .post('/api/jobs')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
                     .send(newJob)
                     .expect(201);
                 testJobId = response.body.newJob.job_id;
@@ -175,6 +182,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .patch(`/api/jobs/${testJobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(updateData)
                 .expect(200);
 
@@ -191,6 +199,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .patch('/api/jobs/99999')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(updateData)
                 .expect(404);
 
@@ -204,6 +213,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .patch(`/api/jobs/${testJobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(invalidData)
                 .expect(400);
 
@@ -219,6 +229,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .patch(`/api/jobs/${testJobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(partialUpdate)
                 .expect(200);
 
@@ -241,6 +252,7 @@ describe('Jobs API Endpoints', () => {
                 
                 const createResponse = await request(app)
                     .post('/api/jobs')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
                     .send(newJob);
                 
                 testJobId = createResponse.body.newJob.job_id;
@@ -248,6 +260,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .delete(`/api/jobs/${testJobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
             expect(response.body).toHaveProperty('msg', 'Job deleted!');
@@ -263,6 +276,7 @@ describe('Jobs API Endpoints', () => {
         test('should return 404 for non-existent job', async () => {
             const response = await request(app)
                 .delete('/api/jobs/99999')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(404);
 
             expect(response.body).toHaveProperty('msg', 'Job not found');
@@ -280,6 +294,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(longStringJob);
 
             // Should fail due to field length constraints
@@ -297,6 +312,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(invalidDateJob);
 
             // Should fail due to invalid date format
@@ -314,6 +330,7 @@ describe('Jobs API Endpoints', () => {
 
             const response = await request(app)
                 .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
                 .send(booleanTestJob)
                 .expect(201);
 
@@ -324,7 +341,9 @@ describe('Jobs API Endpoints', () => {
     afterAll(async () => {
         if (testJobId) {
             try {
-                await request(app).delete(`/api/jobs/${testJobId}`);
+                await request(app)
+                    .delete(`/api/jobs/${testJobId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }

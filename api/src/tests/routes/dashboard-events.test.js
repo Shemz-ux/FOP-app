@@ -2,11 +2,13 @@ import request from 'supertest';
 import app from '../../app.js';
 import bcrypt from 'bcrypt';
 import db from '../../db/db.js';
+import '../setup.js';
 
 describe('Dashboard Events API Endpoints', () => {
     let testJobseekerId;
     let testEventIds = [];
     let hashedPassword;
+    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
     const testPassword = 'TestPassword123';
 
     beforeAll(async () => {
@@ -35,6 +37,7 @@ describe('Dashboard Events API Endpoints', () => {
         // Create test events
         const event1Response = await request(app)
             .post('/api/events')
+            .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Tech Conference',
                 company: 'TechCorp',
@@ -47,6 +50,7 @@ describe('Dashboard Events API Endpoints', () => {
 
         const event2Response = await request(app)
             .post('/api/events')
+            .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Data Workshop',
                 company: 'DataCorp',
@@ -59,6 +63,7 @@ describe('Dashboard Events API Endpoints', () => {
 
         const event3Response = await request(app)
             .post('/api/events')
+            .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Product Meetup',
                 company: 'ProductCorp',
@@ -269,7 +274,9 @@ describe('Dashboard Events API Endpoints', () => {
         
         if (testEventId1) {
             try {
-                await request(app).delete(`/api/events/${testEventId1}`);
+                await request(app)
+                    .delete(`/api/events/${testEventId1}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }
@@ -277,7 +284,9 @@ describe('Dashboard Events API Endpoints', () => {
         
         if (testEventId2) {
             try {
-                await request(app).delete(`/api/events/${testEventId2}`);
+                await request(app)
+                    .delete(`/api/events/${testEventId2}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }
@@ -285,7 +294,9 @@ describe('Dashboard Events API Endpoints', () => {
         
         if (testEventId3) {
             try {
-                await request(app).delete(`/api/events/${testEventId3}`);
+                await request(app)
+                    .delete(`/api/events/${testEventId3}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
             } catch (error) {
                 // Ignore cleanup errors
             }

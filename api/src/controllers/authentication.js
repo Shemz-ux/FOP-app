@@ -1,5 +1,6 @@
 import { fetchJobseekerByEmail } from "../models/jobseekers.js";
 import { fetchSocietyByEmail } from "../models/societies.js";
+import { fetchAdminUserByEmail, updateLastLogin } from "../models/admin-users.js";
 import { generateToken } from "../lib/token.js";
 import bcrypt from "bcrypt";
 
@@ -11,11 +12,13 @@ async function createToken(req, res) {
   }
 
   try {
-    // First, try to find a jobseeker with this email
+    // Try to find user in all three user types: jobseekers, societies, admin_users
     let user = null;
     let userType = null;
     let userId = null;
+    let userRole = null;
 
+    // First, try to find a jobseeker with this email
     try {
       user = await fetchJobseekerByEmail(email);
       if (user) {
@@ -35,7 +38,21 @@ async function createToken(req, res) {
           userId = user.society_id;
         }
       } catch (err) {
-        // Society not found either
+        // Society not found, continue to check admin users
+      }
+    }
+
+    // If no jobseeker or society found, try to find an admin user with this email
+    if (!user) {
+      try {
+        user = await fetchAdminUserByEmail(email);
+        if (user) {
+          userType = 'admin';
+          userId = user.admin_id;
+          userRole = user.role; // 'admin' or 'super_admin'
+        }
+      } catch (err) {
+        // Admin user not found either
       }
     }
 
@@ -52,15 +69,27 @@ async function createToken(req, res) {
       return res.status(401).json({ message: "Password incorrect" });
     }
 
-    // Generate token with user type and ID
-    const token = generateToken(userId, userType);
+    // Update last login for admin users
+    if (userType === 'admin') {
+      await updateLastLogin(userId);
+    }
+
+    // Generate token with user type, ID, and role (for admin users)
+    const token = generateToken(userId, userType, userRole);
     
-    return res.status(201).json({ 
+    const response = { 
       token: token, 
       user_id: userId,
       user_type: userType,
       message: "OK" 
-    });
+    };
+
+    // Include role in response for admin users
+    if (userRole) {
+      response.role = userRole;
+    }
+    
+    return res.status(201).json(response);
   } catch (error) {
     console.error("Auth Error:", error);
     return res.status(500).json({ message: "Internal server error" });
