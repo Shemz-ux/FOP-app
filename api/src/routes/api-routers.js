@@ -9,6 +9,7 @@ import societyDashboardRouter from "./society-dashboard.js";
 import jobsAdvancedRouter from "./jobs-advanced.js";
 import eventsAdvancedRouter from "./events-advanced.js";
 import adminRouter from "./admin.js";
+import resourcesRouter from "./resources.js";
 
 const apiRouter = express.Router();
 // Advanced filtering routes
@@ -26,6 +27,9 @@ apiRouter.use("/", authRouter);
 
 // Admin routes (analytics + user management)
 apiRouter.use("/admin", adminRouter);
+
+// Resources routes
+apiRouter.use("/resources", resourcesRouter);
 
 // Dashboard routes 
 apiRouter.use("/", jobseekerDashboardRouter);  // Handles /jobseekers/:id/dashboard, etc.

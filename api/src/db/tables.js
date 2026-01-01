@@ -52,6 +52,8 @@ const seed = () => {
         return createSocietyEventsSavedTable()
     }).then(()=>{
         return createAdminUsersTable()
+    }).then(()=>{
+        return createResourcesTable()
     })
 }
 
@@ -328,5 +330,27 @@ const createAdminUsersTable = () => {
             console.log("Admin users table created!✅")
         })
 }
+
+const createResourcesTable = () => {
+    return db.query(`CREATE TABLE IF NOT EXISTS resources (
+        resource_id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        category VARCHAR(100) NOT NULL,
+        file_name VARCHAR(255) NOT NULL,
+        file_size BIGINT NOT NULL,
+        file_type VARCHAR(50) NOT NULL,
+        storage_key VARCHAR(500) NOT NULL UNIQUE,
+        storage_url VARCHAR(1000),
+        download_count INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_by INT REFERENCES admin_users(admin_id),
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+    )`).then(()=>{
+        console.log("Resources table created!✅")
+    })
+}
+
 
 export default seed;
