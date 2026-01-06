@@ -1,4 +1,4 @@
-import ThemeToggle from '../components/ui/ThemeToggle.jsx';
+import ThemeToggle from './Ui/ThemeToggle.jsx';
 
 const DesignSystemDemo = () => {
   return (

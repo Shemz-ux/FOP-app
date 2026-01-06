@@ -1,8 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Bell, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import Avatar from '../ui/Avatar.jsx';
-import ThemeToggle from '../ui/ThemeToggle.jsx';
+import Avatar from '../Ui/Avatar.jsx';
+import ThemeToggle from '../Ui/ThemeToggle.jsx';
 
 export default function Navbar({
   userName = 'User',

@@ -153,6 +153,33 @@
   --sidebar-ring: #0D7DFF;
 }
 
+/* Badge Styles */
+.badge {
+  @apply inline-flex items-center justify-center text-xs font-medium px-3 py-2 rounded-full leading-none;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Badge Variants */
+.badge-purple {
+  @apply bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300;
+}
+
+.badge-green {
+  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+}
+
+.badge-orange {
+  @apply bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300;
+}
+
+.badge-pink {
+  @apply bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300;
+}
+
+.badge-teal {
+  @apply bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
