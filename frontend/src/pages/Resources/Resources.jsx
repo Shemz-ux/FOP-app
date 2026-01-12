@@ -15,7 +15,7 @@ export default function Resources() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const resourcesPerPage = 6;
+  const resourcesPerPage = 12;
 
   const handleSearch = (filters) => {
     setSearchQuery(filters.query);
@@ -68,12 +68,12 @@ export default function Resources() {
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
               <FileText className="w-10 h-10 text-primary" />
-              <h1 className="text-4xl text-foreground">
+              <h1 className="text-4xl text-foreground text-left">
                 Career Resources
               </h1>
             </div>
 
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-xl text-muted-foreground mb-8 text-left">
               Download free templates, guides, and tools to supercharge your job search
             </p>
 
