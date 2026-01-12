@@ -33,8 +33,8 @@ export default function JobCard({
         <div className="flex items-start gap-4">
           <CompanyLogo logo={companyLogo} color={companyColor} />
           <div className="pt-0.5">
-            <h3 className="text-lg font-medium text-foreground mb-0.5">{jobTitle}</h3>
-            <p className="text-muted-foreground text-sm">
+            <h3 className="text-lg font-medium text-foreground mb-0.5 text-left">{jobTitle}</h3>
+            <p className="text-muted-foreground text-sm text-left">
               <span className="font-medium text-foreground/90">{company}</span> • {applicants} Applicants
             </p>
           </div>
@@ -61,12 +61,17 @@ export default function JobCard({
 
       {/* Tags */}
       {tags && tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
-          {tags.map((tag, index) => (
+        <div className="flex gap-2 mb-3 overflow-hidden">
+          {tags.slice(0, 3).map((tag, index) => (
             <JobBadge key={index} variant={tag.variant}>
               {tag.label}
             </JobBadge>
           ))}
+          {tags.length > 3 && (
+            <span className="inline-flex items-center justify-center text-xs font-medium px-3 py-2 rounded-full text-muted-foreground">
+              +{tags.length - 3}
+            </span>
+          )}
         </div>
       )}
 

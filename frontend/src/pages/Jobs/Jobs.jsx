@@ -1,14 +1,20 @@
 import { useState } from "react";
-// import HeroSection from "../../components/HeroSection/HeroSection";
-// import FilterSidebar from "../../components/FilterSidebar/FilterSidebar";
+import Hero from "../../components/Hero/Hero";
+import FilterSidebar from "../../components/FilterSidebar/FilterSidebar";
+import FilterButton from "../../components/Ui/FilterButton";
 import JobCard from "../../components/JobCard/JobCard";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
+import Pagination from "../../components/Pagination/Pagination";
 import { mockJobs } from "../../services/Jobs/jobs";
 
 export default function Jobs() {
   const [favorites, setFavorites] =  useState(new Set());
   const [sortBy, setSortBy] =  useState("recent");
   const [salaryRange, setSalaryRange] =  useState([50, 120]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchFilters, setSearchFilters] = useState({ query: '', location: '' });
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const jobsPerPage = 9;
 
   const [jobTypes, setJobTypes] =  useState([
     { label: "Full time", checked: true },
@@ -58,18 +64,61 @@ export default function Jobs() {
     );
   };
 
+  const handleSearch = (filters) => {
+    setSearchFilters(filters);
+    setCurrentPage(1);
+  };
+
+  const toggleMobileFilter = () => {
+    setIsMobileFilterOpen(!isMobileFilterOpen);
+  };
+
+  const getActiveFilterCount = () => {
+    const checkedJobTypes = jobTypes.filter(type => type.checked).length;
+    const checkedExpLevels = experienceLevels.filter(level => level.checked).length;
+    return checkedJobTypes + checkedExpLevels;
+  };
+
+  // Filter jobs based on search criteria
+  const filteredJobs = mockJobs.filter((job) => {
+    const matchesQuery = !searchFilters.query || 
+      job.jobTitle.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
+      job.company.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
+      job.tags.some(tag => tag.label.toLowerCase().includes(searchFilters.query.toLowerCase()));
+    
+    const matchesLocation = !searchFilters.location || 
+      job.location?.toLowerCase().includes(searchFilters.location.toLowerCase());
+    
+    return matchesQuery && matchesLocation;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  const startIndex = (currentPage - 1) * jobsPerPage;
+  const endIndex = startIndex + jobsPerPage;
+  const currentJobs = filteredJobs.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      {/* <HeroSection backgroundImage="https://images.unsplash.com/photo-1718220216044-006f43e3a9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080" /> */}
+      <Hero 
+        backgroundImage="https://images.unsplash.com/photo-1718220216044-006f43e3a9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080"
+        onSearch={handleSearch}
+      />
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-          {/* Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
+          {/* Desktop Sidebar */}
           <aside className="hidden lg:block">
             <div className="sticky top-24">
-              {/* <FilterSidebar
+              <FilterSidebar
                 jobTypes={jobTypes}
                 experienceLevels={experienceLevels}
                 salaryRange={salaryRange}
@@ -77,21 +126,61 @@ export default function Jobs() {
                 onExperienceLevelChange={handleExperienceLevelChange}
                 onSalaryRangeChange={setSalaryRange}
                 onClearAll={handleClearAll}
-              /> */}
+              />
             </div>
           </aside>
+
+          {/* Mobile Filter Sidebar */}
+          <div
+            className={`fixed inset-y-0 left-0 z-50 w-80 bg-background border-r border-border transform transition-transform duration-300 ease-in-out lg:hidden ${
+              isMobileFilterOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+          >
+            <div className="h-full overflow-y-auto p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-foreground">Filters</h2>
+                <button
+                  onClick={toggleMobileFilter}
+                  className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                  aria-label="Close filters"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <FilterSidebar
+                jobTypes={jobTypes}
+                experienceLevels={experienceLevels}
+                salaryRange={salaryRange}
+                onJobTypeChange={handleJobTypeChange}
+                onExperienceLevelChange={handleExperienceLevelChange}
+                onSalaryRangeChange={setSalaryRange}
+                onClearAll={handleClearAll}
+              />
+            </div>
+          </div>
+
+          {/* Mobile Filter Overlay */}
+          {isMobileFilterOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+              onClick={toggleMobileFilter}
+            />
+          )}
 
           {/* Job Listings */}
           <div>
             {/* Header */}
             <div className="mb-6">
-              <div className="flex items-center justify-between">
+              {/* Desktop Layout */}
+              <div className="hidden md:flex items-center justify-between">
                 <div className="text-left">
                   <h2 className="text-foreground">
                     Recommended jobs
                   </h2>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {mockJobs.length} jobs found
+                    {filteredJobs.length} jobs found
                   </p>
                 </div>
                 <SortDropdown
@@ -99,38 +188,51 @@ export default function Jobs() {
                   onValueChange={setSortBy}
                 />
               </div>
+
+              {/* Mobile Layout */}
+              <div className="md:hidden">
+                <div className="text-left mb-4">
+                  <h2 className="text-foreground">
+                    Recommended jobs
+                  </h2>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    {filteredJobs.length} jobs found
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <FilterButton
+                    onClick={toggleMobileFilter}
+                    filterCount={getActiveFilterCount()}
+                  />
+                  <SortDropdown
+                    value={sortBy}
+                    onValueChange={setSortBy}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Job Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {mockJobs.map((job, index) => (
-                <JobCard
-                  key={index}
-                  {...job}
-                  isFavorite={favorites.has(index)}
-                  onFavoriteClick={() => toggleFavorite(index)}
-                />
-              ))}
+              {currentJobs.map((job, index) => {
+                const actualIndex = startIndex + index;
+                return (
+                  <JobCard
+                    key={actualIndex}
+                    {...job}
+                    isFavorite={favorites.has(actualIndex)}
+                    onFavoriteClick={() => toggleFavorite(actualIndex)}
+                  />
+                );
+              })}
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-center gap-2 mt-12">
-              <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors">
-                Previous
-              </button>
-              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
-                1
-              </button>
-              <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors">
-                2
-              </button>
-              <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors">
-                3
-              </button>
-              <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors">
-                Next
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>
