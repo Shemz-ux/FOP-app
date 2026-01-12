@@ -7,6 +7,7 @@ import DesignSystemDemo from './components/DesignSystemDemo.jsx'
 import Navbar from './components/Navbar/Navbar.jsx'
 import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
+import Resources from './pages/Resources/Resources.jsx'
 
 function App() {
   useEffect(() => {
@@ -35,7 +36,7 @@ function App() {
     },
     {
       path: "/resources",
-      element: <Layout><div className="p-8 bg-background text-foreground min-h-screen"><h1>Resources Page</h1><p>Coming soon...</p></div></Layout>
+      element: <Layout><Resources /></Layout>
     },
     {
       path: "/students",
