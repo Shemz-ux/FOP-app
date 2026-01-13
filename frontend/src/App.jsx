@@ -9,6 +9,7 @@ import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
 import Resources from './pages/Resources/Resources.jsx'
 import Profile from './pages/Profile/Profile.jsx'
+import Settings from './pages/Settings/Settings.jsx'
 
 function App() {
   useEffect(() => {
@@ -54,6 +55,10 @@ function App() {
     {
       path: "/profile",
       element: <Layout><Profile /></Layout>
+    },
+    {
+      path: "/settings",
+      element: <Layout><Settings /></Layout>
     },
     {
       path: "/design-system",
