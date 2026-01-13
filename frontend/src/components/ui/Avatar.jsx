@@ -1,23 +1,42 @@
-export default function Avatar({ src, alt, fallback, className = "" }) {
+import * as AvatarPrimitive from "@radix-ui/react-avatar";
+
+import { cn } from "./utils";
+
+// TODO: consider what this should look like
+function Avatar({ className, ...props }) {
   return (
-    <div className={`relative inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-secondary-foreground overflow-hidden ${className}`}>
-      {src ? (
-        <img
-          src={src}
-          alt={alt}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.nextSibling.style.display = 'flex';
-          }}
-        />
-      ) : null}
-      <div 
-        className={`absolute inset-0 flex items-center justify-center text-sm font-medium ${src ? 'hidden' : 'flex'}`}
-        style={{ display: src ? 'none' : 'flex' }}
-      >
-        {fallback}
-      </div>
-    </div>
+    <AvatarPrimitive.Root
+      data-slot="avatar"
+      className={cn(
+        "relative flex size-10 shrink-0 overflow-hidden rounded-full",
+        className
+      )}
+      {...props}
+    />
   );
 }
+
+function AvatarImage({ className, ...props }) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn("aspect-square size-full", className)}
+      {...props}
+    />
+  );
+}
+
+function AvatarFallback({ className, ...props }) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        "bg-muted flex size-full items-center justify-center rounded-full",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export { Avatar, AvatarImage, AvatarFallback };

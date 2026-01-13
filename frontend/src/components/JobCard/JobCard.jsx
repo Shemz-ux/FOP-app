@@ -83,7 +83,7 @@ export default function JobCard({
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-border/50">
         <div>
-          <span className="text-foreground font-medium">{salary}</span>
+          {/* <span className="text-foreground font-medium">{salary}</span> */}
         </div>
         <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
           <Clock className="w-3.5 h-3.5" />

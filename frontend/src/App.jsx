@@ -8,6 +8,7 @@ import Navbar from './components/Navbar/Navbar.jsx'
 import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
 import Resources from './pages/Resources/Resources.jsx'
+import Profile from './pages/Profile/Profile.jsx'
 
 function App() {
   useEffect(() => {
@@ -52,7 +53,7 @@ function App() {
     },
     {
       path: "/profile",
-      element: <Layout><div className="p-8 bg-background text-foreground min-h-screen"><h1>Profile Page</h1><p>Coming soon...</p></div></Layout>
+      element: <Layout><Profile /></Layout>
     },
     {
       path: "/design-system",

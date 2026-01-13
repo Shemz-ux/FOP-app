@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Bell, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import Avatar from '../Ui/Avatar.jsx';
+import { Avatar, AvatarImage, AvatarFallback } from '../Ui/Avatar.jsx';
 import ThemeToggle from '../Ui/ThemeToggle.jsx';
 
 export default function Navbar({
@@ -158,7 +158,10 @@ export default function Navbar({
             {/* User Profile */}
             <Link to="/profile" className="flex items-center gap-3 pl-4 border-l border-border hover:opacity-80 transition-opacity">
               <span className="text-foreground hidden lg:block">{userName}</span>
-              <Avatar src={userImage} alt={userName} fallback={userName.charAt(0)} />
+              <Avatar>
+                <AvatarImage src={userImage} alt={userName} />
+                <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+              </Avatar>
             </Link>
           </div>
         </div>
