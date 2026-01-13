@@ -70,19 +70,24 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-6 py-12 max-w-4xl">
-        {/* Header */}
-        <div className="mb-8 text-left">
-          <Link
-            to="/profile"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Profile
-          </Link>
-          <h1 className="text-3xl mb-2 text-foreground">Account Settings</h1>
-          <p className="text-muted-foreground">Manage your personal information and account preferences</p>
+      {/* Header with Gradient Background */}
+      <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border">
+        <div className="container mx-auto px-6 py-12 max-w-4xl">
+          <div className="text-left">
+            <Link
+              to="/profile"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Profile
+            </Link>
+            <h1 className="text-3xl mb-2 text-foreground">Account Settings</h1>
+            <p className="text-muted-foreground">Manage your personal information and account preferences</p>
+          </div>
         </div>
+      </section>
+
+      <div className="container mx-auto px-6 py-12 max-w-4xl">
 
         {saved && (
           <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3">

@@ -8,7 +8,7 @@ export default function Hero({
   onSearch,
 }) {
   return (
-    <div className="bg-card border-b border-border relative overflow-hidden">
+    <div className="bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border relative overflow-hidden">
       <div className="container mx-auto px-6 py-16">
         <div className="max-w-4xl">
           {/* Title */}

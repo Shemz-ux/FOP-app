@@ -97,7 +97,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen">
       {/* Profile Header */}
-      <section className="bg-secondary/30 border-b border-border">
+      <section className="bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border">
         <div className="container mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <Avatar className="w-30 h-30">
