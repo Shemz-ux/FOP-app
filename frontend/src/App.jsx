@@ -5,6 +5,7 @@ import Home from './pages/Home/Home.jsx'
 import Jobs from './pages/Jobs/Jobs.jsx'
 import DesignSystemDemo from './components/DesignSystemDemo.jsx'
 import Navbar from './components/Navbar/Navbar.jsx'
+import Footer from './components/Footer/Footer.jsx'
 import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
 import Resources from './pages/Resources/Resources.jsx'
@@ -16,11 +17,12 @@ function App() {
   useEffect(() => {
     initializeTheme();
   }, []);
-  // Layout wrapper component
+ 
   const Layout = ({ children }) => (
     <>
       <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
       {children}
+      <Footer />
     </>
   );
 
