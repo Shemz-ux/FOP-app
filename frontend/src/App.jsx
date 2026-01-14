@@ -10,6 +10,7 @@ import Events from './pages/Events/Events.jsx'
 import Resources from './pages/Resources/Resources.jsx'
 import Profile from './pages/Profile/Profile.jsx'
 import Settings from './pages/Settings/Settings.jsx'
+import About from './pages/About/About.jsx'
 
 function App() {
   useEffect(() => {
@@ -50,7 +51,7 @@ function App() {
     },
     {
       path: "/about",
-      element: <Layout><div className="p-8 bg-background text-foreground min-h-screen"><h1>About Us Page</h1><p>Coming soon...</p></div></Layout>
+      element: <Layout><About /></Layout>
     },
     {
       path: "/profile",
