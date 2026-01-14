@@ -12,6 +12,7 @@ import Resources from './pages/Resources/Resources.jsx'
 import Profile from './pages/Profile/Profile.jsx'
 import Settings from './pages/Settings/Settings.jsx'
 import About from './pages/About/About.jsx'
+import Students from './pages/Students/Students.jsx'
 
 function App() {
   useEffect(() => {
@@ -45,7 +46,7 @@ function App() {
     },
     {
       path: "/students",
-      element: <Layout><div className="p-8 bg-background text-foreground min-h-screen"><h1>Students Page</h1><p>Coming soon...</p></div></Layout>
+      element: <Layout><Students /></Layout>
     },
     {
       path: "/employers",
