@@ -13,6 +13,7 @@ import Profile from './pages/Profile/Profile.jsx'
 import Settings from './pages/Settings/Settings.jsx'
 import About from './pages/About/About.jsx'
 import Students from './pages/Students/Students.jsx'
+import Employers from './pages/Employers/Employers.jsx'
 
 function App() {
   useEffect(() => {
@@ -50,7 +51,7 @@ function App() {
     },
     {
       path: "/employers",
-      element: <Layout><div className="p-8 bg-background text-foreground min-h-screen"><h1>Mentors Page</h1><p>Coming soon...</p></div></Layout>
+      element: <Layout><Employers /></Layout>
     },
     {
       path: "/about",
