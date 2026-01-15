@@ -9,6 +9,7 @@ import Navbar from './components/Navbar/Navbar.jsx'
 import Footer from './components/Footer/Footer.jsx'
 import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
+import EventDetails from './pages/Events/EventDetails.jsx'
 import Resources from './pages/Resources/Resources.jsx'
 import Profile from './pages/Profile/Profile.jsx'
 import Settings from './pages/Settings/Settings.jsx'
@@ -48,7 +49,7 @@ function App() {
     },
     {
       path: "/events/:eventId",
-      element: <Layout><div>Event Details</div></Layout>
+      element: <Layout><EventDetails /></Layout>
     },
     {
       path: "/resources",

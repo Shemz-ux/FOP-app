@@ -15,11 +15,46 @@ export default function JobDetails() {
 
   if (!job) {
     return (
-      <div className="container mx-auto px-6 py-20 text-center">
-        <h1 className="mb-4 text-foreground">Job not found</h1>
-        <Link to="/jobs" className="text-primary hover:opacity-80">
-          Back to all jobs
-        </Link>
+      <div className="min-h-screen flex items-center justify-center bg-secondary/30">
+        <div className="container mx-auto px-6 py-20">
+          <div className="max-w-md mx-auto text-center">
+            <div className="mb-8">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-secondary flex items-center justify-center">
+                <svg 
+                  className="w-12 h-12 text-muted-foreground" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                  />
+                </svg>
+              </div>
+              <h1 className="text-3xl font-bold mb-3 text-foreground">Job Not Found</h1>
+              <p className="text-muted-foreground mb-8">
+                The job you're looking for doesn't exist or has been removed. It may have been filled or the posting has expired.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link 
+                to="/jobs" 
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity font-medium"
+              >
+                Browse All Jobs
+              </Link>
+              <button
+                onClick={() => navigate(-1)}
+                className="px-6 py-3 border border-border text-foreground rounded-xl hover:bg-secondary transition-colors font-medium"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
