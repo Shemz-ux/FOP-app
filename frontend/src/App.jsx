@@ -16,6 +16,8 @@ import Settings from './pages/Settings/Settings.jsx'
 import About from './pages/About/About.jsx'
 import Students from './pages/Students/Students.jsx'
 import Employers from './pages/Employers/Employers.jsx'
+import Login from './pages/Login/Login.jsx'
+import SignUp from './pages/SignUp/SignUp.jsx'
 
 function App() {
   useEffect(() => {
@@ -27,6 +29,14 @@ function App() {
       <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
       {children}
       <Footer />
+    </>
+  );
+
+  const AuthLayout = ({ children }) => (
+    // TODO: Needs to not pass down username if not logged in
+    <>
+      <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
+      {children}
     </>
   );
 
@@ -74,6 +84,14 @@ function App() {
     {
       path: "/settings",
       element: <Layout><Settings /></Layout>
+    },
+    {
+      path: "/login",
+      element: <AuthLayout><Login /></AuthLayout>
+    },
+    {
+      path: "/signUp",
+      element: <AuthLayout><SignUp /></AuthLayout>
     },
     {
       path: "/design-system",
