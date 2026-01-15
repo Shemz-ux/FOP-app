@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { useEffect } from 'react'
 import Home from './pages/Home/Home.jsx'
 import Jobs from './pages/Jobs/Jobs.jsx'
+import JobDetails from './pages/Jobs/JobDetails.jsx'
 import DesignSystemDemo from './components/DesignSystemDemo.jsx'
 import Navbar from './components/Navbar/Navbar.jsx'
 import Footer from './components/Footer/Footer.jsx'
@@ -38,8 +39,16 @@ function App() {
       element: <Layout><Jobs /></Layout>
     },
     {
+      path: "jobs/:jobId",
+      element: <Layout><JobDetails /></Layout>
+    },
+    {
       path: "/events",
       element: <Layout><Events /></Layout>
+    },
+    {
+      path: "/events/:eventId",
+      element: <Layout><div>Event Details</div></Layout>
     },
     {
       path: "/resources",
