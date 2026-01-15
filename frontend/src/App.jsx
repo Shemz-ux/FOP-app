@@ -18,6 +18,7 @@ import Students from './pages/Students/Students.jsx'
 import Employers from './pages/Employers/Employers.jsx'
 import Login from './pages/Login/Login.jsx'
 import SignUp from './pages/SignUp/SignUp.jsx'
+import AdminDashboard from './admin/AdminDashboard.jsx'
 
 function App() {
   useEffect(() => {
@@ -96,6 +97,10 @@ function App() {
     {
       path: "/design-system",
       element: <Layout><DesignSystemDemo /></Layout>
+    },
+    {
+      path: "/admin",
+      element: <Layout><AdminDashboard /></Layout>
     }
   ]);
 
