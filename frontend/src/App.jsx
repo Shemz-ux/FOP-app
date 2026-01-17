@@ -11,6 +11,7 @@ import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
 import EventDetails from './pages/Events/EventDetails.jsx'
 import Resources from './pages/Resources/Resources.jsx'
+import ResourceDetail from './pages/Resources/ResourceDetail.jsx'
 import Profile from './pages/Profile/Profile.jsx'
 import Settings from './pages/Settings/Settings.jsx'
 import About from './pages/About/About.jsx'
@@ -19,6 +20,20 @@ import Employers from './pages/Employers/Employers.jsx'
 import Login from './pages/Login/Login.jsx'
 import SignUp from './pages/SignUp/SignUp.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
+import JobsList from './admin/Jobs/JobsList.jsx'
+import JobDetail from './admin/Jobs/JobDetail.jsx'
+import JobCreate from './admin/Jobs/JobCreate.jsx'
+import JobEdit from './admin/Jobs/JobEdit.jsx'
+import EventsList from './admin/Events/EventsList.jsx'
+import EventDetail from './admin/Events/EventDetail.jsx'
+import EventCreate from './admin/Events/EventCreate.jsx'
+import EventEdit from './admin/Events/EventEdit.jsx'
+import ResourcesList from './admin/Resource/ResourcesList.jsx'
+import AdminResourceDetail from './admin/Resource/ResourceDetail.jsx'
+import ResourceCreate from './admin/Resource/ResourceCreate.jsx'
+import ResourceEdit from './admin/Resource/ResourceEdit.jsx'
+import StudentsManagement from './admin/Management/StudentsManagement.jsx'
+import SocietiesManagement from './admin/Management/SocietiesManagement.jsx'
 
 function App() {
   useEffect(() => {
@@ -67,6 +82,10 @@ function App() {
       element: <Layout><Resources /></Layout>
     },
     {
+      path: "/resources/:id",
+      element: <Layout><ResourceDetail /></Layout>
+    },
+    {
       path: "/students",
       element: <Layout><Students /></Layout>
     },
@@ -101,6 +120,62 @@ function App() {
     {
       path: "/admin",
       element: <Layout><AdminDashboard /></Layout>
+    },
+    {
+      path: "/admin/jobs",
+      element: <Layout><JobsList /></Layout>
+    },
+    {
+      path: "/admin/jobs/new",
+      element: <Layout><JobCreate /></Layout>
+    },
+    {
+      path: "/admin/jobs/:id",
+      element: <Layout><JobDetail /></Layout>
+    },
+    {
+      path: "/admin/jobs/:id/edit",
+      element: <Layout><JobEdit /></Layout>
+    },
+    {
+      path: "/admin/events",
+      element: <Layout><EventsList /></Layout>
+    },
+    {
+      path: "/admin/events/new",
+      element: <Layout><EventCreate /></Layout>
+    },
+    {
+      path: "/admin/events/:id",
+      element: <Layout><EventDetail /></Layout>
+    },
+    {
+      path: "/admin/events/:id/edit",
+      element: <Layout><EventEdit /></Layout>
+    },
+    {
+      path: "/admin/resources",
+      element: <Layout><ResourcesList /></Layout>
+    },
+    {
+      path: "/admin/resources/new",
+      element: <Layout><ResourceCreate /></Layout>
+    },
+    {
+      path: "/admin/resources/:id",
+      element: <Layout><AdminResourceDetail /></Layout>
+    },
+    {
+      path: "/admin/resources/:id/edit",
+      element: <Layout><ResourceEdit /></Layout>
+    },
+    {
+      path: "/admin/students",
+      element: <Layout><StudentsManagement /></Layout>
+    },
+    {
+      path: "/admin/societies",
+      element: <Layout><SocietiesManagement /></Layout>
     }
   ]);
 

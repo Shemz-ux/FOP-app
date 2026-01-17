@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Link } from 'react-router-dom';
 import { 
   Briefcase, 
   Calendar, 
@@ -6,21 +6,12 @@ import {
   Users, 
   Building2,
   BarChart3,
-  Plus
+  Plus,
+  ArrowRight
 } from 'lucide-react';
 import { mockJobs, mockEvents, mockStudents, mockSocieties } from '../services/Admin/admin-analytics';
-import JobsManagement from './JobsManagement';
-import EventsManagement from './EventsManagement';
-import ResourcesManagement from './ResourcesManagement';
-import StudentsManagement from './StudentsManagement';
-import SocietiesManagement from './SocietiesManagement';
-import { CreateJobForm, CreateEventForm, CreateResourceForm } from './adminForms';
 
 export default function AdminDashboard() {
-  const [currentView, setCurrentView] = useState('overview');
-  const [showCreateJob, setShowCreateJob] = useState(false);
-  const [showCreateEvent, setShowCreateEvent] = useState(false);
-  const [showCreateResource, setShowCreateResource] = useState(false);
 
   const stats = {
     totalJobs: mockJobs.length,
@@ -46,13 +37,15 @@ export default function AdminDashboard() {
     </div>
   );
 
-  const renderOverview = () => (
-    <div className="space-y-8 text-left">
-      <div>
-        <h1 className="text-3xl mb-2 text-foreground">Admin Dashboard</h1>
-        {/* // TODO: Get user name from API */}
-        <p className="text-muted-foreground">Welcome back John! Here's what's happening today.</p>
-      </div>
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-6 py-8">
+        <div className="space-y-8 text-left">
+          <div>
+            <h1 className="text-3xl mb-2 text-foreground">Admin Dashboard</h1>
+            {/* // TODO: Get user name from API */}
+            <p className="text-muted-foreground">Welcome back John! Here's what's happening today.</p>
+          </div>
 
       {/* Stats Grid */}
       <div className="grid md:grid-cols-4 gap-6 text-left">
@@ -90,11 +83,8 @@ export default function AdminDashboard() {
       <div className="bg-card border border-border rounded-xl p-6 text-left">
         <h2 className="text-xl mb-4 text-foreground">Quick Actions</h2>
         <div className="grid md:grid-cols-3 gap-4">
-          <button
-            onClick={() => {
-              setShowCreateJob(true);
-              setCurrentView('jobs');
-            }}
+          <Link
+            to="/admin/jobs/new"
             className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
@@ -104,12 +94,9 @@ export default function AdminDashboard() {
               <p className="text-foreground font-medium">Post New Job</p>
               <p className="text-sm text-muted-foreground">Create job listing</p>
             </div>
-          </button>
-          <button
-            onClick={() => {
-              setShowCreateEvent(true);
-              setCurrentView('events');
-            }}
+          </Link>
+          <Link
+            to="/admin/events/new"
             className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
@@ -119,12 +106,9 @@ export default function AdminDashboard() {
               <p className="text-foreground font-medium">Create Event</p>
               <p className="text-sm text-muted-foreground">Schedule new event</p>
             </div>
-          </button>
-          <button
-            onClick={() => {
-              setShowCreateResource(true);
-              setCurrentView('resources');
-            }}
+          </Link>
+          <Link
+            to="/admin/resources/new"
             className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
@@ -134,7 +118,7 @@ export default function AdminDashboard() {
               <p className="text-foreground font-medium">Upload Resource</p>
               <p className="text-sm text-muted-foreground">Add new resource</p>
             </div>
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -143,12 +127,12 @@ export default function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl text-foreground">Recent Jobs</h2>
-            <button
-              onClick={() => setCurrentView('jobs')}
+            <Link
+              to="/admin/jobs"
               className="text-sm text-primary hover:opacity-80"
             >
               View all
-            </button>
+            </Link>
           </div>
           <div className="space-y-3">
             {mockJobs.slice(0, 3).map(job => (
@@ -168,12 +152,12 @@ export default function AdminDashboard() {
         <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl text-foreground">Upcoming Events</h2>
-            <button
-              onClick={() => setCurrentView('events')}
+            <Link
+              to="/admin/events"
               className="text-sm text-primary hover:opacity-80"
             >
               View all
-            </button>
+            </Link>
           </div>
           <div className="space-y-3">
             {mockEvents.slice(0, 3).map(event => (
@@ -190,114 +174,89 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </div>
-  );
+      {/* Management Sections */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Link
+          to="/admin/jobs"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center">
+              <Briefcase className="w-6 h-6 text-white" />
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <h3 className="text-xl text-foreground mb-2">Jobs</h3>
+          <p className="text-sm text-muted-foreground">Manage job postings and applications</p>
+        </Link>
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-8">
-        {/* Sidebar Navigation */}
-        <div className="flex gap-8">
-          <aside className="w-64 flex-shrink-0">
-            <nav className="bg-card border border-border rounded-xl p-4 sticky top-24">
-              <div className="space-y-1">
-                <button
-                  onClick={() => setCurrentView('overview')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    currentView === 'overview'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <BarChart3 className="w-5 h-5" />
-                  Overview
-                </button>
-                <button
-                  onClick={() => setCurrentView('jobs')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    currentView === 'jobs' || currentView === 'job-detail' || currentView === 'create-job'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <Briefcase className="w-5 h-5" />
-                  Jobs
-                </button>
-                <button
-                  onClick={() => setCurrentView('events')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    currentView === 'events' || currentView === 'event-detail' || currentView === 'create-event'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <Calendar className="w-5 h-5" />
-                  Events
-                </button>
-                <button
-                  onClick={() => setCurrentView('resources')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    currentView === 'resources' || currentView === 'create-resource'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <BookOpen className="w-5 h-5" />
-                  Resources
-                </button>
-                <button
-                  onClick={() => setCurrentView('students')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    currentView === 'students'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <Users className="w-5 h-5" />
-                  Students
-                </button>
-                <button
-                  onClick={() => setCurrentView('societies')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    currentView === 'societies'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <Building2 className="w-5 h-5" />
-                  Societies
-                </button>
-              </div>
-            </nav>
-          </aside>
+        <Link
+          to="/admin/events"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-white" />
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <h3 className="text-xl text-foreground mb-2">Events</h3>
+          <p className="text-sm text-muted-foreground">Manage events and registrations</p>
+        </Link>
 
-          {/* Main Content */}
-          <main className="flex-1">
-            {currentView === 'overview' && renderOverview()}
-            {currentView === 'jobs' && !showCreateJob && <JobsManagement />}
-            {currentView === 'jobs' && showCreateJob && (
-              <CreateJobForm onCancel={() => {
-                setShowCreateJob(false);
-                setCurrentView('jobs');
-              }} />
-            )}
-            {currentView === 'events' && !showCreateEvent && <EventsManagement />}
-            {currentView === 'events' && showCreateEvent && (
-              <CreateEventForm onCancel={() => {
-                setShowCreateEvent(false);
-                setCurrentView('events');
-              }} />
-            )}
-            {currentView === 'resources' && !showCreateResource && <ResourcesManagement />}
-            {currentView === 'resources' && showCreateResource && (
-              <CreateResourceForm onCancel={() => {
-                setShowCreateResource(false);
-                setCurrentView('resources');
-              }} />
-            )}
-            {currentView === 'students' && <StudentsManagement />}
-            {currentView === 'societies' && <SocietiesManagement />}
-          </main>
+        <Link
+          to="/admin/resources"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-lg bg-teal-500 flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-white" />
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <h3 className="text-xl text-foreground mb-2">Resources</h3>
+          <p className="text-sm text-muted-foreground">Manage downloadable resources</p>
+        </Link>
+
+        <Link
+          to="/admin/students"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <h3 className="text-xl text-foreground mb-2">Students</h3>
+          <p className="text-sm text-muted-foreground">View and manage student profiles</p>
+        </Link>
+
+        <Link
+          to="/admin/societies"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-lg bg-orange-500 flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <h3 className="text-xl text-foreground mb-2">Societies</h3>
+          <p className="text-sm text-muted-foreground">Manage society information</p>
+        </Link>
+
+        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <h3 className="text-xl text-foreground mb-2">Analytics</h3>
+          <p className="text-sm text-muted-foreground mb-4">View detailed platform analytics</p>
+          <button className="text-sm text-primary hover:opacity-80">Coming Soon</button>
+        </div>
+      </div>
         </div>
       </div>
     </div>

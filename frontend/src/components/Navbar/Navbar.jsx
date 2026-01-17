@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Menu, X } from 'lucide-react';
+import { Bell, Menu, X, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from '../Ui/Avatar.jsx';
 import ThemeToggle from '../Ui/ThemeToggle.jsx';
@@ -9,6 +9,8 @@ export default function Navbar({
   userImage,
   logo,
   onNotificationClick,
+  isAuthenticated = true,
+  isAdmin = true
 }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -145,24 +147,40 @@ export default function Navbar({
             {/* Theme Toggle */}
             <ThemeToggle />
 
-            {/* Notifications */}
-            <button
-              onClick={onNotificationClick}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors relative cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5 text-foreground" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
-            </button>
+            {/* Admin route */}
+            {isAuthenticated ? (
+              <>
+                {/* Admin Button */}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className="p-2 hover:bg-secondary rounded-lg transition-colors relative"
+                    title="Admin Dashboard"
+                  >
+                    <Shield className="w-5 h-5 text-primary" />
+                  </Link>
+                )}
 
-            {/* User Profile */}
-            <Link to="/profile" className="flex items-center gap-3 pl-4 border-l border-border hover:opacity-80 transition-opacity">
-              <span className="text-foreground hidden lg:block">{userName}</span>
-              <Avatar>
-                <AvatarImage src={userImage} alt={userName} />
-                <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
-              </Avatar>
-            </Link>
+                {/* Notifications */}
+                {/* <button
+                  onClick={onNotificationClick}
+                  className="p-2 hover:bg-secondary rounded-lg transition-colors relative cursor-pointer"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-5 h-5 text-foreground" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+                </button> */}
+
+                {/* User Profile */}
+                <Link to="/profile" className="flex items-center gap-3 pl-4 border-l border-border hover:opacity-80 transition-opacity">
+                  <span className="text-foreground hidden lg:block">{userName}</span>
+                  <Avatar>
+                    <AvatarImage src={userImage} alt={userName} />
+                    <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                </Link>
+              </>
+            ) : null}
           </div>
         </div>
       </div>
@@ -194,7 +212,21 @@ export default function Navbar({
 
           {/* Mobile Navigation Links */}
           <nav className="flex-1 px-6 py-4">
-            <div className="space-y-2">
+            <div className="space-y-2 text-left">
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={closeMobileMenu}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-lg transition-colors ${
+                    isActive('/admin')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-secondary'
+                  }`}
+                >
+                  <Shield className="w-5 h-5" />
+                  Admin Dashboard
+                </Link>
+              )}
               <Link
                 to="/jobs"
                 onClick={closeMobileMenu}

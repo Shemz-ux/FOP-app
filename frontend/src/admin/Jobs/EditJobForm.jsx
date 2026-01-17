@@ -1,24 +1,68 @@
 import React from 'react';
-import { X, Upload } from 'lucide-react';
+import { ArrowLeft, Upload } from 'lucide-react';
+import AdminSelect from '../Components/AdminSelect';
 
 export function EditJobForm({ job, onCancel }) {
   const [formData, setFormData] = React.useState({
     title: job?.title || '',
     company: job?.company || '',
-    description: job?.description || '',
+    companyColor: job?.companyColor || '#0084FF',
+    shortDescription: job?.shortDescription || job?.description || '',
     industry: job?.industry || '',
     location: job?.location || '',
+    salary: job?.salary || '',
     job_level: job?.job_level || '',
     role_type: job?.role_type || '',
     work_mode: job?.work_mode || '',
     contact_email: job?.contact_email || '',
     job_link: job?.job_link || '',
-    salary: job?.salary || '',
     deadline: job?.deadline || '',
     is_active: job?.is_active !== undefined ? job.is_active : true,
+    descriptionSections: job?.descriptionSections || [
+      { header: 'About the Role', content: [''] },
+      { header: 'Responsibilities', content: [''] },
+      { header: 'Requirements', content: [''] },
+      { header: 'Benefits', content: [''] },
+    ],
   });
   const [logoFile, setLogoFile] = React.useState(null);
   const [logoPreview, setLogoPreview] = React.useState(null);
+
+  const addSection = () => {
+    setFormData({
+      ...formData,
+      descriptionSections: [...formData.descriptionSections, { header: '', content: [''] }],
+    });
+  };
+
+  const removeSection = (sectionIndex) => {
+    const newSections = formData.descriptionSections.filter((_, i) => i !== sectionIndex);
+    setFormData({ ...formData, descriptionSections: newSections });
+  };
+
+  const updateSectionHeader = (sectionIndex, value) => {
+    const newSections = [...formData.descriptionSections];
+    newSections[sectionIndex].header = value;
+    setFormData({ ...formData, descriptionSections: newSections });
+  };
+
+  const addContentItem = (sectionIndex) => {
+    const newSections = [...formData.descriptionSections];
+    newSections[sectionIndex].content.push('');
+    setFormData({ ...formData, descriptionSections: newSections });
+  };
+
+  const removeContentItem = (sectionIndex, contentIndex) => {
+    const newSections = [...formData.descriptionSections];
+    newSections[sectionIndex].content = newSections[sectionIndex].content.filter((_, i) => i !== contentIndex);
+    setFormData({ ...formData, descriptionSections: newSections });
+  };
+
+  const updateContentItem = (sectionIndex, contentIndex, value) => {
+    const newSections = [...formData.descriptionSections];
+    newSections[sectionIndex].content[contentIndex] = value;
+    setFormData({ ...formData, descriptionSections: newSections });
+  };
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -40,16 +84,18 @@ export function EditJobForm({ job, onCancel }) {
   };
 
   return (
-    <div className="space-y-6 text-left">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl text-foreground">Edit Job Posting</h1>
-        <button
-          onClick={onCancel}
-          className="p-2 hover:bg-secondary rounded-lg transition-colors"
-        >
-          <X className="w-5 h-5 text-foreground" />
-        </button>
-      </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-6 py-8">
+        <div className="space-y-6 text-left">
+      <button
+        onClick={onCancel}
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span>Back</span>
+      </button>
+      
+      <h1 className="text-3xl text-foreground mb-6">Edit Job Posting</h1>
 
       <div className="bg-card border border-border rounded-xl p-6 text-left">
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -116,57 +162,51 @@ export function EditJobForm({ job, onCancel }) {
               <label htmlFor="job-level" className="block text-sm mb-2 text-foreground">
                 Job Level *
               </label>
-              <select
-                id="job-level"
+              <AdminSelect
                 value={formData.job_level}
-                onChange={(e) => setFormData({ ...formData, job_level: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              >
-                <option value="">Select level</option>
-                <option value="Entry-level">Entry-level</option>
-                <option value="Mid-level">Mid-level</option>
-                <option value="Senior">Senior</option>
-                <option value="Lead">Lead</option>
-                <option value="Manager">Manager</option>
-              </select>
+                onValueChange={(value) => setFormData({ ...formData, job_level: value })}
+                placeholder="Select level"
+                options={[
+                  { value: 'Entry-level', label: 'Entry-level' },
+                  { value: 'Mid-level', label: 'Mid-level' },
+                  { value: 'Senior', label: 'Senior' },
+                  { value: 'Lead', label: 'Lead' },
+                  { value: 'Manager', label: 'Manager' }
+                ]}
+              />
             </div>
 
             <div>
               <label htmlFor="role-type" className="block text-sm mb-2 text-foreground">
                 Role Type *
               </label>
-              <select
-                id="role-type"
+              <AdminSelect
                 value={formData.role_type}
-                onChange={(e) => setFormData({ ...formData, role_type: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              >
-                <option value="">Select type</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Internship">Internship</option>
-                <option value="Contract">Contract</option>
-              </select>
+                onValueChange={(value) => setFormData({ ...formData, role_type: value })}
+                placeholder="Select type"
+                options={[
+                  { value: 'Full-time', label: 'Full-time' },
+                  { value: 'Part-time', label: 'Part-time' },
+                  { value: 'Internship', label: 'Internship' },
+                  { value: 'Contract', label: 'Contract' }
+                ]}
+              />
             </div>
 
             <div>
               <label htmlFor="work-mode" className="block text-sm mb-2 text-foreground">
                 Work Mode *
               </label>
-              <select
-                id="work-mode"
+              <AdminSelect
                 value={formData.work_mode}
-                onChange={(e) => setFormData({ ...formData, work_mode: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              >
-                <option value="">Select mode</option>
-                <option value="Remote">Remote</option>
-                <option value="In-person">In-person</option>
-                <option value="Hybrid">Hybrid</option>
-              </select>
+                onValueChange={(value) => setFormData({ ...formData, work_mode: value })}
+                placeholder="Select mode"
+                options={[
+                  { value: 'Remote', label: 'Remote' },
+                  { value: 'In-person', label: 'In-person' },
+                  { value: 'Hybrid', label: 'Hybrid' }
+                ]}
+              />
             </div>
 
             <div>
@@ -253,17 +293,102 @@ export function EditJobForm({ job, onCancel }) {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="description" className="block text-sm mb-2 text-foreground">
-                Job Description *
+              <label htmlFor="short-description" className="block text-sm mb-2 text-foreground">
+                Short Description *
               </label>
               <textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={8}
+                id="short-description"
+                value={formData.shortDescription}
+                onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+                rows={3}
+                placeholder="Brief overview shown in job cards"
                 className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 required
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="company-color" className="block text-sm mb-2 text-foreground">
+                Company Brand Color
+              </label>
+              <input
+                id="company-color"
+                type="color"
+                value={formData.companyColor}
+                onChange={(e) => setFormData({ ...formData, companyColor: e.target.value })}
+                className="w-20 h-10 rounded-lg border border-input cursor-pointer"
+              />
+            </div>
+
+            <div className="md:col-span-2 space-y-6">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm text-foreground">
+                  Job Description Sections *
+                </label>
+                <button
+                  type="button"
+                  onClick={addSection}
+                  className="px-4 py-2 border border-border rounded-xl hover:bg-secondary text-foreground text-sm"
+                >
+                  + Add Section
+                </button>
+              </div>
+              
+              {formData.descriptionSections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="border border-border rounded-xl p-4 space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={section.header}
+                      onChange={(e) => updateSectionHeader(sectionIndex, e.target.value)}
+                      placeholder="Section Header (e.g., About the Role, Responsibilities)"
+                      className="flex-1 px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary font-medium"
+                      required
+                    />
+                    {formData.descriptionSections.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSection(sectionIndex)}
+                        className="px-4 py-3 border border-border rounded-xl hover:bg-secondary text-muted-foreground"
+                      >
+                        Remove Section
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2 ml-4">
+                    <label className="block text-xs text-muted-foreground">Content Items</label>
+                    {section.content.map((item, contentIndex) => (
+                      <div key={contentIndex} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={item}
+                          onChange={(e) => updateContentItem(sectionIndex, contentIndex, e.target.value)}
+                          placeholder="Bullet point content"
+                          className="flex-1 px-4 py-2 bg-input-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                          required
+                        />
+                        {section.content.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeContentItem(sectionIndex, contentIndex)}
+                            className="px-3 py-2 border border-border rounded-lg hover:bg-secondary text-muted-foreground text-sm"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addContentItem(sectionIndex)}
+                      className="px-3 py-1.5 border border-border rounded-lg hover:bg-secondary text-foreground text-xs"
+                    >
+                      + Add Item
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="md:col-span-2">
@@ -295,6 +420,8 @@ export function EditJobForm({ job, onCancel }) {
             </button>
           </div>
         </form>
+      </div>
+        </div>
       </div>
     </div>
   );

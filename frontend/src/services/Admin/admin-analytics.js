@@ -12,15 +12,99 @@ export const mockEvents = [
 ];
 
 export const mockResources = [
-  { id: 1, title: 'CV Template Pack', type: 'Document', downloads: 234, posted: '2025-01-01' },
-  { id: 2, title: 'Interview Prep Guide', type: 'PDF', downloads: 189, posted: '2025-01-05' },
-  { id: 3, title: 'Coding Interview Questions', type: 'Video', downloads: 156, posted: '2025-01-10' },
+  { 
+    id: 1, 
+    title: 'CV Template Pack', 
+    type: 'Document', 
+    category: 'Career Resources',
+    description: 'A comprehensive collection of professional CV templates designed for various industries including tech, finance, consulting, and creative fields. Includes ATS-friendly formats and modern designs.',
+    downloads: 234, 
+    posted: '2025-01-01',
+    fileSize: '2.4 MB',
+    fileFormat: 'ZIP',
+    uploadedBy: 'Career Services Team',
+    lastUpdated: '2025-01-15',
+    tags: ['CV', 'Resume', 'Templates', 'Career']
+  },
+  { 
+    id: 2, 
+    title: 'Interview Prep Guide', 
+    type: 'PDF', 
+    category: 'Interview Preparation',
+    description: 'Complete guide to acing your interviews with tips on behavioral questions, technical interviews, case studies, and salary negotiations. Includes sample questions and model answers.',
+    downloads: 189, 
+    posted: '2025-01-05',
+    fileSize: '1.8 MB',
+    fileFormat: 'PDF',
+    uploadedBy: 'FOP Admin',
+    lastUpdated: '2025-01-12',
+    tags: ['Interview', 'Preparation', 'Tips', 'Career']
+  },
+  { 
+    id: 3, 
+    title: 'Coding Interview Questions', 
+    type: 'Video', 
+    category: 'Technical Skills',
+    description: 'Video series covering common coding interview questions for software engineering roles. Includes data structures, algorithms, system design, and problem-solving techniques with detailed explanations.',
+    downloads: 156, 
+    posted: '2025-01-10',
+    fileSize: '450 MB',
+    fileFormat: 'MP4',
+    uploadedBy: 'Tech Society',
+    lastUpdated: '2025-01-10',
+    tags: ['Coding', 'Technical', 'Software Engineering', 'Interview']
+  },
 ];
 
 export const mockStudents = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', university: "King's College London", year: '2nd', course: 'Computer Science' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', university: 'Imperial College', year: '3rd', course: 'Engineering' },
-  { id: 3, name: 'Mike Johnson', email: 'mike@example.com', university: 'UCL', year: '1st', course: 'Business' },
+  { 
+    id: 1, 
+    name: 'John Doe', 
+    email: 'john@example.com', 
+    university: "King's College London", 
+    year: '2nd', 
+    course: 'Computer Science',
+    education_level: 'undergraduate',
+    degree_type: 'bsc',
+    area_of_study: 'Computer Science',
+    role_interest_option_one: 'Software Developer',
+    role_interest_option_two: 'Data Engineer',
+    society: 'Tech Society',
+    linkedIn: 'linkedin.com/in/johndoe',
+    cvUrl: '/cv/john-doe.pdf'
+  },
+  { 
+    id: 2, 
+    name: 'Jane Smith', 
+    email: 'jane@example.com', 
+    university: 'Imperial College', 
+    year: '3rd', 
+    course: 'Engineering',
+    education_level: 'undergraduate',
+    degree_type: 'beng',
+    area_of_study: 'Engineering',
+    role_interest_option_one: 'Mechanical Engineer',
+    role_interest_option_two: 'Project Manager',
+    society: 'Engineering Society',
+    linkedIn: 'linkedin.com/in/janesmith',
+    cvUrl: '/cv/jane-smith.pdf'
+  },
+  { 
+    id: 3, 
+    name: 'Mike Johnson', 
+    email: 'mike@example.com', 
+    university: 'UCL', 
+    year: '1st', 
+    course: 'Business',
+    education_level: 'undergraduate',
+    degree_type: 'ba',
+    area_of_study: 'Business',
+    role_interest_option_one: 'Business Analyst',
+    role_interest_option_two: 'Consultant',
+    society: 'Business Society',
+    linkedIn: 'linkedin.com/in/mikejohnson',
+    cvUrl: null
+  },
 ];
 
 export const mockSocieties = [
@@ -52,19 +136,16 @@ export const mockApplicantProfiles = {
     university: "King's College London",
     course: 'Computer Science',
     year: '3rd Year',
+    education_level: 'undergraduate',
+    degree_type: 'bsc',
+    area_of_study: 'Computer Science',
+    role_interest_option_one: 'Software Developer',
+    role_interest_option_two: 'Full Stack Engineer',
+    society: 'Tech Society',
     graduationDate: '2026-06',
     appliedDate: '2025-01-11',
     status: 'pending',
     cvUrl: '/cv/alice-brown.pdf',
-    coverLetter: 'I am writing to express my strong interest in the Software Engineer position...',
-    skills: ['JavaScript', 'React', 'Node.js', 'Python', 'SQL'],
-    experience: [
-      { title: 'Software Engineering Intern', company: 'StartupXYZ', period: 'Summer 2024', description: 'Developed full-stack web applications using React and Node.js' },
-      { title: 'Teaching Assistant', company: "King's College London", period: '2024-Present', description: 'Assisted in teaching introductory programming courses' }
-    ],
-    education: [
-      { degree: 'BSc Computer Science', institution: "King's College London", period: '2023-2026', grade: 'First Class Honours (Expected)' }
-    ],
     linkedIn: 'linkedin.com/in/alicebrown',
     github: 'github.com/alicebrown',
     portfolio: 'alicebrown.dev'
@@ -77,18 +158,16 @@ export const mockApplicantProfiles = {
     university: 'Imperial College',
     course: 'Data Science',
     year: '2nd Year',
+    education_level: 'undergraduate',
+    degree_type: 'bsc',
+    area_of_study: 'Data Science',
+    role_interest_option_one: 'Data Scientist',
+    role_interest_option_two: 'Machine Learning Engineer',
+    society: 'Data Science Society',
     graduationDate: '2027-06',
     appliedDate: '2025-01-12',
     status: 'reviewed',
     cvUrl: '/cv/bob-wilson.pdf',
-    coverLetter: 'As a passionate data scientist with strong analytical skills...',
-    skills: ['Python', 'R', 'Machine Learning', 'SQL', 'Tableau'],
-    experience: [
-      { title: 'Data Analytics Intern', company: 'FinTech Solutions', period: 'Summer 2024', description: 'Analyzed financial data and created predictive models' }
-    ],
-    education: [
-      { degree: 'BSc Data Science', institution: 'Imperial College', period: '2025-2027', grade: '2:1 (Expected)' }
-    ],
     linkedIn: 'linkedin.com/in/bobwilson',
     github: 'github.com/bobwilson',
     portfolio: null
@@ -101,19 +180,16 @@ export const mockApplicantProfiles = {
     university: 'UCL',
     course: 'Business Management',
     year: '4th Year',
+    education_level: 'undergraduate',
+    degree_type: 'bsc',
+    area_of_study: 'Business Management',
+    role_interest_option_one: 'Product Manager',
+    role_interest_option_two: 'Business Analyst',
+    society: 'Entrepreneurship Society',
     graduationDate: '2025-06',
     appliedDate: '2025-01-13',
     status: 'pending',
     cvUrl: '/cv/charlie-davis.pdf',
-    coverLetter: 'With my background in business management and product strategy...',
-    skills: ['Product Management', 'Agile', 'Market Research', 'Data Analysis', 'Stakeholder Management'],
-    experience: [
-      { title: 'Product Management Intern', company: 'E-commerce Ltd', period: 'Summer 2024', description: 'Managed product roadmap and coordinated with development teams' },
-      { title: 'Business Analyst', company: 'Consulting Group', period: '2023-2024', description: 'Conducted market research and business analysis for clients' }
-    ],
-    education: [
-      { degree: 'BSc Business Management', institution: 'UCL', period: '2021-2025', grade: 'First Class Honours (Expected)' }
-    ],
     linkedIn: 'linkedin.com/in/charliedavis',
     github: null,
     portfolio: null
@@ -126,12 +202,17 @@ export const mockApplicantProfiles = {
     university: "King's College London",
     course: 'Design & Digital Media',
     year: '3rd Year',
+    education_level: 'undergraduate',
+    degree_type: 'ba',
+    area_of_study: 'Design & Digital Media',
+    role_interest_option_one: 'UX Designer',
+    role_interest_option_two: 'Product Designer',
+    society: 'Design Society',
     graduationDate: '2026-06',
     appliedDate: '2025-01-14',
     status: 'shortlisted',
     cvUrl: '/cv/diana-evans.pdf',
-    coverLetter: 'I am excited to apply for the UX Designer position as someone who is passionate about creating user-centered designs...',
-    skills: ['Figma', 'Adobe XD', 'User Research', 'Prototyping', 'UI/UX Design', 'HTML/CSS'],
+    linkedIn: 'linkedin.com/in/dianaevans',
     experience: [
       { title: 'UX Design Intern', company: 'Creative Agency', period: 'Summer 2024', description: 'Designed user interfaces and conducted usability testing' },
       { title: 'Freelance Designer', company: 'Self-employed', period: '2023-Present', description: 'Created brand identities and websites for small businesses' }
@@ -154,14 +235,16 @@ export const mockAttendeeProfiles = {
     university: "King's College London",
     course: 'Economics',
     year: '2nd Year',
+    education_level: 'undergraduate',
+    degree_type: 'bsc',
+    area_of_study: 'Economics',
+    role_interest_option_one: 'Financial Analyst',
+    role_interest_option_two: 'Investment Banker',
+    society: 'Finance Society',
     registeredDate: '2025-01-20',
     status: 'confirmed',
-    dietaryRequirements: 'Vegetarian',
-    accessibility: 'None',
-    interests: ['Finance', 'Consulting', 'Investment Banking'],
-    previousEvents: ['Career Fair 2024', 'Finance Workshop'],
     linkedIn: 'linkedin.com/in/sarahjohnson',
-    questions: 'Will there be opportunities to speak with recruiters one-on-one?'
+    cvUrl: '/cv/sarah-johnson.pdf'
   },
   2: {
     id: 2,
@@ -171,14 +254,16 @@ export const mockAttendeeProfiles = {
     university: 'Imperial College',
     course: 'Mechanical Engineering',
     year: '4th Year',
+    education_level: 'undergraduate',
+    degree_type: 'beng',
+    area_of_study: 'Mechanical Engineering',
+    role_interest_option_one: 'Mechanical Engineer',
+    role_interest_option_two: 'Automotive Engineer',
+    society: 'Engineering Society',
     registeredDate: '2025-01-21',
     status: 'confirmed',
-    dietaryRequirements: 'None',
-    accessibility: 'None',
-    interests: ['Engineering', 'Automotive', 'Renewable Energy'],
-    previousEvents: ['Engineering Expo 2024'],
     linkedIn: 'linkedin.com/in/tomwilson',
-    questions: null
+    cvUrl: '/cv/tom-wilson.pdf'
   },
   3: {
     id: 3,
@@ -188,14 +273,16 @@ export const mockAttendeeProfiles = {
     university: 'UCL',
     course: 'Marketing',
     year: '1st Year',
+    education_level: 'undergraduate',
+    degree_type: 'ba',
+    area_of_study: 'Marketing',
+    role_interest_option_one: 'Marketing Manager',
+    role_interest_option_two: 'Brand Strategist',
+    society: 'Marketing Society',
     registeredDate: '2025-01-22',
     status: 'waitlist',
-    dietaryRequirements: 'Vegan',
-    accessibility: 'Wheelchair access required',
-    interests: ['Digital Marketing', 'Brand Strategy', 'Social Media'],
-    previousEvents: [],
     linkedIn: 'linkedin.com/in/emmadavis',
-    questions: 'Is there parking available at the venue?'
+    cvUrl: null
   },
   4: {
     id: 4,
@@ -205,13 +292,15 @@ export const mockAttendeeProfiles = {
     university: "King's College London",
     course: 'Law',
     year: '3rd Year',
+    education_level: 'undergraduate',
+    degree_type: 'ba',
+    area_of_study: 'Law',
+    role_interest_option_one: 'Corporate Lawyer',
+    role_interest_option_two: 'Legal Consultant',
+    society: 'Law Society',
     registeredDate: '2025-01-23',
     status: 'confirmed',
-    dietaryRequirements: 'Halal',
-    accessibility: 'None',
-    interests: ['Corporate Law', 'Legal Tech', 'Human Rights'],
-    previousEvents: ['Law Society Networking 2024', 'Legal Careers Fair'],
     linkedIn: 'linkedin.com/in/jamesbrown',
-    questions: null
+    cvUrl: '/cv/james-brown.pdf'
   }
 };

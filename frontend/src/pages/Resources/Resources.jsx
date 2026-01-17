@@ -1,4 +1,5 @@
 import {useState} from "react";
+import { useNavigate } from "react-router-dom";
 import { FileText, BookOpen, File } from "lucide-react";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import ResourceCard from "../../components/ResourceCard/ResourceCard";
@@ -12,6 +13,7 @@ const iconMap = {
 };
 
 export default function Resources() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -110,16 +112,14 @@ export default function Resources() {
 
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {currentResources.map((resource, index) => (
+          {currentResources.map((resource) => (
             <ResourceCard
-              key={index}
+              key={resource.id}
               {...resource}
               onDownload={() =>
                 console.log("Download:", resource.title)
               }
-              onPreview={() =>
-                console.log("Preview:", resource.title)
-              }
+              onPreview={() => navigate(`/resources/${resource.id}`)}
             />
           ))}
         </div>

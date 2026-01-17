@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Search, Filter, Eye, Mail, Users, Download, X } from 'lucide-react';
-import { mockSocieties } from '../services/Admin/admin-analytics';
+import { Link } from 'react-router-dom';
+import { Search, Filter, BarChart, Users, Download, Eye, ArrowLeft, Home } from 'lucide-react';
+import AdminSelect from '../Components/AdminSelect';
+import { mockSocieties } from '../../services/Admin/admin-analytics';
 
 export default function SocietiesManagement() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,18 +34,20 @@ export default function SocietiesManagement() {
     if (!society) return null;
 
     return (
-      <div className="space-y-6 text-left">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setSelectedSocietyId(null)}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-foreground" />
-          </button>
-          <div>
-            <h1 className="text-3xl mb-2 text-foreground">{society.name}</h1>
-            <p className="text-muted-foreground">{society.university}</p>
-          </div>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-6 py-8">
+          <div className="space-y-6 text-left">
+        <button
+          onClick={() => setSelectedSocietyId(null)}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back</span>
+        </button>
+        
+        <div>
+          <h1 className="text-3xl mb-2 text-foreground">{society.name}</h1>
+          <p className="text-muted-foreground">{society.university}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -84,10 +88,6 @@ export default function SocietiesManagement() {
               <p className="text-foreground">{society.contact}</p>
             </div>
             <div className="flex gap-4">
-              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90">
-                <Mail className="w-4 h-4 inline mr-2" />
-                Send Email
-              </button>
               <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary">
                 <Download className="w-4 h-4 inline mr-2" />
                 Export Members
@@ -95,12 +95,26 @@ export default function SocietiesManagement() {
             </div>
           </div>
         </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-6 py-8">
+        <div className="space-y-6 text-left">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+        <Link to="/admin" className="hover:text-foreground transition-colors flex items-center gap-1">
+          <Home className="w-4 h-4" />
+          Dashboard
+        </Link>
+        <span>/</span>
+        <span className="text-foreground">Societies</span>
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl mb-2 text-foreground">Society Management</h1>
@@ -117,17 +131,15 @@ export default function SocietiesManagement() {
       {/* Search and Filters */}
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="space-y-4">
-          <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search by society name, university, or contact..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-input-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search by society name, university, or contact..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
           </div>
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -138,30 +150,30 @@ export default function SocietiesManagement() {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm mb-2 text-foreground">University</label>
-              <select
+              <AdminSelect
                 value={filterUniversity}
-                onChange={(e) => setFilterUniversity(e.target.value)}
-                className="w-full px-4 py-2 bg-input-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="all">All Universities</option>
-                {universities.map(uni => (
-                  <option key={uni} value={uni}>{uni}</option>
-                ))}
-              </select>
+                onValueChange={setFilterUniversity}
+                placeholder="All Universities"
+                options={[
+                  { value: 'all', label: 'All Universities' },
+                  ...universities.map(uni => ({ value: uni, label: uni }))
+                ]}
+              />
             </div>
 
             <div>
               <label className="block text-sm mb-2 text-foreground">Member Count</label>
-              <select
+              <AdminSelect
                 value={filterMemberCount}
-                onChange={(e) => setFilterMemberCount(e.target.value)}
-                className="w-full px-4 py-2 bg-input-background border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                <option value="all">All Sizes</option>
-                <option value="small">Small (&lt; 100)</option>
-                <option value="medium">Medium (100-199)</option>
-                <option value="large">Large (200+)</option>
-              </select>
+                onValueChange={setFilterMemberCount}
+                placeholder="All Sizes"
+                options={[
+                  { value: 'all', label: 'All Sizes' },
+                  { value: 'small', label: 'Small (< 100)' },
+                  { value: 'medium', label: 'Medium (100-199)' },
+                  { value: 'large', label: 'Large (200+)' }
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -219,7 +231,7 @@ export default function SocietiesManagement() {
                       <button
                         onClick={() => setSelectedSocietyId(society.id)}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
-                        title="View details"
+                        title="View analytics"
                       >
                         <Eye className="w-4 h-4 text-foreground" />
                       </button>
@@ -229,6 +241,8 @@ export default function SocietiesManagement() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
         </div>
       </div>
     </div>

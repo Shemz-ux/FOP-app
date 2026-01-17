@@ -35,7 +35,8 @@ export default function JobCard({
           <div className="pt-0.5">
             <h3 className="text-lg font-medium text-foreground mb-0.5 text-left">{jobTitle}</h3>
             <p className="text-muted-foreground text-sm text-left">
-              <span className="font-medium text-foreground/90">{company}</span> • {applicants} Applicants
+              <span className="font-medium text-foreground/90">{company}</span> 
+            {/* • {applicants} Applicants */}
             </p>
           </div>
         </div>
