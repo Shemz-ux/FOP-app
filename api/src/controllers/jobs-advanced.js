@@ -6,8 +6,9 @@ import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions } from '../models/
  * - company: Filter by company name (partial match)
  * - industry: Filter by industry (partial match)
  * - location: Filter by location (partial match)
- * - job_level: Filter by job level (partial match)
+ * - experience_level: Filter by experience level (partial match)
  * - role_type: Filter by role type (partial match)
+ * - work_type: Filter by work type (partial match)
  * - sort: Sort by 'newest', 'oldest', 'popular', 'company', 'title'
  * - limit: Number of results per page (default: 50, max: 100)
  * - page: Page number (default: 1)
@@ -19,8 +20,9 @@ export const getJobsAdvanced = async (req, res) => {
             company,
             industry,
             location,
-            job_level,
+            experience_level,
             role_type,
+            work_type,
             sort = 'newest',
             limit = 50,
             page = 1,
@@ -41,8 +43,9 @@ export const getJobsAdvanced = async (req, res) => {
             company,
             industry,
             location,
-            job_level,
+            experience_level,
             role_type,
+            work_type,
             sort: validSort,
             limit: parsedLimit,
             offset,
@@ -74,8 +77,9 @@ export const getJobsAdvanced = async (req, res) => {
                 company,
                 industry,
                 location,
-                job_level,
+                experience_level,
                 role_type,
+                work_type,
                 sort: validSort,
                 active: isActive
             }

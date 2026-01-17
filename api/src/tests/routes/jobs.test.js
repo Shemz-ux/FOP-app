@@ -47,12 +47,16 @@ describe('Jobs API Endpoints', () => {
             const newJob = {
                 title: 'Software Developer',
                 company: `TestCorp ${timestamp}`,
+                company_logo: '',
+                company_color: '#3B82F6',
+                company_description: 'Leading technology company',
+                company_website: 'https://testcorp.com',
                 description: 'Exciting software development role',
                 industry: 'Technology',
                 location: 'London',
-                job_level: 'Mid-level',
+                experience_level: 'Mid-level',
                 role_type: 'Full-time',
-                contact_email: `hr.${timestamp}@testcorp.com`,
+                work_type: 'Remote',
                 job_link: 'https://testcorp.com/jobs/123',
                 salary: '£50,000 - £70,000',
                 deadline: '2024-12-31',
@@ -69,7 +73,9 @@ describe('Jobs API Endpoints', () => {
             expect(response.body.newJob).toHaveProperty('job_id');
             expect(response.body.newJob.title).toBe('Software Developer');
             expect(response.body.newJob.company).toBe(`TestCorp ${timestamp}`);
-            expect(response.body.newJob.contact_email).toBe(`hr.${timestamp}@testcorp.com`);
+            expect(response.body.newJob.company_color).toBe('#3B82F6');
+            expect(response.body.newJob.experience_level).toBe('Mid-level');
+            expect(response.body.newJob.work_type).toBe('Remote');
 
             // Store the job ID for other tests
             testJobId = response.body.newJob.job_id;
@@ -175,9 +181,11 @@ describe('Jobs API Endpoints', () => {
             const updateData = {
                 title: 'Updated Job Title',
                 company: 'Updated Company',
+                company_color: '#10B981',
                 description: 'Updated description',
                 salary: '£60,000 - £80,000',
-                contact_email: `updated.hr.${updateTimestamp}@company.com`
+                experience_level: 'Senior',
+                work_type: 'Hybrid'
             };
 
             const response = await request(app)
@@ -191,7 +199,9 @@ describe('Jobs API Endpoints', () => {
             expect(response.body.job.title).toBe('Updated Job Title');
             expect(response.body.job.company).toBe('Updated Company');
             expect(response.body.job.salary).toBe('£60,000 - £80,000');
-            expect(response.body.job.contact_email).toBe(`updated.hr.${updateTimestamp}@company.com`);
+            expect(response.body.job.company_color).toBe('#10B981');
+            expect(response.body.job.experience_level).toBe('Senior');
+            expect(response.body.job.work_type).toBe('Hybrid');
         });
 
         test('should handle non-existent job update', async () => {

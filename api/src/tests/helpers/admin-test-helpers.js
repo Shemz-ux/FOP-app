@@ -83,23 +83,31 @@ export class AdminTestHelper {
             {
                 title: `Software Engineer Helper Test ${timestamp}`,
                 company: "Tech Corp Helper",
+                company_logo: "",
+                company_color: "#3B82F6",
+                company_description: "Innovative tech company",
+                company_website: "https://techcorp.com",
                 description: "Test job for helper functions",
                 industry: "Technology",
                 location: "London",
-                job_level: "Entry",
+                experience_level: "Entry",
                 role_type: "Full-time",
-                contact_email: "hr@techcorp-helper.com",
+                work_type: "Remote",
                 salary: "£30,000"
             },
             {
                 title: `Data Scientist Helper Test ${timestamp}`,
                 company: "Data Inc Helper",
+                company_logo: "",
+                company_color: "#10B981",
+                company_description: "Data analytics leader",
+                company_website: "https://datainc.com",
                 description: "Another test job for helper functions",
                 industry: "Technology",
                 location: "Manchester",
-                job_level: "Mid",
+                experience_level: "Mid",
                 role_type: "Full-time",
-                contact_email: "hr@datainc-helper.com",
+                work_type: "Hybrid",
                 salary: "£45,000"
             }
         ];

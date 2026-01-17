@@ -6,8 +6,9 @@ import db from "../db/db.js";
  * @param {string} filters.company - Filter by company name
  * @param {string} filters.industry - Filter by industry
  * @param {string} filters.location - Filter by location
- * @param {string} filters.job_level - Filter by job level
+ * @param {string} filters.experience_level - Filter by experience level
  * @param {string} filters.role_type - Filter by role type
+ * @param {string} filters.work_type - Filter by work type
  * @param {string} filters.sort - Sort by: 'newest', 'oldest', 'popular', 'company', 'title'
  * @param {number} filters.limit - Limit results (default: 50)
  * @param {number} filters.offset - Offset for pagination (default: 0)
@@ -18,8 +19,9 @@ export const fetchJobsAdvanced = (filters = {}) => {
         company,
         industry,
         location,
-        job_level,
+        experience_level,
         role_type,
+        work_type,
         sort = 'newest',
         limit = 50,
         offset = 0,
@@ -55,15 +57,21 @@ export const fetchJobsAdvanced = (filters = {}) => {
         paramIndex++;
     }
 
-    if (job_level) {
-        conditions.push(`LOWER(job_level) LIKE LOWER($${paramIndex})`);
-        params.push(`%${job_level}%`);
+    if (experience_level) {
+        conditions.push(`LOWER(experience_level) LIKE LOWER($${paramIndex})`);
+        params.push(`%${experience_level}%`);
         paramIndex++;
     }
 
     if (role_type) {
         conditions.push(`LOWER(role_type) LIKE LOWER($${paramIndex})`);
         params.push(`%${role_type}%`);
+        paramIndex++;
+    }
+
+    if (work_type) {
+        conditions.push(`LOWER(work_type) LIKE LOWER($${paramIndex})`);
+        params.push(`%${work_type}%`);
         paramIndex++;
     }
 
@@ -99,12 +107,16 @@ export const fetchJobsAdvanced = (filters = {}) => {
             job_id,
             title,
             company,
+            company_logo,
+            company_color,
+            company_description,
+            company_website,
             description,
             industry,
             location,
-            job_level,
+            experience_level,
             role_type,
-            contact_email,
+            work_type,
             job_link,
             salary,
             deadline,
@@ -131,8 +143,9 @@ export const getJobsCount = (filters = {}) => {
         company,
         industry,
         location,
-        job_level,
+        experience_level,
         role_type,
+        work_type,
         active = true
     } = filters;
 
@@ -162,15 +175,21 @@ export const getJobsCount = (filters = {}) => {
         paramIndex++;
     }
 
-    if (job_level) {
-        conditions.push(`LOWER(job_level) LIKE LOWER($${paramIndex})`);
-        params.push(`%${job_level}%`);
+    if (experience_level) {
+        conditions.push(`LOWER(experience_level) LIKE LOWER($${paramIndex})`);
+        params.push(`%${experience_level}%`);
         paramIndex++;
     }
 
     if (role_type) {
         conditions.push(`LOWER(role_type) LIKE LOWER($${paramIndex})`);
         params.push(`%${role_type}%`);
+        paramIndex++;
+    }
+
+    if (work_type) {
+        conditions.push(`LOWER(work_type) LIKE LOWER($${paramIndex})`);
+        params.push(`%${work_type}%`);
         paramIndex++;
     }
 
@@ -190,8 +209,9 @@ export const getJobFilterOptions = () => {
         'SELECT DISTINCT company FROM jobs WHERE company IS NOT NULL AND company != \'\' ORDER BY company',
         'SELECT DISTINCT industry FROM jobs WHERE industry IS NOT NULL AND industry != \'\' ORDER BY industry',
         'SELECT DISTINCT location FROM jobs WHERE location IS NOT NULL AND location != \'\' ORDER BY location',
-        'SELECT DISTINCT job_level FROM jobs WHERE job_level IS NOT NULL AND job_level != \'\' ORDER BY job_level',
-        'SELECT DISTINCT role_type FROM jobs WHERE role_type IS NOT NULL AND role_type != \'\' ORDER BY role_type'
+        'SELECT DISTINCT experience_level FROM jobs WHERE experience_level IS NOT NULL AND experience_level != \'\' ORDER BY experience_level',
+        'SELECT DISTINCT role_type FROM jobs WHERE role_type IS NOT NULL AND role_type != \'\' ORDER BY role_type',
+        'SELECT DISTINCT work_type FROM jobs WHERE work_type IS NOT NULL AND work_type != \'\' ORDER BY work_type'
     ];
 
     return Promise.all(queries.map(query => db.query(query)))
@@ -200,8 +220,9 @@ export const getJobFilterOptions = () => {
                 companies: results[0].rows.map(row => row.company),
                 industries: results[1].rows.map(row => row.industry),
                 locations: results[2].rows.map(row => row.location),
-                job_levels: results[3].rows.map(row => row.job_level),
-                role_types: results[4].rows.map(row => row.role_type)
+                experience_levels: results[3].rows.map(row => row.experience_level),
+                role_types: results[4].rows.map(row => row.role_type),
+                work_types: results[5].rows.map(row => row.work_type)
             };
         });
 };

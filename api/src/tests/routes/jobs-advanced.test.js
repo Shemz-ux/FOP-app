@@ -15,45 +15,45 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                 company: 'Google',
                 industry: 'Technology',
                 location: 'London',
-                job_level: 'Senior',
+                experience_level: 'Senior',
                 role_type: 'Full-time',
-                contact_email: 'jobs@google.com'
+                description: 'Senior software engineering role at Google'
             },
             {
                 title: 'Junior Developer',
                 company: 'Microsoft',
                 industry: 'Technology', 
                 location: 'Manchester',
-                job_level: 'Junior',
+                experience_level: 'Junior',
                 role_type: 'Full-time',
-                contact_email: 'careers@microsoft.com'
+                description: 'Junior developer position at Microsoft'
             },
             {
                 title: 'Marketing Manager',
                 company: 'Apple',
                 industry: 'Technology',
                 location: 'London',
-                job_level: 'Mid',
+                experience_level: 'Mid',
                 role_type: 'Full-time',
-                contact_email: 'jobs@apple.com'
+                description: 'Marketing management role at Apple'
             },
             {
                 title: 'Data Analyst',
                 company: 'Facebook',
                 industry: 'Technology',
                 location: 'Birmingham',
-                job_level: 'Mid',
+                experience_level: 'Mid',
                 role_type: 'Contract',
-                contact_email: 'hiring@facebook.com'
+                description: 'Data analyst contract position'
             },
             {
                 title: 'Financial Advisor',
                 company: 'Goldman Sachs',
                 industry: 'Finance',
                 location: 'London',
-                job_level: 'Senior',
+                experience_level: 'Senior',
                 role_type: 'Full-time',
-                contact_email: 'careers@gs.com'
+                description: 'Senior financial advisor role'
             }
         ];
 
@@ -126,13 +126,13 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
 
             it('should filter jobs by job level', async () => {
                 const response = await request(app)
-                    .get('/api/jobs/search?job_level=Senior')
+                    .get('/api/jobs/search?experience_level=Senior')
                     .expect(200);
 
                 expect(response.body.jobs.length).toBeGreaterThanOrEqual(2);
                 const seniorJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
                 seniorJobs.forEach(job => {
-                    expect(job.job_level).toBe('Senior');
+                    expect(job.experience_level).toBe('Senior');
                 });
             });
 
@@ -155,14 +155,14 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
         describe('Combined filtering', () => {
             it('should filter by multiple criteria', async () => {
                 const response = await request(app)
-                    .get('/api/jobs/search?industry=Technology&location=London&job_level=Senior')
+                    .get('/api/jobs/search?industry=Technology&location=London&experience_level=Senior')
                     .expect(200);
 
                 // Check that all returned jobs match the criteria
                 response.body.jobs.forEach(job => {
                     expect(job.industry).toBe('Technology');
                     expect(job.location).toBe('London');
-                    expect(job.job_level).toBe('Senior');
+                    expect(job.experience_level).toBe('Senior');
                 });
                 
                 // Should have at least some results or empty array
@@ -343,7 +343,7 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
             expect(response.body.filterOptions).toHaveProperty('companies');
             expect(response.body.filterOptions).toHaveProperty('industries');
             expect(response.body.filterOptions).toHaveProperty('locations');
-            expect(response.body.filterOptions).toHaveProperty('job_levels');
+            expect(response.body.filterOptions).toHaveProperty('experience_levels');
             expect(response.body.filterOptions).toHaveProperty('role_types');
 
             expect(Array.isArray(response.body.filterOptions.companies)).toBe(true);
