@@ -17,13 +17,7 @@ describe('Resources API Endpoints', () => {
     };
 
     beforeAll(async () => {
-        // Create a test admin user for resource creation
-        const adminResult = await db.query(`
-            INSERT INTO admin_users (first_name, last_name, email, password_hash, role)
-            VALUES ('Test', 'Admin', 'test.admin@test.com', 'hashedpassword', 'admin')
-            RETURNING admin_id
-        `);
-        testAdminId = adminResult.rows[0].admin_id;
+        // No need to create admin user since we're using uploaded_by as string
     });
 
     afterAll(async () => {
@@ -36,13 +30,7 @@ describe('Resources API Endpoints', () => {
             }
         }
 
-        if (testAdminId) {
-            try {
-                await db.query('DELETE FROM admin_users WHERE admin_id = $1', [testAdminId]);
-            } catch (error) {
-                // Ignore cleanup errors
-            }
-        }
+        // No admin user to clean up
 
         // Close database connection
         await db.end();

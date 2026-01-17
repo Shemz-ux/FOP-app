@@ -18,6 +18,15 @@ import {
     getFileStream
 } from '../lib/r2Storage.js';
 
+// Helper function to format file size
+const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+};
+
 // Configure multer for file uploads (memory storage)
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -94,7 +103,7 @@ const getResourceById = async (req, res) => {
 // Create new resource with file upload
 const postResource = async (req, res) => {
     try {
-        const { title, description, category } = req.body;
+        const { title, description, detailed_description, whats_included, category, uploaded_by } = req.body;
         const file = req.file;
 
         // Validate required fields
@@ -111,9 +120,6 @@ const postResource = async (req, res) => {
             });
         }
 
-        // Get admin user ID from middleware
-        const created_by = req.user_id;
-
         // Upload file to R2
         const uploadResult = await uploadFile(
             file.buffer,
@@ -126,13 +132,16 @@ const postResource = async (req, res) => {
         const resourceData = {
             title,
             description: description || null,
+            detailed_description: detailed_description || null,
+            whats_included: whats_included || null,
             category,
             file_name: file.originalname,
-            file_size: file.size,
+            file_size: formatFileSize(file.size),
             file_type: file.mimetype,
             storage_key: uploadResult.storageKey,
             storage_url: uploadResult.publicUrl,
-            created_by
+            uploaded_by: uploaded_by || 'FOP',
+            created_by: req.user_id || null
         };
 
         const newResource = await createResource(resourceData);

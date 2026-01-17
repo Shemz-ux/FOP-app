@@ -283,11 +283,54 @@ const createSocietyEventsSavedTable = () => {
         });
 };
 
+const createAdminUsersTable = () => {
+    return testDb.query(`CREATE TABLE IF NOT EXISTS admin_users (
+        admin_id SERIAL PRIMARY KEY,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'admin',
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW(),
+        last_login TIMESTAMP
+    )`).then(()=>{
+        console.log("Admin users table created!✅")
+    });
+};
+
+const createResourcesTable = () => {
+    return testDb.query(`CREATE TABLE IF NOT EXISTS resources (
+        resource_id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        detailed_description TEXT,
+        whats_included TEXT,
+        category VARCHAR(100) NOT NULL,
+        file_name VARCHAR(255) NOT NULL,
+        file_size VARCHAR(50),
+        file_type VARCHAR(50) NOT NULL,
+        storage_key VARCHAR(500) NOT NULL UNIQUE,
+        storage_url VARCHAR(1000),
+        download_count INT DEFAULT 0,
+        uploaded_by VARCHAR(255),
+        created_by INT REFERENCES admin_users(admin_id),
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+    )`).then(()=>{
+        console.log("Resources table created!✅")
+    });
+};
+
 const runTestSeed = async () => {
     console.log('Seeding test database...');
     
     try {
         // Drop tables in reverse order of dependencies (child tables first)
+        await testDb.query('DROP TABLE IF EXISTS resources CASCADE');
+        await testDb.query('DROP TABLE IF EXISTS admin_users CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobseekers_jobs_applied CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobseekers_jobs_saved CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobseekers_events_applied CASCADE');
@@ -309,6 +352,8 @@ const runTestSeed = async () => {
         await createJobseekerEventsSavedTable();
         await createSocietyJobsSavedTable();
         await createSocietyEventsSavedTable();
+        await createAdminUsersTable();
+        await createResourcesTable();
         
         console.log('✅ Test database seeded successfully!');
         await testDb.end();

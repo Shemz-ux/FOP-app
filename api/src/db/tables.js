@@ -344,19 +344,24 @@ const createAdminUsersTable = () => {
 }
 
 const createResourcesTable = () => {
-    return db.query(`CREATE TABLE IF NOT EXISTS resources (
+    return db.query(`
+        DROP TABLE IF EXISTS resources CASCADE;
+        CREATE TABLE resources (
         resource_id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         description TEXT,
+        detailed_description TEXT,
+        whats_included TEXT,
         category VARCHAR(100) NOT NULL,
         file_name VARCHAR(255) NOT NULL,
-        file_size BIGINT NOT NULL,
+        file_size VARCHAR(50),
         file_type VARCHAR(50) NOT NULL,
         storage_key VARCHAR(500) NOT NULL UNIQUE,
         storage_url VARCHAR(1000),
         download_count INT DEFAULT 0,
-        is_active BOOLEAN DEFAULT TRUE,
+        uploaded_by VARCHAR(255),
         created_by INT REFERENCES admin_users(admin_id),
+        is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
     )`).then(()=>{

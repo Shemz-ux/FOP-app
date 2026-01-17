@@ -5,27 +5,30 @@ const createResource = async (resourceData) => {
     const {
         title,
         description,
+        detailed_description,
+        whats_included,
         category,
         file_name,
         file_size,
         file_type,
         storage_key,
         storage_url,
+        uploaded_by,
         created_by
     } = resourceData;
 
     const query = `
         INSERT INTO resources (
-            title, description, category, file_name, file_size, 
-            file_type, storage_key, storage_url, created_by
+            title, description, detailed_description, whats_included, category, file_name, file_size, 
+            file_type, storage_key, storage_url, uploaded_by, created_by
         ) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
         RETURNING *
     `;
 
     const values = [
-        title, description, category, file_name, file_size,
-        file_type, storage_key, storage_url, created_by
+        title, description, detailed_description, whats_included, category, file_name, file_size,
+        file_type, storage_key, storage_url, uploaded_by, created_by
     ];
 
     try {
@@ -39,9 +42,8 @@ const createResource = async (resourceData) => {
 // Get all resources with optional filtering
 const fetchResources = async (filters = {}) => {
     let query = `
-        SELECT r.*, au.first_name, au.last_name 
+        SELECT r.*
         FROM resources r
-        LEFT JOIN admin_users au ON r.created_by = au.admin_id
         WHERE r.is_active = TRUE
     `;
     const values = [];
@@ -102,9 +104,8 @@ const fetchResources = async (filters = {}) => {
 // Get resource by ID
 const fetchResourceById = async (resourceId) => {
     const query = `
-        SELECT r.*, au.first_name, au.last_name 
+        SELECT r.*
         FROM resources r
-        LEFT JOIN admin_users au ON r.created_by = au.admin_id
         WHERE r.resource_id = $1 AND r.is_active = TRUE
     `;
 
@@ -118,7 +119,7 @@ const fetchResourceById = async (resourceId) => {
 
 // Update resource
 const updateResource = async (resourceId, updateData) => {
-    const allowedFields = ['title', 'description', 'category', 'is_active'];
+    const allowedFields = ['title', 'description', 'detailed_description', 'whats_included', 'category', 'uploaded_by', 'is_active'];
     const updates = [];
     const values = [];
     let paramCount = 0;
@@ -217,8 +218,7 @@ const fetchResourceStats = async () => {
         SELECT 
             COUNT(*) as total_resources,
             SUM(download_count) as total_downloads,
-            COUNT(DISTINCT category) as total_categories,
-            AVG(file_size) as avg_file_size
+            COUNT(DISTINCT category) as total_categories
         FROM resources 
         WHERE is_active = TRUE
     `;
