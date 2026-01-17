@@ -406,6 +406,131 @@ describe.only('Jobseekers API Endpoints', () => {
     });
   });
 
+  describe('LinkedIn and CV Fields', () => {
+    let cvTestJobseekerId;
+
+    afterAll(async () => {
+      if (cvTestJobseekerId) {
+        try {
+          await db.query('DELETE FROM jobseekers WHERE jobseeker_id = $1', [cvTestJobseekerId]);
+        } catch (err) {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    test('should create jobseeker with LinkedIn profile', async () => {
+      const timestamp = Date.now();
+      const newJobseeker = {
+        first_name: 'LinkedIn',
+        last_name: 'User',
+        email: `linkedin.user.${timestamp}@test.com`,
+        password: testPassword,
+        linkedin: 'https://www.linkedin.com/in/test-user',
+        education_level: 'undergraduate',
+        institution_name: 'Test University',
+        uni_year: '2nd',
+        degree_type: 'bsc',
+        area_of_study: 'Computer Science'
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(newJobseeker)
+        .expect(201);
+
+      expect(response.body.newJobseeker).toHaveProperty('linkedin', 'https://www.linkedin.com/in/test-user');
+      cvTestJobseekerId = response.body.newJobseeker.jobseeker_id;
+    });
+
+    test('should create jobseeker with CV upload fields', async () => {
+      const timestamp = Date.now();
+      const newJobseeker = {
+        first_name: 'CV',
+        last_name: 'User',
+        email: `cv.user.${timestamp}@test.com`,
+        password: testPassword,
+        cv_file_name: 'John_Doe_CV.pdf',
+        cv_file_size: '245 KB',
+        cv_storage_key: 'cvs/1234567890-abcdef.pdf',
+        cv_storage_url: 'https://storage.example.com/cvs/1234567890-abcdef.pdf',
+        cv_uploaded_at: new Date().toISOString(),
+        education_level: 'undergraduate',
+        institution_name: 'Test University',
+        uni_year: '3rd',
+        degree_type: 'bsc',
+        area_of_study: 'Engineering'
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(newJobseeker)
+        .expect(201);
+
+      expect(response.body.newJobseeker).toHaveProperty('cv_file_name', 'John_Doe_CV.pdf');
+      expect(response.body.newJobseeker).toHaveProperty('cv_file_size', '245 KB');
+      expect(response.body.newJobseeker).toHaveProperty('cv_storage_key', 'cvs/1234567890-abcdef.pdf');
+      expect(response.body.newJobseeker).toHaveProperty('cv_storage_url');
+      expect(response.body.newJobseeker).toHaveProperty('cv_uploaded_at');
+    });
+
+    test('should update jobseeker LinkedIn profile', async () => {
+      if (!cvTestJobseekerId) return;
+
+      const updateData = {
+        linkedin: 'https://www.linkedin.com/in/updated-profile'
+      };
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${cvTestJobseekerId}`)
+        .send(updateData)
+        .expect(200);
+
+      expect(response.body.jobseeker.linkedin).toBe('https://www.linkedin.com/in/updated-profile');
+    });
+
+    test('should update jobseeker CV fields', async () => {
+      if (!cvTestJobseekerId) return;
+
+      const updateData = {
+        cv_file_name: 'Updated_CV.pdf',
+        cv_file_size: '320 KB',
+        cv_storage_key: 'cvs/9876543210-xyz.pdf',
+        cv_storage_url: 'https://storage.example.com/cvs/9876543210-xyz.pdf',
+        cv_uploaded_at: new Date().toISOString()
+      };
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${cvTestJobseekerId}`)
+        .send(updateData)
+        .expect(200);
+
+      expect(response.body.jobseeker.cv_file_name).toBe('Updated_CV.pdf');
+      expect(response.body.jobseeker.cv_file_size).toBe('320 KB');
+      expect(response.body.jobseeker.cv_storage_key).toBe('cvs/9876543210-xyz.pdf');
+    });
+
+    test('should delete CV by setting fields to null', async () => {
+      if (!cvTestJobseekerId) return;
+
+      const updateData = {
+        cv_file_name: null,
+        cv_file_size: null,
+        cv_storage_key: null,
+        cv_storage_url: null,
+        cv_uploaded_at: null
+      };
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${cvTestJobseekerId}`)
+        .send(updateData)
+        .expect(200);
+
+      expect(response.body.jobseeker.cv_file_name).toBeNull();
+      expect(response.body.jobseeker.cv_storage_key).toBeNull();
+    });
+  });
+
   afterAll(async () => {
     // Close database connection to prevent Jest from hanging
     await db.end();

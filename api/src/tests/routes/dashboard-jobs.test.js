@@ -267,6 +267,47 @@ describe('Dashboard Jobs API Endpoints', () => {
         });
     });
 
+    describe('Application Status Field', () => {
+        test('should create job application with default status', async () => {
+            const response = await request(app)
+                .post(`/api/jobseekers/${testJobseekerId}/apply/${testJobId1}`)
+                .expect(201);
+
+            expect(response.body.application).toHaveProperty('status', 'applied');
+        });
+
+        test('should verify status is stored in database', async () => {
+            await request(app)
+                .post(`/api/jobseekers/${testJobseekerId}/apply/${testJobId2}`)
+                .expect(201);
+
+            const result = await db.query(
+                'SELECT status FROM jobseekers_jobs_applied WHERE jobseeker_id = $1 AND job_id = $2',
+                [testJobseekerId, testJobId2]
+            );
+
+            expect(result.rows[0].status).toBe('applied');
+        });
+
+        test('should allow admin to update application status', async () => {
+            await request(app)
+                .post(`/api/jobseekers/${testJobseekerId}/apply/${testJobId3}`)
+                .expect(201);
+
+            await db.query(
+                'UPDATE jobseekers_jobs_applied SET status = $1 WHERE jobseeker_id = $2 AND job_id = $3',
+                ['succeeded', testJobseekerId, testJobId3]
+            );
+
+            const result = await db.query(
+                'SELECT status FROM jobseekers_jobs_applied WHERE jobseeker_id = $1 AND job_id = $2',
+                [testJobseekerId, testJobId3]
+            );
+
+            expect(result.rows[0].status).toBe('succeeded');
+        });
+    });
+
     describe('Performance and N+1 Prevention', () => {
         test('should handle large datasets efficiently', async () => {
             // This test would ideally measure query count and execution time

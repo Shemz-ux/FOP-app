@@ -117,6 +117,12 @@ const createJobseekersTable = () => {
             role_interest_option_one VARCHAR(255),
             role_interest_option_two VARCHAR(255),
             society VARCHAR(255),
+            linkedin VARCHAR(500),
+            cv_file_name VARCHAR(255),
+            cv_file_size VARCHAR(50),
+            cv_storage_key VARCHAR(500),
+            cv_storage_url VARCHAR(1000),
+            cv_uploaded_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT NOW(),
             updated_at TIMESTAMP DEFAULT NOW(),
             
@@ -227,6 +233,7 @@ const createJobseekerJobApplicationsTable = () => {
     return db.query(`CREATE TABLE jobseekers_jobs_applied (
     jobseeker_id INT NOT NULL,
     job_id INT NOT NULL,
+    status VARCHAR(50) DEFAULT 'applied',
     applied_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (jobseeker_id, job_id),
     FOREIGN KEY (jobseeker_id)
@@ -261,6 +268,7 @@ const createJobseekerEventApplicationsTable = () => {
     return db.query(`CREATE TABLE jobseekers_events_applied (
     jobseeker_id INT NOT NULL,
     event_id INT NOT NULL,
+    status VARCHAR(50) DEFAULT 'registered',
     applied_at TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (jobseeker_id, event_id),
     FOREIGN KEY (jobseeker_id)

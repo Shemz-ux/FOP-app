@@ -297,6 +297,47 @@ describe('Dashboard Events API Endpoints', () => {
         }
     });
 
+    describe('Event Registration Status Field', () => {
+        test('should create event registration with default status', async () => {
+            const response = await request(app)
+                .post(`/api/jobseekers/${testJobseekerId}/apply-event/${testEventId1}`)
+                .expect(201);
+
+            expect(response.body.application).toHaveProperty('status', 'registered');
+        });
+
+        test('should verify status is stored in database', async () => {
+            await request(app)
+                .post(`/api/jobseekers/${testJobseekerId}/apply-event/${testEventId2}`)
+                .expect(201);
+
+            const result = await db.query(
+                'SELECT status FROM jobseekers_events_applied WHERE jobseeker_id = $1 AND event_id = $2',
+                [testJobseekerId, testEventId2]
+            );
+
+            expect(result.rows[0].status).toBe('registered');
+        });
+
+        test('should allow admin to update registration status', async () => {
+            await request(app)
+                .post(`/api/jobseekers/${testJobseekerId}/apply-event/${testEventId3}`)
+                .expect(201);
+
+            await db.query(
+                'UPDATE jobseekers_events_applied SET status = $1 WHERE jobseeker_id = $2 AND event_id = $3',
+                ['attended', testJobseekerId, testEventId3]
+            );
+
+            const result = await db.query(
+                'SELECT status FROM jobseekers_events_applied WHERE jobseeker_id = $1 AND event_id = $2',
+                [testJobseekerId, testEventId3]
+            );
+
+            expect(result.rows[0].status).toBe('attended');
+        });
+    });
+
     afterAll(async () => {
         // Close database connection to prevent Jest from hanging
         await db.end();

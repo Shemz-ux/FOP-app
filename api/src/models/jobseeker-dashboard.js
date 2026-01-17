@@ -224,13 +224,13 @@ export const fetchJobseekerDashboardPaginated = (jobseeker_id, options = {}) => 
 /**
  * Apply for a job (create job application)
  */
-export const applyForJob = (jobseeker_id, job_id) => {
+export const applyForJob = (jobseeker_id, job_id, status = 'applied') => {
     return db.query(`
-        INSERT INTO jobseekers_jobs_applied (jobseeker_id, job_id)
-        VALUES ($1, $2)
+        INSERT INTO jobseekers_jobs_applied (jobseeker_id, job_id, status)
+        VALUES ($1, $2, $3)
         ON CONFLICT (jobseeker_id, job_id) DO NOTHING
         RETURNING *
-    `, [jobseeker_id, job_id])
+    `, [jobseeker_id, job_id, status])
     .then(({rows}) => {
         if (rows.length === 0) {
             return Promise.reject({status: 409, msg: 'Already applied for this job'});
@@ -357,13 +357,13 @@ export const fetchJobseekerSavedEvents = (jobseeker_id) => {
 /**
  * Apply for an event (create event application)
  */
-export const applyForEvent = (jobseeker_id, event_id) => {
+export const applyForEvent = (jobseeker_id, event_id, status = 'registered') => {
     return db.query(`
-        INSERT INTO jobseekers_events_applied (jobseeker_id, event_id)
-        VALUES ($1, $2)
+        INSERT INTO jobseekers_events_applied (jobseeker_id, event_id, status)
+        VALUES ($1, $2, $3)
         ON CONFLICT (jobseeker_id, event_id) DO NOTHING
         RETURNING *
-    `, [jobseeker_id, event_id])
+    `, [jobseeker_id, event_id, status])
     .then(({rows}) => {
         if (rows.length === 0) {
             return Promise.reject({status: 409, msg: 'Already applied for this event'});

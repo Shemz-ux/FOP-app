@@ -49,7 +49,13 @@ export const createJobseeker = (newJobseeker) => {
         subject_four,
         role_interest_option_one, 
         role_interest_option_two,
-        society
+        society,
+        linkedin,
+        cv_file_name,
+        cv_file_size,
+        cv_storage_key,
+        cv_storage_url,
+        cv_uploaded_at
     } = newJobseeker;
     
     return db.query(`
@@ -59,16 +65,18 @@ export const createJobseeker = (newJobseeker) => {
             first_gen_to_go_uni, education_level, institution_name, 
             uni_year, degree_type, area_of_study, 
             subject_one, subject_two, subject_three, subject_four,
-            role_interest_option_one, role_interest_option_two, society
+            role_interest_option_one, role_interest_option_two, society,
+            linkedin, cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28) 
         RETURNING *`, 
         [first_name, last_name, email, password_hash, phone_number, 
          date_of_birth, gender, ethnicity, school_meal_eligible, 
          first_gen_to_go_uni, education_level, institution_name,
          uni_year, degree_type, area_of_study,
          subject_one, subject_two, subject_three, subject_four,
-         role_interest_option_one, role_interest_option_two, society]
+         role_interest_option_one, role_interest_option_two, society,
+         linkedin, cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at]
     ).then(({rows}) => {
         return rows[0];
     });
@@ -82,7 +90,8 @@ export const updateJobseeker = (updateJobseeker, id) => {
         "gender", "ethnicity", "school_meal_eligible", "first_gen_to_go_uni", 
         "education_level", "institution_name", "uni_year", 
         "degree_type", "area_of_study", "subject_one", "subject_two", 
-        "subject_three", "subject_four", "role_interest_option_one", "role_interest_option_two", "society"
+        "subject_three", "subject_four", "role_interest_option_one", "role_interest_option_two", "society",
+        "linkedin", "cv_file_name", "cv_file_size", "cv_storage_key", "cv_storage_url", "cv_uploaded_at"
     ];
     let index = 1;
 
