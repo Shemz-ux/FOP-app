@@ -158,7 +158,7 @@ export default function JobDetails() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-6">
+            <div className="space-y-6">
               {/* Apply Card */}
               <div className="bg-card border border-border rounded-2xl p-6">
                 {hasApplied ? (

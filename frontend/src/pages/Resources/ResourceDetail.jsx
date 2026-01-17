@@ -204,7 +204,7 @@ export default function ResourceDetail() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Download Card */}
-            <div className="bg-card border border-border rounded-2xl p-6 sticky top-24">
+            <div className="bg-card border border-border rounded-2xl p-6">
               <div className="space-y-4">
                 <div className="text-left">
                   <p className="text-sm text-muted-foreground mb-1">File Size</p>
