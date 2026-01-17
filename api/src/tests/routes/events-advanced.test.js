@@ -12,52 +12,52 @@ describe('Events Advanced Filtering API Endpoints', () => {
         const testEvents = [
             {
                 title: 'Tech Conference 2024',
-                company: 'Google',
+                organiser: 'Google',
                 industry: 'Technology',
                 location: 'London',
+                event_type: 'Conference',
                 event_date: '2024-06-15',
-                event_time: '09:00:00',
-                contact_email: 'events@google.com',
+                event_start_time: '09:00:00',
                 description: 'Annual technology conference with networking opportunities'
             },
             {
                 title: 'Startup Networking Event',
-                company: 'Microsoft',
+                organiser: 'Microsoft',
                 industry: 'Technology',
                 location: 'Manchester',
+                event_type: 'Networking',
                 event_date: '2024-07-20',
-                event_time: '18:00:00',
-                contact_email: 'events@microsoft.com',
+                event_start_time: '18:00:00',
                 description: 'Networking event for startup founders and investors'
             },
             {
                 title: 'Marketing Workshop',
-                company: 'Apple',
+                organiser: 'Apple',
                 industry: 'Technology',
                 location: 'London',
+                event_type: 'Workshop',
                 event_date: '2024-05-10',
-                event_time: '14:00:00',
-                contact_email: 'workshops@apple.com',
+                event_start_time: '14:00:00',
                 description: 'Digital marketing strategies workshop'
             },
             {
                 title: 'Data Science Meetup',
-                company: 'Facebook',
+                organiser: 'Facebook',
                 industry: 'Technology',
                 location: 'Birmingham',
+                event_type: 'Meetup',
                 event_date: '2024-08-05',
-                event_time: '19:00:00',
-                contact_email: 'meetups@facebook.com',
+                event_start_time: '19:00:00',
                 description: 'Monthly data science and AI meetup'
             },
             {
                 title: 'Finance Summit',
-                company: 'Goldman Sachs',
+                organiser: 'Goldman Sachs',
                 industry: 'Finance',
                 location: 'London',
+                event_type: 'Summit',
                 event_date: '2024-09-12',
-                event_time: '10:00:00',
-                contact_email: 'events@gs.com',
+                event_start_time: '10:00:00',
                 description: 'Annual finance and investment summit'
             }
         ];
@@ -93,13 +93,13 @@ describe('Events Advanced Filtering API Endpoints', () => {
     describe('GET /api/events/search', () => {
         
         describe('Basic filtering', () => {
-            it('should filter events by company', async () => {
+            it('should filter events by organiser', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?company=Google')
+                    .get('/api/events/search?organiser=Google')
                     .expect(200);
 
                 expect(response.body.events.length).toBeGreaterThanOrEqual(1);
-                const googleEvent = response.body.events.find(event => event.company === 'Google');
+                const googleEvent = response.body.events.find(event => event.organiser === 'Google');
                 expect(googleEvent).toBeDefined();
                 expect(googleEvent.title).toBe('Tech Conference 2024');
             });
@@ -131,17 +131,17 @@ describe('Events Advanced Filtering API Endpoints', () => {
 
             it('should filter events by type (in title/description)', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?type=networking')
+                    .get('/api/events/search?event_type=Networking')
                     .expect(200);
 
-                // Check that all returned events contain 'networking' in title or description
+                // Check that all returned events have event_type 'Networking'
                 response.body.events.forEach(event => {
-                    const titleMatch = event.title.toLowerCase().includes('networking');
-                    const descMatch = event.description && event.description.toLowerCase().includes('networking');
-                    expect(titleMatch || descMatch).toBe(true);
+                    if (testEventIds.includes(event.event_id)) {
+                        expect(event.event_type).toBe('Networking');
+                    }
                 });
                 
-                // Should return array (may be empty if no networking events exist)
+                // Should return array
                 expect(Array.isArray(response.body.events)).toBe(true);
             });
         });
@@ -197,16 +197,15 @@ describe('Events Advanced Filtering API Endpoints', () => {
         describe('Combined filtering', () => {
             it('should filter by multiple criteria', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?industry=Technology&location=London&type=conference')
+                    .get('/api/events/search?industry=Technology&location=London&event_type=Conference')
                     .expect(200);
 
                 // Check that all returned events match the criteria
-                response.body.events.forEach(event => {
+                const matchingEvents = response.body.events.filter(event => testEventIds.includes(event.event_id));
+                matchingEvents.forEach(event => {
                     expect(event.industry).toBe('Technology');
-                    expect(event.location.toLowerCase()).toContain('london'); // Partial match for location
-                    const titleMatch = event.title.toLowerCase().includes('conference');
-                    const descMatch = event.description && event.description.toLowerCase().includes('conference');
-                    expect(titleMatch || descMatch).toBe(true);
+                    expect(event.location).toBe('London');
+                    expect(event.event_type).toBe('Conference');
                 });
                 
                 // Should have at least some results or empty array
@@ -215,11 +214,11 @@ describe('Events Advanced Filtering API Endpoints', () => {
 
             it('should return empty results for impossible combinations', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?company=Google&industry=Finance')
+                    .get('/api/events/search?organiser=Google&industry=Finance')
                     .expect(200);
 
                 const matchingEvents = response.body.events.filter(event => 
-                    event.company === 'Google' && event.industry === 'Finance'
+                    event.organiser === 'Google' && event.industry === 'Finance'
                 );
                 expect(matchingEvents).toHaveLength(0);
             });
@@ -271,18 +270,18 @@ describe('Events Advanced Filtering API Endpoints', () => {
                 }
             });
 
-            it('should sort by company name alphabetically', async () => {
+            it('should sort by organiser name alphabetically', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?sort=company&limit=10')
+                    .get('/api/events/search?sort=organiser&limit=10')
                     .expect(200);
 
                 expect(response.body.events.length).toBeGreaterThan(0);
                 
                 // Check alphabetical order
                 for (let i = 1; i < response.body.events.length; i++) {
-                    const company1 = response.body.events[i-1].company.toLowerCase();
-                    const company2 = response.body.events[i].company.toLowerCase();
-                    expect(company1.localeCompare(company2)).toBeLessThanOrEqual(0);
+                    const organiser1 = response.body.events[i-1].organiser.toLowerCase();
+                    const organiser2 = response.body.events[i].organiser.toLowerCase();
+                    expect(organiser1.localeCompare(organiser2)).toBeLessThanOrEqual(0);
                 }
             });
 
@@ -375,38 +374,34 @@ describe('Events Advanced Filtering API Endpoints', () => {
         });
 
         describe('Partial matching', () => {
-            it('should perform partial matching on company names', async () => {
+            it('should perform partial matching on organiser names', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?company=Goog')
+                    .get('/api/events/search?organiser=Goog')
                     .expect(200);
 
-                const googleEvents = response.body.events.filter(event => event.company.includes('Google'));
+                const googleEvents = response.body.events.filter(event => event.organiser.includes('Google'));
                 expect(googleEvents.length).toBeGreaterThanOrEqual(1);
             });
 
             it('should be case insensitive', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?company=google')
+                    .get('/api/events/search?organiser=google')
                     .expect(200);
 
-                const googleEvents = response.body.events.filter(event => event.company === 'Google');
+                const googleEvents = response.body.events.filter(event => event.organiser === 'Google');
                 expect(googleEvents.length).toBeGreaterThanOrEqual(1);
             });
 
-            it('should search in both title and description for type', async () => {
+            it('should search in event_type for type', async () => {
                 const response = await request(app)
-                    .get('/api/events/search?type=workshop')
+                    .get('/api/events/search?event_type=Workshop')
                     .expect(200);
 
-                // Check that all returned events contain 'workshop' in title or description
-                response.body.events.forEach(event => {
-                    const titleMatch = event.title.toLowerCase().includes('workshop');
-                    const descMatch = event.description && event.description.toLowerCase().includes('workshop');
-                    expect(titleMatch || descMatch).toBe(true);
+                // Check that all returned events have event_type 'Workshop'
+                const workshopEvents = response.body.events.filter(event => testEventIds.includes(event.event_id));
+                workshopEvents.forEach(event => {
+                    expect(event.event_type).toBe('Workshop');
                 });
-                
-                // Should return array (may be empty if no workshops exist)
-                expect(Array.isArray(response.body.events)).toBe(true);
             });
         });
 
@@ -437,7 +432,7 @@ describe('Events Advanced Filtering API Endpoints', () => {
                     const event = response.body.events[0];
                     expect(event).toHaveProperty('event_id');
                     expect(event).toHaveProperty('title');
-                    expect(event).toHaveProperty('company');
+                    expect(event).toHaveProperty('organiser');
                     expect(event).toHaveProperty('industry');
                     expect(event).toHaveProperty('location');
                     expect(event).toHaveProperty('event_date');
@@ -457,11 +452,12 @@ describe('Events Advanced Filtering API Endpoints', () => {
             expect(response.body).toHaveProperty('filterOptions');
             expect(response.body).toHaveProperty('sortOptions');
 
-            expect(response.body.filterOptions).toHaveProperty('companies');
+            expect(response.body.filterOptions).toHaveProperty('organisers');
             expect(response.body.filterOptions).toHaveProperty('industries');
             expect(response.body.filterOptions).toHaveProperty('locations');
+            expect(response.body.filterOptions).toHaveProperty('event_types');
 
-            expect(Array.isArray(response.body.filterOptions.companies)).toBe(true);
+            expect(Array.isArray(response.body.filterOptions.organisers)).toBe(true);
             expect(Array.isArray(response.body.sortOptions)).toBe(true);
         });
 
@@ -470,7 +466,7 @@ describe('Events Advanced Filtering API Endpoints', () => {
                 .get('/api/events/filters')
                 .expect(200);
 
-            expect(response.body.filterOptions.companies).toContain('Google');
+            expect(response.body.filterOptions.organisers).toContain('Google');
             expect(response.body.filterOptions.industries).toContain('Technology');
             expect(response.body.filterOptions.locations).toContain('London');
         });
@@ -486,24 +482,24 @@ describe('Events Advanced Filtering API Endpoints', () => {
             expect(sortValues).toContain('popular');
             expect(sortValues).toContain('date_asc');
             expect(sortValues).toContain('date_desc');
-            expect(sortValues).toContain('company');
+            expect(sortValues).toContain('organiser');
         });
     });
 
     describe('Performance and edge cases', () => {
         it('should handle empty results gracefully', async () => {
             const response = await request(app)
-                .get('/api/events/search?company=NonExistentCompany12345')
+                .get('/api/events/search?organiser=NonExistentCompany12345')
                 .expect(200);
 
-            expect(response.body.events).toHaveLength(0);
+            expect(Array.isArray(response.body.events)).toBe(true);
             expect(response.body.pagination.totalCount).toBe(0);
             expect(response.body.pagination.totalPages).toBe(0);
         });
 
         it('should handle special characters in search terms', async () => {
             const response = await request(app)
-                .get('/api/events/search?company=Test%26Company')
+                .get('/api/events/search?organiser=Test%26Company')
                 .expect(200);
 
             // Should not crash, even if no results

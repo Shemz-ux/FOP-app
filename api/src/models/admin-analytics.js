@@ -42,12 +42,12 @@ export const fetchEventApplicationStats = () => {
         SELECT 
             e.event_id,
             e.title,
-            e.company,
+            e.organiser,
             e.event_date,
             COUNT(jea.jobseeker_id) as application_count
         FROM events e
         LEFT JOIN jobseekers_events_applied jea ON e.event_id = jea.event_id
-        GROUP BY e.event_id, e.title, e.company, e.event_date
+        GROUP BY e.event_id, e.title, e.organiser, e.event_date
         ORDER BY application_count DESC
     `).then(({rows}) => {
         return rows;

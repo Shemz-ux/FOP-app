@@ -3,13 +3,13 @@ import { fetchEventsAdvanced, getEventsCount, getEventFilterOptions } from '../m
 /**
  * Get events with advanced filtering and sorting
  * Query parameters:
- * - company: Filter by company name (partial match)
+ * - organiser: Filter by organiser name (partial match)
  * - industry: Filter by industry (partial match)
  * - location: Filter by location (partial match)
- * - type: Filter by event type in title/description (partial match)
+ * - event_type: Filter by event type (partial match)
  * - date_from: Filter events from this date (YYYY-MM-DD)
  * - date_to: Filter events until this date (YYYY-MM-DD)
- * - sort: Sort by 'newest', 'oldest', 'popular', 'date_asc', 'date_desc', 'company'
+ * - sort: Sort by 'newest', 'oldest', 'popular', 'date_asc', 'date_desc', 'organiser'
  * - limit: Number of results per page (default: 50, max: 100)
  * - page: Page number (default: 1)
  * - active: Filter by active status (default: true)
@@ -18,10 +18,10 @@ import { fetchEventsAdvanced, getEventsCount, getEventFilterOptions } from '../m
 export const getEventsAdvanced = async (req, res) => {
     try {
         const {
-            company,
+            organiser,
             industry,
             location,
-            type,
+            event_type,
             date_from,
             date_to,
             sort = 'newest',
@@ -39,7 +39,7 @@ export const getEventsAdvanced = async (req, res) => {
         const isUpcoming = upcoming === 'true';
 
         // Validate sort parameter
-        const validSorts = ['newest', 'oldest', 'popular', 'date_asc', 'date_desc', 'company'];
+        const validSorts = ['newest', 'oldest', 'popular', 'date_asc', 'date_desc', 'organiser'];
         const validSort = validSorts.includes(sort) ? sort : 'newest';
 
         // Validate date format (basic validation)
@@ -58,10 +58,10 @@ export const getEventsAdvanced = async (req, res) => {
         }
 
         const filters = {
-            company,
+            organiser,
             industry,
             location,
-            type,
+            event_type,
             date_from,
             date_to,
             sort: validSort,
@@ -93,10 +93,10 @@ export const getEventsAdvanced = async (req, res) => {
                 hasPrevPage
             },
             filters: {
-                company,
+                organiser,
                 industry,
                 location,
-                type,
+                event_type,
                 date_from,
                 date_to,
                 sort: validSort,
@@ -129,7 +129,7 @@ export const getEventFilters = async (req, res) => {
                 { value: 'popular', label: 'Most Popular' },
                 { value: 'date_asc', label: 'Event Date (Earliest)' },
                 { value: 'date_desc', label: 'Event Date (Latest)' },
-                { value: 'company', label: 'Company A-Z' }
+                { value: 'organiser', label: 'Organiser A-Z' }
             ]
         });
 

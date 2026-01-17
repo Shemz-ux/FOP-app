@@ -3,10 +3,10 @@ import db from "../db/db.js";
 /**
  * Advanced event filtering and sorting
  * @param {Object} filters - Filter parameters
- * @param {string} filters.company - Filter by company name
+ * @param {string} filters.organiser - Filter by organiser name
  * @param {string} filters.industry - Filter by industry
  * @param {string} filters.location - Filter by location
- * @param {string} filters.type - Filter by event type (from description or title)
+ * @param {string} filters.event_type - Filter by event type
  * @param {string} filters.date_from - Filter events from this date (YYYY-MM-DD)
  * @param {string} filters.date_to - Filter events until this date (YYYY-MM-DD)
  * @param {string} filters.sort - Sort by: 'newest', 'oldest', 'popular', 'date_asc', 'date_desc', 'company'
@@ -17,10 +17,10 @@ import db from "../db/db.js";
  */
 export const fetchEventsAdvanced = (filters = {}) => {
     const {
-        company,
+        organiser,
         industry,
         location,
-        type,
+        event_type,
         date_from,
         date_to,
         sort = 'newest',
@@ -46,9 +46,9 @@ export const fetchEventsAdvanced = (filters = {}) => {
     }
 
     // Add filters if provided
-    if (company) {
-        conditions.push(`LOWER(company) LIKE LOWER($${paramIndex})`);
-        params.push(`%${company}%`);
+    if (organiser) {
+        conditions.push(`LOWER(organiser) LIKE LOWER($${paramIndex})`);
+        params.push(`%${organiser}%`);
         paramIndex++;
     }
 
@@ -64,10 +64,10 @@ export const fetchEventsAdvanced = (filters = {}) => {
         paramIndex++;
     }
 
-    if (type) {
-        conditions.push(`(LOWER(title) LIKE LOWER($${paramIndex}) OR LOWER(description) LIKE LOWER($${paramIndex + 1}))`);
-        params.push(`%${type}%`, `%${type}%`);
-        paramIndex += 2;
+    if (event_type) {
+        conditions.push(`LOWER(event_type) LIKE LOWER($${paramIndex})`);
+        params.push(`%${event_type}%`);
+        paramIndex++;
     }
 
     if (date_from) {
@@ -92,13 +92,13 @@ export const fetchEventsAdvanced = (filters = {}) => {
             orderBy = 'ORDER BY applicant_count DESC, created_at DESC';
             break;
         case 'date_asc':
-            orderBy = 'ORDER BY event_date ASC, event_time ASC';
+            orderBy = 'ORDER BY event_date ASC, event_start_time ASC';
             break;
         case 'date_desc':
-            orderBy = 'ORDER BY event_date DESC, event_time DESC';
+            orderBy = 'ORDER BY event_date DESC, event_start_time DESC';
             break;
-        case 'company':
-            orderBy = 'ORDER BY company ASC, event_date ASC';
+        case 'organiser':
+            orderBy = 'ORDER BY organiser ASC, event_date ASC';
             break;
         case 'newest':
         default:
@@ -116,14 +116,22 @@ export const fetchEventsAdvanced = (filters = {}) => {
         SELECT 
             event_id,
             title,
-            company,
-            description,
+            organiser,
+            organiser_logo,
+            organiser_description,
+            organiser_website,
             industry,
+            event_type,
+            location_type,
             location,
+            address,
+            capacity,
             event_link,
-            contact_email,
+            description,
+            event_image,
             event_date,
-            event_time,
+            event_start_time,
+            event_end_time,
             is_active,
             applicant_count,
             created_at,
@@ -144,10 +152,10 @@ export const fetchEventsAdvanced = (filters = {}) => {
  */
 export const getEventsCount = (filters = {}) => {
     const {
-        company,
+        organiser,
         industry,
         location,
-        type,
+        event_type,
         date_from,
         date_to,
         active = true,
@@ -166,9 +174,9 @@ export const getEventsCount = (filters = {}) => {
         conditions.push(`event_date >= CURRENT_DATE`);
     }
 
-    if (company) {
-        conditions.push(`LOWER(company) LIKE LOWER($${paramIndex})`);
-        params.push(`%${company}%`);
+    if (organiser) {
+        conditions.push(`LOWER(organiser) LIKE LOWER($${paramIndex})`);
+        params.push(`%${organiser}%`);
         paramIndex++;
     }
 
@@ -184,10 +192,10 @@ export const getEventsCount = (filters = {}) => {
         paramIndex++;
     }
 
-    if (type) {
-        conditions.push(`(LOWER(title) LIKE LOWER($${paramIndex}) OR LOWER(description) LIKE LOWER($${paramIndex + 1}))`);
-        params.push(`%${type}%`, `%${type}%`);
-        paramIndex += 2;
+    if (event_type) {
+        conditions.push(`LOWER(event_type) LIKE LOWER($${paramIndex})`);
+        params.push(`%${event_type}%`);
+        paramIndex++;
     }
 
     if (date_from) {
@@ -215,17 +223,19 @@ export const getEventsCount = (filters = {}) => {
  */
 export const getEventFilterOptions = () => {
     const queries = [
-        'SELECT DISTINCT company FROM events WHERE company IS NOT NULL AND company != \'\' ORDER BY company',
+        'SELECT DISTINCT organiser FROM events WHERE organiser IS NOT NULL AND organiser != \'\' ORDER BY organiser',
         'SELECT DISTINCT industry FROM events WHERE industry IS NOT NULL AND industry != \'\' ORDER BY industry',
-        'SELECT DISTINCT location FROM events WHERE location IS NOT NULL AND location != \'\' ORDER BY location'
+        'SELECT DISTINCT location FROM events WHERE location IS NOT NULL AND location != \'\' ORDER BY location',
+        'SELECT DISTINCT event_type FROM events WHERE event_type IS NOT NULL AND event_type != \'\' ORDER BY event_type'
     ];
 
     return Promise.all(queries.map(query => db.query(query)))
         .then(results => {
             return {
-                companies: results[0].rows.map(row => row.company),
+                organisers: results[0].rows.map(row => row.organiser),
                 industries: results[1].rows.map(row => row.industry),
-                locations: results[2].rows.map(row => row.location)
+                locations: results[2].rows.map(row => row.location),
+                event_types: results[3].rows.map(row => row.event_type)
             };
         });
 };

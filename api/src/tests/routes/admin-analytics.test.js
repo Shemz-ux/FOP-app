@@ -86,9 +86,8 @@ describe('Admin Analytics API Endpoints', () => {
                 description: "Test job for admin routes",
                 industry: "Technology",
                 location: "London",
-                job_level: "Entry",
+                experience_level: "Entry",
                 role_type: "Full-time",
-                contact_email: "hr@techcorp-admin.com",
                 salary: "£30,000"
             },
             {
@@ -97,9 +96,8 @@ describe('Admin Analytics API Endpoints', () => {
                 description: "Another test job for admin routes",
                 industry: "Technology",
                 location: "Manchester",
-                job_level: "Mid",
+                experience_level: "Mid",
                 role_type: "Full-time",
-                contact_email: "hr@datainc-admin.com",
                 salary: "£45,000"
             }
         ];
@@ -113,23 +111,19 @@ describe('Admin Analytics API Endpoints', () => {
         const events = [
             {
                 title: "Admin Career Fair 2024",
-                company: "Admin University Careers",
+                organiser: "Admin University Careers",
                 description: "Admin test career fair",
                 industry: "Education",
-                location: "London",
-                contact_email: "careers@admin-uni.ac.uk",
                 event_date: "2024-12-15",
-                event_time: "10:00:00"
+                event_start_time: "10:00:00"
             },
             {
                 title: "Admin Tech Networking",
-                company: "Admin Tech Network",
+                organiser: "Admin Tech Network",
                 description: "Admin networking event",
                 industry: "Technology",
-                location: "Birmingham",
-                contact_email: "events@admin-technet.com",
                 event_date: "2024-12-20",
-                event_time: "18:00:00"
+                event_start_time: "18:00:00"
             }
         ];
 
@@ -287,7 +281,7 @@ describe('Admin Analytics API Endpoints', () => {
             const stats = response.body.event_application_stats;
             const testEventStat = stats.find(stat => stat.title === "Admin Career Fair 2024");
             expect(testEventStat).toBeDefined();
-            expect(testEventStat.company).toBe("Admin University Careers");
+            expect(testEventStat.organiser).toBe("Admin University Careers");
         });
 
         it('should return applications for specific event', async () => {

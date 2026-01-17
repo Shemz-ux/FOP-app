@@ -1,7 +1,7 @@
 import db from "../db/db.js";
 
 export const fetchEvents = () => {
-    return db.query(`SELECT * FROM events ORDER BY event_date ASC, event_time ASC`).then(({rows}) => {
+    return db.query(`SELECT * FROM events ORDER BY event_date ASC, event_start_time ASC`).then(({rows}) => {
         return rows;
     });
 };
@@ -19,28 +19,38 @@ export const fetchEventById = (id) => {
 export const createEvent = (newEvent) => {
     const {
         title,
-        company,
-        description,
+        organiser,
+        organiser_logo,
+        organiser_description,
+        organiser_website,
         industry,
+        event_type,
+        location_type,
         location,
+        address,
+        capacity,
         event_link,
-        contact_email,
+        description,
+        event_image,
         event_date,
-        event_time,
+        event_start_time,
+        event_end_time,
         applicant_count,
         is_active = true
     } = newEvent;
     
     return db.query(`
         INSERT INTO events (
-            title, company, description, industry, location, 
-            event_link, contact_email, event_date, event_time, 
+            title, organiser, organiser_logo, organiser_description, organiser_website,
+            industry, event_type, location_type, location, address, capacity,
+            event_link, description, event_image, event_date, event_start_time, event_end_time,
             applicant_count, is_active
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) 
         RETURNING *`, 
-        [title, company, description, industry, location, 
-         event_link, contact_email, event_date, event_time, 
+        [title, organiser, organiser_logo, organiser_description, organiser_website,
+         industry, event_type, location_type, location, address, capacity,
+         event_link, description, event_image, event_date, event_start_time, event_end_time,
          applicant_count, is_active]
     ).then(({rows}) => {
         return rows[0];
@@ -51,8 +61,9 @@ export const updateEvent = (updateEvent, id) => {
     const fields = [];
     const values = [];
     const validFields = [
-        "title", "company", "description", "industry", "location", 
-        "event_link", "contact_email", "event_date", "event_time", 
+        "title", "organiser", "organiser_logo", "organiser_description", "organiser_website",
+        "industry", "event_type", "location_type", "location", "address", "capacity",
+        "event_link", "description", "event_image", "event_date", "event_start_time", "event_end_time",
         "applicant_count", "is_active"
     ];
     let index = 1;
@@ -99,13 +110,13 @@ export const removeEvent = (id) => {
 };
 
 export const fetchActiveEvents = () => {
-    return db.query(`SELECT * FROM events WHERE is_active = true ORDER BY event_date ASC, event_time ASC`).then(({rows}) => {
+    return db.query(`SELECT * FROM events WHERE is_active = true ORDER BY event_date ASC, event_start_time ASC`).then(({rows}) => {
         return rows;
     });
 };
 
 export const fetchUpcomingEvents = () => {
-    return db.query(`SELECT * FROM events WHERE event_date >= CURRENT_DATE AND is_active = true ORDER BY event_date ASC, event_time ASC`).then(({rows}) => {
+    return db.query(`SELECT * FROM events WHERE event_date >= CURRENT_DATE AND is_active = true ORDER BY event_date ASC, event_start_time ASC`).then(({rows}) => {
         return rows;
     });
 };

@@ -40,11 +40,9 @@ describe('Dashboard Events API Endpoints', () => {
             .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Tech Conference',
-                company: 'TechCorp',
-                location: 'London',
-                contact_email: 'events@techcorp.com',
+                organiser: 'TechCorp',
                 event_date: '2024-12-31',
-                event_time: '09:00:00'
+                event_start_time: '09:00:00'
             });
         testEventId1 = event1Response.body.newEvent.event_id;
 
@@ -53,11 +51,9 @@ describe('Dashboard Events API Endpoints', () => {
             .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Data Workshop',
-                company: 'DataCorp',
-                location: 'Manchester',
-                contact_email: 'workshops@datacorp.com',
+                organiser: 'DataCorp',
                 event_date: '2024-12-25',
-                event_time: '14:00:00'
+                event_start_time: '14:00:00'
             });
         testEventId2 = event2Response.body.newEvent.event_id;
 
@@ -66,11 +62,9 @@ describe('Dashboard Events API Endpoints', () => {
             .set('Authorization', `Bearer ${backdoorToken}`)
             .send({
                 title: 'Product Meetup',
-                company: 'ProductCorp',
-                location: 'Birmingham',
-                contact_email: 'meetups@productcorp.com',
+                organiser: 'ProductCorp',
                 event_date: '2024-12-20',
-                event_time: '18:00:00'
+                event_start_time: '18:00:00'
             });
         testEventId3 = event3Response.body.newEvent.event_id;
     });
@@ -106,11 +100,11 @@ describe('Dashboard Events API Endpoints', () => {
 
             // Check event details are included (no N+1 problem)
             expect(response.body.dashboard.applied_events[0]).toHaveProperty('title');
-            expect(response.body.dashboard.applied_events[0]).toHaveProperty('company');
+            expect(response.body.dashboard.applied_events[0]).toHaveProperty('organiser');
             expect(response.body.dashboard.applied_events[0]).toHaveProperty('applied_at');
             
             expect(response.body.dashboard.saved_events[0]).toHaveProperty('title');
-            expect(response.body.dashboard.saved_events[0]).toHaveProperty('company');
+            expect(response.body.dashboard.saved_events[0]).toHaveProperty('organiser');
             expect(response.body.dashboard.saved_events[0]).toHaveProperty('saved_at');
         });
     });

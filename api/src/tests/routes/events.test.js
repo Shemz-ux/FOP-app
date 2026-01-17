@@ -46,14 +46,22 @@ describe('Events API Endpoints', () => {
             const timestamp = Date.now();
             const newEvent = {
                 title: 'Tech Conference 2024',
-                company: `TechOrg ${timestamp}`,
+                organiser: `TechOrg ${timestamp}`,
+                organiser_logo: '',
+                organiser_description: 'Leading tech organization',
+                organiser_website: 'https://techorg.com',
                 description: 'Annual technology conference',
                 industry: 'Technology',
+                event_type: 'Workshop',
+                location_type: 'in-person',
                 location: 'London Convention Center',
+                address: '123 Tech Street, London',
+                capacity: 120,
                 event_link: 'https://techorg.com/conference',
-                contact_email: `contact.${timestamp}@techorg.com`,
+                event_image: '',
                 event_date: '2024-12-15',
-                event_time: '09:00:00',
+                event_start_time: '09:00:00',
+                event_end_time: '17:00:00',
                 is_active: true
             };
 
@@ -66,8 +74,8 @@ describe('Events API Endpoints', () => {
             expect(response.body).toHaveProperty('newEvent');
             expect(response.body.newEvent).toHaveProperty('event_id');
             expect(response.body.newEvent.title).toBe('Tech Conference 2024');
-            expect(response.body.newEvent.company).toBe(`TechOrg ${timestamp}`);
-            expect(response.body.newEvent.contact_email).toBe(`contact.${timestamp}@techorg.com`);
+            expect(response.body.newEvent.organiser).toBe(`TechOrg ${timestamp}`);
+            expect(response.body.newEvent.event_type).toBe('Workshop');
 
             // Store the event ID for other tests
             testEventId = response.body.newEvent.event_id;
@@ -77,7 +85,7 @@ describe('Events API Endpoints', () => {
             const incompleteEvent = {
                 description: 'Test description',
                 location: 'Test Location',
-                // Missing title, company, contact_email, and event_date (required fields)
+                // Missing title, organiser, and event_date (required fields)
             };
 
             const response = await request(app)
@@ -93,9 +101,7 @@ describe('Events API Endpoints', () => {
             const timestamp = Date.now();
             const minimalEvent = {
                 title: 'Minimal Event',
-                company: `MinimalCorp ${timestamp}`,
-                location: 'Test Location',
-                contact_email: `minimal.${timestamp}@test.com`,
+                organiser: `MinimalCorp ${timestamp}`,
                 event_date: '2024-12-20'
             };
 
@@ -117,9 +123,7 @@ describe('Events API Endpoints', () => {
                 const timestamp = Date.now();
                 const newEvent = {
                     title: 'Test Event',
-                    company: `GetTestOrg ${timestamp}`,
-                    location: 'Test Location',
-                    contact_email: `get.test.${timestamp}@test.com`,
+                    organiser: `GetTestOrg ${timestamp}`,
                     event_date: '2024-12-25'
                 };
                 const response = await request(app)
@@ -137,7 +141,7 @@ describe('Events API Endpoints', () => {
             expect(response.body).toHaveProperty('event');
             expect(response.body.event).toHaveProperty('event_id');
             expect(response.body.event.title).toBe('Test Event');
-            expect(response.body.event.company).toContain('GetTestOrg');
+            expect(response.body.event.organiser).toContain('GetTestOrg');
         });
 
         test('should return 404 if event not found', async () => {
@@ -163,9 +167,7 @@ describe('Events API Endpoints', () => {
                 const timestamp = Date.now();
                 const newEvent = {
                     title: 'Update Test Event',
-                    company: `UpdateTestOrg ${timestamp}`,
-                    location: 'Test Location',
-                    contact_email: `update.test.${timestamp}@test.com`,
+                    organiser: `UpdateTestOrg ${timestamp}`,
                     event_date: '2024-12-30'
                 };
                 const response = await request(app)
@@ -182,7 +184,7 @@ describe('Events API Endpoints', () => {
                 description: 'Updated event description',
                 location: 'Updated Location',
                 applicant_count: 1000,
-                contact_email: `updated.contact.${updateTimestamp}@org.com`
+                event_type: 'Seminar'
             };
 
             const response = await request(app)
@@ -197,7 +199,7 @@ describe('Events API Endpoints', () => {
             expect(response.body.event.description).toBe('Updated event description');
             expect(response.body.event.location).toBe('Updated Location');
             expect(response.body.event.applicant_count).toBe(1000);
-            expect(response.body.event.contact_email).toBe(`updated.contact.${updateTimestamp}@org.com`);
+            expect(response.body.event.event_type).toBe('Seminar');
         });
 
         test('should handle non-existent event update', async () => {
@@ -252,9 +254,7 @@ describe('Events API Endpoints', () => {
                 const timestamp = Date.now();
                 const newEvent = {
                     title: 'Delete Test Event',
-                    company: `DeleteTestOrg ${timestamp}`,
-                    location: 'Test Location',
-                    contact_email: `delete.test.${timestamp}@test.com`,
+                    organiser: `DeleteTestOrg ${timestamp}`,
                     event_date: '2024-12-31'
                 };
                 
@@ -297,7 +297,7 @@ describe('Events API Endpoints', () => {
             const longStringEvent = {
                 title: 'A'.repeat(300), // Exceeds VARCHAR(255)
                 event_date: '2024-12-31',
-                organizer: `LongTestOrg ${timestamp}`
+                organiser: `LongTestOrg ${timestamp}`
             };
 
             const response = await request(app)
@@ -314,7 +314,7 @@ describe('Events API Endpoints', () => {
             const invalidDateEvent = {
                 title: 'Date Test Event',
                 event_date: 'invalid-date',
-                organizer: `DateTestOrg ${timestamp}`
+                organiser: `DateTestOrg ${timestamp}`
             };
 
             const response = await request(app)
@@ -331,8 +331,8 @@ describe('Events API Endpoints', () => {
             const invalidTimeEvent = {
                 title: 'Time Test Event',
                 event_date: '2024-12-31',
-                event_time: 'invalid-time',
-                organizer: `TimeTestOrg ${timestamp}`
+                event_start_time: 'invalid-time',
+                organiser: `TimeTestOrg ${timestamp}`
             };
 
             const response = await request(app)
@@ -348,9 +348,7 @@ describe('Events API Endpoints', () => {
             const timestamp = Date.now();
             const validationTestEvent = {
                 title: 'Validation Test Event',
-                company: `ValidationTestOrg ${timestamp}`,
-                location: 'Test Location',
-                contact_email: `validation.${timestamp}@test.com`,
+                organiser: `ValidationTestOrg ${timestamp}`,
                 event_date: '2024-12-31',
                 applicant_count: 250,
                 is_active: false
