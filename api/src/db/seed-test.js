@@ -443,7 +443,26 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/google.com', '#4285F4', 
                 'Google is a global technology leader focused on organizing the world''s information and making it universally accessible and useful.',
                 'https://careers.google.com',
-                'Join our team to work on cutting-edge technology projects. You will collaborate with experienced engineers to develop scalable solutions. Work on real products used by billions of users worldwide. 12-week summer program with mentorship and networking opportunities.',
+                'About the Role
+Join our team to work on cutting-edge technology projects that impact billions of users worldwide. This 12-week summer program offers hands-on experience with mentorship and networking opportunities.
+
+Responsibilities
+- Collaborate with experienced engineers to develop scalable solutions
+- Work on real products used by billions of users
+- Participate in code reviews and technical discussions
+- Contribute to team projects and initiatives
+
+Requirements
+- Currently pursuing a degree in Computer Science or related field
+- Strong programming skills in one or more languages (Java, Python, C++, Go)
+- Understanding of data structures and algorithms
+- Excellent problem-solving and communication skills
+
+Benefits
+- Competitive salary and housing stipend
+- Mentorship from industry experts
+- Networking events and social activities
+- Potential for full-time offer upon graduation',
                 'Technology', 'London', 'Student', 'Summer Intern', 'Hybrid',
                 'https://careers.google.com/jobs/results/123456789',
                 '2025-03-31', true
@@ -453,8 +472,27 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/deloitte.com', '#86BC25', 
                 'Deloitte is a leading global provider of audit and assurance, consulting, financial advisory, risk advisory, tax, and related services.',
                 'https://www2.deloitte.com/uk/careers',
-                'Analyze complex datasets to drive business insights. Work with clients across various industries including finance, healthcare, and technology. Comprehensive 2-year training program with rotations across different teams and professional qualifications support.',
-                'Consulting', 'Manchester', 'Graduate', 'Grad Programme', 'On-site',
+                'About the Role
+Join our Data Analytics team as a Graduate Analyst. This comprehensive 2-year program includes rotations across different teams and full support for professional qualifications.
+
+What You''ll Do
+- Analyze complex datasets to drive business insights
+- Work with clients across various industries including finance, healthcare, and technology
+- Create data visualizations and reports for stakeholders
+- Support strategic decision-making with data-driven recommendations
+
+Requirements
+- Bachelor''s degree in Mathematics, Statistics, Economics, or related field
+- Strong analytical and problem-solving skills
+- Proficiency in Excel, SQL, and data visualization tools
+- Excellent communication and presentation skills
+
+What We Offer
+- Competitive salary and benefits package
+- Professional qualifications support (ACA, ACCA, etc.)
+- Structured training and development program
+- Clear career progression pathway',
+                'Consulting', 'Manchester', 'Graduate', 'Grad Scheme', 'On-site',
                 'https://www2.deloitte.com/uk/careers/graduates',
                 '2025-02-28', true
             ),
@@ -463,7 +501,27 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/stripe.com', '#635BFF', 
                 'Stripe is a technology company that builds economic infrastructure for the internet. Businesses of every size use our software to accept payments and manage their operations online.',
                 'https://stripe.com/jobs',
-                'Build payment infrastructure for the internet. Fully remote position with flexible hours. Work on systems processing billions of dollars in transactions. Competitive salary, equity package, and comprehensive benefits. Experience with React, Node.js, and PostgreSQL required.',
+                'About the Role
+Join Stripe''s engineering team to build payment infrastructure for the internet. This fully remote position offers flexible hours and the opportunity to work on systems processing billions of dollars in transactions.
+
+Responsibilities
+- Design and implement scalable payment processing systems
+- Build and maintain APIs used by thousands of businesses
+- Collaborate with product and design teams on new features
+- Ensure system reliability and security at scale
+
+Requirements
+- 3+ years of experience in full-stack development
+- Strong proficiency in React, Node.js, and PostgreSQL
+- Experience with distributed systems and microservices
+- Excellent debugging and problem-solving skills
+
+Benefits
+- Competitive salary and equity package
+- Comprehensive health, dental, and vision insurance
+- Fully remote with flexible working hours
+- Professional development budget
+- Home office setup allowance',
                 'Technology', 'Remote', 'Mid Level', 'Full-time', 'Remote',
                 'https://stripe.com/jobs/listing/software-engineer',
                 '2025-04-15', true
@@ -473,7 +531,26 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/unilever.com', '#0077B5', 
                 'Unilever is one of the world''s leading suppliers of Food, Home Care, Personal Care and Refreshment products with sales in over 190 countries.',
                 'https://www.unilever.com/careers',
-                'Gain hands-on experience in brand marketing and consumer insights during our 1-week spring program. Work on real campaigns for iconic brands like Dove, Ben & Jerry''s, and Hellmann''s. Mentorship from senior marketers included. Potential fast-track to summer internship.',
+                'About the Role
+Gain hands-on experience in brand marketing and consumer insights during our 1-week spring program. Work on real campaigns for iconic brands like Dove, Ben & Jerry''s, and Hellmann''s.
+
+What You''ll Do
+- Participate in brand strategy sessions
+- Conduct consumer research and analysis
+- Support campaign development and execution
+- Present findings to senior marketing teams
+
+Requirements
+- Penultimate year student in Marketing, Business, or related field
+- Strong interest in consumer brands and marketing
+- Excellent communication and teamwork skills
+- Creative thinking and analytical mindset
+
+What We Offer
+- Mentorship from senior marketers
+- Networking opportunities
+- Potential fast-track to summer internship
+- Accommodation and travel expenses covered',
                 'Marketing', 'London', 'Penultimate Year', 'Spring Week', 'Hybrid',
                 'https://www.unilever.com/careers/students-graduates',
                 '2025-01-31', true
@@ -483,7 +560,26 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/rolls-royce.com', '#5E2750', 
                 'Rolls-Royce pioneers cutting-edge technologies that deliver the cleanest, safest and most competitive solutions to our planet''s vital power needs.',
                 'https://careers.rolls-royce.com',
-                'Design and develop next-generation aerospace systems. Work on engines that power aircraft and ships worldwide. Two-year graduate program with rotations across different engineering teams including design, testing, and manufacturing. Chartership support provided.',
+                'About the Role
+Join our engineering team to design and develop next-generation aerospace systems. Work on engines that power aircraft and ships worldwide through our comprehensive two-year graduate program.
+
+Responsibilities
+- Design and analyze aerospace components and systems
+- Conduct testing and validation of new technologies
+- Collaborate with cross-functional engineering teams
+- Support manufacturing and production processes
+
+Requirements
+- Bachelor''s or Master''s degree in Mechanical Engineering
+- Strong understanding of thermodynamics and fluid mechanics
+- CAD software proficiency (CATIA, SolidWorks)
+- Problem-solving and analytical skills
+
+What We Offer
+- Two-year structured graduate program
+- Rotations across design, testing, and manufacturing
+- Chartership (CEng) support and mentorship
+- Competitive salary and benefits package',
                 'Engineering', 'Derby', 'Graduate', 'Grad Scheme', 'On-site',
                 'https://careers.rolls-royce.com/graduates',
                 '2025-02-15', true
@@ -493,7 +589,27 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/hsbc.com', '#DB0011', 
                 'HSBC is one of the world''s largest banking and financial services organizations, serving millions of customers through our global businesses.',
                 'https://www.hsbc.com/careers',
-                'Analyze financial data and support investment decisions. Work from anywhere in the UK with flexible remote working. Exposure to global markets, M&A deals, and investment strategies. Professional qualifications (CFA/ACA) support provided. Competitive salary and bonus structure.',
+                'About the Role
+Join our Investment Banking team as an Analyst with full remote flexibility across the UK. Gain exposure to global markets, M&A deals, and investment strategies while building your finance career.
+
+What You''ll Do
+- Analyze financial data and market trends
+- Support investment decisions and deal execution
+- Prepare client presentations and financial models
+- Conduct industry research and competitive analysis
+
+Requirements
+- 2-3 years of experience in finance or related field
+- Strong financial modeling and analytical skills
+- Proficiency in Excel, PowerPoint, and financial databases
+- Excellent attention to detail and communication skills
+
+Benefits
+- Fully remote working across the UK
+- Professional qualifications support (CFA/ACA)
+- Competitive salary and performance bonus
+- Comprehensive benefits package
+- Career development opportunities',
                 'Finance', 'Remote', 'Associate', 'Full-time', 'Remote',
                 'https://www.hsbc.com/careers/students-and-graduates',
                 '2025-03-31', true
@@ -503,7 +619,29 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/meta.com', '#0084FF', 
                 'Meta builds technologies that help people connect, find communities, and grow businesses. From Facebook and Instagram to WhatsApp and Messenger.',
                 'https://www.metacareers.com',
-                'Join our design team for a 12-month placement working on products used by billions. Collaborate with product managers, engineers, and researchers. Work on real features from concept to launch. Mentorship, training, and potential return offer for graduates.',
+                'About the Role
+Join our UX Design team for a 12-month placement working on products used by billions of people worldwide. This is a unique opportunity to work on real features from concept to launch.
+
+Responsibilities
+- Design user experiences for Meta''s family of apps
+- Collaborate with product managers, engineers, and researchers
+- Create wireframes, prototypes, and high-fidelity designs
+- Conduct user research and usability testing
+- Present design concepts to stakeholders
+
+Requirements
+- Final year student in Design, HCI, or related field
+- Strong portfolio demonstrating UX/UI design skills
+- Proficiency in Figma, Sketch, or similar tools
+- Understanding of user-centered design principles
+- Excellent communication and collaboration skills
+
+What We Offer
+- Competitive placement salary
+- Mentorship from experienced designers
+- Professional development and training
+- Potential return offer for graduates
+- Hybrid working in London office',
                 'Design', 'London', 'Final Year', 'Year Placement', 'Hybrid',
                 'https://www.metacareers.com/jobs',
                 '2025-01-15', true
@@ -513,7 +651,29 @@ const insertJobs = async () => {
                 'https://logo.clearbit.com/gchq.gov.uk', '#003366', 
                 'GCHQ is the UK''s intelligence, security and cyber agency. We work to keep the UK safe and prosperous in an increasingly complex digital world.',
                 'https://www.gchq-careers.co.uk',
-                'Learn cybersecurity while earning. 4-year degree apprenticeship combining work at GCHQ with university study. Gain hands-on experience in threat detection, incident response, and security operations. Full salary, tuition fees paid, and security clearance provided.',
+                'About the Role
+Launch your cybersecurity career with our 4-year degree apprenticeship. Combine practical work at GCHQ with university study, earning while you learn to protect the UK from cyber threats.
+
+What You''ll Do
+- Gain hands-on experience in threat detection and analysis
+- Support incident response and security operations
+- Learn from world-class cybersecurity experts
+- Apply theoretical knowledge to real-world challenges
+- Contribute to protecting national security
+
+Requirements
+- A-levels or equivalent (typically BBB or above)
+- Strong interest in cybersecurity and technology
+- Problem-solving and analytical thinking skills
+- British citizenship and eligibility for security clearance
+- Commitment to 4-year program
+
+What We Offer
+- Full salary from day one
+- University tuition fees fully paid
+- Degree in Cyber Security upon completion
+- Security clearance and specialist training
+- Permanent role upon successful completion',
                 'Cybersecurity', 'Cheltenham', 'No Experience', 'Degree Apprentice', 'On-site',
                 'https://www.gchq-careers.co.uk/apprenticeships',
                 '2025-02-28', true

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Download, Eye, Calendar, User, FileText, BookOpen, File, Share2 } from 'lucide-react';
+import StructuredDescription from '../../components/Ui/StructuredDescription';
 import { mockResources } from '../../services/Resources/resources';
 
 const iconMap = {
@@ -127,9 +128,7 @@ export default function ResourceDetail() {
             {/* Detailed Description */}
             <div className="bg-card border border-border rounded-2xl p-8">
               <h2 className="text-2xl mb-4 text-foreground text-left">About This Resource</h2>
-              <p className="text-foreground leading-relaxed text-left whitespace-pre-line">
-                {resource.detailedDescription}
-              </p>
+              <StructuredDescription description={resource.detailedDescription} />
             </div>
 
             {/* What's Included */}

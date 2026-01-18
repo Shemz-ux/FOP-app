@@ -1,36 +1,20 @@
 // Utility functions to generate tags for jobs and events
+import { 
+  JOB_EXPERIENCE_LEVELS, 
+  JOB_ROLE_TYPES, 
+  JOB_WORK_TYPES,
+  EVENT_TYPES,
+  EVENT_LOCATION_TYPES,
+  EVENT_INDUSTRIES,
+  getVariantFromOptions 
+} from './dropdownOptions';
 
 // ==================== JOB TAGS ====================
 
-// Experience level to variant mapping
-const experienceLevelVariants = {
-  'Entry level': 'blue',
-  'Mid level': 'purple',
-  'Senior level': 'orange',
-  'Expert': 'red',
-  'Intermediate': 'purple',
-};
-
-// Role type to variant mapping
-const roleTypeVariants = {
-  'Internship': 'cyan',
-  'Apprenticeship': 'teal',
-  'Graduate Scheme': 'indigo',
-  'Graduate': 'indigo',
-  'Placement': 'pink',
-  'Full-time': 'green',
-  'Part-time': 'yellow',
-  'Contract': 'gray',
-  'Freelance': 'slate',
-};
-
-// Work type to variant mapping
-const workTypeVariants = {
-  'Remote': 'emerald',
-  'Hybrid': 'violet',
-  'On-site': 'amber',
-  'In-person': 'amber',
-};
+// Helper function to get variant from dropdown options
+const getJobExperienceVariant = (value) => getVariantFromOptions(JOB_EXPERIENCE_LEVELS, value);
+const getJobRoleVariant = (value) => getVariantFromOptions(JOB_ROLE_TYPES, value);
+const getJobWorkTypeVariant = (value) => getVariantFromOptions(JOB_WORK_TYPES, value);
 
 /**
  * Generate tags for a job based on its properties
@@ -44,7 +28,7 @@ export const generateJobTags = (job) => {
   if (job.experience_level) {
     tags.push({
       label: job.experience_level,
-      variant: experienceLevelVariants[job.experience_level] || 'blue'
+      variant: getJobExperienceVariant(job.experience_level)
     });
   }
 
@@ -52,7 +36,7 @@ export const generateJobTags = (job) => {
   if (job.role_type) {
     tags.push({
       label: job.role_type,
-      variant: roleTypeVariants[job.role_type] || 'green'
+      variant: getJobRoleVariant(job.role_type)
     });
   }
 
@@ -60,7 +44,7 @@ export const generateJobTags = (job) => {
   if (job.work_type) {
     tags.push({
       label: job.work_type,
-      variant: workTypeVariants[job.work_type] || 'emerald'
+      variant: getJobWorkTypeVariant(job.work_type)
     });
   }
 
@@ -91,53 +75,10 @@ export const addJobTagsToList = (jobs) => {
 
 // ==================== EVENT TAGS ====================
 
-// Event type to variant mapping
-const eventTypeVariants = {
-  'career_fair': 'blue',
-  'Career Fair': 'blue',
-  'networking': 'purple',
-  'Networking': 'purple',
-  'workshop': 'green',
-  'Workshop': 'green',
-  'panel_discussion': 'orange',
-  'Panel Discussion': 'orange',
-  'seminar': 'pink',
-  'Seminar': 'pink',
-  'conference': 'red',
-  'Conference': 'red',
-  'webinar': 'cyan',
-  'Webinar': 'cyan',
-  'meetup': 'teal',
-  'Meetup': 'teal',
-};
-
-// Location type to variant mapping
-const locationTypeVariants = {
-  'online': 'emerald',
-  'Online': 'emerald',
-  'Virtual': 'emerald',
-  'in_person': 'amber',
-  'In-person': 'amber',
-  'On-site': 'amber',
-  'hybrid': 'violet',
-  'Hybrid': 'violet',
-};
-
-// Industry to variant mapping
-const industryVariants = {
-  'Technology': 'blue',
-  'Finance': 'green',
-  'Engineering': 'orange',
-  'Marketing': 'pink',
-  'Consulting': 'purple',
-  'Healthcare': 'red',
-  'Education': 'cyan',
-  'General': 'gray',
-  'Law': 'indigo',
-  'Media': 'yellow',
-  'Retail': 'teal',
-  'Manufacturing': 'slate',
-};
+// Helper functions to get variant from dropdown options
+const getEventTypeVariant = (value) => getVariantFromOptions(EVENT_TYPES, value);
+const getEventLocationVariant = (value) => getVariantFromOptions(EVENT_LOCATION_TYPES, value);
+const getEventIndustryVariant = (value) => getVariantFromOptions(EVENT_INDUSTRIES, value);
 
 /**
  * Generate tags for an event based on its properties
@@ -156,19 +97,19 @@ export const generateEventTags = (event) => {
     
     tags.push({
       label: label,
-      variant: eventTypeVariants[event.event_type] || eventTypeVariants[label] || 'blue'
+      variant: getEventTypeVariant(event.event_type)
     });
   }
 
   // Add location type tag
   if (event.location_type) {
-    const label = event.location_type === 'online' ? 'Virtual' : 
-                  event.location_type === 'in_person' ? 'In-person' : 
+    const label = event.location_type === 'online' ? 'Online/Virtual' : 
+                  event.location_type === 'in_person' ? 'In-Person' : 
                   event.location_type.charAt(0).toUpperCase() + event.location_type.slice(1);
     
     tags.push({
       label: label,
-      variant: locationTypeVariants[event.location_type] || locationTypeVariants[label] || 'emerald'
+      variant: getEventLocationVariant(event.location_type)
     });
   }
 
@@ -176,7 +117,7 @@ export const generateEventTags = (event) => {
   if (event.industry) {
     tags.push({
       label: event.industry,
-      variant: industryVariants[event.industry] || 'gray'
+      variant: getEventIndustryVariant(event.industry)
     });
   }
 

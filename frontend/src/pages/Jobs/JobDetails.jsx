@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Bookmark, Share2, MapPin, DollarSign, Users, Clock, Building, Calendar } from 'lucide-react';
+import { ArrowLeft, Bookmark, Share2, MapPin, DollarSign, Users, Clock, Building, Calendar, ExternalLink } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
+import CompanyLogo from '../../components/Ui/CompanyLogo';
+import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import { jobsService } from '../../services';
+import { generateJobTags } from '../../utils/tagGenerator';
+import { formatTimeAgo } from '../../utils/timeFormatter';
 
 export default function JobDetails() {
   const { jobId } = useParams();
@@ -13,6 +17,7 @@ export default function JobDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
 
   // Fetch job details
@@ -90,8 +95,18 @@ export default function JobDetails() {
   }
 
   const handleApply = () => {
-    setHasApplied(true);
-    // In a real app, this would submit the application
+    if (!job?.job_link) return;
+    
+    setIsApplying(true);
+    
+    // Show applying state for 2 seconds before redirect
+    setTimeout(() => {
+      setHasApplied(true);
+      // Redirect to company application page after showing message
+      setTimeout(() => {
+        window.open(job.job_link, '_blank');
+      }, 1500);
+    }, 1000);
   };
 
   return (
@@ -99,29 +114,26 @@ export default function JobDetails() {
       {/* Header */}
       <div className="border-b border-border bg-secondary/30">
         <div className="container mx-auto px-6 py-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Jobs
+            </button>
+          </div>
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 text-left">
             <div className="flex items-start gap-4">
-              <div
-                className="w-16 h-16 rounded-xl flex items-center justify-center p-3 shrink-0"
-                style={{ backgroundColor: `${job.companyColor}15` }}
-              >
-                <img
-                  src={job.companyLogo}
-                  alt={job.company}
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <CompanyLogo 
+                logo={job.company_logo} 
+                color={job.company_color} 
+                companyName={job.company}
+              />
               <div>
-                <h1 className="text-3xl mb-2 text-foreground">
-                  {job.jobTitle}
+                <h1 className="text-3xl mb-2 text-foreground font-semibold">
+                  {job.title}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2 text-muted-foreground mb-3">
                   <span className="flex items-center gap-1">
@@ -136,16 +148,17 @@ export default function JobDetails() {
                   <span>•</span>
                   <span className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
-                    {job.postedDate} 
+                    {formatTimeAgo(job.created_at)}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {job.tags.map((tag, index) => (
+                  {generateJobTags(job).map((tag, index) => (
                     <JobBadge
                       key={index}
-                      label={tag.label}
                       variant={tag.variant}
-                    />
+                    >
+                      {tag.label}
+                    </JobBadge>
                   ))}
                 </div>
               </div>
@@ -177,12 +190,8 @@ export default function JobDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <div className="bg-card border border-border rounded-2xl p-8">
-              <div
-                className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: job.description }}
-                style={{ color: "var(--foreground)" }}
-              />
+            <div className="bg-card border border-border rounded-2xl p-8 job-description-content">
+              <StructuredDescription description={job.description} />
             </div>
           </div>
 
@@ -208,20 +217,36 @@ export default function JobDetails() {
                         />
                       </svg>
                     </div>
-                    <p className="text-foreground mb-1">
-                      Application Submitted!
+                    <p className="text-foreground font-medium mb-1">
+                      Redirecting you...
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      We'll be in touch soon
+                      You'll be directed to {job.company}'s application page
+                    </p>
+                  </div>
+                ) : isApplying ? (
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto mb-3">
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                    <p className="text-foreground font-medium">
+                      Preparing application...
                     </p>
                   </div>
                 ) : (
                   <button
                     onClick={handleApply}
-                    className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
+                    disabled={!job.job_link}
+                    className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     Apply Now
+                    <ExternalLink className="w-4 h-4" />
                   </button>
+                )}
+                {job.job_link && !hasApplied && !isApplying && (
+                  <p className="text-xs text-muted-foreground text-center mt-3">
+                    You'll be redirected to the company website
+                  </p>
                 )}
               </div>
 
@@ -236,7 +261,19 @@ export default function JobDetails() {
                       Applicants
                     </div>
                     <div className="text-foreground">
-                      {job.applicants} candidates
+                      {job.applicant_count || 0} candidate{job.applicant_count !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Building className="w-5 h-5 text-primary mt-0.5" />
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-0.5">
+                      Role Type
+                    </div>
+                    <div className="text-foreground">
+                      {job.role_type}
                     </div>
                   </div>
                 </div>
@@ -245,10 +282,10 @@ export default function JobDetails() {
                   <Clock className="w-5 h-5 text-primary mt-0.5" />
                   <div>
                     <div className="text-sm text-muted-foreground mb-0.5">
-                      Employment Type
+                      Work Type
                     </div>
                     <div className="text-foreground">
-                      {job.employmentType}
+                      {job.work_type}
                     </div>
                   </div>
                 </div>
@@ -257,41 +294,55 @@ export default function JobDetails() {
                   <Calendar className="w-5 h-5 text-primary mt-0.5" />
                   <div>
                     <div className="text-sm text-muted-foreground mb-0.5">
-                      Posted
+                      Experience Level
                     </div>
                     <div className="text-foreground">
-                      {job.postedDate}
+                      {job.experience_level}
                     </div>
                   </div>
                 </div>
+
+                {job.deadline && (
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-5 h-5 text-primary mt-0.5" />
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-0.5">
+                        Application Deadline
+                      </div>
+                      <div className="text-foreground">
+                        {new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Company Info // TODO: Need to include way to get company profile */}
+              {/* Company Info */}
               <div className="bg-card border border-border rounded-2xl p-6">
-                <h3 className="text-foreground mb-4">
+                <h3 className="text-foreground font-medium mb-4">
                   About {job.company}
                 </h3>
-                <div
-                  className="w-full h-16 rounded-xl flex items-center justify-center p-4 mb-4"
-                  style={{ backgroundColor: `${job.companyColor}15` }}
-                >
-                  <img
-                    src={job.companyLogo}
-                    alt={job.company}
-                    className="max-w-full max-h-full object-contain"
+                <div className="flex items-center justify-center mb-4">
+                  <CompanyLogo 
+                    logo={job.company_logo} 
+                    color={job.company_color} 
+                    companyName={job.company}
                   />
                 </div>
                 <p className="text-muted-foreground text-sm mb-4">
-                  {job.company} is a leading technology company committed to
-                  building innovative products that connect people and create
-                  value.
+                  {job.company_description || `${job.company} is committed to building innovative products and creating value.`}
                 </p>
-                <Link
-                  to={`/company/${job.company.toLowerCase()}`}
-                  className="text-primary hover:opacity-80 text-sm"
-                >
-                  View company profile →
-                </Link>
+                {job.company_website && (
+                  <a
+                    href={job.company_website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:opacity-80 text-sm flex items-center gap-1"
+                  >
+                    Visit company website
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -299,22 +350,19 @@ export default function JobDetails() {
       </div>
 
       <style>{`
-        .prose h3 {
-          color: var(--foreground);
-          margin-top: 1.5rem;
-          margin-bottom: 0.75rem;
+        .job-description-content ul {
+          list-style-type: disc !important;
+          margin-left: 1.5rem !important;
         }
-        .prose p {
-          color: var(--muted-foreground);
-          margin-bottom: 1rem;
+        .job-description-content ul li {
+          font-weight: 400 !important;
+          font-size: 1rem !important;
+          color: var(--muted-foreground) !important;
+          line-height: 1.625 !important;
+          margin-bottom: 0.375rem !important;
         }
-        .prose ul {
-          color: var(--muted-foreground);
-          margin-left: 1.5rem;
-          margin-bottom: 1rem;
-        }
-        .prose li {
-          margin-bottom: 0.5rem;
+        .job-description-content ul li::marker {
+          color: var(--muted-foreground) !important;
         }
       `}</style>
     </div>

@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Bookmark, Share2, MapPin, Clock, Users, Calendar } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
+import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import { eventsService } from '../../services';
@@ -168,13 +169,7 @@ export default function EventDetails() {
           {/* Main Content */}
           <div className="lg:col-span-2">
             <div className="bg-card border border-border rounded-2xl p-8">
-              <div
-                className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: event.description }}
-                style={{
-                  color: 'var(--foreground)',
-                }}
-              />
+              <StructuredDescription description={event.description} />
             </div>
           </div>
 

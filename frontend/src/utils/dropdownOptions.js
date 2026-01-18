@@ -140,14 +140,14 @@ export const EVENT_TYPES = [
   { value: 'conference', label: 'Conference', variant: 'red' },
   { value: 'webinar', label: 'Webinar', variant: 'cyan' },
   { value: 'meetup', label: 'Meetup', variant: 'teal' },
-  { value: 'Other', label: 'Other (Custom)', variant: 'gray' }
+  { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 export const EVENT_LOCATION_TYPES = [
   { value: 'online', label: 'Online/Virtual', variant: 'emerald' },
   { value: 'in_person', label: 'In-Person', variant: 'amber' },
   { value: 'hybrid', label: 'Hybrid', variant: 'violet' },
-  { value: 'Other', label: 'Other (Custom)', variant: 'gray' }
+  { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 // ==================== JOBS ====================
@@ -217,18 +217,17 @@ export const JOB_INDUSTRIES = [
 
 export const JOB_ROLE_TYPES = [
   // Student & Graduate Opportunities
-  { value: 'Summer Internship', label: 'Summer Intern', variant: 'cyan' },
+  { value: 'Summer Intern', label: 'Summer Intern', variant: 'cyan' },
   { value: 'Spring Week', label: 'Spring Week', variant: 'sky' },
-  { value: 'Winter Internship', label: 'Winter Intern', variant: 'blue' },
+  { value: 'Winter Intern', label: 'Winter Intern', variant: 'blue' },
   { value: 'Year Placement', label: 'Year Placement', variant: 'indigo' },
   { value: 'Placement', label: 'Placement', variant: 'pink' },
-  { value: 'Graduate Scheme', label: 'Grad Scheme', variant: 'purple' },
-  { value: 'Graduate Programme', label: 'Grad Programme', variant: 'violet' },
+  { value: 'Grad Scheme', label: 'Grad Scheme', variant: 'purple' },
   { value: 'Apprenticeship', label: 'Apprenticeship', variant: 'teal' },
-  { value: 'Degree Apprenticeship', label: 'Degree Apprentice', variant: 'emerald' },
+  { value: 'Degree Apprentice', label: 'Degree Apprentice', variant: 'emerald' },
   { value: 'Insight Day', label: 'Insight Day', variant: 'lime' },
   { value: 'Work Experience', label: 'Work Experience', variant: 'amber' },
-  { value: 'Vacation Scheme', label: 'Vac Scheme', variant: 'orange' },
+  { value: 'Vac Scheme', label: 'Vac Scheme', variant: 'orange' },
   
   // Standard Employment
   { value: 'Full-time', label: 'Full-time', variant: 'green' },
@@ -245,21 +244,21 @@ export const JOB_WORK_TYPES = [
   { value: 'Remote', label: 'Remote', variant: 'emerald' },
   { value: 'Hybrid', label: 'Hybrid', variant: 'violet' },
   { value: 'On-site', label: 'On-site', variant: 'amber' },
-  { value: 'Other', label: 'Other (Custom)', variant: 'gray' }
+  { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 export const JOB_EXPERIENCE_LEVELS = [
   // Student & Early Career
-  { value: 'No experience required', label: 'No Experience', variant: 'sky' },
+  { value: 'No Experience', label: 'No Experience', variant: 'sky' },
   { value: 'Student', label: 'Student', variant: 'cyan' },
-  { value: 'Penultimate year', label: 'Penultimate Year', variant: 'blue' },
-  { value: 'Final year', label: 'Final Year', variant: 'indigo' },
-  { value: 'Recent graduate', label: 'Graduate', variant: 'violet' },
-  { value: 'Entry level', label: 'Entry Level', variant: 'purple' },
+  { value: 'Penultimate Year', label: 'Penultimate Year', variant: 'blue' },
+  { value: 'Final Year', label: 'Final Year', variant: 'indigo' },
+  { value: 'Graduate', label: 'Graduate', variant: 'violet' },
+  { value: 'Entry Level', label: 'Entry Level', variant: 'purple' },
   
   // Experienced
   { value: 'Associate', label: 'Associate', variant: 'pink' },
-  { value: 'Mid level', label: 'Mid Level', variant: 'rose' },
+  { value: 'Mid Level', label: 'Mid Level', variant: 'rose' },
   { value: 'Senior', label: 'Senior', variant: 'orange' },
   { value: 'Lead', label: 'Lead', variant: 'amber' },
   { value: 'Principal', label: 'Principal', variant: 'red' },

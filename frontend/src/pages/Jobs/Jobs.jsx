@@ -23,20 +23,26 @@ export default function Jobs() {
   const jobsPerPage = 9;
 
   const [jobTypes, setJobTypes] = useState([
-    { label: "Summer Intern", value: "Summer Internship", checked: false },
-    { label: "Grad Scheme", value: "Graduate Scheme", checked: false },
+    { label: "Summer Intern", value: "Summer Intern", checked: false },
+    { label: "Spring Week", value: "Spring Week", checked: false },
+    { label: "Grad Scheme", value: "Grad Scheme", checked: false },
     { label: "Year Placement", value: "Year Placement", checked: false },
     { label: "Full-time", value: "Full-time", checked: false },
     { label: "Part-time", value: "Part-time", checked: false },
-    { label: "Apprenticeship", value: "Apprenticeship", checked: false },
+    { label: "Contract", value: "Contract", checked: false },
+    { label: "Vac Scheme", value: "Vac Scheme", checked: false },
+    { label: "Degree Apprentice", value: "Degree Apprentice", checked: false },
   ]);
 
   const [experienceLevels, setExperienceLevels] = useState([
-    { label: "No Experience", value: "No experience required", checked: false },
+    { label: "No Experience", value: "No Experience", checked: false },
     { label: "Student", value: "Student", checked: false },
-    { label: "Graduate", value: "Recent graduate", checked: false },
-    { label: "Entry Level", value: "Entry level", checked: false },
-    { label: "Mid Level", value: "Mid level", checked: false },
+    { label: "Penultimate Year", value: "Penultimate Year", checked: false },
+    { label: "Final Year", value: "Final Year", checked: false },
+    { label: "Graduate", value: "Graduate", checked: false },
+    { label: "Entry Level", value: "Entry Level", checked: false },
+    { label: "Mid Level", value: "Mid Level", checked: false },
+    { label: "Associate", value: "Associate", checked: false },
     { label: "Senior", value: "Senior", checked: false },
   ]);
 
@@ -110,6 +116,7 @@ export default function Jobs() {
       // Map sort options
       const sortMap = {
         'recent': 'created_at',
+        'relevant': 'applicant_count',
         'title': 'title',
         'company': 'company'
       };
@@ -124,7 +131,7 @@ export default function Jobs() {
       });
 
       setJobs(response.jobs || []);
-      setTotalJobs(response.total || 0);
+      setTotalJobs(response.pagination?.totalCount || 0);
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setError(err.message || 'Failed to load jobs');
@@ -236,10 +243,15 @@ export default function Jobs() {
               <div className="hidden md:flex items-center justify-between">
                 <div className="text-left">
                   <h2 className="text-foreground">
-                    Recommended jobs
+                    {getActiveFilterCount() > 0 ? 'Filtered jobs' : 'Recommended jobs'}
                   </h2>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {totalJobs} jobs found
+                    {totalJobs} job{totalJobs !== 1 ? 's' : ''} found
+                    {getActiveFilterCount() > 0 && (
+                      <span className="ml-2 text-primary">
+                        ({getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''} active)
+                      </span>
+                    )}
                   </p>
                 </div>
                 <SortDropdown
@@ -255,7 +267,7 @@ export default function Jobs() {
                     Recommended jobs
                   </h2>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {totalJobs} jobs found
+                    {totalJobs} job{totalJobs !== 1 ? 's' : ''} found
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -293,6 +305,8 @@ export default function Jobs() {
                     company={job.company}
                     location={job.location}
                     companyColor={job.company_color}
+                    description={job.description}
+                    postedTime={job.created_at}
                     tags={job.tags || []}
                     isFavorite={favorites.has(job.job_id)}
                     onFavoriteClick={() => toggleFavorite(job.job_id)}

@@ -3,6 +3,7 @@ import { Heart, Clock } from 'lucide-react';
 import JobBadge from '../Ui/JobBadge';
 import CompanyLogo from '../Ui/CompanyLogo';
 import { Link } from 'react-router-dom';
+import { formatTimeAgo } from '../../utils/timeFormatter';
 
 export default function JobCard({
   company,
@@ -27,15 +28,15 @@ export default function JobCard({
       .replace(/\./g, '')}`;
 
   const cardContent = (
-    <div className="bg-card rounded-xl p-5 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md group hover:-translate-y-0.5">
+    <div className="bg-card rounded-xl p-5 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md group hover:-translate-y-0.5 flex flex-col min-h-[280px]">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start gap-4">
-          <CompanyLogo logo={companyLogo} color={companyColor} />
-          <div className="pt-0.5">
-            <h3 className="text-lg font-medium text-foreground mb-0.5 text-left">{jobTitle}</h3>
-            <p className="text-muted-foreground text-sm text-left">
-              <span className="font-medium text-foreground/90">{company}</span> 
+        <div className="flex items-start gap-4 flex-1 min-w-0">
+          <CompanyLogo logo={companyLogo} color={companyColor} companyName={company} />
+          <div className="pt-0.5 flex-1 min-w-0">
+            <h3 className="text-lg font-medium text-foreground mb-0.5 text-left line-clamp-2">{jobTitle}</h3>
+            <p className="text-muted-foreground text-sm text-left truncate">
+              <span className="font-medium">{company}</span> 
             {/* • {applicants} Applicants */}
             </p>
           </div>
@@ -77,18 +78,20 @@ export default function JobCard({
       )}
 
       {/* Description */}
-      <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed text-left">
-        {description}
-      </p>
+      <div className="flex-grow">
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed text-left">
+          {description}
+        </p>
+      </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-3 border-t border-border/50">
+      <div className="flex items-center justify-between pt-3 border-t border-border/50 mt-auto">
         <div>
           {/* <span className="text-foreground font-medium">{salary}</span> */}
         </div>
         <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
           <Clock className="w-3.5 h-3.5" />
-          <span className="text-xs">Posted {postedTime}</span>
+          <span className="text-xs">{formatTimeAgo(postedTime)}</span>
         </div>
       </div>
     </div>
