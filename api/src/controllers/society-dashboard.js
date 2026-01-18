@@ -10,6 +10,7 @@ import {
 
 // This file contains SOCIETY dashboard controllers
 // For jobseeker dashboard controllers, see dashboard.js
+// NOTE: Societies can only SAVE jobs/events, NOT apply/register
 
 /**
  * Get complete dashboard data for a society

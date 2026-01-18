@@ -82,6 +82,7 @@ export const fetchSocietySavedEvents = (society_id) => {
 
 /**
  * Get complete society dashboard data
+ * NOTE: Societies can only SAVE jobs/events, NOT apply/register
  */
 export const fetchSocietyDashboard = (society_id) => {
     return Promise.all([

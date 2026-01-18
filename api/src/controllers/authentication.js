@@ -77,10 +77,21 @@ async function createToken(req, res) {
     // Generate token with user type, ID, and role (for admin users)
     const token = generateToken(userId, userType, userRole);
     
+    // Extract user name based on user type
+    let userName = null;
+    if (userType === 'jobseeker') {
+      userName = `${user.first_name} ${user.last_name}`;
+    } else if (userType === 'society') {
+      userName = user.society_name;
+    } else if (userType === 'admin') {
+      userName = user.name;
+    }
+    
     const response = { 
       token: token, 
       user_id: userId,
       user_type: userType,
+      name: userName,
       message: "OK" 
     };
 
