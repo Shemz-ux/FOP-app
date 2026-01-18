@@ -1,19 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Bookmark, Share2, MapPin, DollarSign, Users, Clock, Building, Calendar } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
-import { mockJobDetails } from '../../services/Jobs/jobs';
+import LoadingSpinner from '../../components/Ui/LoadingSpinner';
+import ErrorMessage from '../../components/Ui/ErrorMessage';
+import { jobsService } from '../../services';
 
 export default function JobDetails() {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
 
-  // Find job by id in the array
-  const job = jobId ? mockJobDetails.find(job => job.id === jobId) : null;
+  // Fetch job details
+  useEffect(() => {
+    const fetchJob = async () => {
+      if (!jobId) return;
+      
+      try {
+        setLoading(true);
+        setError(null);
+        const jobData = await jobsService.getJobById(jobId);
+        setJob(jobData);
+      } catch (err) {
+        console.error('Error fetching job:', err);
+        setError(err.message || 'Failed to load job details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJob();
+  }, [jobId]);
 
-  if (!job) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="xl" />
+      </div>
+    );
+  }
+
+  if (error || !job) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-secondary/30">
         <div className="container mx-auto px-6 py-20">
@@ -36,7 +66,7 @@ export default function JobDetails() {
               </div>
               <h1 className="text-3xl font-bold mb-3 text-foreground">Job Not Found</h1>
               <p className="text-muted-foreground mb-8">
-                The job you're looking for doesn't exist or has been removed. It may have been filled or the posting has expired.
+                {error || "The job you're looking for doesn't exist or has been removed. It may have been filled or the posting has expired."}
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">

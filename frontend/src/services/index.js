@@ -1,14 +1,27 @@
 // Central export file for all services
-// Import and re-export all service functions
+import { apiGet, apiPost, apiPatch, apiDelete, buildQueryString } from './api';
 
-export * from './api';
-export * from './Auth/authService';
-export * from './Jobs/jobsService';
-export * from './Events/eventsService';
-export * from './Jobseekers/jobseekersService';
-export * from './Societies/societiesService';
-export * from './Resources/resourcesService';
-export * from './Admin/adminService';
+// Import all services
+import * as jobsService from './Jobs/jobsService';
+import * as eventsService from './Events/eventsService';
+import * as resourcesService from './Resources/resourcesService';
+import * as jobseekersService from './Jobseekers/jobseekersService';
+import * as societiesService from './Societies/societiesService';
+import * as adminService from './Admin/adminService';
+import * as authService from './Auth/authService';
 
-// You can now import any service function like:
-// import { getJobs, loginJobseeker, getResources } from '@/services';
+// Export all services
+export {
+  jobsService,
+  eventsService,
+  resourcesService,
+  jobseekersService,
+  societiesService,
+  adminService,
+  authService,
+  apiGet,
+  apiPost,
+  apiPatch,
+  apiDelete,
+  buildQueryString
+};

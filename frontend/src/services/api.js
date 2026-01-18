@@ -1,16 +1,14 @@
 // API Configuration
-// Switch between test and production environments
+// Uses environment variable for security and flexibility
 
-const API_URLS = {
-  development: 'http://localhost:9090/api',
-  production: 'https://your-production-url.com/api', // Update with actual production URL
-  test: 'http://localhost:9090/api'
-};
+// Get API URL from environment variable, fallback to localhost for development
+// Note: Vite uses import.meta.env instead of process.env
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
-// Set current environment - change this to switch between environments
-const CURRENT_ENV = process.env.NODE_ENV || 'development';
-
-export const API_BASE_URL = API_URLS[CURRENT_ENV];
+// Log the API URL in development mode (helps with debugging)
+if (import.meta.env.DEV) {
+  console.log('🔗 API Base URL:', API_BASE_URL);
+}
 
 // Helper function to handle API responses
 export const handleResponse = async (response) => {

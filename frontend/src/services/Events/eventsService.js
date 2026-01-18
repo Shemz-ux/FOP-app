@@ -11,10 +11,10 @@ export const getEvents = async (filters = {}) => {
 // Get events with advanced filtering
 export const getEventsAdvanced = async (filters = {}) => {
   const queryString = buildQueryString(filters);
-  const data = await apiGet(`/events/advanced${queryString}`);
+  const data = await apiGet(`/events/search${queryString}`);
   return {
     ...data,
-    events: addEventTagsToList(data.events)
+    events: addEventTagsToList(data.events || [])
   };
 };
 

@@ -1,4 +1,4 @@
-import { apiPost } from './api';
+import { apiPost } from '../api';
 
 // Login for jobseekers
 export const loginJobseeker = async (email, password) => {

@@ -1,10 +1,13 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, BookOpen, File } from "lucide-react";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import ResourceCard from "../../components/ResourceCard/ResourceCard";
 import Pagination from "../../components/Pagination/Pagination";
-import { mockResources } from "../../services/Resources/resources";
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import ErrorMessage from "../../components/Ui/ErrorMessage";
+import EmptyState from "../../components/Ui/EmptyState";
+import { resourcesService } from "../../services";
 
 const iconMap = {
   FileText: FileText,
@@ -14,9 +17,15 @@ const iconMap = {
 
 export default function Resources() {
   const navigate = useNavigate();
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalResources, setTotalResources] = useState(0);
+  const [categories, setCategories] = useState([]);
+  const [popularResources, setPopularResources] = useState([]);
   const resourcesPerPage = 12;
 
   const handleSearch = (filters) => {
@@ -29,38 +38,93 @@ export default function Resources() {
     setCurrentPage(1);
   };
 
-  // Filter resources by search query and category
-  const filteredResources = mockResources.filter(resource => {
-    const matchesSearch = !searchQuery || 
-      resource.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.category?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' ||
-      resource.category?.toLowerCase() === selectedCategory.toLowerCase() ||
-      resource.category?.toLowerCase().includes(selectedCategory.toLowerCase());
-    
-    return matchesSearch && matchesCategory;
-  });
+  // Fetch resources from API
+  useEffect(() => {
+    fetchResources();
+  }, [currentPage, searchQuery, selectedCategory]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredResources.length / resourcesPerPage);
-  const startIndex = (currentPage - 1) * resourcesPerPage;
-  const endIndex = startIndex + resourcesPerPage;
-  const currentResources = filteredResources.slice(startIndex, endIndex);
+  const fetchResources = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const filters = {
+        page: currentPage,
+        limit: resourcesPerPage
+      };
+
+      if (searchQuery) filters.search = searchQuery;
+      if (selectedCategory && selectedCategory !== 'all') {
+        filters.category = selectedCategory;
+      }
+
+      const response = await resourcesService.getResources(filters);
+      setResources(response.resources || []);
+      setTotalResources(response.total || 0);
+    } catch (err) {
+      console.error('Error fetching resources:', err);
+      setError(err.message || 'Failed to load resources');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch categories
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const stats = await resourcesService.getResourceStats();
+        const cats = [
+          { id: 'all', label: 'All Resources', count: stats.total_resources || 0 }
+        ];
+        
+        if (stats.by_category) {
+          Object.entries(stats.by_category).forEach(([category, count]) => {
+            cats.push({ id: category, label: category, count });
+          });
+        }
+        
+        setCategories(cats);
+      } catch (err) {
+        console.error('Error loading categories:', err);
+        setCategories([{ id: 'all', label: 'All Resources', count: 0 }]);
+      }
+    };
+    loadCategories();
+  }, []);
+
+  // Fetch popular resources
+  useEffect(() => {
+    const loadPopular = async () => {
+      try {
+        const response = await resourcesService.getResources({ 
+          limit: 3, 
+          sort_by: 'download_count',
+          sort_order: 'desc'
+        });
+        setPopularResources(response.resources || []);
+      } catch (err) {
+        console.error('Error loading popular resources:', err);
+      }
+    };
+    loadPopular();
+  }, []);
+
+  const totalPages = Math.ceil(totalResources / resourcesPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const categories = [
-    { id: "all", label: "All Resources", count: mockResources.length },
-    { id: "resume", label: "Resume", count: 3 },
-    { id: "interview", label: "Interview", count: 4 },
-    { id: "career-tips", label: "Career Tips", count: 2 },
-    { id: "portfolio", label: "Portfolio", count: 1 },
-  ];
+  const handleDownload = async (resourceId) => {
+    try {
+      const downloadUrl = await resourcesService.downloadResource(resourceId);
+      window.open(downloadUrl, '_blank');
+    } catch (err) {
+      console.error('Error downloading resource:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -111,25 +175,48 @@ export default function Resources() {
         </div>
 
         {/* Resources Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {currentResources.map((resource) => (
-            <ResourceCard
-              key={resource.id}
-              {...resource}
-              onDownload={() =>
-                console.log("Download:", resource.title)
-              }
-              onPreview={() => navigate(`/resources/${resource.id}`)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="py-20">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : error ? (
+          <ErrorMessage message={error} onRetry={fetchResources} />
+        ) : resources.length === 0 ? (
+          <EmptyState 
+            icon={FileText}
+            title="No resources found"
+            message="Try adjusting your search or category filter"
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {resources.map((resource) => (
+                <ResourceCard
+                  key={resource.resource_id}
+                  id={resource.resource_id}
+                  title={resource.title}
+                  description={resource.description}
+                  category={resource.category}
+                  fileType={resource.file_type}
+                  fileSize={resource.file_size}
+                  downloads={resource.download_count || 0}
+                  iconType={resource.icon_type}
+                  categoryVariant={resource.category_variant}
+                  tags={resource.tags || []}
+                  onDownload={() => handleDownload(resource.resource_id)}
+                  onPreview={() => navigate(`/resources/${resource.resource_id}`)}
+                />
+              ))}
+            </div>
 
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
 
         {/* Popular Downloads */}
         <div className="bg-secondary/30 rounded-2xl p-8 border border-border mt-8">
@@ -138,32 +225,29 @@ export default function Resources() {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {mockResources
-              .slice()
-              .sort((a, b) => b.downloads - a.downloads)
-              .slice(0, 3)
-              .map((resource, index) => {
-                const IconComponent = iconMap[resource.iconType] || FileText;
-                return (
-                  <div
-                    key={index}
-                    className="flex items-start gap-4 p-4 bg-card rounded-xl border border-border"
-                  >
-                    <div className="p-3 rounded-lg bg-primary/10 text-primary flex-shrink-0">
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-foreground mb-1 text-sm truncate text-left">
-                        {resource.title}
-                      </h4>
-                      <p className="text-muted-foreground text-xs text-left">
-                        {resource.downloads.toLocaleString()} downloads
-                      </p>
-                    </div>
+            {popularResources.map((resource) => {
+              const IconComponent = iconMap[resource.icon_type] || FileText;
+              return (
+                <div
+                  key={resource.resource_id}
+                  className="flex items-start gap-4 p-4 bg-card rounded-xl border border-border cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => navigate(`/resources/${resource.resource_id}`)}
+                >
+                  <div className="p-3 rounded-lg bg-primary/10 text-primary flex-shrink-0">
+                    <IconComponent className="w-6 h-6" />
                   </div>
-                );
-              })}
+
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-foreground mb-1 text-sm truncate text-left">
+                      {resource.title}
+                    </h4>
+                    <p className="text-muted-foreground text-xs text-left">
+                      {(resource.download_count || 0).toLocaleString()} downloads
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

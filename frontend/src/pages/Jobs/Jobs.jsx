@@ -1,38 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Hero from "../../components/Hero/Hero";
 import FilterSidebar from "../../components/FilterSidebar/FilterSidebar";
 import FilterButton from "../../components/Ui/FilterButton";
 import JobCard from "../../components/JobCard/JobCard";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import Pagination from "../../components/Pagination/Pagination";
-import { mockJobs } from "../../services/Jobs/jobs";
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import ErrorMessage from "../../components/Ui/ErrorMessage";
+import EmptyState from "../../components/Ui/EmptyState";
+import { jobsService } from "../../services";
 
 export default function Jobs() {
-  const [favorites, setFavorites] =  useState(new Set());
-  const [sortBy, setSortBy] =  useState("recent");
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [favorites, setFavorites] = useState(new Set());
+  const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilters, setSearchFilters] = useState({ query: '', location: '' });
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [totalJobs, setTotalJobs] = useState(0);
   const jobsPerPage = 9;
 
-  const [jobTypes, setJobTypes] =  useState([
-    { label: "Full time", checked: true },
-    { label: "Part time", checked: true },
-    { label: "Internship", checked: false },
-    { label: "Project work", checked: true },
-    { label: "Volunteering", checked: false },
+  const [jobTypes, setJobTypes] = useState([
+    { label: "Summer Intern", value: "Summer Internship", checked: false },
+    { label: "Grad Scheme", value: "Graduate Scheme", checked: false },
+    { label: "Year Placement", value: "Year Placement", checked: false },
+    { label: "Full-time", value: "Full-time", checked: false },
+    { label: "Part-time", value: "Part-time", checked: false },
+    { label: "Apprenticeship", value: "Apprenticeship", checked: false },
   ]);
 
-  const [experienceLevels, setExperienceLevels] =  useState([
-    { label: "Entry level", count: 392, checked: false },
-    { label: "Intermediate", count: 124, checked: true },
-    { label: "Expert", count: 3021, checked: true },
+  const [experienceLevels, setExperienceLevels] = useState([
+    { label: "No Experience", value: "No experience required", checked: false },
+    { label: "Student", value: "Student", checked: false },
+    { label: "Graduate", value: "Recent graduate", checked: false },
+    { label: "Entry Level", value: "Entry level", checked: false },
+    { label: "Mid Level", value: "Mid level", checked: false },
+    { label: "Senior", value: "Senior", checked: false },
   ]);
 
   const [workTypes, setWorkTypes] = useState([
-    { label: "Remote", checked: true },
-    { label: "Hybrid", checked: true },
-    { label: "On-site", checked: true },
+    { label: "Remote", value: "Remote", checked: false },
+    { label: "Hybrid", value: "Hybrid", checked: false },
+    { label: "On-site", value: "On-site", checked: false },
   ]);
 
   const toggleFavorite = (index) => {
@@ -71,6 +82,57 @@ export default function Jobs() {
     );
   };
 
+  // Fetch jobs from API
+  useEffect(() => {
+    fetchJobs();
+  }, [currentPage, sortBy, searchFilters, jobTypes, experienceLevels, workTypes]);
+
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Build filter params
+      const filters = {};
+      
+      if (searchFilters.query) filters.search = searchFilters.query;
+      if (searchFilters.location) filters.location = searchFilters.location;
+      
+      const checkedRoleTypes = jobTypes.filter(t => t.checked).map(t => t.value);
+      if (checkedRoleTypes.length > 0) filters.role_type = checkedRoleTypes.join(',');
+      
+      const checkedExpLevels = experienceLevels.filter(l => l.checked).map(l => l.value);
+      if (checkedExpLevels.length > 0) filters.experience_level = checkedExpLevels.join(',');
+      
+      const checkedWorkTypes = workTypes.filter(w => w.checked).map(w => w.value);
+      if (checkedWorkTypes.length > 0) filters.work_type = checkedWorkTypes.join(',');
+
+      // Map sort options
+      const sortMap = {
+        'recent': 'created_at',
+        'title': 'title',
+        'company': 'company'
+      };
+      filters.sort_by = sortMap[sortBy] || 'created_at';
+      filters.sort_order = 'desc';
+
+      const response = await jobsService.getJobsAdvanced({
+        ...filters,
+        page: currentPage,
+        limit: jobsPerPage,
+        is_active: true
+      });
+
+      setJobs(response.jobs || []);
+      setTotalJobs(response.total || 0);
+    } catch (err) {
+      console.error('Error fetching jobs:', err);
+      setError(err.message || 'Failed to load jobs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleClearAll = () => {
     setJobTypes((prev) => prev.map((item) => ({ ...item, checked: false })));
     setExperienceLevels((prev) => prev.map((item) => ({ ...item, checked: false })));
@@ -90,28 +152,11 @@ export default function Jobs() {
   const getActiveFilterCount = () => {
     const checkedJobTypes = jobTypes.filter(type => type.checked).length;
     const checkedExpLevels = experienceLevels.filter(level => level.checked).length;
-    return checkedJobTypes + checkedExpLevels;
+    const checkedWorkTypes = workTypes.filter(type => type.checked).length;
+    return checkedJobTypes + checkedExpLevels + checkedWorkTypes;
   };
 
-  // Filter jobs based on search criteria
-  const filteredJobs = mockJobs.filter((job) => {
-    const matchesQuery = !searchFilters.query || 
-      job.jobTitle.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
-      job.company.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
-      job.description.toLowerCase().includes(searchFilters.query.toLowerCase()) ||
-      job.tags.some(tag => tag.label.toLowerCase().includes(searchFilters.query.toLowerCase()));
-    
-    const matchesLocation = !searchFilters.location || 
-      job.location?.toLowerCase().includes(searchFilters.location.toLowerCase());
-    
-    return matchesQuery && matchesLocation;
-  });
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-  const startIndex = (currentPage - 1) * jobsPerPage;
-  const endIndex = startIndex + jobsPerPage;
-  const currentJobs = filteredJobs.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(totalJobs / jobsPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -194,7 +239,7 @@ export default function Jobs() {
                     Recommended jobs
                   </h2>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {filteredJobs.length} jobs found
+                    {totalJobs} jobs found
                   </p>
                 </div>
                 <SortDropdown
@@ -210,7 +255,7 @@ export default function Jobs() {
                     Recommended jobs
                   </h2>
                   <p className="text-muted-foreground text-sm mt-1">
-                    {filteredJobs.length} jobs found
+                    {totalJobs} jobs found
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -227,26 +272,43 @@ export default function Jobs() {
             </div>
 
             {/* Job Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {currentJobs.map((job, index) => {
-                const actualIndex = startIndex + index;
-                return (
+            {loading ? (
+              <div className="py-20">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : error ? (
+              <ErrorMessage message={error} onRetry={fetchJobs} />
+            ) : jobs.length === 0 ? (
+              <EmptyState 
+                title="No jobs found"
+                message="Try adjusting your filters or search terms to find more opportunities"
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {jobs.map((job) => (
                   <JobCard
-                    key={actualIndex}
-                    {...job}
-                    isFavorite={favorites.has(actualIndex)}
-                    onFavoriteClick={() => toggleFavorite(actualIndex)}
+                    key={job.job_id}
+                    jobId={job.job_id}
+                    jobTitle={job.title}
+                    company={job.company}
+                    location={job.location}
+                    companyColor={job.company_color}
+                    tags={job.tags || []}
+                    isFavorite={favorites.has(job.job_id)}
+                    onFavoriteClick={() => toggleFavorite(job.job_id)}
                   />
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
 
             {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {!loading && !error && jobs.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
           </div>
         </div>
       </div>

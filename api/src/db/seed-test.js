@@ -439,68 +439,128 @@ const insertJobs = async () => {
             deadline, is_active
         ) VALUES 
             (
-                'Software Engineering Intern', 'Google UK', 
+                'Software Engineering Summer Intern', 'Google UK', 
                 'https://logo.clearbit.com/google.com', '#4285F4', 
                 'Google is a global technology leader focused on organizing the world''s information and making it universally accessible and useful.',
                 'https://careers.google.com',
-                'Join our team to work on cutting-edge technology projects. You will collaborate with experienced engineers to develop scalable solutions. Work on real products used by billions of users worldwide.',
-                'Technology', 'London', 'Entry level', 'Internship', 'Hybrid',
+                'Join our team to work on cutting-edge technology projects. You will collaborate with experienced engineers to develop scalable solutions. Work on real products used by billions of users worldwide. 12-week summer program with mentorship and networking opportunities.',
+                'Technology', 'London', 'Student', 'Summer Intern', 'Hybrid',
                 'https://careers.google.com/jobs/results/123456789',
-                '2024-12-31', true
+                '2025-03-31', true
             ),
             (
-                'Data Analyst Graduate', 'Deloitte', 
+                'Data Analyst Graduate Programme', 'Deloitte', 
                 'https://logo.clearbit.com/deloitte.com', '#86BC25', 
                 'Deloitte is a leading global provider of audit and assurance, consulting, financial advisory, risk advisory, tax, and related services.',
                 'https://www2.deloitte.com/uk/careers',
-                'Analyze complex datasets to drive business insights. Work with clients across various industries including finance, healthcare, and technology. Comprehensive training program included.',
-                'Consulting', 'Manchester', 'Entry level', 'Graduate Scheme', 'On-site',
+                'Analyze complex datasets to drive business insights. Work with clients across various industries including finance, healthcare, and technology. Comprehensive 2-year training program with rotations across different teams and professional qualifications support.',
+                'Consulting', 'Manchester', 'Graduate', 'Grad Programme', 'On-site',
                 'https://www2.deloitte.com/uk/careers/graduates',
-                '2024-11-30', true
+                '2025-02-28', true
             ),
             (
-                'Remote Software Developer', 'Stripe', 
+                'Full Stack Developer', 'Stripe', 
                 'https://logo.clearbit.com/stripe.com', '#635BFF', 
                 'Stripe is a technology company that builds economic infrastructure for the internet. Businesses of every size use our software to accept payments and manage their operations online.',
                 'https://stripe.com/jobs',
-                'Build payment infrastructure for the internet. Fully remote position with flexible hours. Work on systems processing billions of dollars in transactions. Competitive salary and equity package.',
-                'Technology', 'Remote', 'Mid level', 'Full-time', 'Remote',
+                'Build payment infrastructure for the internet. Fully remote position with flexible hours. Work on systems processing billions of dollars in transactions. Competitive salary, equity package, and comprehensive benefits. Experience with React, Node.js, and PostgreSQL required.',
+                'Technology', 'Remote', 'Mid Level', 'Full-time', 'Remote',
                 'https://stripe.com/jobs/listing/software-engineer',
-                '2025-01-15', true
+                '2025-04-15', true
             ),
             (
-                'Marketing Intern', 'Unilever', 
+                'Marketing Spring Week', 'Unilever', 
                 'https://logo.clearbit.com/unilever.com', '#0077B5', 
                 'Unilever is one of the world''s leading suppliers of Food, Home Care, Personal Care and Refreshment products with sales in over 190 countries.',
                 'https://www.unilever.com/careers',
-                'Gain hands-on experience in brand marketing and consumer insights. Work on real campaigns for iconic brands like Dove, Ben & Jerry''s, and Hellmann''s. Mentorship from senior marketers included.',
-                'Marketing', 'London', 'Entry level', 'Internship', 'Hybrid',
+                'Gain hands-on experience in brand marketing and consumer insights during our 1-week spring program. Work on real campaigns for iconic brands like Dove, Ben & Jerry''s, and Hellmann''s. Mentorship from senior marketers included. Potential fast-track to summer internship.',
+                'Marketing', 'London', 'Penultimate Year', 'Spring Week', 'Hybrid',
                 'https://www.unilever.com/careers/students-graduates',
-                '2024-12-20', true
+                '2025-01-31', true
             ),
             (
-                'Mechanical Engineering Graduate', 'Rolls-Royce', 
+                'Mechanical Engineering Graduate Scheme', 'Rolls-Royce', 
                 'https://logo.clearbit.com/rolls-royce.com', '#5E2750', 
                 'Rolls-Royce pioneers cutting-edge technologies that deliver the cleanest, safest and most competitive solutions to our planet''s vital power needs.',
                 'https://careers.rolls-royce.com',
-                'Design and develop next-generation aerospace systems. Work on engines that power aircraft and ships worldwide. Two-year graduate program with rotations across different engineering teams.',
-                'Engineering', 'Derby', 'Entry level', 'Graduate Scheme', 'On-site',
+                'Design and develop next-generation aerospace systems. Work on engines that power aircraft and ships worldwide. Two-year graduate program with rotations across different engineering teams including design, testing, and manufacturing. Chartership support provided.',
+                'Engineering', 'Derby', 'Graduate', 'Grad Scheme', 'On-site',
                 'https://careers.rolls-royce.com/graduates',
-                '2024-12-15', true
+                '2025-02-15', true
             ),
             (
-                'Finance Analyst', 'HSBC', 
+                'Investment Banking Analyst', 'HSBC', 
                 'https://logo.clearbit.com/hsbc.com', '#DB0011', 
                 'HSBC is one of the world''s largest banking and financial services organizations, serving millions of customers through our global businesses.',
                 'https://www.hsbc.com/careers',
-                'Analyze financial data and support investment decisions. Work from anywhere in the UK with flexible remote working. Exposure to global markets and investment strategies. Professional qualifications support provided.',
-                'Finance', 'Remote', 'Mid level', 'Full-time', 'Remote',
+                'Analyze financial data and support investment decisions. Work from anywhere in the UK with flexible remote working. Exposure to global markets, M&A deals, and investment strategies. Professional qualifications (CFA/ACA) support provided. Competitive salary and bonus structure.',
+                'Finance', 'Remote', 'Associate', 'Full-time', 'Remote',
                 'https://www.hsbc.com/careers/students-and-graduates',
+                '2025-03-31', true
+            ),
+            (
+                'UX Design Year Placement', 'Meta', 
+                'https://logo.clearbit.com/meta.com', '#0084FF', 
+                'Meta builds technologies that help people connect, find communities, and grow businesses. From Facebook and Instagram to WhatsApp and Messenger.',
+                'https://www.metacareers.com',
+                'Join our design team for a 12-month placement working on products used by billions. Collaborate with product managers, engineers, and researchers. Work on real features from concept to launch. Mentorship, training, and potential return offer for graduates.',
+                'Design', 'London', 'Final Year', 'Year Placement', 'Hybrid',
+                'https://www.metacareers.com/jobs',
+                '2025-01-15', true
+            ),
+            (
+                'Cybersecurity Apprentice', 'GCHQ', 
+                'https://logo.clearbit.com/gchq.gov.uk', '#003366', 
+                'GCHQ is the UK''s intelligence, security and cyber agency. We work to keep the UK safe and prosperous in an increasingly complex digital world.',
+                'https://www.gchq-careers.co.uk',
+                'Learn cybersecurity while earning. 4-year degree apprenticeship combining work at GCHQ with university study. Gain hands-on experience in threat detection, incident response, and security operations. Full salary, tuition fees paid, and security clearance provided.',
+                'Cybersecurity', 'Cheltenham', 'No Experience', 'Degree Apprentice', 'On-site',
+                'https://www.gchq-careers.co.uk/apprenticeships',
+                '2025-02-28', true
+            ),
+            (
+                'Product Manager Insight Day', 'Amazon', 
+                'https://logo.clearbit.com/amazon.com', '#FF9900', 
+                'Amazon is guided by four principles: customer obsession, passion for invention, commitment to operational excellence, and long-term thinking.',
+                'https://www.amazon.jobs',
+                'One-day insight into product management at Amazon. Learn about the role, meet current PMs, participate in workshops, and work on a mini case study. Lunch and networking included. Open to all year groups. Potential fast-track to internship interviews.',
+                'Technology', 'London', 'Student', 'Insight Day', 'On-site',
+                'https://www.amazon.jobs/students',
+                '2025-01-20', true
+            ),
+            (
+                'Data Science Contract', 'BBC', 
+                'https://logo.clearbit.com/bbc.co.uk', '#BB1919', 
+                'The BBC is the world''s leading public service broadcaster. We''re impartial, independent and working for the benefit of all.',
+                'https://careers.bbc.co.uk',
+                'Work on data analytics projects for BBC iPlayer and BBC Sounds. 6-month contract with possibility of extension. Analyze user behavior, build recommendation systems, and create data visualizations. Experience with Python, SQL, and machine learning required.',
+                'Data Science', 'Manchester', 'Mid Level', 'Contract', 'Hybrid',
+                'https://careers.bbc.co.uk/jobs',
+                '2025-02-15', true
+            ),
+            (
+                'Legal Vacation Scheme', 'Clifford Chance', 
+                'https://logo.clearbit.com/cliffordchance.com', '#C41E3A', 
+                'Clifford Chance is one of the world''s leading law firms, helping clients achieve their goals by combining the highest global standards with local expertise.',
+                'https://www.cliffordchance.com/careers',
+                'Two-week vacation scheme experiencing life as a trainee solicitor. Work in two practice areas, attend workshops, and receive mentorship. Assessed for training contract. Accommodation and travel expenses provided for non-London students.',
+                'Law', 'London', 'Penultimate Year', 'Vac Scheme', 'On-site',
+                'https://www.cliffordchance.com/careers/students-graduates',
                 '2025-01-31', true
+            ),
+            (
+                'Part-Time Research Assistant', 'Imperial College London', 
+                'https://logo.clearbit.com/imperial.ac.uk', '#003E74', 
+                'Imperial College London is a world-leading university in science, engineering, medicine and business, with a reputation for excellence in teaching and research.',
+                'https://www.imperial.ac.uk/jobs',
+                'Support research in AI and machine learning. Flexible hours (15-20 hours/week) to fit around studies. Assist with literature reviews, data collection, and experiment design. Great for PhD applications. Requires strong Python skills and interest in research.',
+                'Research & Development', 'London', 'Student', 'Part-time', 'Hybrid',
+                'https://www.imperial.ac.uk/jobs/research',
+                '2025-03-01', true
             )
     `);
     
-    console.log('✅ Jobs seeded (3 in-person/hybrid + 3 remote/virtual)');
+    console.log('✅ Jobs seeded (12 diverse roles with proper categories)');
 };
 
 const insertEvents = async () => {
@@ -511,80 +571,128 @@ const insertEvents = async () => {
             description, event_image, event_date, event_start_time, event_end_time, is_active
         ) VALUES 
             (
-                'Tech Career Fair 2024', 'King''s College London',
+                'Tech Career Fair 2025', 'King''s College London',
                 'https://logo.clearbit.com/kcl.ac.uk',
                 'Leading university in London connecting students with top employers',
                 'https://kcl.ac.uk',
                 'Technology', 'career_fair', 'in_person',
                 'London', 'Strand Campus, King''s College London, WC2R 2LS', 500,
                 NULL,
-                'Meet with recruiters from Google, Meta, Amazon, and more. Bring your CV and dress professionally.',
+                'Meet with recruiters from Google, Meta, Amazon, Microsoft, and 50+ tech companies. Bring multiple copies of your CV and dress in business casual attire. Free professional headshots available. Register early as spaces are limited.',
                 'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
-                '2024-11-25', '10:00:00', '16:00:00', true
+                '2025-02-15', '10:00:00', '16:00:00', true
             ),
             (
-                'Virtual Networking Night: Finance Careers', 'Business Society',
+                'Finance & Consulting Networking Evening', 'Business Society',
                 'https://logo.clearbit.com/icbusiness.com',
                 'Imperial College Business Society - Connecting students with top finance firms',
                 'https://icbusiness.com',
                 'Finance', 'networking', 'online',
-                'Virtual Event', 'Online', 200,
+                'Virtual Event', 'Online via Zoom', 200,
                 'https://zoom.us/j/123456789',
-                'Connect with finance professionals from Goldman Sachs, JP Morgan, and Barclays. Join us online via Zoom for an evening of networking and career insights. Meeting link will be sent 24 hours before the event.',
+                'Connect with finance and consulting professionals from Goldman Sachs, JP Morgan, McKinsey, and Bain. Speed networking sessions, career insights panel, and Q&A. Zoom link sent 24 hours before event. Business attire recommended.',
                 'https://images.unsplash.com/photo-1559136555-9303baea8ebd',
-                '2024-11-20', '18:00:00', '20:00:00', true
+                '2025-02-08', '18:00:00', '20:30:00', true
             ),
             (
-                'Engineering Workshop: CAD Fundamentals', 'Engineering Society',
-                'https://logo.clearbit.com/manchestereng.com',
-                'University of Manchester Engineering Society',
-                'https://manchestereng.com',
-                'Engineering', 'workshop', 'in_person',
-                'Manchester', 'Engineering Building A, University of Manchester, M13 9PL', 50,
+                'AI & Machine Learning Workshop', 'Data Science Society',
+                'https://logo.clearbit.com/datasciencesoc.com',
+                'University Data Science Society - Advancing AI education',
+                'https://datasciencesoc.com',
+                'AI & Machine Learning', 'workshop', 'hybrid',
+                'London', 'Computer Science Building, Room 3.02', 80,
                 NULL,
-                'Hands-on workshop learning AutoCAD and SolidWorks. Laptops will be provided.',
-                'https://images.unsplash.com/photo-1581092160562-40aa08e78837',
-                '2024-11-22', '14:00:00', '17:00:00', true
+                'Hands-on workshop on building ML models with TensorFlow and PyTorch. Covers neural networks, CNNs, and practical applications. Bring your laptop. Suitable for intermediate Python users. In-person and online options available.',
+                'https://images.unsplash.com/photo-1677442136019-21780ecad995',
+                '2025-02-12', '14:00:00', '17:00:00', true
             ),
             (
-                'Online Panel: Breaking into Tech', 'Tech Society',
-                'https://logo.clearbit.com/kcltech.com',
-                'King''s College London Tech Society - Empowering the next generation of tech leaders',
-                'https://kcltech.com',
-                'Technology', 'panel_discussion', 'online',
-                'Virtual Event', 'Online', 300,
+                'Breaking into Investment Banking Panel', 'Finance Society',
+                'https://logo.clearbit.com/financesoc.com',
+                'University Finance Society',
+                'https://financesoc.com',
+                'Investment Banking', 'panel_discussion', 'online',
+                'Virtual Event', 'Online via Microsoft Teams', 300,
                 'https://teams.microsoft.com/l/meetup-join/19',
-                'Hear from software engineers at Spotify, Monzo, and Revolut about their career journeys. Learn about breaking into tech, interview tips, and what it''s really like working at top tech companies. Q&A session included.',
+                'Hear from analysts and associates at top investment banks about their career journeys. Learn about spring weeks, summer internships, and graduate schemes. Cover interview tips, technical questions, and day-to-day life in IB. Live Q&A session.',
                 'https://images.unsplash.com/photo-1591115765373-5207764f72e7',
-                '2024-11-18', '19:00:00', '20:30:00', true
+                '2025-01-25', '19:00:00', '20:30:00', true
             ),
             (
-                'CV Review Drop-in Session', 'Careers Service',
-                'https://logo.clearbit.com/kcl.ac.uk',
-                'King''s College London Careers Service',
-                'https://kcl.ac.uk/careers',
-                'General', 'workshop', 'in_person',
-                'London', 'Careers Centre, King''s College London, WC2R 2LS', 30,
+                'Cybersecurity Conference 2025', 'GCHQ & NCA',
+                'https://logo.clearbit.com/gchq.gov.uk',
+                'GCHQ and National Crime Agency',
+                'https://www.gchq-careers.co.uk',
+                'Cybersecurity', 'conference', 'in_person',
+                'Cheltenham', 'GCHQ Headquarters, Hubble Road, GL51 0EX', 250,
                 NULL,
-                'Get your CV reviewed by careers advisors. No booking required, drop in anytime.',
-                'https://images.unsplash.com/photo-1586281380349-632531db7ed4',
-                '2024-11-21', '12:00:00', '15:00:00', true
+                'Full-day conference on careers in cybersecurity. Keynote speakers from GCHQ, NCA, and leading cybersecurity firms. Workshops on ethical hacking, threat intelligence, and incident response. Lunch and refreshments provided. Security clearance not required.',
+                'https://images.unsplash.com/photo-1550751827-4bd374c3f58b',
+                '2025-03-05', '09:00:00', '17:00:00', true
             ),
             (
-                'Virtual Coding Bootcamp', 'Google',
-                'https://logo.clearbit.com/google.com',
-                'Google UK - Building the future of technology together',
-                'https://careers.google.com',
-                'Technology', 'workshop', 'online',
-                'Virtual Event', 'Online', 1000,
+                'UX Design Webinar: Portfolio Building', 'Design Collective',
+                'https://logo.clearbit.com/designcollective.com',
+                'Design Collective - Empowering creative professionals',
+                'https://designcollective.com',
+                'Design', 'webinar', 'online',
+                'Virtual Event', 'Online', 500,
                 'https://meet.google.com/abc-defg-hij',
-                'Free 3-hour coding workshop covering Python basics and data structures. All levels welcome. Learn from Google engineers and get hands-on practice with real coding challenges. Certificate of completion provided.',
-                'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
-                '2024-11-28', '10:00:00', '13:00:00', true
+                'Learn how to build a standout UX design portfolio from senior designers at Figma, Adobe, and Airbnb. Cover case study structure, showcasing process, and presenting your work. Includes portfolio review session. Recording available to all registrants.',
+                'https://images.unsplash.com/photo-1561070791-2526d30994b5',
+                '2025-02-20', '18:00:00', '19:30:00', true
+            ),
+            (
+                'Law Careers Seminar', 'Law Society',
+                'https://logo.clearbit.com/lawsoc.com',
+                'University Law Society',
+                'https://lawsoc.com',
+                'Law', 'seminar', 'in_person',
+                'London', 'Law Faculty Building, Lecture Theatre 1', 120,
+                NULL,
+                'Explore different career paths in law including commercial law, criminal law, human rights, and in-house roles. Hear from solicitors, barristers, and legal executives. Learn about vacation schemes, training contracts, and pupillages. Networking reception afterwards.',
+                'https://images.unsplash.com/photo-1589829545856-d10d557cf95f',
+                '2025-02-18', '17:00:00', '19:00:00', true
+            ),
+            (
+                'Startup & Entrepreneurship Meetup', 'Entrepreneurs Society',
+                'https://logo.clearbit.com/entrepreneursoc.com',
+                'Student Entrepreneurs Society',
+                'https://entrepreneursoc.com',
+                'Management', 'meetup', 'hybrid',
+                'Manchester', 'Innovation Hub, Oxford Road', 60,
+                NULL,
+                'Monthly meetup for aspiring entrepreneurs and startup enthusiasts. Pitch your ideas, find co-founders, and learn from successful founders. This month: guest speaker from a Series A fintech startup. Pizza and drinks provided.',
+                'https://images.unsplash.com/photo-1556761175-b413da4baf72',
+                '2025-02-22', '18:30:00', '21:00:00', true
+            ),
+            (
+                'Healthcare Careers Virtual Fair', 'Medical Society',
+                'https://logo.clearbit.com/medsoc.com',
+                'University Medical Society',
+                'https://medsoc.com',
+                'Healthcare', 'career_fair', 'online',
+                'Virtual Event', 'Online Platform', 1000,
+                'https://virtualfair.medsoc.com',
+                'Virtual career fair featuring NHS trusts, pharmaceutical companies, medical device firms, and healthcare consultancies. Virtual booths, live chat with recruiters, and webinar sessions on different healthcare careers. Open to all students.',
+                'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d',
+                '2025-03-10', '10:00:00', '16:00:00', true
+            ),
+            (
+                'Marketing & PR Industry Panel', 'Marketing Society',
+                'https://logo.clearbit.com/marketingsoc.com',
+                'Student Marketing Society',
+                'https://marketingsoc.com',
+                'Marketing', 'panel_discussion', 'in_person',
+                'London', 'Business School, Room 2.15', 100,
+                NULL,
+                'Panel discussion with marketing directors and PR managers from Unilever, Ogilvy, and Edelman. Topics include digital marketing, brand strategy, influencer marketing, and breaking into the industry. Networking session with free refreshments.',
+                'https://images.unsplash.com/photo-1557804506-669a67965ba0',
+                '2025-02-28', '18:00:00', '20:00:00', true
             )
     `);
     
-    console.log('✅ Events seeded (3 in-person + 3 online)');
+    console.log('✅ Events seeded (10 diverse events with proper categories)');
 };
 
 const insertResources = async () => {
@@ -595,63 +703,173 @@ const insertResources = async () => {
             uploaded_by, is_active
         ) VALUES 
             (
-                'CV Writing Guide 2024', 
+                'CV Writing Guide 2025', 
                 'Comprehensive guide to writing an effective CV for graduate applications',
-                'This detailed guide covers everything you need to know about creating a standout CV. Learn about formatting, content structure, and what recruiters look for.',
-                '• 20-page PDF guide\n• CV templates\n• Industry-specific examples\n• Common mistakes to avoid',
-                'CV & Cover Letters',
-                'cv-writing-guide-2024.pdf', '2.5 MB', 'application/pdf',
-                'resources/cv-writing-guide-2024.pdf',
-                'https://storage.fop.com/resources/cv-writing-guide-2024.pdf',
+                'This detailed guide covers everything you need to know about creating a standout CV. Learn about formatting, content structure, ATS optimization, and what recruiters look for in 2025.',
+                '• 25-page PDF guide\n• 5 CV templates (Word & PDF)\n• Industry-specific examples\n• ATS-friendly formatting tips\n• Common mistakes to avoid',
+                'CV',
+                'cv-writing-guide-2025.pdf', '2.5 MB', 'application/pdf',
+                'resources/cv-writing-guide-2025.pdf',
+                'https://storage.fop.com/resources/cv-writing-guide-2025.pdf',
                 'FOP Team', true
             ),
             (
-                'Technical Interview Preparation', 
+                'Cover Letter Templates & Examples', 
+                'Professional cover letter templates for different industries',
+                'Stand out with compelling cover letters. Includes templates for tech, finance, consulting, law, and creative industries. Learn how to tailor your letter to each application.',
+                '• 15 customizable templates\n• Industry-specific examples\n• Opening and closing lines\n• Do''s and don''ts checklist',
+                'Cover Letters',
+                'cover-letter-templates.pdf', '1.8 MB', 'application/pdf',
+                'resources/cover-letter-templates.pdf',
+                'https://storage.fop.com/resources/cover-letter-templates.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Technical Interview Mastery', 
                 'Master coding interviews with practice problems and solutions',
-                'Prepare for technical interviews at top tech companies. Includes data structures, algorithms, and system design questions.',
-                '• 150+ coding problems\n• Video solutions\n• Time complexity analysis\n• Mock interview tips',
-                'Interview Prep',
-                'technical-interview-prep.pdf', '5.8 MB', 'application/pdf',
-                'resources/technical-interview-prep.pdf',
-                'https://storage.fop.com/resources/technical-interview-prep.pdf',
-                'FOP Team', true
-            ),
-            (
-                'Finance Career Pathways', 
-                'Explore different career paths in finance and banking',
-                'Understand the various roles available in finance, from investment banking to asset management.',
-                '• Career path diagrams\n• Role descriptions\n• Salary expectations\n• Required qualifications',
-                'Career Guides',
-                'finance-career-pathways.pdf', '3.2 MB', 'application/pdf',
-                'resources/finance-career-pathways.pdf',
-                'https://storage.fop.com/resources/finance-career-pathways.pdf',
-                'FOP Team', true
-            ),
-            (
-                'LinkedIn Optimization Checklist', 
-                'Step-by-step guide to creating a professional LinkedIn profile',
-                'Optimize your LinkedIn profile to attract recruiters and build your professional network.',
-                '• Profile checklist\n• Headline examples\n• Summary templates\n• Networking strategies',
-                'Professional Development',
-                'linkedin-optimization.pdf', '1.8 MB', 'application/pdf',
-                'resources/linkedin-optimization.pdf',
-                'https://storage.fop.com/resources/linkedin-optimization.pdf',
+                'Prepare for technical interviews at FAANG and top tech companies. Comprehensive guide covering data structures, algorithms, system design, and behavioral questions.',
+                '• 200+ coding problems with solutions\n• Video walkthroughs\n• Time & space complexity analysis\n• System design templates\n• Mock interview tips',
+                'Interviews',
+                'technical-interview-mastery.pdf', '6.2 MB', 'application/pdf',
+                'resources/technical-interview-mastery.pdf',
+                'https://storage.fop.com/resources/technical-interview-mastery.pdf',
                 'FOP Team', true
             ),
             (
                 'Assessment Centre Success Guide', 
                 'Navigate assessment centres with confidence',
-                'Learn what to expect at assessment centres and how to excel in group exercises, presentations, and case studies.',
-                '• Assessment centre overview\n• Group exercise tips\n• Presentation frameworks\n• Case study examples',
-                'Interview Prep',
-                'assessment-centre-guide.pdf', '4.1 MB', 'application/pdf',
+                'Complete guide to excelling at assessment centres. Learn what to expect and how to perform well in group exercises, presentations, case studies, and psychometric tests.',
+                '• Assessment centre overview\n• Group exercise strategies\n• Presentation frameworks\n• Case study examples\n• Psychometric test practice',
+                'Assessment Centres',
+                'assessment-centre-guide.pdf', '3.4 MB', 'application/pdf',
                 'resources/assessment-centre-guide.pdf',
                 'https://storage.fop.com/resources/assessment-centre-guide.pdf',
+                'FOP Team', true
+            ),
+            (
+                'LinkedIn Profile Optimization', 
+                'Build a professional LinkedIn presence that attracts recruiters',
+                'Optimize your LinkedIn profile to stand out to recruiters and build your professional network. Includes profile examples, headline formulas, and networking strategies.',
+                '• Profile optimization checklist\n• 50+ headline examples\n• Summary templates\n• Networking message templates\n• Content posting guide',
+                'LinkedIn Optimization',
+                'linkedin-optimization-2025.pdf', '2.1 MB', 'application/pdf',
+                'resources/linkedin-optimization-2025.pdf',
+                'https://storage.fop.com/resources/linkedin-optimization-2025.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Graduate Scheme Application Guide', 
+                'Everything you need to know about applying to graduate schemes',
+                'Comprehensive guide to graduate scheme applications covering timelines, application forms, online tests, video interviews, and assessment centres.',
+                '• Application timeline planner\n• Top graduate schemes list\n• Application form tips\n• Video interview guide\n• Competency framework',
+                'Graduate Schemes',
+                'graduate-scheme-guide.pdf', '4.1 MB', 'application/pdf',
+                'resources/graduate-scheme-guide.pdf',
+                'https://storage.fop.com/resources/graduate-scheme-guide.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Networking for Students', 
+                'Build meaningful professional connections',
+                'Learn how to network effectively as a student. Covers networking events, informational interviews, LinkedIn networking, and maintaining professional relationships.',
+                '• Networking event preparation\n• Conversation starters\n• Email templates\n• Follow-up strategies\n• Building long-term relationships',
+                'Networking',
+                'networking-for-students.pdf', '2.3 MB', 'application/pdf',
+                'resources/networking-for-students.pdf',
+                'https://storage.fop.com/resources/networking-for-students.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Career Planning Workbook', 
+                'Map out your career journey with structured exercises',
+                'Interactive workbook to help you explore career options, set goals, and create an action plan. Includes self-assessment tools and decision-making frameworks.',
+                '• Self-assessment exercises\n• Career exploration tools\n• Goal-setting templates\n• Action plan worksheets\n• Progress tracking sheets',
+                'Career Planning',
+                'career-planning-workbook.pdf', '3.7 MB', 'application/pdf',
+                'resources/career-planning-workbook.pdf',
+                'https://storage.fop.com/resources/career-planning-workbook.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Finance Industry Insights 2025', 
+                'Understand the finance industry and career paths',
+                'Comprehensive overview of the finance industry including investment banking, asset management, private equity, and fintech. Includes salary guides and career progression paths.',
+                '• Industry overview\n• Role descriptions\n• Salary benchmarks\n• Career progression maps\n• Top firms list',
+                'Industry Insights',
+                'finance-industry-insights.pdf', '3.9 MB', 'application/pdf',
+                'resources/finance-industry-insights.pdf',
+                'https://storage.fop.com/resources/finance-industry-insights.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Internship Application Checklist', 
+                'Step-by-step guide to securing your dream internship',
+                'Complete checklist for internship applications from research to offer acceptance. Includes timeline, application tips, and interview preparation.',
+                '• Application timeline\n• Research checklist\n• Application tracking sheet\n• Interview prep guide\n• Offer evaluation framework',
+                'Internship Guides',
+                'internship-application-checklist.pdf', '1.9 MB', 'application/pdf',
+                'resources/internship-application-checklist.pdf',
+                'https://storage.fop.com/resources/internship-application-checklist.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Personal Branding for Graduates', 
+                'Build your professional brand and stand out',
+                'Learn how to develop and communicate your personal brand across all touchpoints. Covers online presence, elevator pitches, and professional storytelling.',
+                '• Brand discovery exercises\n• Elevator pitch templates\n• Online presence audit\n• Professional bio examples\n• Content creation guide',
+                'Personal Branding',
+                'personal-branding-guide.pdf', '2.6 MB', 'application/pdf',
+                'resources/personal-branding-guide.pdf',
+                'https://storage.fop.com/resources/personal-branding-guide.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Salary Negotiation Guide', 
+                'Negotiate your worth with confidence',
+                'Master the art of salary negotiation. Learn how to research market rates, prepare your case, and negotiate effectively for graduate roles and internships.',
+                '• Market research guide\n• Negotiation scripts\n• Counter-offer strategies\n• Benefits evaluation\n• Email templates',
+                'Salary & Benefits',
+                'salary-negotiation-guide.pdf', '2.2 MB', 'application/pdf',
+                'resources/salary-negotiation-guide.pdf',
+                'https://storage.fop.com/resources/salary-negotiation-guide.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Skills Development Roadmap', 
+                'Identify and develop in-demand skills',
+                'Comprehensive guide to developing technical and soft skills that employers value. Includes learning resources, project ideas, and skill assessment tools.',
+                '• Skills gap analysis\n• Learning resource directory\n• Project-based learning ideas\n• Skill certification guide\n• Portfolio building tips',
+                'Skills Development',
+                'skills-development-roadmap.pdf', '3.5 MB', 'application/pdf',
+                'resources/skills-development-roadmap.pdf',
+                'https://storage.fop.com/resources/skills-development-roadmap.pdf',
+                'FOP Team', true
+            ),
+            (
+                'First Job Survival Guide', 
+                'Thrive in your first professional role',
+                'Navigate your first job successfully. Covers workplace etiquette, building relationships, managing expectations, and making a strong impression in your first 90 days.',
+                '• First 90 days checklist\n• Workplace etiquette guide\n• Relationship building tips\n• Performance expectations\n• Common pitfalls to avoid',
+                'First Job',
+                'first-job-survival-guide.pdf', '2.4 MB', 'application/pdf',
+                'resources/first-job-survival-guide.pdf',
+                'https://storage.fop.com/resources/first-job-survival-guide.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Remote Work Best Practices', 
+                'Excel in remote and hybrid work environments',
+                'Master remote work with tips on productivity, communication, work-life balance, and building relationships virtually. Essential for modern work environments.',
+                '• Home office setup guide\n• Productivity tools & techniques\n• Virtual communication tips\n• Time management strategies\n• Work-life balance framework',
+                'Remote Work',
+                'remote-work-best-practices.pdf', '2.8 MB', 'application/pdf',
+                'resources/remote-work-best-practices.pdf',
+                'https://storage.fop.com/resources/remote-work-best-practices.pdf',
                 'FOP Team', true
             )
     `);
     
-    console.log('✅ Resources seeded');
+    console.log('✅ Resources seeded (15 diverse resources with proper categories)');
 };
 
 const runTestSeed = async () => {

@@ -1,31 +1,29 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "lucide-react";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import BrowseCategory from "../../components/BrowseEvents/BrowseEvents";
-import { mockEvents } from "../../services/Events/events"
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import ErrorMessage from "../../components/Ui/ErrorMessage";
+import EmptyState from "../../components/Ui/EmptyState";
+import { eventsService } from "../../services"
 
 
 export default function Events() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [totalEvents, setTotalEvents] = useState(0);
+  const [categories, setCategories] = useState([]);
   const eventsPerPage = 6;
-
-  // Need to get this from the add as a category
-  const categories = [
-    { label: "Career Fairs", count: 12 },
-    { label: "Workshops", count: 24 },
-    { label: "Networking", count: 18 },
-    { label: "Conferences", count: 8 },
-    { label: "Bootcamps", count: 15 },
-    { label: "Panels", count: 10 },
-  ];
 
   const toggleFavorite = (index) => {
     setFavorites((prev) => {
@@ -44,30 +42,70 @@ export default function Events() {
     setCurrentPage(1);
   };
 
+  // Fetch events from API
+  useEffect(() => {
+    fetchEvents();
+  }, [currentPage, sortBy, searchQuery, selectedCategory]);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const filters = {
+        page: currentPage,
+        limit: eventsPerPage,
+        is_active: true
+      };
+
+      if (searchQuery) filters.search = searchQuery;
+      if (selectedCategory) filters.event_type = selectedCategory;
+
+      const sortMap = {
+        'recent': 'created_at',
+        'date': 'event_date',
+        'title': 'title'
+      };
+      filters.sort_by = sortMap[sortBy] || 'event_date';
+      filters.sort_order = 'asc';
+
+      const response = await eventsService.getEventsAdvanced(filters);
+      setEvents(response.events || []);
+      setTotalEvents(response.total || 0);
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      setError(err.message || 'Failed to load events');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch categories/event types
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true });
+        const eventTypes = {};
+        response.events?.forEach(event => {
+          if (event.event_type) {
+            eventTypes[event.event_type] = (eventTypes[event.event_type] || 0) + 1;
+          }
+        });
+        const cats = Object.entries(eventTypes).map(([label, count]) => ({ label, count }));
+        setCategories(cats);
+      } catch (err) {
+        console.error('Error loading categories:', err);
+      }
+    };
+    loadCategories();
+  }, []);
+
   const handleSearch = (filters) => {
     setSearchQuery(filters.query);
     setCurrentPage(1);
   };
 
-  // Filter events by search query and category
-  const filteredEvents = mockEvents.filter(event => {
-    const matchesSearch = !searchQuery || 
-      event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.organizer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.tags?.some(tag => tag.label.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = !selectedCategory ||
-      event.tags?.some(tag => tag.label.toLowerCase().includes(selectedCategory.toLowerCase()));
-    
-    return matchesSearch && matchesCategory;
-  });
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-  const startIndex = (currentPage - 1) * eventsPerPage;
-  const endIndex = startIndex + eventsPerPage;
-  const currentEvents = filteredEvents.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(totalEvents / eventsPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -110,7 +148,7 @@ export default function Events() {
               Upcoming Events
             </h2>
             <p className="text-muted-foreground text-sm text-left">
-              {filteredEvents.length} events available
+              {totalEvents} events available
               {selectedCategory && (
                 <span className="ml-2 text-primary">
                   (filtered by {selectedCategory})
@@ -134,23 +172,45 @@ export default function Events() {
         />
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {currentEvents.map((event, index) => (
-            <EventCard
-              key={index}
-              {...event}
-              isFavorite={favorites.has(startIndex + index)}
-              onFavoriteClick={() => toggleFavorite(startIndex + index)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="py-20">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : error ? (
+          <ErrorMessage message={error} onRetry={fetchEvents} />
+        ) : events.length === 0 ? (
+          <EmptyState 
+            icon={Calendar}
+            title="No events found"
+            message="Try adjusting your search or category filter to find more events"
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {events.map((event) => (
+                <EventCard
+                  key={event.event_id}
+                  eventId={event.event_id}
+                  title={event.title}
+                  organizer={event.organizer}
+                  date={event.event_date}
+                  time={event.event_time}
+                  location={event.location}
+                  tags={event.tags || []}
+                  isFavorite={favorites.has(event.event_id)}
+                  onFavoriteClick={() => toggleFavorite(event.event_id)}
+                />
+              ))}
+            </div>
 
-        {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
       </div>
     </div>
   );

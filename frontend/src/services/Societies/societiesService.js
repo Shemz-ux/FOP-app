@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPatch, apiDelete } from './api';
+import { apiGet, apiPost, apiPatch, apiDelete } from '../api';
 
 // Get all societies
 export const getSocieties = async () => {

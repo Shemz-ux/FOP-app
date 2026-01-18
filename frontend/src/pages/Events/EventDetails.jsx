@@ -1,18 +1,49 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Bookmark, Share2, MapPin, Clock, Users, Calendar } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
-import { mockEventDetails } from '../../services/Events/events';
+import LoadingSpinner from '../../components/Ui/LoadingSpinner';
+import ErrorMessage from '../../components/Ui/ErrorMessage';
+import { eventsService } from '../../services';
 
 export default function EventDetails() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
-  const event = eventId ? mockEventDetails.find(event => event.id === eventId) : null;
+  // Fetch event details
+  useEffect(() => {
+    const fetchEvent = async () => {
+      if (!eventId) return;
+      
+      try {
+        setLoading(true);
+        setError(null);
+        const eventData = await eventsService.getEventById(eventId);
+        setEvent(eventData);
+      } catch (err) {
+        console.error('Error fetching event:', err);
+        setError(err.message || 'Failed to load event details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvent();
+  }, [eventId]);
 
-  if (!event) {
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="xl" />
+      </div>
+    );
+  }
+
+  if (error || !event) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-secondary/30">
         <div className="container mx-auto px-6 py-20">
@@ -35,7 +66,7 @@ export default function EventDetails() {
               </div>
               <h1 className="text-3xl font-bold mb-3 text-foreground">Event Not Found</h1>
               <p className="text-muted-foreground mb-8">
-                The event you're looking for doesn't exist or has been removed. It may have been filled or the posting has expired.
+                {error || "The event you're looking for doesn't exist or has been removed. It may have been cancelled or the posting has expired."}
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -63,7 +94,7 @@ export default function EventDetails() {
     // In a real app, this would submit the registration
   };
 
-  const spotsLeft = event.capacity - event.attendees;
+  const spotsLeft = event.capacity ? (event.capacity - (event.attendees || 0)) : null;
 
   return (
     <div className="min-h-screen">

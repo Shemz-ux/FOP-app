@@ -11,10 +11,10 @@ export const getJobs = async (filters = {}) => {
 // Get jobs with advanced filtering
 export const getJobsAdvanced = async (filters = {}) => {
   const queryString = buildQueryString(filters);
-  const data = await apiGet(`/jobs/advanced${queryString}`);
+  const data = await apiGet(`/jobs/search${queryString}`);
   return {
     ...data,
-    jobs: addJobTagsToList(data.jobs)
+    jobs: addJobTagsToList(data.jobs || [])
   };
 };
 

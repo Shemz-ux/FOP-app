@@ -129,7 +129,11 @@ export const fetchJobsAdvanced = (filters = {}) => {
         ${limitClause}
     `;
 
+    console.log('🔍 Jobs Query:', query);
+    console.log('📊 Query Params:', params);
+
     return db.query(query, params).then(({ rows }) => {
+        console.log('✅ Jobs Found:', rows.length);
         return rows;
     });
 };
