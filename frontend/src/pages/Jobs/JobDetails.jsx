@@ -200,16 +200,6 @@ export default function JobDetails() {
                 <h3 className="text-foreground mb-4">Job Details</h3>
 
                 <div className="flex items-start gap-3">
-                  <DollarSign className="w-5 h-5 text-primary mt-0.5" />
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-0.5">
-                      Salary
-                    </div>
-                    <div className="text-foreground">{job.salary}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
                   <Users className="w-5 h-5 text-primary mt-0.5" />
                   <div>
                     <div className="text-sm text-muted-foreground mb-0.5">

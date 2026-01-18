@@ -10,7 +10,6 @@ import { mockJobs } from "../../services/Jobs/jobs";
 export default function Jobs() {
   const [favorites, setFavorites] =  useState(new Set());
   const [sortBy, setSortBy] =  useState("recent");
-  const [salaryRange, setSalaryRange] =  useState([50, 120]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilters, setSearchFilters] = useState({ query: '', location: '' });
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -28,6 +27,12 @@ export default function Jobs() {
     { label: "Entry level", count: 392, checked: false },
     { label: "Intermediate", count: 124, checked: true },
     { label: "Expert", count: 3021, checked: true },
+  ]);
+
+  const [workTypes, setWorkTypes] = useState([
+    { label: "Remote", checked: true },
+    { label: "Hybrid", checked: true },
+    { label: "On-site", checked: true },
   ]);
 
   const toggleFavorite = (index) => {
@@ -58,10 +63,19 @@ export default function Jobs() {
     );
   };
 
-  const handleClearAll = () => {
-    setJobTypes((prev) =>
-      prev.map((item) => ({ ...item, checked: false }))
+  const handleWorkTypeChange = (index, checked) => {
+    setWorkTypes((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, checked } : item
+      )
     );
+  };
+
+  const handleClearAll = () => {
+    setJobTypes((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setExperienceLevels((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setWorkTypes((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setCurrentPage(1);
   };
 
   const handleSearch = (filters) => {
@@ -121,10 +135,10 @@ export default function Jobs() {
               <FilterSidebar
                 jobTypes={jobTypes}
                 experienceLevels={experienceLevels}
-                salaryRange={salaryRange}
+                workTypes={workTypes}
                 onJobTypeChange={handleJobTypeChange}
                 onExperienceLevelChange={handleExperienceLevelChange}
-                onSalaryRangeChange={setSalaryRange}
+                onWorkTypeChange={handleWorkTypeChange}
                 onClearAll={handleClearAll}
               />
             </div>
@@ -152,10 +166,10 @@ export default function Jobs() {
               <FilterSidebar
                 jobTypes={jobTypes}
                 experienceLevels={experienceLevels}
-                salaryRange={salaryRange}
+                workTypes={workTypes}
                 onJobTypeChange={handleJobTypeChange}
                 onExperienceLevelChange={handleExperienceLevelChange}
-                onSalaryRangeChange={setSalaryRange}
+                onWorkTypeChange={handleWorkTypeChange}
                 onClearAll={handleClearAll}
               />
             </div>

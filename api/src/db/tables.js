@@ -174,7 +174,7 @@ const createSocietiesTable = () => {
 }
 
 const createJobsTable = () => {
-    return db.query(`CREATE TABLE jobs (
+    return db.query(`CREATE TABLE IF NOT EXISTS jobs (
         job_id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         company VARCHAR(255) NOT NULL,
@@ -189,7 +189,6 @@ const createJobsTable = () => {
         role_type VARCHAR(255),
         work_type VARCHAR(255),
         job_link VARCHAR(255),
-        salary VARCHAR(255),
         deadline DATE,
         is_active BOOLEAN DEFAULT TRUE,
         applicant_count INT DEFAULT 0,

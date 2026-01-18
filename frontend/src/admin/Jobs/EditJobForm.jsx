@@ -10,7 +10,6 @@ export function EditJobForm({ job, onCancel }) {
     shortDescription: job?.shortDescription || job?.description || '',
     industry: job?.industry || '',
     location: job?.location || '',
-    salary: job?.salary || '',
     job_level: job?.job_level || '',
     role_type: job?.role_type || '',
     work_mode: job?.work_mode || '',
@@ -234,20 +233,6 @@ export function EditJobForm({ job, onCancel }) {
                 value={formData.job_link}
                 onChange={(e) => setFormData({ ...formData, job_link: e.target.value })}
                 placeholder="https://company.com/jobs/123"
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="salary" className="block text-sm mb-2 text-foreground">
-                Salary Range
-              </label>
-              <input
-                id="salary"
-                type="text"
-                value={formData.salary}
-                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                placeholder="e.g. £40,000 - £60,000"
                 className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>

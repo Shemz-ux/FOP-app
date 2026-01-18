@@ -118,7 +118,6 @@ export const fetchJobsAdvanced = (filters = {}) => {
             role_type,
             work_type,
             job_link,
-            salary,
             deadline,
             is_active,
             applicant_count,

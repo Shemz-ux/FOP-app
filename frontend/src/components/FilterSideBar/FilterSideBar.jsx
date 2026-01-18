@@ -1,14 +1,13 @@
 import React from 'react';
 import { Checkbox } from '../Ui/Checkbox.jsx';
-import { Slider } from '../Ui/Slider.jsx';
 
 export default function FilterSidebar({
   jobTypes,
   experienceLevels,
-  salaryRange,
+  workTypes,
   onJobTypeChange,
   onExperienceLevelChange,
-  onSalaryRangeChange,
+  onWorkTypeChange,
   onClearAll,
 }) {
   return (
@@ -48,30 +47,29 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Salary Range Filter */}
+      {/* Work Type Filter */}
       <div>
-        <h3 className="text-card-foreground text-left mb-4">Salary Range</h3>
-        <div className="px-2">
-          <Slider
-            value={salaryRange}
-            onValueChange={(value) => {
-              if (onSalaryRangeChange) {
-                onSalaryRangeChange(value);
-              }
-            }}
-            min={0}
-            max={200}
-            step={10}
-            className="mb-4"
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">
-              ${salaryRange[0]}k
-            </span>
-            <span className="text-muted-foreground">
-              ${salaryRange[1]}k
-            </span>
-          </div>
+        <h3 className="text-card-foreground text-left mb-4">Work Type</h3>
+        <div className="space-y-3">
+          {workTypes && workTypes.map((type, index) => (
+            <div key={index} className="flex items-center gap-3">
+              <Checkbox
+                id={`work-type-${index}`}
+                checked={type.checked}
+                onCheckedChange={(checked) => {
+                  if (onWorkTypeChange) {
+                    onWorkTypeChange(index, Boolean(checked));
+                  }
+                }}
+              />
+              <label
+                htmlFor={`work-type-${index}`}
+                className="flex-1 text-muted-foreground cursor-pointer text-left"
+              >
+                {type.label}
+              </label>
+            </div>
+          ))}
         </div>
       </div>
 

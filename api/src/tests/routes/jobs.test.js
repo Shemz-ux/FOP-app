@@ -58,7 +58,6 @@ describe('Jobs API Endpoints', () => {
                 role_type: 'Full-time',
                 work_type: 'Remote',
                 job_link: 'https://testcorp.com/jobs/123',
-                salary: '£50,000 - £70,000',
                 deadline: '2024-12-31',
                 is_active: true
             };
@@ -183,7 +182,6 @@ describe('Jobs API Endpoints', () => {
                 company: 'Updated Company',
                 company_color: '#10B981',
                 description: 'Updated description',
-                salary: '£60,000 - £80,000',
                 experience_level: 'Senior',
                 work_type: 'Hybrid'
             };
@@ -198,7 +196,6 @@ describe('Jobs API Endpoints', () => {
             expect(response.body.job).toHaveProperty('job_id');
             expect(response.body.job.title).toBe('Updated Job Title');
             expect(response.body.job.company).toBe('Updated Company');
-            expect(response.body.job.salary).toBe('£60,000 - £80,000');
             expect(response.body.job.company_color).toBe('#10B981');
             expect(response.body.job.experience_level).toBe('Senior');
             expect(response.body.job.work_type).toBe('Hybrid');

@@ -21,8 +21,6 @@ export default function SortDropdown({ value = 'recent', onValueChange }) {
       <SelectContent>
         <SelectItem value="recent">Most recent</SelectItem>
         <SelectItem value="relevant">Most relevant</SelectItem>
-        <SelectItem value="salary-high">Salary: High to Low</SelectItem>
-        <SelectItem value="salary-low">Salary: Low to High</SelectItem>
       </SelectContent>
     </Select>
   );

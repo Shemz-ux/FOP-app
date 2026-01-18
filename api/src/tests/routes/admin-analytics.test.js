@@ -82,23 +82,21 @@ describe('Admin Analytics API Endpoints', () => {
         const jobs = [
             {
                 title: "Software Engineer Admin Test",
-                company: "Tech Corp Admin",
-                description: "Test job for admin routes",
+                company: "TechCorp",
+                description: "Test job for analytics",
                 industry: "Technology",
                 location: "London",
                 experience_level: "Entry",
-                role_type: "Full-time",
-                salary: "£30,000"
+                role_type: "Full-time"
             },
             {
                 title: "Data Scientist Admin Test",
-                company: "Data Inc Admin",
-                description: "Another test job for admin routes",
+                company: "DataCorp",
+                description: "Another test job",
                 industry: "Technology",
                 location: "Manchester",
                 experience_level: "Mid",
-                role_type: "Full-time",
-                salary: "£45,000"
+                role_type: "Full-time"
             }
         ];
 
@@ -247,7 +245,7 @@ describe('Admin Analytics API Endpoints', () => {
             const stats = response.body.job_application_stats;
             const testJobStat = stats.find(stat => stat.title === "Software Engineer Admin Test");
             expect(testJobStat).toBeDefined();
-            expect(testJobStat.company).toBe("Tech Corp Admin");
+            expect(testJobStat.company).toBe("TechCorp");
         });
 
         it('should return applications for specific job', async () => {

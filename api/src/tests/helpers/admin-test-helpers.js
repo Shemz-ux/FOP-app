@@ -92,8 +92,7 @@ export class AdminTestHelper {
                 location: "London",
                 experience_level: "Entry",
                 role_type: "Full-time",
-                work_type: "Remote",
-                salary: "£30,000"
+                work_type: "Remote"
             },
             {
                 title: `Data Scientist Helper Test ${timestamp}`,
@@ -107,8 +106,7 @@ export class AdminTestHelper {
                 location: "Manchester",
                 experience_level: "Mid",
                 role_type: "Full-time",
-                work_type: "Hybrid",
-                salary: "£45,000"
+                work_type: "Hybrid"
             }
         ];
 
@@ -341,7 +339,6 @@ export const generateTestJob = (overrides = {}) => {
         job_level: "Entry",
         role_type: "Full-time",
         contact_email: "test@company.com",
-        salary: "£25,000",
         ...overrides
     };
 };
