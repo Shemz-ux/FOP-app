@@ -1009,7 +1009,7 @@ const insertResources = async () => {
                 'Build a professional LinkedIn presence that attracts recruiters',
                 'Optimize your LinkedIn profile to stand out to recruiters and build your professional network. Includes profile examples, headline formulas, and networking strategies.',
                 '• Profile optimization checklist\n• 50+ headline examples\n• Summary templates\n• Networking message templates\n• Content posting guide',
-                'LinkedIn Optimization',
+                'LinkedIn',
                 'linkedin-optimization-2025.pdf', '2.1 MB', 'application/pdf',
                 'resources/linkedin-optimization-2025.pdf',
                 'https://storage.fop.com/resources/linkedin-optimization-2025.pdf',

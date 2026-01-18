@@ -41,34 +41,44 @@ const createResource = async (resourceData) => {
 
 // Get all resources with optional filtering
 const fetchResources = async (filters = {}) => {
-    let query = `
-        SELECT r.*
-        FROM resources r
-        WHERE r.is_active = TRUE
-    `;
+    let whereClause = `WHERE r.is_active = TRUE`;
     const values = [];
     let paramCount = 0;
 
     // Add category filter
     if (filters.category) {
         paramCount++;
-        query += ` AND r.category = $${paramCount}`;
+        whereClause += ` AND r.category = $${paramCount}`;
         values.push(filters.category);
     }
 
     // Add search filter (title or description)
     if (filters.search) {
         paramCount++;
-        query += ` AND (r.title ILIKE $${paramCount} OR r.description ILIKE $${paramCount})`;
+        whereClause += ` AND (r.title ILIKE $${paramCount} OR r.description ILIKE $${paramCount})`;
         values.push(`%${filters.search}%`);
     }
 
     // Add file type filter
     if (filters.file_type) {
         paramCount++;
-        query += ` AND r.file_type = $${paramCount}`;
+        whereClause += ` AND r.file_type = $${paramCount}`;
         values.push(filters.file_type);
     }
+
+    // Get total count with same filters
+    const countQuery = `
+        SELECT COUNT(*) as total
+        FROM resources r
+        ${whereClause}
+    `;
+
+    // Build main query
+    let query = `
+        SELECT r.*
+        FROM resources r
+        ${whereClause}
+    `;
 
     // Add sorting
     const sortBy = filters.sort_by || 'created_at';
@@ -94,8 +104,16 @@ const fetchResources = async (filters = {}) => {
     values.push(offset);
 
     try {
-        const result = await db.query(query, values);
-        return result.rows;
+        // Execute both queries
+        const [countResult, resourcesResult] = await Promise.all([
+            db.query(countQuery, values.slice(0, values.length - 2)), // Exclude LIMIT and OFFSET params
+            db.query(query, values)
+        ]);
+
+        return {
+            resources: resourcesResult.rows,
+            totalCount: parseInt(countResult.rows[0].total)
+        };
     } catch (error) {
         throw error;
     }
@@ -214,7 +232,7 @@ const fetchResourceCategories = async () => {
 
 // Get resource statistics
 const fetchResourceStats = async () => {
-    const query = `
+    const totalQuery = `
         SELECT 
             COUNT(*) as total_resources,
             SUM(download_count) as total_downloads,
@@ -223,9 +241,29 @@ const fetchResourceStats = async () => {
         WHERE is_active = TRUE
     `;
 
+    const categoryQuery = `
+        SELECT 
+            category,
+            COUNT(*) as count
+        FROM resources 
+        WHERE is_active = TRUE
+        GROUP BY category
+        ORDER BY count DESC
+    `;
+
     try {
-        const result = await db.query(query);
-        return result.rows[0];
+        const totalResult = await db.query(totalQuery);
+        const categoryResult = await db.query(categoryQuery);
+        
+        const by_category = {};
+        categoryResult.rows.forEach(row => {
+            by_category[row.category] = parseInt(row.count);
+        });
+
+        return {
+            ...totalResult.rows[0],
+            by_category
+        };
     } catch (error) {
         throw error;
     }

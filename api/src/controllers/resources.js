@@ -56,14 +56,15 @@ const getResources = async (req, res) => {
             limit: req.query.limit || 20
         };
 
-        const resources = await fetchResources(filters);
+        const result = await fetchResources(filters);
 
         res.status(200).json({
-            resources,
+            resources: result.resources,
             pagination: {
                 page: parseInt(filters.page),
                 limit: parseInt(filters.limit),
-                total: resources.length
+                total: result.resources.length,
+                totalCount: result.totalCount
             }
         });
     } catch (error) {
