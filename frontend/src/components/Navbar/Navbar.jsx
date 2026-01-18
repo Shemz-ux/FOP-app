@@ -1,17 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Menu, X, Shield } from 'lucide-react';
+import { Bell, Menu, X, LogIn, Shield } from 'lucide-react';
 import { useState } from 'react';
-import { Avatar, AvatarImage, AvatarFallback } from '../Ui/Avatar.jsx';
 import ThemeToggle from '../Ui/ThemeToggle.jsx';
+import UserMenu from '../UserMenu/UserMenu.jsx';
+import AuthModal from '../AuthModal/AuthModal.jsx';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 
 export default function Navbar({
-  userName = 'User',
-  userImage,
   logo,
-  onNotificationClick,
-  isAuthenticated = true,
-  isAdmin = true
+  onNotificationClick
 }) {
+  const { isLoggedIn, isAdmin } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -147,40 +147,18 @@ export default function Navbar({
             {/* Theme Toggle */}
             <ThemeToggle />
 
-            {/* Admin route */}
-            {isAuthenticated ? (
-              <>
-                {/* Admin Button */}
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="p-2 hover:bg-secondary rounded-lg transition-colors relative"
-                    title="Admin Dashboard"
-                  >
-                    <Shield className="w-5 h-5 text-primary" />
-                  </Link>
-                )}
-
-                {/* Notifications */}
-                {/* <button
-                  onClick={onNotificationClick}
-                  className="p-2 hover:bg-secondary rounded-lg transition-colors relative cursor-pointer"
-                  aria-label="Notifications"
-                >
-                  <Bell className="w-5 h-5 text-foreground" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
-                </button> */}
-
-                {/* User Profile */}
-                <Link to="/profile" className="flex items-center gap-3 pl-4 border-l border-border hover:opacity-80 transition-opacity">
-                  <span className="text-foreground hidden lg:block">{userName}</span>
-                  <Avatar>
-                    <AvatarImage src={userImage} alt={userName} />
-                    <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                </Link>
-              </>
-            ) : null}
+            {/* Auth Section */}
+            {isLoggedIn() ? (
+              <UserMenu />
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="flex items-center gap-2 px-4 py-2 text-foreground hover:text-primary transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                <span className="font-medium">Sign In</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -213,7 +191,7 @@ export default function Navbar({
           {/* Mobile Navigation Links */}
           <nav className="flex-1 px-6 py-4">
             <div className="space-y-2 text-left">
-              {isAdmin && (
+              {isAdmin() && (
                 <Link
                   to="/admin"
                   onClick={closeMobileMenu}
@@ -298,6 +276,12 @@ export default function Navbar({
 
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </header>
   );
 }

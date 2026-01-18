@@ -33,7 +33,7 @@ export const RESOURCE_CATEGORIES = [
   
   // Networking & Personal Brand
   { value: 'Networking', label: 'Networking', variant: 'pink', icon: 'Users' },
-  { value: 'LinkedIn Optimization', label: 'LinkedIn', variant: 'blue', icon: 'Linkedin' },
+  { value: 'LinkedIn', label: 'LinkedIn', variant: 'blue', icon: 'Linkedin' },
   { value: 'Personal Branding', label: 'Personal Brand', variant: 'fuchsia', icon: 'User' },
   { value: 'Social Media', label: 'Social Media', variant: 'purple', icon: 'Share2' },
   

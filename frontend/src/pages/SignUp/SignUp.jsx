@@ -10,6 +10,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import CustomSelect from "../../components/Ui/CustomSelect";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -324,19 +325,19 @@ export default function SignUp() {
               <label htmlFor="gender" className="block text-sm mb-2 text-foreground">
                 Gender *
               </label>
-              <select
+              <CustomSelect
                 id="gender"
                 value={jobSeekerData.gender}
                 onChange={(e) => setJobSeekerData({ ...jobSeekerData, gender: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Select gender"
                 required
-              >
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="non-binary">Non-binary</option>
-                <option value="prefer-not-to-say">Prefer not to say</option>
-              </select>
+                options={[
+                  { value: "male", label: "Male" },
+                  { value: "female", label: "Female" },
+                  { value: "non-binary", label: "Non-binary" },
+                  { value: "prefer-not-to-say", label: "Prefer not to say" }
+                ]}
+              />
             </div>
           </div>
 
@@ -345,32 +346,32 @@ export default function SignUp() {
             <label htmlFor="ethnicity" className="block text-sm mb-2 text-foreground">
               Ethnicity *
             </label>
-            <select
+            <CustomSelect
               id="ethnicity"
               value={jobSeekerData.ethnicity}
               onChange={(e) => setJobSeekerData({ ...jobSeekerData, ethnicity: e.target.value })}
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Select ethnicity"
               required
-            >
-              <option value="">Select ethnicity</option>
-              <option value="White British">White British</option>
-              <option value="White Irish">White Irish</option>
-              <option value="White Other">White Other</option>
-              <option value="Mixed White and Black Caribbean">Mixed White and Black Caribbean</option>
-              <option value="Mixed White and Black African">Mixed White and Black African</option>
-              <option value="Mixed White and Asian">Mixed White and Asian</option>
-              <option value="Mixed Other">Mixed Other</option>
-              <option value="Asian or Asian British Indian">Asian or Asian British Indian</option>
-              <option value="Asian or Asian British Pakistani">Asian or Asian British Pakistani</option>
-              <option value="Asian or Asian British Bangladeshi">Asian or Asian British Bangladeshi</option>
-              <option value="Asian Other">Asian Other</option>
-              <option value="Black or Black British Caribbean">Black or Black British Caribbean</option>
-              <option value="Black or Black British African">Black or Black British African</option>
-              <option value="Black Other">Black Other</option>
-              <option value="Chinese">Chinese</option>
-              <option value="Other">Other</option>
-              <option value="Prefer not to say">Prefer not to say</option>
-            </select>
+              options={[
+                { value: "White British", label: "White British" },
+                { value: "White Irish", label: "White Irish" },
+                { value: "White Other", label: "White Other" },
+                { value: "Mixed White and Black Caribbean", label: "Mixed White and Black Caribbean" },
+                { value: "Mixed White and Black African", label: "Mixed White and Black African" },
+                { value: "Mixed White and Asian", label: "Mixed White and Asian" },
+                { value: "Mixed Other", label: "Mixed Other" },
+                { value: "Asian or Asian British Indian", label: "Asian or Asian British Indian" },
+                { value: "Asian or Asian British Pakistani", label: "Asian or Asian British Pakistani" },
+                { value: "Asian or Asian British Bangladeshi", label: "Asian or Asian British Bangladeshi" },
+                { value: "Asian Other", label: "Asian Other" },
+                { value: "Black or Black British Caribbean", label: "Black or Black British Caribbean" },
+                { value: "Black or Black British African", label: "Black or Black British African" },
+                { value: "Black Other", label: "Black Other" },
+                { value: "Chinese", label: "Chinese" },
+                { value: "Other", label: "Other" },
+                { value: "Prefer not to say", label: "Prefer not to say" }
+              ]}
+            />
           </div>
 
           {/* Background Questions */}
@@ -440,20 +441,20 @@ export default function SignUp() {
             <label htmlFor="education_level" className="block text-sm mb-2 text-foreground">
               Education Level *
             </label>
-            <select
+            <CustomSelect
               id="education_level"
               value={jobSeekerData.education_level}
               onChange={(e) => setJobSeekerData({ ...jobSeekerData, education_level: e.target.value })}
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Select education level"
               required
-            >
-              <option value="">Select education level</option>
-              <option value="undergraduate">Undergraduate</option>
-              <option value="postgraduate">Postgraduate</option>
-              <option value="doctorate">Doctorate</option>
-              <option value="a-levels">A-Levels</option>
-              <option value="gcse">GCSE</option>
-            </select>
+              options={[
+                { value: "undergraduate", label: "Undergraduate" },
+                { value: "postgraduate", label: "Postgraduate" },
+                { value: "doctorate", label: "Doctorate" },
+                { value: "a-levels", label: "A-Levels" },
+                { value: "gcse", label: "GCSE" }
+              ]}
+            />
           </div>
 
           {/* Institution Name */}
@@ -478,41 +479,41 @@ export default function SignUp() {
               <label htmlFor="uni_year" className="block text-sm mb-2 text-foreground">
                 Year of Study *
               </label>
-              <select
+              <CustomSelect
                 id="uni_year"
                 value={jobSeekerData.uni_year}
                 onChange={(e) => setJobSeekerData({ ...jobSeekerData, uni_year: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Select year"
                 required
-              >
-                <option value="">Select year</option>
-                <option value="1st">1st Year</option>
-                <option value="2nd">2nd Year</option>
-                <option value="3rd">3rd Year</option>
-                <option value="4th">4th Year</option>
-                <option value="final">Final Year</option>
-              </select>
+                options={[
+                  { value: "1st", label: "1st Year" },
+                  { value: "2nd", label: "2nd Year" },
+                  { value: "3rd", label: "3rd Year" },
+                  { value: "4th", label: "4th Year" },
+                  { value: "final", label: "Final Year" }
+                ]}
+              />
             </div>
             <div>
               <label htmlFor="degree_type" className="block text-sm mb-2 text-foreground">
                 Degree Type *
               </label>
-              <select
+              <CustomSelect
                 id="degree_type"
                 value={jobSeekerData.degree_type}
                 onChange={(e) => setJobSeekerData({ ...jobSeekerData, degree_type: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                placeholder="Select degree type"
                 required
-              >
-                <option value="">Select degree type</option>
-                <option value="bsc">BSc</option>
-                <option value="ba">BA</option>
-                <option value="beng">BEng</option>
-                <option value="msc">MSc</option>
-                <option value="ma">MA</option>
-                <option value="meng">MEng</option>
-                <option value="phd">PhD</option>
-              </select>
+                options={[
+                  { value: "bsc", label: "BSc" },
+                  { value: "ba", label: "BA" },
+                  { value: "beng", label: "BEng" },
+                  { value: "msc", label: "MSc" },
+                  { value: "ma", label: "MA" },
+                  { value: "meng", label: "MEng" },
+                  { value: "phd", label: "PhD" }
+                ]}
+              />
             </div>
           </div>
 

@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Eye, Calendar, User, FileText, BookOpen, File, Share2 } from 'lucide-react';
+import { ArrowLeft, Download, FileText, BookOpen, File, Share2, Clock, User, Calendar } from 'lucide-react';
+import JobBadge from '../../components/Ui/JobBadge';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
-import { mockResources } from '../../services/Resources/resources';
+import LoadingSpinner from '../../components/Ui/LoadingSpinner';
+import ErrorMessage from '../../components/Ui/ErrorMessage';
+import { resourcesService } from '../../services';
+import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
+import { formatTimeAgo } from '../../utils/timeFormatter';
 
 const iconMap = {
   FileText: FileText,
@@ -15,36 +20,59 @@ export default function ResourceDetail() {
   const navigate = useNavigate();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchResource = async () => {
-      setLoading(true);
-      const foundResource = mockResources.find(r => r.id === parseInt(id));
-      
-      if (foundResource) {
-        setResource(foundResource);
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await resourcesService.getResourceById(id);
+        setResource(data);
+      } catch (err) {
+        console.error('Error fetching resource:', err);
+        setError(err.message || 'Failed to load resource');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchResource();
   }, [id]);
 
-  const handleDownload = () => {
-    console.log('Download resource:', resource.title);
+  const handleDownload = async () => {
+    try {
+      const downloadUrl = await resourcesService.downloadResource(id);
+      window.open(downloadUrl, '_blank');
+    } catch (err) {
+      console.error('Error downloading resource:', err);
+    }
   };
 
   const handleShare = () => {
-    console.log('Share resource:', resource.title);
+    if (navigator.share) {
+      navigator.share({
+        title: resource.title,
+        text: resource.description,
+        url: window.location.href,
+      }).catch(err => console.log('Error sharing:', err));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading resource...</p>
-        </div>
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <ErrorMessage message={error} onRetry={() => window.location.reload()} />
       </div>
     );
   }
@@ -72,19 +100,8 @@ export default function ResourceDetail() {
     );
   }
 
-  const IconComponent = iconMap[resource.iconType] || FileText;
-  const categoryColors = {
-    purple: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-    green: 'bg-green-500/10 text-green-500 border-green-500/20',
-    orange: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-    pink: 'bg-pink-500/10 text-pink-500 border-pink-500/20',
-    blue: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    teal: 'bg-teal-500/10 text-teal-500 border-teal-500/20',
-  };
-
-  const relatedResources = mockResources
-    .filter(r => r.category === resource.category && r.id !== resource.id)
-    .slice(0, 3);
+  const categoryInfo = RESOURCE_CATEGORIES.find(c => c.value === resource.category);
+  const IconComponent = iconMap[categoryInfo?.icon] || FileText;
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,19 +120,30 @@ export default function ResourceDetail() {
             {/* Header */}
             <div className="bg-card border border-border rounded-2xl p-8">
               <div className="flex items-start gap-6 mb-6">
-                <div className={`w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0 ${categoryColors[resource.categoryVariant] || categoryColors.purple} border`}>
+                <div className="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0 bg-primary/10 text-primary border border-primary/20">
                   <IconComponent className="w-8 h-8" />
                 </div>
                 <div className="flex-1">
                   <h1 className="text-3xl mb-3 text-foreground text-left">{resource.title}</h1>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className={`px-3 py-1 rounded-lg text-sm border ${categoryColors[resource.categoryVariant] || categoryColors.purple}`}>
-                      {resource.category}
-                    </span>
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-2 text-muted-foreground mb-3 text-left">
+                    <span className="flex items-center gap-1">
                       <Download className="w-4 h-4" />
-                      {resource.downloads.toLocaleString()} downloads
+                      {resource.download_count?.toLocaleString() || 0} downloads
                     </span>
+                    {resource.created_at && (
+                      <>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {formatTimeAgo(resource.created_at)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <JobBadge variant={categoryInfo?.variant || 'gray'}>
+                      {resource.category}
+                    </JobBadge>
                   </div>
                 </div>
               </div>
@@ -126,78 +154,32 @@ export default function ResourceDetail() {
             </div>
 
             {/* Detailed Description */}
-            <div className="bg-card border border-border rounded-2xl p-8">
-              <h2 className="text-2xl mb-4 text-foreground text-left">About This Resource</h2>
-              <StructuredDescription description={resource.detailedDescription} />
-            </div>
-
-            {/* What's Included */}
-            <div className="bg-card border border-border rounded-2xl p-8">
-              <h2 className="text-2xl mb-4 text-foreground text-left">What's Included</h2>
-              <ul className="space-y-3 text-left">
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-foreground">Comprehensive guide with step-by-step instructions</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-foreground">Real-world examples and case studies</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-foreground">Customizable templates and worksheets</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-foreground">Expert tips and best practices</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Related Resources */}
-            {relatedResources.length > 0 && (
-              <div className="bg-card border border-border rounded-2xl p-8">
-                <h2 className="text-2xl mb-6 text-foreground text-left">Related Resources</h2>
-                <div className="grid md:grid-cols-3 gap-4">
-                  {relatedResources.map((related) => {
-                    const RelatedIcon = iconMap[related.iconType] || FileText;
-                    return (
-                      <Link
-                        key={related.id}
-                        to={`/resources/${related.id}`}
-                        className="p-4 border border-border rounded-xl hover:border-primary/50 transition-colors group"
-                      >
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-3 ${categoryColors[related.categoryVariant] || categoryColors.purple} border`}>
-                          <RelatedIcon className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-foreground mb-2 text-sm group-hover:text-primary transition-colors text-left">
-                          {related.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground text-left">
-                          {related.downloads.toLocaleString()} downloads
-                        </p>
-                      </Link>
-                    );
-                  })}
-                </div>
+            {resource.detailed_description && (
+              <div className="bg-card border border-border rounded-2xl p-8 text-left">
+                <h2 className="text-2xl mb-4 text-foreground text-left">About This Resource</h2>
+                <StructuredDescription description={resource.detailed_description} />
               </div>
             )}
+
+            {/* What's Included */}
+            {resource.whats_included && (
+              <div className="bg-card border border-border rounded-2xl p-8">
+                <h2 className="text-2xl mb-4 text-foreground text-left">What's Included</h2>
+                <ul className="space-y-3 text-left">
+                  {resource.whats_included.split('\n').filter(line => line.trim()).map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-foreground">{item.replace(/^[•\-]\s*/, '')}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
           </div>
 
           {/* Sidebar */}
@@ -207,15 +189,24 @@ export default function ResourceDetail() {
               <div className="space-y-4">
                 <div className="text-left">
                   <p className="text-sm text-muted-foreground mb-1">File Size</p>
-                  <p className="text-foreground font-medium">{resource.fileSize}</p>
+                  <p className="text-foreground font-medium flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    {resource.file_size}
+                  </p>
                 </div>
                 <div className="text-left">
                   <p className="text-sm text-muted-foreground mb-1">File Type</p>
-                  <p className="text-foreground font-medium">{resource.fileType}</p>
+                  <p className="text-foreground font-medium flex items-center gap-2">
+                    <IconComponent className="w-4 h-4" />
+                    {resource.file_type}
+                  </p>
                 </div>
                 <div className="text-left">
                   <p className="text-sm text-muted-foreground mb-1">Downloads</p>
-                  <p className="text-foreground font-medium">{resource.downloads.toLocaleString()}</p>
+                  <p className="text-foreground font-medium flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    {resource.download_count?.toLocaleString() || 0}
+                  </p>
                 </div>
 
                 <div className="pt-4 border-t border-border space-y-3">
@@ -241,27 +232,33 @@ export default function ResourceDetail() {
             <div className="bg-card border border-border rounded-2xl p-6">
               <h3 className="text-lg mb-4 text-foreground text-left">Resource Information</h3>
               <div className="space-y-4 text-left">
-                <div className="flex items-start gap-3">
-                  <User className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Uploaded By</p>
-                    <p className="text-foreground">{resource.uploadedBy}</p>
+                {resource.uploaded_by && (
+                  <div className="flex items-start gap-3">
+                    <User className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Uploaded By</p>
+                      <p className="text-foreground">{resource.uploaded_by}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Upload Date</p>
-                    <p className="text-foreground">{resource.uploadedDate}</p>
+                )}
+                {resource.created_at && (
+                  <div className="flex items-start gap-3">
+                    <Calendar className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                    <div className="text-left">
+                      <p className="text-sm text-muted-foreground">Upload Date</p>
+                      <p className="text-foreground">{new Date(resource.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Last Updated</p>
-                    <p className="text-foreground">{resource.lastUpdated}</p>
+                )}
+                {resource.updated_at && (
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                    <div className="text-left">
+                      <p className="text-sm text-muted-foreground">Last Updated</p>
+                      <p className="text-foreground">{new Date(resource.updated_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 

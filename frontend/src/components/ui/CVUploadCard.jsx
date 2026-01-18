@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FileText, Upload, X } from "lucide-react";
 
 export default function CVUploadCard({ initialCV, onUpload, onDelete }) {
-  const [uploadedCV, setUploadedCV] = useState(initialCV);
+  const [uploadedCV, setUploadedCV] = useState(initialCV || null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -41,7 +41,7 @@ export default function CVUploadCard({ initialCV, onUpload, onDelete }) {
         <h3 className="text-foreground">CV / Resume</h3>
       </div>
 
-      {uploadedCV.name ? (
+      {uploadedCV?.name ? (
         <div className="p-4 bg-secondary/30 rounded-xl border border-border">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -49,9 +49,9 @@ export default function CVUploadCard({ initialCV, onUpload, onDelete }) {
                 <FileText className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-foreground text-sm mb-1 truncate text-left">{uploadedCV.name}</div>
+                <div className="text-foreground text-sm mb-1 truncate text-left">{uploadedCV?.name}</div>
                 <div className="text-muted-foreground text-xs text-left">
-                  {uploadedCV.size} • Uploaded {uploadedCV.uploadedDate}
+                  {uploadedCV?.size} • Uploaded {uploadedCV?.uploadedDate}
                 </div>
               </div>
             </div>

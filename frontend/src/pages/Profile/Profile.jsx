@@ -1,22 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Briefcase, Calendar, Heart, User, Settings, Bell, ChevronDown } from "lucide-react";
 import JobCard from "../../components/JobCard/JobCard";
 import EventCard from "../../components/EventCard/EventCard";
-import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/Avatar";
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import { Avatar, AvatarImage, AvatarFallback } from "../../components/Ui/Avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../components/ui/Tabs";
 import { Link } from "react-router-dom";
 import Pagination from "../../components/Pagination/Pagination";
 import EducationCard from "../../components/ui/EducationCard";
 import CVUploadCard from "../../components/ui/CVUploadCard";
-import {appliedJobs} from "../../services/Jobs/appliedJobs";
-import {savedJobs} from "../../services/Jobs/savedJobs";
-import {registeredEvents} from "../../services/Events/registeredEvents";
-import {savedEvents} from "../../services/Events/savedEvents";
+import { useAuth } from '../../contexts/AuthContext';
+import { dashboardService } from '../../services';
+import { profileService } from '../../services';
+import * as jobActionsService from '../../services/Jobs/jobActions';
+import * as eventActionsService from '../../services/Events/eventActions';
+import { addJobTagsToList, addEventTagsToList } from '../../utils/tagGenerator';
 
-export default function ProfilePage() {
+export default function Profile() {
+  const { user, isJobseeker, isSociety, isAdmin } = useAuth();
   const [favorites, setFavorites] = useState(new Set([0, 1]));
   const [eventFavorites, setEventFavorites] = useState(new Set([0]));
   const [activeTab, setActiveTab] = useState("saved-jobs");
+  const [loading, setLoading] = useState(true);
+  const [savedJobsData, setSavedJobsData] = useState([]);
+  const [appliedJobsData, setAppliedJobsData] = useState([]);
+  const [savedEventsData, setSavedEventsData] = useState([]);
+  const [registeredEventsData, setRegisteredEventsData] = useState([]);
+  const [profileData, setProfileData] = useState(null);
   
   // Pagination state for each tab
   const [savedJobsPage, setSavedJobsPage] = useState(1);
@@ -25,59 +35,185 @@ export default function ProfilePage() {
   const [registeredEventsPage, setRegisteredEventsPage] = useState(1);
   const itemsPerPage = 6;
   
-  // TODO: Fetch from backend
-  const [educationData, setEducationData] = useState({
-    education_level: "undergraduate",
-    institution_name: "University of London - King's College",
-    uni_year: "2nd",
-    degree_type: "bsc",
-    area_of_study: "Computer Science",
-    role_interest_option_one: "Software Developer",
-    role_interest_option_two: "Data Scientist",
-    society: "Tech Society",
-  });
+  const [educationData, setEducationData] = useState(null);
+  const [uploadedCV, setUploadedCV] = useState(null);
 
-  // TODO: Fetch from backend
-  const [uploadedCV, setUploadedCV] = useState({
-    name: "Fintan_Cabrera_CV.pdf",
-    size: "245 KB",
-    uploadedDate: "January 2, 2026",
-  });
-
-  const toggleFavorite = (index) => {
-    setFavorites((prev) => {
-      const newSet = new Set(prev);
-      newSet.has(index) ? newSet.delete(index) : newSet.add(index);
-      return newSet;
-    });
+  const toggleFavorite = async (jobId) => {
+    if (!user) return;
+    
+    try {
+      const isSaved = favorites.has(jobId);
+      console.log('Toggle favorite:', { jobId, isSaved, userId: user.userId, userType: user.userType });
+      
+      if (isSaved) {
+        console.log('Unsaving job...');
+        const result = await jobActionsService.unsaveJob(jobId, user.userId, user.userType);
+        console.log('Unsave result:', result);
+        
+        setFavorites((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(jobId);
+          console.log('Updated favorites:', newSet);
+          return newSet;
+        });
+        
+        // Remove from savedJobsData
+        setSavedJobsData(prev => {
+          const filtered = prev.filter(job => job.job_id !== jobId);
+          console.log('Updated savedJobsData:', filtered.length);
+          return filtered;
+        });
+      } else {
+        console.log('Saving job...');
+        const result = await jobActionsService.saveJob(jobId, user.userId, user.userType);
+        console.log('Save result:', result);
+        setFavorites((prev) => new Set(prev).add(jobId));
+      }
+    } catch (err) {
+      console.error('Error toggling job save:', err);
+      alert(`Failed to ${favorites.has(jobId) ? 'unsave' : 'save'} job. Please try again.`);
+    }
   };
 
-  const toggleEventFavorite = (index) => {
-    setEventFavorites((prev) => {
-      const newSet = new Set(prev);
-      newSet.has(index) ? newSet.delete(index) : newSet.add(index);
-      return newSet;
-    });
+  const toggleEventFavorite = async (eventId) => {
+    if (!user) return;
+    
+    try {
+      const isSaved = eventFavorites.has(eventId);
+      
+      if (isSaved) {
+        await eventActionsService.unsaveEvent(eventId, user.userId, user.userType);
+        setEventFavorites((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(eventId);
+          return newSet;
+        });
+        // Remove from savedEventsData
+        setSavedEventsData(prev => prev.filter(event => event.event_id !== eventId));
+      } else {
+        await eventActionsService.saveEvent(eventId, user.userId, user.userType);
+        setEventFavorites((prev) => new Set(prev).add(eventId));
+      }
+    } catch (err) {
+      console.error('Error toggling event save:', err);
+      alert('Failed to save event. Please try again.');
+    }
   };
 
-  const handleSaveEducation = (newData) => {
-    setEducationData(newData);
-    // save to backend here
+  const handleSaveEducation = async (newData) => {
+    try {
+      await profileService.updateUserProfile(user.userId, user.userType, newData);
+      setEducationData(newData);
+      console.log('Education details saved successfully');
+    } catch (error) {
+      console.error('Error saving education:', error);
+      console.error('Failed to save education details');
+    }
   };
 
-  const handleCVUpload = (newCV) => {
-    setUploadedCV(newCV);
-    // save to backend here
+  const handleCVUpload = async (file) => {
+    try {
+      // TODO: Implement file upload to backend
+      // For now, just update local state
+      const newCV = {
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(0)} KB`,
+        uploadedDate: new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+      };
+      setUploadedCV(newCV);
+      console.log('CV uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading CV:', error);
+      console.error('Failed to upload CV');
+    }
   };
 
-  const handleCVDelete = () => {
-    setUploadedCV({
-      name: "",
-      size: "",
-      uploadedDate: "",
-    });
-    // delete from backend here
+  const handleCVDelete = async () => {
+    try {
+      // TODO: Implement CV delete on backend
+      setUploadedCV(null);
+      console.log('CV deleted successfully');
+    } catch (error) {
+      console.error('Error deleting CV:', error);
+      console.error('Failed to delete CV');
+    }
   };
+
+  // Fetch profile and dashboard data
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user) return;
+      
+      setLoading(true);
+      try {
+        // Fetch profile data
+        const profile = await profileService.getUserProfile(user.userId, user.userType);
+        setProfileData(profile);
+        
+        // Set education data for jobseekers
+        if (isJobseeker() && profile.jobseeker) {
+          setEducationData({
+            education_level: profile.jobseeker.education_level,
+            institution_name: profile.jobseeker.institution_name,
+            uni_year: profile.jobseeker.uni_year,
+            degree_type: profile.jobseeker.degree_type,
+            area_of_study: profile.jobseeker.area_of_study,
+            subject_one: profile.jobseeker.subject_one,
+            subject_two: profile.jobseeker.subject_two,
+            subject_three: profile.jobseeker.subject_three,
+            subject_four: profile.jobseeker.subject_four,
+            role_interest_option_one: profile.jobseeker.role_interest_option_one,
+            role_interest_option_two: profile.jobseeker.role_interest_option_two,
+            society: profile.jobseeker.society
+          });
+          
+          // Set CV data if exists
+          if (profile.jobseeker.cv_url) {
+            setUploadedCV({
+              name: profile.jobseeker.cv_url.split('/').pop(),
+              size: "N/A",
+              uploadedDate: "N/A"
+            });
+          }
+        }
+        
+        // Fetch dashboard data
+        const [savedJobs, appliedJobs, savedEvents, registeredEvents] = await Promise.all([
+          dashboardService.getSavedJobs(user.userId, user.userType),
+          isJobseeker() ? dashboardService.getAppliedJobs(user.userId) : Promise.resolve([]),
+          dashboardService.getSavedEvents(user.userId, user.userType),
+          dashboardService.getRegisteredEvents(user.userId, user.userType)
+        ]);
+        
+        // Add tags to jobs and events
+        const savedJobsWithTags = addJobTagsToList(savedJobs);
+        const appliedJobsWithTags = addJobTagsToList(appliedJobs);
+        const savedEventsWithTags = addEventTagsToList(savedEvents);
+        const registeredEventsWithTags = addEventTagsToList(registeredEvents);
+        
+        setSavedJobsData(savedJobsWithTags);
+        setAppliedJobsData(appliedJobsWithTags);
+        setSavedEventsData(savedEventsWithTags);
+        setRegisteredEventsData(registeredEventsWithTags);
+        
+        // Create Sets of saved IDs for quick lookup
+        const savedJobIds = new Set(savedJobsWithTags.map(job => job.job_id));
+        const savedEventIds = new Set(savedEventsWithTags.map(event => event.event_id));
+        setFavorites(savedJobIds);
+        setEventFavorites(savedEventIds);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [user, isJobseeker]);
 
   // Pagination helpers
   const getPaginatedItems = (items, currentPage) => {
@@ -89,10 +225,10 @@ export default function ProfilePage() {
   const getTotalPages = (items) => Math.ceil(items.length / itemsPerPage);
 
   // Paginated data
-  const paginatedSavedJobs = getPaginatedItems(savedJobs, savedJobsPage);
-  const paginatedAppliedJobs = getPaginatedItems(appliedJobs, appliedJobsPage);
-  const paginatedSavedEvents = getPaginatedItems(savedEvents, savedEventsPage);
-  const paginatedRegisteredEvents = getPaginatedItems(registeredEvents, registeredEventsPage);
+  const paginatedSavedJobs = getPaginatedItems(savedJobsData, savedJobsPage);
+  const paginatedAppliedJobs = getPaginatedItems(appliedJobsData, appliedJobsPage);
+  const paginatedSavedEvents = getPaginatedItems(savedEventsData, savedEventsPage);
+  const paginatedRegisteredEvents = getPaginatedItems(registeredEventsData, registeredEventsPage);
 
   return (
     <div className="min-h-screen">
@@ -101,13 +237,24 @@ export default function ProfilePage() {
         <div className="container mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <Avatar className="w-30 h-30">
-              <AvatarFallback className="text-3xl">FC</AvatarFallback>
+              <AvatarFallback className="text-3xl">
+                {user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'}
+              </AvatarFallback>
             </Avatar>
 
             <div className="flex-1 text-left">
-              <h1 className="text-3xl mb-2 text-foreground">Fintan Cabrera</h1>
+              <h1 className="text-3xl mb-2 text-foreground">
+                {user?.name || 'User'}
+              </h1>
               <p className="text-muted-foreground mb-4">
-                Product Designer • San Francisco, CA
+                {isJobseeker() && profileData?.jobseeker ? 
+                  `${profileData.jobseeker.area_of_study || 'Student'} • ${profileData.jobseeker.institution_name || 'University'}` :
+                  isSociety() && profileData?.society ?
+                  `${profileData.society.society_name || 'Society'}` :
+                  isAdmin() ?
+                  'Administrator' :
+                  'User'
+                }
               </p>
 
               <div className="flex flex-wrap gap-3">
@@ -126,22 +273,24 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-8 text-center">
+            <div className={`grid ${isSociety() ? 'grid-cols-2' : 'grid-cols-3'} gap-8 text-center`}>
+              {isJobseeker() && (
+                <div>
+                  <div className="text-2xl mb-1 text-foreground">
+                    {appliedJobsData.length}
+                  </div>
+                  <div className="text-muted-foreground text-sm">Applied</div>
+                </div>
+              )}
               <div>
                 <div className="text-2xl mb-1 text-foreground">
-                  {appliedJobs.length}
+                  {savedJobsData.length}
                 </div>
-                <div className="text-muted-foreground text-sm">Applied</div>
+                <div className="text-muted-foreground text-sm">Saved Jobs</div>
               </div>
               <div>
                 <div className="text-2xl mb-1 text-foreground">
-                  {savedJobs.length}
-                </div>
-                <div className="text-muted-foreground text-sm">Saved</div>
-              </div>
-              <div>
-                <div className="text-2xl mb-1 text-foreground">
-                  {registeredEvents.length}
+                  {registeredEventsData.length}
                 </div>
                 <div className="text-muted-foreground text-sm">Events</div>
               </div>
@@ -155,29 +304,45 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* LEFT COLUMN */}
           <div className="lg:col-span-1 space-y-6">
-            <EducationCard 
-              initialData={educationData}
-              onSave={handleSaveEducation}
-            />
+            {/* Education Card - Only for Jobseekers */}
+            {isJobseeker() ? (
+              <EducationCard
+                educationData={educationData}
+                onSave={handleSaveEducation}
+              />
+            ) : (
+              <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4 text-foreground">Education</h3>
+                <p className="text-muted-foreground">N/A</p>
+              </div>
+            )}
 
-            <CVUploadCard
-              initialCV={uploadedCV}
-              onUpload={handleCVUpload}
-              onDelete={handleCVDelete}
-            />
+            {/* CV Upload Card - Only for Jobseekers */}
+            {isJobseeker() ? (
+              <CVUploadCard
+                uploadedCV={uploadedCV}
+                onUpload={handleCVUpload}
+                onDelete={handleCVDelete}
+              />
+            ) : (
+              <div className="bg-card border border-border rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4 text-foreground">CV</h3>
+                <p className="text-muted-foreground">N/A</p>
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN */}
           <div className="lg:col-span-3">
             {/* Mobile Dropdown */}
-            <div className="md:hidden mb-6 relative">
+            <div className="relative md:hidden mb-6">
               <select
                 value={activeTab}
                 onChange={(e) => setActiveTab(e.target.value)}
-                className="w-full px-4 py-3 pr-10 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                className="w-full px-4 py-3 bg-card border border-border rounded-xl text-foreground appearance-none cursor-pointer"
               >
                 <option value="saved-jobs">Saved Jobs</option>
-                <option value="applied-jobs">Applied Jobs</option>
+                {isJobseeker() && <option value="applied-jobs">Applied Jobs</option>}
                 <option value="saved-events">Saved Events</option>
                 <option value="registered-events">Registered Events</option>
               </select>
@@ -186,28 +351,35 @@ export default function ProfilePage() {
 
             {/* Desktop Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="hidden md:grid grid-cols-4 mb-8 w-full">
+              <TabsList className={`hidden md:grid ${isSociety() ? 'grid-cols-3' : 'grid-cols-4'} mb-8 w-full`}>
                 <TabsTrigger value="saved-jobs">Saved Jobs</TabsTrigger>
-                <TabsTrigger value="applied-jobs">Applied Jobs</TabsTrigger>
+                {isJobseeker() && <TabsTrigger value="applied-jobs">Applied Jobs</TabsTrigger>}
                 <TabsTrigger value="saved-events">Saved Events</TabsTrigger>
                 <TabsTrigger value="registered-events">Registered Events</TabsTrigger>
               </TabsList>
 
               <TabsContent value="saved-jobs">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {paginatedSavedJobs.map((job, index) => (
+                  {paginatedSavedJobs.map((job) => (
                     <JobCard
-                      key={index}
-                      {...job}
-                      isFavorite={favorites.has(index)}
-                      onFavoriteClick={() => toggleFavorite(index)}
+                      key={job.job_id}
+                      jobId={job.job_id}
+                      jobTitle={job.title}
+                      company={job.company}
+                      companyLogo={job.company_logo}
+                      companyColor={job.company_color}
+                      description={job.description}
+                      postedTime={job.job_created_at || job.created_at}
+                      tags={job.tags || []}
+                      isFavorite={true}
+                      onFavoriteClick={() => toggleFavorite(job.job_id)}
                     />
                   ))}
                 </div>
-                {savedJobs.length > itemsPerPage && (
+                {savedJobsData.length > itemsPerPage && (
                   <Pagination
                     currentPage={savedJobsPage}
-                    totalPages={getTotalPages(savedJobs)}
+                    totalPages={getTotalPages(savedJobsData)}
                     onPageChange={setSavedJobsPage}
                   />
                 )}
@@ -215,19 +387,26 @@ export default function ProfilePage() {
 
               <TabsContent value="applied-jobs">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {paginatedAppliedJobs.map((job, index) => (
+                  {paginatedAppliedJobs.map((job) => (
                     <JobCard
-                      key={index}
-                      {...job}
-                      isFavorite={favorites.has(index)}
-                      onFavoriteClick={() => toggleFavorite(index)}
+                      key={job.job_id}
+                      jobId={job.job_id}
+                      jobTitle={job.title}
+                      company={job.company}
+                      companyLogo={job.company_logo}
+                      companyColor={job.company_color}
+                      description={job.description}
+                      postedTime={job.job_created_at || job.created_at}
+                      tags={job.tags || []}
+                      isFavorite={favorites.has(job.job_id)}
+                      onFavoriteClick={() => toggleFavorite(job.job_id)}
                     />
                   ))}
                 </div>
-                {appliedJobs.length > itemsPerPage && (
+                {appliedJobsData.length > itemsPerPage && (
                   <Pagination
                     currentPage={appliedJobsPage}
-                    totalPages={getTotalPages(appliedJobs)}
+                    totalPages={getTotalPages(appliedJobsData)}
                     onPageChange={setAppliedJobsPage}
                   />
                 )}
@@ -235,19 +414,29 @@ export default function ProfilePage() {
 
               <TabsContent value="saved-events">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {paginatedSavedEvents.map((event, index) => (
+                  {paginatedSavedEvents.map((event) => (
                     <EventCard
-                      key={index}
-                      {...event}
-                      isFavorite={eventFavorites.has(index)}
-                      onFavoriteClick={() => toggleEventFavorite(index)}
+                      key={event.event_id}
+                      eventId={event.event_id}
+                      title={event.title}
+                      organizer={event.organiser}
+                      date={new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      time={`${event.event_start_time?.slice(0, 5)} - ${event.event_end_time?.slice(0, 5)}`}
+                      location={event.location}
+                      attendees={event.attendee_count || 0}
+                      description={event.description}
+                      tags={event.tags}
+                      image={event.event_image}
+                      isFavorite={true}
+                      onFavoriteClick={() => toggleEventFavorite(event.event_id)}
+                      createdAt={event.event_created_at || event.created_at}
                     />
                   ))}
                 </div>
-                {savedEvents.length > itemsPerPage && (
+                {savedEventsData.length > itemsPerPage && (
                   <Pagination
                     currentPage={savedEventsPage}
-                    totalPages={getTotalPages(savedEvents)}
+                    totalPages={getTotalPages(savedEventsData)}
                     onPageChange={setSavedEventsPage}
                   />
                 )}
@@ -255,19 +444,29 @@ export default function ProfilePage() {
 
               <TabsContent value="registered-events">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {paginatedRegisteredEvents.map((event, index) => (
+                  {paginatedRegisteredEvents.map((event) => (
                     <EventCard
-                      key={index}
-                      {...event}
-                      isFavorite={eventFavorites.has(index)}
-                      onFavoriteClick={() => toggleEventFavorite(index)}
+                      key={event.event_id}
+                      eventId={event.event_id}
+                      title={event.title}
+                      organizer={event.organiser}
+                      date={new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      time={`${event.event_start_time?.slice(0, 5)} - ${event.event_end_time?.slice(0, 5)}`}
+                      location={event.location}
+                      attendees={event.attendee_count || 0}
+                      description={event.description}
+                      tags={event.tags}
+                      image={event.event_image}
+                      isFavorite={eventFavorites.has(event.event_id)}
+                      onFavoriteClick={() => toggleEventFavorite(event.event_id)}
+                      createdAt={event.event_created_at || event.created_at}
                     />
                   ))}
                 </div>
-                {registeredEvents.length > itemsPerPage && (
+                {registeredEventsData.length > itemsPerPage && (
                   <Pagination
                     currentPage={registeredEventsPage}
-                    totalPages={getTotalPages(registeredEvents)}
+                    totalPages={getTotalPages(registeredEventsData)}
                     onPageChange={setRegisteredEventsPage}
                   />
                 )}

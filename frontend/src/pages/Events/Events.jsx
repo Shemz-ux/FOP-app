@@ -9,10 +9,14 @@ import BrowseCategory from "../../components/BrowseEvents/BrowseEvents";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
-import { eventsService } from "../../services"
+import { eventsService } from "../../services";
+import { useAuth } from "../../contexts/AuthContext";
+import * as eventActionsService from "../../services/Events/eventActions";
+import AuthModal from "../../components/AuthModal/AuthModal"
 
 
 export default function Events() {
+  const { user, isLoggedIn } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,18 +27,33 @@ export default function Events() {
   const [searchQuery, setSearchQuery] = useState('');
   const [totalEvents, setTotalEvents] = useState(0);
   const [categories, setCategories] = useState([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const eventsPerPage = 6;
 
-  const toggleFavorite = (index) => {
-    setFavorites((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
+  const toggleFavorite = async (eventId) => {
+    if (!isLoggedIn()) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    try {
+      const isSaved = favorites.has(eventId);
+      
+      if (isSaved) {
+        await eventActionsService.unsaveEvent(eventId, user.userId, user.userType);
+        setFavorites((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(eventId);
+          return newSet;
+        });
       } else {
-        newSet.add(index);
+        await eventActionsService.saveEvent(eventId, user.userId, user.userType);
+        setFavorites((prev) => new Set(prev).add(eventId));
       }
-      return newSet;
-    });
+    } catch (err) {
+      console.error('Error toggling event save:', err);
+      alert('Failed to save event. Please try again.');
+    }
   };
 
   const handleCategoryClick = (category) => {
@@ -46,6 +65,22 @@ export default function Events() {
   useEffect(() => {
     fetchEvents();
   }, [currentPage, sortBy, searchQuery, selectedCategory]);
+
+  // Load saved events on mount
+  useEffect(() => {
+    const loadSavedEvents = async () => {
+      if (isLoggedIn() && user) {
+        try {
+          const { getSavedEventIds } = await import('../../services/Dashboard/dashboardService');
+          const savedEventIds = await getSavedEventIds(user.userId, user.userType);
+          setFavorites(new Set(savedEventIds));
+        } catch (err) {
+          console.error('Error loading saved events:', err);
+        }
+      }
+    };
+    loadSavedEvents();
+  }, [isLoggedIn, user]);
 
   const fetchEvents = async () => {
     try {
@@ -218,6 +253,12 @@ export default function Events() {
           </>
         )}
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 }

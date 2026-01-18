@@ -1,24 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GraduationCap, Edit } from "lucide-react";
+import CustomSelect from "../Ui/CustomSelect";
+import Toast from "../Ui/Toast";
 
-export default function EducationCard({ initialData, onSave }) {
+export default function EducationCard({ educationData, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [educationData, setEducationData] = useState(initialData);
+  const [localEducationData, setLocalEducationData] = useState(educationData || {});
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
-  const handleSave = () => {
+  // Sync local state when prop changes
+  useEffect(() => {
+    if (educationData) {
+      setLocalEducationData(educationData);
+    }
+  }, [educationData]);
+
+  const handleSave = async () => {
     setIsEditing(false);
     if (onSave) {
-      onSave(educationData);
+      try {
+        await onSave(localEducationData);
+        setToastMessage('Education details saved successfully!');
+        setToastType('success');
+        setShowToast(true);
+      } catch (error) {
+        setToastMessage('Failed to save education details');
+        setToastType('error');
+        setShowToast(true);
+      }
     }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEducationData(initialData);
+    setLocalEducationData(educationData || {});
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-6">
+    <>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+      <div className="bg-card border border-border rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <GraduationCap className="w-5 h-5 text-primary" />
@@ -37,41 +66,43 @@ export default function EducationCard({ initialData, onSave }) {
         <div className="space-y-3">
           <div>
             <label className="text-sm text-muted-foreground mb-1 block text-left">Education Level</label>
-            <select
-              value={educationData.education_level}
-              onChange={(e) => setEducationData({ ...educationData, education_level: e.target.value })}
-              className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
-            >
-              <option value="a_level_or_btec">A-Level / BTEC</option>
-              <option value="undergraduate">Undergraduate</option>
-              <option value="postgraduate">Postgraduate</option>
-              <option value="phd">PhD</option>
-              <option value="other">Other</option>
-            </select>
+            <CustomSelect
+              value={localEducationData.education_level || ''}
+              onChange={(e) => setLocalEducationData({ ...localEducationData, education_level: e.target.value })}
+              placeholder="Select education level"
+              options={[
+                { value: "a_level_or_btec", label: "A-Level / BTEC" },
+                { value: "undergraduate", label: "Undergraduate" },
+                { value: "postgraduate", label: "Postgraduate" },
+                { value: "phd", label: "PhD" },
+                { value: "other", label: "Other" }
+              ]}
+              className="text-sm"
+            />
           </div>
 
           <div>
             <label className="text-sm text-muted-foreground mb-1 block text-left">
-              {educationData.education_level === 'a_level_or_btec' ? 'School/College' : 'Institution'}
+              {localEducationData.education_level === 'a_level_or_btec' ? 'School/College' : 'Institution'}
             </label>
             <input
               type="text"
-              value={educationData.institution_name || ''}
-              onChange={(e) => setEducationData({ ...educationData, institution_name: e.target.value })}
-              placeholder={educationData.education_level === 'a_level_or_btec' ? 'e.g. Sixth Form College' : 'e.g. University of London'}
+              value={localEducationData.institution_name || ''}
+              onChange={(e) => setLocalEducationData({ ...educationData, institution_name: e.target.value })}
+              placeholder={localEducationData.education_level === 'a_level_or_btec' ? 'e.g. Sixth Form College' : 'e.g. University of London'}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
 
           {/* A-Level/BTEC Students - Show Subjects */}
-          {educationData.education_level === 'a_level_or_btec' ? (
+          {localEducationData.education_level === 'a_level_or_btec' ? (
             <>
               <div>
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Subject 1 *</label>
                 <input
                   type="text"
-                  value={educationData.subject_one || ''}
-                  onChange={(e) => setEducationData({ ...educationData, subject_one: e.target.value })}
+                  value={localEducationData.subject_one || ''}
+                  onChange={(e) => setLocalEducationData({ ...educationData, subject_one: e.target.value })}
                   placeholder="e.g. Mathematics"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                   required
@@ -81,8 +112,8 @@ export default function EducationCard({ initialData, onSave }) {
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Subject 2</label>
                 <input
                   type="text"
-                  value={educationData.subject_two || ''}
-                  onChange={(e) => setEducationData({ ...educationData, subject_two: e.target.value })}
+                  value={localEducationData.subject_two || ''}
+                  onChange={(e) => setLocalEducationData({ ...educationData, subject_two: e.target.value })}
                   placeholder="e.g. Physics"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -91,8 +122,8 @@ export default function EducationCard({ initialData, onSave }) {
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Subject 3</label>
                 <input
                   type="text"
-                  value={educationData.subject_three || ''}
-                  onChange={(e) => setEducationData({ ...educationData, subject_three: e.target.value })}
+                  value={localEducationData.subject_three || ''}
+                  onChange={(e) => setLocalEducationData({ ...educationData, subject_three: e.target.value })}
                   placeholder="e.g. Computer Science"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -101,8 +132,8 @@ export default function EducationCard({ initialData, onSave }) {
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Subject 4</label>
                 <input
                   type="text"
-                  value={educationData.subject_four || ''}
-                  onChange={(e) => setEducationData({ ...educationData, subject_four: e.target.value })}
+                  value={localEducationData.subject_four || ''}
+                  onChange={(e) => setLocalEducationData({ ...educationData, subject_four: e.target.value })}
                   placeholder="e.g. Further Mathematics"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -114,56 +145,50 @@ export default function EducationCard({ initialData, onSave }) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm text-muted-foreground mb-1 block text-left">Year</label>
-                  <select
-                    value={educationData.uni_year || ''}
-                    onChange={(e) => setEducationData({ ...educationData, uni_year: e.target.value })}
-                    className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
-                  >
-                    <option value="">Select year</option>
-                    {educationData.education_level === 'phd' ? (
-                      <>
-                        <option value="phd_year_1">PhD Year 1</option>
-                        <option value="phd_year_2">PhD Year 2</option>
-                        <option value="phd_year_3">PhD Year 3</option>
-                        <option value="phd_year_4">PhD Year 4</option>
-                        <option value="graduated">Graduated</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="foundation">Foundation</option>
-                        <option value="1st">1st Year</option>
-                        <option value="2nd">2nd Year</option>
-                        <option value="3rd">3rd Year</option>
-                        <option value="4th">4th Year</option>
-                        <option value="5th">5th Year</option>
-                        <option value="masters">Masters</option>
-                        <option value="graduated">Graduated</option>
-                      </>
-                    )}
-                  </select>
+                  <CustomSelect
+                    value={localEducationData.uni_year || ''}
+                    onChange={(e) => setLocalEducationData({ ...educationData, uni_year: e.target.value })}
+                    placeholder="Select year"
+                    options={[
+                      { value: "foundation", label: "Foundation" },
+                      { value: "1st", label: "1st Year" },
+                      { value: "2nd", label: "2nd Year" },
+                      { value: "3rd", label: "3rd Year" },
+                      { value: "4th", label: "4th Year" },
+                      { value: "5th", label: "5th Year" },
+                      { value: "masters", label: "Masters" },
+                      { value: "phd_year_1", label: "PhD Year 1" },
+                      { value: "phd_year_2", label: "PhD Year 2" },
+                      { value: "phd_year_3", label: "PhD Year 3" },
+                      { value: "phd_year_4", label: "PhD Year 4" },
+                      { value: "graduated", label: "Graduated" }
+                    ]}
+                    className="text-sm"
+                  />
                 </div>
 
                 <div>
                   <label className="text-sm text-muted-foreground mb-1 block text-left">Degree</label>
-                  <select
-                    value={educationData.degree_type || ''}
-                    onChange={(e) => setEducationData({ ...educationData, degree_type: e.target.value })}
-                    className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
-                  >
-                    <option value="">Select degree</option>
-                    <option value="ba">BA</option>
-                    <option value="bsc">BSc</option>
-                    <option value="beng">BEng</option>
-                    <option value="llb">LLB</option>
-                    <option value="bmed">BMed</option>
-                    <option value="ma">MA</option>
-                    <option value="msc">MSc</option>
-                    <option value="meng">MEng</option>
-                    <option value="mba">MBA</option>
-                    <option value="llm">LLM</option>
-                    <option value="phd">PhD</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <CustomSelect
+                    value={localEducationData.degree_type || ''}
+                    onChange={(e) => setLocalEducationData({ ...educationData, degree_type: e.target.value })}
+                    placeholder="Select degree"
+                    options={[
+                      { value: "ba", label: "BA" },
+                      { value: "bsc", label: "BSc" },
+                      { value: "beng", label: "BEng" },
+                      { value: "llb", label: "LLB" },
+                      { value: "bmed", label: "BMed" },
+                      { value: "ma", label: "MA" },
+                      { value: "msc", label: "MSc" },
+                      { value: "meng", label: "MEng" },
+                      { value: "mba", label: "MBA" },
+                      { value: "llm", label: "LLM" },
+                      { value: "phd", label: "PhD" },
+                      { value: "other", label: "Other" }
+                    ]}
+                    className="text-sm"
+                  />
                 </div>
               </div>
 
@@ -171,8 +196,8 @@ export default function EducationCard({ initialData, onSave }) {
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Area of Study</label>
                 <input
                   type="text"
-                  value={educationData.area_of_study || ''}
-                  onChange={(e) => setEducationData({ ...educationData, area_of_study: e.target.value })}
+                  value={localEducationData.area_of_study || ''}
+                  onChange={(e) => setLocalEducationData({ ...educationData, area_of_study: e.target.value })}
                   placeholder="e.g. Computer Science"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -184,8 +209,8 @@ export default function EducationCard({ initialData, onSave }) {
             <label className="text-sm text-muted-foreground mb-1 block text-left">Role Interest 1</label>
             <input
               type="text"
-              value={educationData.role_interest_option_one}
-              onChange={(e) => setEducationData({ ...educationData, role_interest_option_one: e.target.value })}
+              value={localEducationData.role_interest_option_one || ''}
+              onChange={(e) => setLocalEducationData({ ...educationData, role_interest_option_one: e.target.value })}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
@@ -194,8 +219,8 @@ export default function EducationCard({ initialData, onSave }) {
             <label className="text-sm text-muted-foreground mb-1 block text-left">Role Interest 2</label>
             <input
               type="text"
-              value={educationData.role_interest_option_two}
-              onChange={(e) => setEducationData({ ...educationData, role_interest_option_two: e.target.value })}
+              value={localEducationData.role_interest_option_two || ''}
+              onChange={(e) => setLocalEducationData({ ...educationData, role_interest_option_two: e.target.value })}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
@@ -204,8 +229,8 @@ export default function EducationCard({ initialData, onSave }) {
             <label className="text-sm text-muted-foreground mb-1 block text-left">Society</label>
             <input
               type="text"
-              value={educationData.society}
-              onChange={(e) => setEducationData({ ...educationData, society: e.target.value })}
+              value={localEducationData.society || ''}
+              onChange={(e) => setLocalEducationData({ ...educationData, society: e.target.value })}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
@@ -222,63 +247,66 @@ export default function EducationCard({ initialData, onSave }) {
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">Education Level</div>
             <div className="text-foreground capitalize text-left">
-              {educationData.education_level === 'a_level_or_btec' ? 'A-Level / BTEC' : educationData.education_level}
+              {localEducationData.education_level === 'a_level_or_btec' ? 'A-Level / BTEC' : (localEducationData.education_level || 'Not specified')}
             </div>
           </div>
 
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">
-              {educationData.education_level === 'a_level_or_btec' ? 'School/College' : 'Institution'}
+              {localEducationData.education_level === 'a_level_or_btec' ? 'School/College' : 'Institution'}
             </div>
-            <div className="text-foreground text-left">{educationData.institution_name || 'Not specified'}</div>
+            <div className="text-foreground text-left">{localEducationData.institution_name || 'Not specified'}</div>
           </div>
 
           {/* A-Level/BTEC Students - Show Subjects */}
-          {educationData.education_level === 'a_level_or_btec' ? (
+          {localEducationData.education_level === 'a_level_or_btec' && (
             <div>
               <div className="text-sm text-muted-foreground mb-1 text-left">Subjects</div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {educationData.subject_one && (
-                  <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
-                    {educationData.subject_one}
-                  </span>
-                )}
-                {educationData.subject_two && (
-                  <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
-                    {educationData.subject_two}
-                  </span>
-                )}
-                {educationData.subject_three && (
-                  <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
-                    {educationData.subject_three}
-                  </span>
-                )}
-                {educationData.subject_four && (
-                  <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
-                    {educationData.subject_four}
-                  </span>
-                )}
+              <div className="text-foreground text-left">
+                {localEducationData.subject_one || localEducationData.subject_two || localEducationData.subject_three || localEducationData.subject_four
+                  ? [localEducationData.subject_one, localEducationData.subject_two, localEducationData.subject_three, localEducationData.subject_four].filter(Boolean).join(', ')
+                  : 'Not specified'}
               </div>
             </div>
-          ) : (
-            /* University Students - Show Degree Fields */
+          )}
+
+          {/* University Students - Show Degree Fields */}
+          {localEducationData.education_level !== 'a_level_or_btec' && localEducationData.education_level && (
             <>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1 text-left">Year</div>
-                  <div className="text-foreground text-left capitalize">
-                    {educationData.uni_year?.replace('_', ' ') || 'Not specified'}
-                  </div>
+              <div>
+                <div className="text-sm text-muted-foreground mb-1 text-left">Year</div>
+                <div className="text-foreground text-left capitalize">
+                  {localEducationData.uni_year === 'phd_year_1' ? 'PhD Year 1' :
+                   localEducationData.uni_year === 'phd_year_2' ? 'PhD Year 2' :
+                   localEducationData.uni_year === 'phd_year_3' ? 'PhD Year 3' :
+                   localEducationData.uni_year === 'phd_year_4' ? 'PhD Year 4' :
+                   localEducationData.uni_year === 'graduated' ? 'Graduated' :
+                   localEducationData.uni_year === 'foundation' ? 'Foundation Year' :
+                   localEducationData.uni_year === 'placement_year' ? 'Placement Year' :
+                   (localEducationData.uni_year || 'Not specified')}
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1 text-left">Degree</div>
-                  <div className="text-foreground uppercase text-left">{educationData.degree_type || 'Not specified'}</div>
+              </div>
+
+              <div>
+                <div className="text-sm text-muted-foreground mb-1 text-left">Degree Type</div>
+                <div className="text-foreground text-left capitalize">
+                  {localEducationData.degree_type === 'bsc' ? 'BSc' :
+                   localEducationData.degree_type === 'ba' ? 'BA' :
+                   localEducationData.degree_type === 'beng' ? 'BEng' :
+                   localEducationData.degree_type === 'msc' ? 'MSc' :
+                   localEducationData.degree_type === 'ma' ? 'MA' :
+                   localEducationData.degree_type === 'meng' ? 'MEng' :
+                   localEducationData.degree_type === 'mphil' ? 'MPhil' :
+                   localEducationData.degree_type === 'other' ? 'Other' :
+                   (localEducationData.degree_type || 'Not specified')}
                 </div>
               </div>
 
               <div>
                 <div className="text-sm text-muted-foreground mb-1 text-left">Area of Study</div>
-                <div className="text-foreground text-left">{educationData.area_of_study || 'Not specified'}</div>
+                <div className="text-foreground text-left">
+                  {localEducationData.area_of_study || 'Not specified'}
+                </div>
               </div>
             </>
           )}
@@ -286,21 +314,26 @@ export default function EducationCard({ initialData, onSave }) {
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">Career Interests</div>
             <div className="flex flex-wrap gap-2 mt-2">
-              <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
-                {educationData.role_interest_option_one}
-              </span>
-              <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
-                {educationData.role_interest_option_two}
-              </span>
+              {localEducationData.role_interest_option_one && (
+                <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
+                  {localEducationData.role_interest_option_one}
+                </span>
+              )}
+              {localEducationData.role_interest_option_two && (
+                <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
+                  {localEducationData.role_interest_option_two}
+                </span>
+              )}
             </div>
           </div>
 
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">Society</div>
-            <div className="text-foreground text-left">{educationData.society}</div>
+            <div className="text-foreground text-left">{localEducationData.society || 'Not specified'}</div>
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

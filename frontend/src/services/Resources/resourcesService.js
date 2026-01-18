@@ -7,6 +7,7 @@ export const getResources = async (filters = {}) => {
   const data = await apiGet(`/resources${queryString}`);
   return {
     resources: addResourceMetadataToList(data.resources || []),
+    pagination: data.pagination,
     total: data.total || 0
   };
 };

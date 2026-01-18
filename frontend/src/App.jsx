@@ -1,6 +1,8 @@
 import './App.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { useEffect } from 'react'
+import { AuthProvider } from './contexts/AuthContext.jsx'
+import NavigateProvider from './components/NavigateProvider.jsx'
 import Home from './pages/Home/Home.jsx'
 import Jobs from './pages/Jobs/Jobs.jsx'
 import JobDetails from './pages/Jobs/JobDetails.jsx'
@@ -17,7 +19,7 @@ import Settings from './pages/Settings/Settings.jsx'
 import About from './pages/About/About.jsx'
 import Students from './pages/Students/Students.jsx'
 import Employers from './pages/Employers/Employers.jsx'
-import Login from './pages/Login/Login.jsx'
+import Login from './pages/Login/Login.jsx';
 import SignUp from './pages/SignUp/SignUp.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
 import JobsList from './admin/Jobs/JobsList.jsx'
@@ -41,19 +43,19 @@ function App() {
   }, []);
  
   const Layout = ({ children }) => (
-    <>
+    <NavigateProvider>
       <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
       {children}
       <Footer />
-    </>
+    </NavigateProvider>
   );
 
   const AuthLayout = ({ children }) => (
     // TODO: Needs to not pass down username if not logged in
-    <>
+    <NavigateProvider>
       <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
       {children}
-    </>
+    </NavigateProvider>
   );
 
   const router = createBrowserRouter([
@@ -98,16 +100,16 @@ function App() {
       element: <Layout><About /></Layout>
     },
     {
+      path: "/login",
+      element: <AuthLayout><Login /></AuthLayout>
+    },
+    {
       path: "/profile",
-      element: <Layout><Profile /></Layout>
+      element: <AuthLayout><Profile /></AuthLayout>
     },
     {
       path: "/settings",
       element: <Layout><Settings /></Layout>
-    },
-    {
-      path: "/login",
-      element: <AuthLayout><Login /></AuthLayout>
     },
     {
       path: "/signUp",
@@ -180,9 +182,9 @@ function App() {
   ]);
 
   return (
-    <>
+    <AuthProvider>
       <RouterProvider router={router} />
-    </>
+    </AuthProvider>
   );
 }
 

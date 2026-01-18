@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart, Clock, Calendar, MapPin, Users } from "lucide-react";
+import { Bookmark, Clock, Calendar, MapPin, Users } from "lucide-react";
 import JobBadge from "../Ui/JobBadge";
 import { Link } from "react-router-dom";
 import { formatTimeAgo } from "../../utils/timeFormatter";
@@ -24,10 +24,10 @@ export default function EventCard({
     eventId || title.toLowerCase().replace(/\s+/g, "-");
 
   const cardContent = (
-    <div className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg group">
+    <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col min-h-[300px] max-h-[600px] shadow-sm overflow-hidden">
       {/* Event Image */}
       {image && (
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-48">
           <img
             src={image}
             alt={title}
@@ -41,12 +41,12 @@ export default function EventCard({
               onFavoriteClick?.();
             }}
             className="absolute top-4 right-4 p-2 bg-card/90 backdrop-blur-sm hover:bg-card rounded-lg transition-colors"
-            aria-label="Add to favorites"
+            aria-label={isFavorite ? "Remove from saved" : "Save event"}
           >
-            <Heart
+            <Bookmark
               className={`w-5 h-5 transition-colors ${
                 isFavorite
-                  ? "fill-pink-500 stroke-pink-500"
+                  ? "fill-primary stroke-primary"
                   : "stroke-muted-foreground"
               }`}
             />
@@ -54,28 +54,30 @@ export default function EventCard({
         </div>
       )}
 
-      <div className="p-6">
+      <div className="p-6 flex-1 flex flex-col">
         {/* Header */}
         <div className="mb-4 text-left">
-          <h3 className="text-card-foreground mb-2 text-left line-clamp-2">
+          <h3 className="text-lg font-medium text-foreground mb-2 text-left line-clamp-2 overflow-hidden">
             {title}
           </h3>
-          <p className="text-muted-foreground text-sm text-left">
-            {organizer}
+          <p className="text-muted-foreground text-sm text-left truncate overflow-hidden">
+            <span className="font-medium">{organizer}</span>
           </p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {tags.map((tag, index) => (
-            <JobBadge key={index} variant={tag.variant}>
-              {tag.label}
-            </JobBadge>
-          ))}
-        </div>
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {tags.map((tag, index) => (
+              <JobBadge key={index} variant={tag?.variant || 'gray'}>
+                {tag?.label || 'Tag'}
+              </JobBadge>
+            ))}
+          </div>
+        )}
 
         {/* Description */}
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 text-left">
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 text-left overflow-hidden">
           {description?.split('\n').filter(line => {
             const trimmed = line.trim();
             return trimmed && !trimmed.match(/^About the Event$/i);
@@ -84,40 +86,36 @@ export default function EventCard({
 
         {/* Event Details */}
         <div className="space-y-2 mb-4 text-left">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm text-left">
-            <Calendar className="w-4 h-4" />
-            <span>{date}</span>
+          <div className="flex items-center gap-2 text-muted-foreground text-sm text-left overflow-hidden">
+            <Calendar className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate overflow-hidden text-ellipsis">{date}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground text-sm text-left">
-            <Clock className="w-4 h-4" />
-            <span>{time}</span>
+          <div className="flex items-center gap-2 text-muted-foreground text-sm text-left overflow-hidden">
+            <Clock className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate overflow-hidden text-ellipsis">{time}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground text-sm text-left">
-            <MapPin className="w-4 h-4" />
-            <span>{location}</span>
+          <div className="flex items-center gap-2 text-muted-foreground text-sm text-left overflow-hidden">
+            <MapPin className="w-4 h-4 flex-shrink-0" />
+            <span className="truncate overflow-hidden text-ellipsis">{location}</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-border">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
+          <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
             {createdAt && (
-              <span className="text-xs">{formatTimeAgo(createdAt)}</span>
+              <>
+                <Clock className="w-3.5 h-3.5" />
+                <span>Posted {formatTimeAgo(createdAt)}</span>
+              </>
             )}
           </div>
-
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // Handle registration
-            }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-sm"
-          >
-            Register
-          </button>
+          <div className="flex items-center gap-2 text-muted-foreground text-xs">
+            <Users className="w-3.5 h-3.5" />
+            <span>{attendees || 0}</span>
+          </div>
         </div>
       </div>
     </div>

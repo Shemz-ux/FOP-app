@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, Trash2, Save } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { profileService } from "../../services";
+import CustomSelect from "../../components/Ui/CustomSelect";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,19 +18,22 @@ import {
 import ForgotPassword from "../../components/ui/ForgotPassword";
 
 export default function Settings() {
+  const { user, isJobseeker } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // TODO: Replace with actual API calls
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: "Fintan",
-    lastName: "Cabrera",
-    email: "fintan.cabrera@example.com",
-    phone: "+1 (555) 123-4567",
-    gender: "prefer-not-to-say",
-    ethnicity: "prefer-not-to-say",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    gender: "",
+    ethnicity: "",
+    school_meal_eligible: false,
+    first_gen_to_go_uni: false,
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -36,10 +42,85 @@ export default function Settings() {
     confirmPassword: "",
   });
 
-  const handleSave = (e) => {
+  // Fetch user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const profile = await profileService.getUserProfile(user.userId, user.userType);
+        console.log('Settings - User type:', user.userType);
+        
+        if (isJobseeker() && profile.jobseeker) {
+          setPersonalInfo({
+            firstName: profile.jobseeker.first_name || "",
+            lastName: profile.jobseeker.last_name || "",
+            email: profile.jobseeker.email || "",
+            phone: profile.jobseeker.phone_number || "",
+            gender: profile.jobseeker.gender || "",
+            ethnicity: profile.jobseeker.ethnicity || "",
+            school_meal_eligible: profile.jobseeker.school_meal_eligible || false,
+            first_gen_to_go_uni: profile.jobseeker.first_gen_to_go_uni || false,
+          });
+        } else if (profile.society) {
+          setPersonalInfo({
+            firstName: profile.society.society_name || "",
+            lastName: "",
+            email: profile.society.email || "",
+            phone: profile.society.phone_number || "",
+            gender: "",
+            ethnicity: "",
+            school_meal_eligible: false,
+            first_gen_to_go_uni: false,
+          });
+        } else if (profile.admin_user) {
+          setPersonalInfo({
+            firstName: profile.admin_user.first_name || "",
+            lastName: profile.admin_user.last_name || "",
+            email: profile.admin_user.email || "",
+            phone: profile.admin_user.phone_number || "",
+            gender: profile.admin_user.gender || "",
+            ethnicity: profile.admin_user.ethnicity || "",
+            school_meal_eligible: false,
+            first_gen_to_go_uni: false,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [user, isJobseeker]);
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    
+    try {
+      const updateData = {
+        first_name: personalInfo.firstName,
+        last_name: personalInfo.lastName,
+        email: personalInfo.email,
+        phone_number: personalInfo.phone,
+        gender: personalInfo.gender,
+        ethnicity: personalInfo.ethnicity,
+      };
+      
+      if (isJobseeker()) {
+        updateData.school_meal_eligible = personalInfo.school_meal_eligible;
+        updateData.first_gen_to_go_uni = personalInfo.first_gen_to_go_uni;
+      }
+      
+      await profileService.updateUserProfile(user.userId, user.userType, updateData);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Failed to save settings. Please try again.');
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -56,6 +137,17 @@ export default function Settings() {
   const handleDeleteAccount = () => {
     console.log("Account deleted");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -156,40 +248,74 @@ export default function Settings() {
                 <label htmlFor="gender" className="block text-sm mb-2 text-foreground">
                   Gender
                 </label>
-                <select
+                <CustomSelect
                   id="gender"
                   value={personalInfo.gender}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, gender: e.target.value })}
-                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="prefer-not-to-say">Prefer not to say</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="non-binary">Non-binary</option>
-                  <option value="other">Other</option>
-                </select>
+                  placeholder="Select gender"
+                  options={[
+                    { value: "prefer_not_to_say", label: "Prefer not to say" },
+                    { value: "male", label: "Male" },
+                    { value: "female", label: "Female" },
+                    { value: "non_binary", label: "Non-binary" },
+                    { value: "other", label: "Other" }
+                  ]}
+                />
               </div>
 
               <div>
                 <label htmlFor="ethnicity" className="block text-sm mb-2 text-foreground">
                   Ethnicity
                 </label>
-                <select
+                <CustomSelect
                   id="ethnicity"
                   value={personalInfo.ethnicity}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, ethnicity: e.target.value })}
-                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="prefer-not-to-say">Prefer not to say</option>
-                  <option value="asian">Asian</option>
-                  <option value="black">Black / African</option>
-                  <option value="hispanic">Hispanic / Latino</option>
-                  <option value="white">White / Caucasian</option>
-                  <option value="mixed">Mixed / Multiple</option>
-                  <option value="other">Other</option>
-                </select>
+                  placeholder="Select ethnicity"
+                  options={[
+                    { value: "prefer_not_to_say", label: "Prefer not to say" },
+                    { value: "asian", label: "Asian" },
+                    { value: "black", label: "Black / African" },
+                    { value: "hispanic", label: "Hispanic / Latino" },
+                    { value: "white", label: "White / Caucasian" },
+                    { value: "mixed", label: "Mixed / Multiple" },
+                    { value: "other", label: "Other" }
+                  ]}
+                />
               </div>
             </div>
+
+            {isJobseeker() && (
+              <div className="space-y-4 pt-4 border-t border-border">
+                <h3 className="text-sm font-medium text-foreground">Background Information</h3>
+                
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="school_meal_eligible"
+                    checked={personalInfo.school_meal_eligible}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, school_meal_eligible: e.target.checked })}
+                    className="w-4 h-4 rounded border-input bg-input-background cursor-pointer"
+                  />
+                  <label htmlFor="school_meal_eligible" className="text-sm text-foreground cursor-pointer">
+                    I was eligible for free school meals
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="first_gen_to_go_uni"
+                    checked={personalInfo.first_gen_to_go_uni}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, first_gen_to_go_uni: e.target.checked })}
+                    className="w-4 h-4 rounded border-input bg-input-background cursor-pointer"
+                  />
+                  <label htmlFor="first_gen_to_go_uni" className="text-sm text-foreground cursor-pointer">
+                    I am the first generation in my family to attend university
+                  </label>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end pt-2">
               <button

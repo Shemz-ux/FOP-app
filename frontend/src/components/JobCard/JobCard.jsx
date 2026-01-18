@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Clock } from 'lucide-react';
+import { Bookmark, Clock } from 'lucide-react';
 import JobBadge from '../Ui/JobBadge';
 import CompanyLogo from '../Ui/CompanyLogo';
 import { Link } from 'react-router-dom';
@@ -22,13 +22,13 @@ export default function JobCard({
   // Generate job ID from company and title if not provided
   const generatedJobId =
     jobId ||
-    `${company.toLowerCase().replace(/\s+/g, '-')}-${jobTitle
+    `${(company || 'company').toLowerCase().replace(/\s+/g, '-')}-${(jobTitle || 'job')
       .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/\./g, '')}`;
 
   const cardContent = (
-    <div className="bg-card rounded-xl p-5 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md group hover:-translate-y-0.5 flex flex-col min-h-[280px]">
+    <div className="bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col min-h-[300px] shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -49,12 +49,12 @@ export default function JobCard({
             if (onFavoriteClick) onFavoriteClick();
           }}
           className="p-1.5 hover:bg-secondary/50 rounded-lg transition-colors duration-200"
-          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          aria-label={isFavorite ? 'Remove from saved' : 'Save job'}
         >
-          <Heart
+          <Bookmark
             className={`w-5 h-5 transition-all duration-200 ${
               isFavorite
-                ? 'fill-pink-500 stroke-pink-500 scale-110'
+                ? 'fill-primary stroke-primary scale-110'
                 : 'stroke-muted-foreground hover:stroke-foreground/70'
             }`}
           />
@@ -65,8 +65,8 @@ export default function JobCard({
       {tags && tags.length > 0 && (
         <div className="flex gap-2 mb-3 overflow-hidden">
           {tags.slice(0, 3).map((tag, index) => (
-            <JobBadge key={index} variant={tag.variant}>
-              {tag.label}
+            <JobBadge key={index} variant={tag?.variant || 'gray'}>
+              {tag?.label || 'Tag'}
             </JobBadge>
           ))}
           {tags.length > 3 && (
@@ -94,7 +94,7 @@ export default function JobCard({
         </div>
         <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
           <Clock className="w-3.5 h-3.5" />
-          <span className="text-xs">{formatTimeAgo(postedTime)}</span>
+          <span>Posted {formatTimeAgo(postedTime)}</span>
         </div>
       </div>
     </div>

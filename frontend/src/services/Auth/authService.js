@@ -1,20 +1,12 @@
 import { apiPost } from '../api';
 
-// Login for jobseekers
-export const loginJobseeker = async (email, password) => {
-  const data = await apiPost('/auth/jobseeker/login', { email, password });
-  return data;
-};
-
-// Login for societies
-export const loginSociety = async (email, password) => {
-  const data = await apiPost('/auth/society/login', { email, password });
-  return data;
-};
-
-// Login for admin users
-export const loginAdmin = async (email, password) => {
-  const data = await apiPost('/auth/admin/login', { email, password });
+// Unified login for all user types (jobseeker, society, admin)
+export const login = async (email, password) => {
+  const data = await apiPost('/tokens', { email, password });
+  // API returns: { token, user_id, user_type, role?, name?, message }
+  if (data.token) {
+    saveUser(data.token, data.user_type, data.user_id, data.role, data.name);
+  }
   return data;
 };
 
@@ -23,7 +15,8 @@ export const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('userType');
   localStorage.removeItem('userId');
-  localStorage.removeItem('user');
+  localStorage.removeItem('role');
+  localStorage.removeItem('userName');
 };
 
 // Get current user from local storage
@@ -31,14 +24,16 @@ export const getCurrentUser = () => {
   const token = localStorage.getItem('token');
   const userType = localStorage.getItem('userType');
   const userId = localStorage.getItem('userId');
-  const user = localStorage.getItem('user');
+  const role = localStorage.getItem('role');
+  const name = localStorage.getItem('userName');
   
   if (token && userType && userId) {
     return {
       token,
       userType,
       userId,
-      user: user ? JSON.parse(user) : null
+      role: role || null,
+      name: name || null
     };
   }
   
@@ -46,11 +41,16 @@ export const getCurrentUser = () => {
 };
 
 // Save user to local storage
-export const saveUser = (token, userType, userId, user) => {
+export const saveUser = (token, userType, userId, role = null, name = null) => {
   localStorage.setItem('token', token);
   localStorage.setItem('userType', userType);
   localStorage.setItem('userId', userId);
-  localStorage.setItem('user', JSON.stringify(user));
+  if (role) {
+    localStorage.setItem('role', role);
+  }
+  if (name) {
+    localStorage.setItem('userName', name);
+  }
 };
 
 // Check if user is authenticated

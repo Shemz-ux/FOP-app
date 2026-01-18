@@ -1,35 +1,47 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Bookmark, Share2, MapPin, DollarSign, Users, Clock, Building, Calendar, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Bookmark, BookmarkCheck, Share2, MapPin, DollarSign, Users, Clock, Building, Calendar, ExternalLink } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
 import CompanyLogo from '../../components/Ui/CompanyLogo';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
-import { jobsService } from '../../services';
+import AuthModal from '../../components/AuthModal/AuthModal';
+import { jobsService, jobActionsService } from '../../services';
 import { generateJobTags } from '../../utils/tagGenerator';
 import { formatTimeAgo } from '../../utils/timeFormatter';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function JobDetails() {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const { user, isLoggedIn, isJobseeker, isSociety } = useAuth();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [savingJob, setSavingJob] = useState(false);
 
-  // Fetch job details
   useEffect(() => {
-    const fetchJob = async () => {
-      if (!jobId) return;
-      
+    const fetchJobDetails = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        const jobData = await jobsService.getJobById(jobId);
-        setJob(jobData);
+        const data = await jobsService.getJobById(jobId);
+        setJob(data);
+        
+        // Check if job is saved and applied
+        if (isLoggedIn() && user) {
+          const saved = await jobActionsService.checkJobSaved(jobId, user.userId, user.userType);
+          setIsSaved(saved);
+          
+          // Check if already applied (jobseekers only)
+          if (isJobseeker()) {
+            const applied = await jobActionsService.checkJobApplied(jobId, user.userId);
+            setHasApplied(applied);
+          }
+        }
       } catch (err) {
         console.error('Error fetching job:', err);
         setError(err.message || 'Failed to load job details');
@@ -37,8 +49,8 @@ export default function JobDetails() {
         setLoading(false);
       }
     };
-    fetchJob();
-  }, [jobId]);
+    fetchJobDetails();
+  }, [jobId, isLoggedIn, user, isJobseeker]);
 
   if (loading) {
     return (
@@ -94,19 +106,89 @@ export default function JobDetails() {
     );
   }
 
-  const handleApply = () => {
+  const handleSave = async () => {
+    if (!isLoggedIn()) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setSavingJob(true);
+    try {
+      if (isSaved) {
+        await jobActionsService.unsaveJob(jobId, user.userId, user.userType);
+        setIsSaved(false);
+      } else {
+        await jobActionsService.saveJob(jobId, user.userId, user.userType);
+        setIsSaved(true);
+      }
+    } catch (err) {
+      console.error('Error saving job:', err);
+    } finally {
+      setSavingJob(false);
+    }
+  };
+
+  const handleApply = async () => {
+    if (!isLoggedIn()) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Prevent societies from applying
+    if (isSociety()) {
+      alert('Societies cannot apply to jobs. You can save jobs for your members.');
+      return;
+    }
+
     if (!job?.job_link) return;
     
     setIsApplying(true);
     
-    // Show applying state for 2 seconds before redirect
-    setTimeout(() => {
+    try {
+      // If already applied, just redirect to job link
+      if (hasApplied) {
+        setTimeout(() => {
+          window.open(job.job_link, '_blank');
+          setIsApplying(false);
+        }, 500);
+        return;
+      }
+
+      // Record application in backend
+      await jobActionsService.applyToJob(jobId, user.userId);
       setHasApplied(true);
-      // Redirect to company application page after showing message
+      
+      // Show applying state before redirect
       setTimeout(() => {
         window.open(job.job_link, '_blank');
+        setIsApplying(false);
       }, 1500);
-    }, 1000);
+    } catch (err) {
+      // If 409 conflict (already applied), update state and redirect
+      if (err.message?.includes('409') || err.message?.includes('Already applied')) {
+        setHasApplied(true);
+        setTimeout(() => {
+          window.open(job.job_link, '_blank');
+          setIsApplying(false);
+        }, 500);
+      } else {
+        console.error('Error applying to job:', err);
+        setIsApplying(false);
+      }
+    }
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: job.title,
+        text: `Check out this job at ${job.company}`,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
   };
 
   return (
@@ -166,18 +248,20 @@ export default function JobDetails() {
 
             <div className="flex gap-3 shrink-0">
               <button
-                onClick={() => setIsSaved(!isSaved)}
-                className={`px-4 py-2 rounded-xl border transition-colors ${
+                onClick={handleSave}
+                disabled={savingJob}
+                className={`px-4 py-2 rounded-xl border transition-colors disabled:opacity-50 ${
                   isSaved
                     ? "bg-primary/10 border-primary text-primary"
-                    : "border-border text-foreground hover:bg-secondary"
+                    : "bg-card border-border hover:border-primary/50"
                 }`}
               >
-                <Bookmark
-                  className={`w-5 h-5 ${isSaved ? "fill-current" : ""}`}
-                />
+                {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
               </button>
-              <button className="px-4 py-2 rounded-xl border border-border text-foreground hover:bg-secondary transition-colors">
+              <button 
+                onClick={handleShare}
+                className="px-4 py-2 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors"
+              >
                 <Share2 className="w-5 h-5" />
               </button>
             </div>
@@ -200,31 +284,7 @@ export default function JobDetails() {
             <div className="space-y-6">
               {/* Apply Card */}
               <div className="bg-card border border-border rounded-2xl p-6">
-                {hasApplied ? (
-                  <div className="text-center py-4">
-                    <div className="w-12 h-12 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center mx-auto mb-3">
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <p className="text-foreground font-medium mb-1">
-                      Redirecting you...
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      You'll be directed to {job.company}'s application page
-                    </p>
-                  </div>
-                ) : isApplying ? (
+                {isApplying ? (
                   <div className="text-center py-4">
                     <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto mb-3">
                       <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -234,19 +294,25 @@ export default function JobDetails() {
                     </p>
                   </div>
                 ) : (
-                  <button
-                    onClick={handleApply}
-                    disabled={!job.job_link}
-                    className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    Apply Now
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
-                )}
-                {job.job_link && !hasApplied && !isApplying && (
-                  <p className="text-xs text-muted-foreground text-center mt-3">
-                    You'll be redirected to the company website
-                  </p>
+                  <>
+                    <button
+                      onClick={handleApply}
+                      disabled={!job.job_link || isSociety()}
+                      className={`w-full px-6 py-3 rounded-xl transition-opacity flex items-center justify-center gap-2 ${
+                        hasApplied
+                          ? 'bg-muted text-muted-foreground cursor-pointer hover:opacity-80'
+                          : 'bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed'
+                      }`}
+                    >
+                      {isSociety() ? 'Societies Cannot Apply' : hasApplied ? 'Applied' : 'Apply Now'}
+                      {!isSociety() && <ExternalLink className="w-4 h-4" />}
+                    </button>
+                    {job.job_link && (
+                      <p className="text-xs text-muted-foreground text-center mt-3">
+                        {hasApplied ? 'Click to view the application page again' : "You'll be redirected to the company website"}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -348,6 +414,12 @@ export default function JobDetails() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
 
       <style>{`
         .job-description-content ul {

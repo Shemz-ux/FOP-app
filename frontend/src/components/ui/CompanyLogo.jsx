@@ -10,10 +10,10 @@ export default function CompanyLogo({ logo, color = '#0D7DFF', companyName }) {
 
   if (logo) {
     return (
-      <div className="w-12 h-12 rounded-lg bg-white flex items-center justify-center overflow-hidden border border-border flex-shrink-0">
+      <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center">
         <img 
           src={logo} 
-          alt="Company logo" 
+          alt={`${companyName} logo`}
           className="w-full h-full object-cover"
           onError={(e) => {
             e.target.style.display = 'none';
@@ -21,8 +21,11 @@ export default function CompanyLogo({ logo, color = '#0D7DFF', companyName }) {
           }}
         />
         <div 
-          className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-semibold text-lg"
-          style={{ backgroundColor: color, display: 'none' }}
+          className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-inner"
+          style={{ 
+            background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+            display: 'none' 
+          }}
         >
           {getInitial()}
         </div>
@@ -32,8 +35,10 @@ export default function CompanyLogo({ logo, color = '#0D7DFF', companyName }) {
 
   return (
     <div 
-      className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-semibold text-lg flex-shrink-0"
-      style={{ backgroundColor: color }}
+      className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-sm"
+      style={{ 
+        background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`
+      }}
     >
       {getInitial()}
     </div>

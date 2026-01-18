@@ -9,8 +9,12 @@ import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
 import { jobsService } from "../../services";
+import { useAuth } from "../../contexts/AuthContext";
+import * as jobActionsService from "../../services/Jobs/jobActions";
+import AuthModal from "../../components/AuthModal/AuthModal";
 
 export default function Jobs() {
+  const { user, isLoggedIn } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +24,7 @@ export default function Jobs() {
   const [searchFilters, setSearchFilters] = useState({ query: '', location: '' });
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [totalJobs, setTotalJobs] = useState(0);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const jobsPerPage = 9;
 
   const [jobTypes, setJobTypes] = useState([
@@ -52,16 +57,30 @@ export default function Jobs() {
     { label: "On-site", value: "On-site", checked: false },
   ]);
 
-  const toggleFavorite = (index) => {
-    setFavorites((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
+  const toggleFavorite = async (jobId) => {
+    if (!isLoggedIn()) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    try {
+      const isSaved = favorites.has(jobId);
+      
+      if (isSaved) {
+        await jobActionsService.unsaveJob(jobId, user.userId, user.userType);
+        setFavorites((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(jobId);
+          return newSet;
+        });
       } else {
-        newSet.add(index);
+        await jobActionsService.saveJob(jobId, user.userId, user.userType);
+        setFavorites((prev) => new Set(prev).add(jobId));
       }
-      return newSet;
-    });
+    } catch (err) {
+      console.error('Error toggling job save:', err);
+      alert('Failed to save job. Please try again.');
+    }
   };
 
   const handleJobTypeChange = (index, checked) => {
@@ -92,6 +111,22 @@ export default function Jobs() {
   useEffect(() => {
     fetchJobs();
   }, [currentPage, sortBy, searchFilters, jobTypes, experienceLevels, workTypes]);
+
+  // Load saved jobs on mount
+  useEffect(() => {
+    const loadSavedJobs = async () => {
+      if (isLoggedIn() && user) {
+        try {
+          const { getSavedJobIds } = await import('../../services/Dashboard/dashboardService');
+          const savedJobIds = await getSavedJobIds(user.userId, user.userType);
+          setFavorites(new Set(savedJobIds));
+        } catch (err) {
+          console.error('Error loading saved jobs:', err);
+        }
+      }
+    };
+    loadSavedJobs();
+  }, [isLoggedIn, user]);
 
   const fetchJobs = async () => {
     try {
@@ -326,6 +361,12 @@ export default function Jobs() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+      />
     </div>
   );
 }
