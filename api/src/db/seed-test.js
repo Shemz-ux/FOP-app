@@ -434,50 +434,69 @@ const insertSocieties = async () => {
 const insertJobs = async () => {
     await testDb.query(`
         INSERT INTO jobs (
-            title, company, description, location, work_type,
-            role_type, deadline, company_logo, is_active
+            title, company, company_logo, company_color, company_description, company_website,
+            description, industry, location, experience_level, role_type, work_type, job_link,
+            deadline, is_active
         ) VALUES 
             (
                 'Software Engineering Intern', 'Google UK', 
-                'Join our team to work on cutting-edge technology projects. You will collaborate with experienced engineers to develop scalable solutions.',
-                'London', 'Hybrid',
-                'Internship', '2024-12-31',
-                'https://logo.clearbit.com/google.com', true
+                'https://logo.clearbit.com/google.com', '#4285F4', 
+                'Google is a global technology leader focused on organizing the world''s information and making it universally accessible and useful.',
+                'https://careers.google.com',
+                'Join our team to work on cutting-edge technology projects. You will collaborate with experienced engineers to develop scalable solutions. Work on real products used by billions of users worldwide.',
+                'Technology', 'London', 'Entry level', 'Internship', 'Hybrid',
+                'https://careers.google.com/jobs/results/123456789',
+                '2024-12-31', true
             ),
             (
                 'Data Analyst Graduate', 'Deloitte', 
-                'Analyze complex datasets to drive business insights. Work with clients across various industries.',
-                'Manchester', 'In-person',
-                'Graduate Scheme', '2024-11-30',
-                'https://logo.clearbit.com/deloitte.com', true
+                'https://logo.clearbit.com/deloitte.com', '#86BC25', 
+                'Deloitte is a leading global provider of audit and assurance, consulting, financial advisory, risk advisory, tax, and related services.',
+                'https://www2.deloitte.com/uk/careers',
+                'Analyze complex datasets to drive business insights. Work with clients across various industries including finance, healthcare, and technology. Comprehensive training program included.',
+                'Consulting', 'Manchester', 'Entry level', 'Graduate Scheme', 'On-site',
+                'https://www2.deloitte.com/uk/careers/graduates',
+                '2024-11-30', true
             ),
             (
                 'Remote Software Developer', 'Stripe', 
-                'Build payment infrastructure for the internet. Fully remote position with flexible hours.',
-                'Remote', 'Remote',
-                'Full-time', '2025-01-15',
-                'https://logo.clearbit.com/stripe.com', true
+                'https://logo.clearbit.com/stripe.com', '#635BFF', 
+                'Stripe is a technology company that builds economic infrastructure for the internet. Businesses of every size use our software to accept payments and manage their operations online.',
+                'https://stripe.com/jobs',
+                'Build payment infrastructure for the internet. Fully remote position with flexible hours. Work on systems processing billions of dollars in transactions. Competitive salary and equity package.',
+                'Technology', 'Remote', 'Mid level', 'Full-time', 'Remote',
+                'https://stripe.com/jobs/listing/software-engineer',
+                '2025-01-15', true
             ),
             (
                 'Marketing Intern', 'Unilever', 
-                'Gain hands-on experience in brand marketing and consumer insights.',
-                'London', 'Hybrid',
-                'Internship', '2024-12-20',
-                'https://logo.clearbit.com/unilever.com', true
+                'https://logo.clearbit.com/unilever.com', '#0077B5', 
+                'Unilever is one of the world''s leading suppliers of Food, Home Care, Personal Care and Refreshment products with sales in over 190 countries.',
+                'https://www.unilever.com/careers',
+                'Gain hands-on experience in brand marketing and consumer insights. Work on real campaigns for iconic brands like Dove, Ben & Jerry''s, and Hellmann''s. Mentorship from senior marketers included.',
+                'Marketing', 'London', 'Entry level', 'Internship', 'Hybrid',
+                'https://www.unilever.com/careers/students-graduates',
+                '2024-12-20', true
             ),
             (
                 'Mechanical Engineering Graduate', 'Rolls-Royce', 
-                'Design and develop next-generation aerospace systems.',
-                'Derby', 'In-person',
-                'Graduate Scheme', '2024-12-15',
-                'https://logo.clearbit.com/rolls-royce.com', true
+                'https://logo.clearbit.com/rolls-royce.com', '#5E2750', 
+                'Rolls-Royce pioneers cutting-edge technologies that deliver the cleanest, safest and most competitive solutions to our planet''s vital power needs.',
+                'https://careers.rolls-royce.com',
+                'Design and develop next-generation aerospace systems. Work on engines that power aircraft and ships worldwide. Two-year graduate program with rotations across different engineering teams.',
+                'Engineering', 'Derby', 'Entry level', 'Graduate Scheme', 'On-site',
+                'https://careers.rolls-royce.com/graduates',
+                '2024-12-15', true
             ),
             (
-                'Virtual Finance Analyst', 'HSBC', 
-                'Analyze financial data and support investment decisions. Work from anywhere in the UK.',
-                'Remote', 'Remote',
-                'Full-time', '2025-01-31',
-                'https://logo.clearbit.com/hsbc.com', true
+                'Finance Analyst', 'HSBC', 
+                'https://logo.clearbit.com/hsbc.com', '#DB0011', 
+                'HSBC is one of the world''s largest banking and financial services organizations, serving millions of customers through our global businesses.',
+                'https://www.hsbc.com/careers',
+                'Analyze financial data and support investment decisions. Work from anywhere in the UK with flexible remote working. Exposure to global markets and investment strategies. Professional qualifications support provided.',
+                'Finance', 'Remote', 'Mid level', 'Full-time', 'Remote',
+                'https://www.hsbc.com/careers/students-and-graduates',
+                '2025-01-31', true
             )
     `);
     
@@ -506,12 +525,12 @@ const insertEvents = async () => {
             (
                 'Virtual Networking Night: Finance Careers', 'Business Society',
                 'https://logo.clearbit.com/icbusiness.com',
-                'Imperial College Business Society',
+                'Imperial College Business Society - Connecting students with top finance firms',
                 'https://icbusiness.com',
                 'Finance', 'networking', 'online',
-                'Online', NULL, 200,
+                'Virtual Event', 'Online', 200,
                 'https://zoom.us/j/123456789',
-                'Connect with finance professionals from Goldman Sachs, JP Morgan, and Barclays. Online via Zoom.',
+                'Connect with finance professionals from Goldman Sachs, JP Morgan, and Barclays. Join us online via Zoom for an evening of networking and career insights. Meeting link will be sent 24 hours before the event.',
                 'https://images.unsplash.com/photo-1559136555-9303baea8ebd',
                 '2024-11-20', '18:00:00', '20:00:00', true
             ),
@@ -530,12 +549,12 @@ const insertEvents = async () => {
             (
                 'Online Panel: Breaking into Tech', 'Tech Society',
                 'https://logo.clearbit.com/kcltech.com',
-                'King''s College London Tech Society',
+                'King''s College London Tech Society - Empowering the next generation of tech leaders',
                 'https://kcltech.com',
                 'Technology', 'panel_discussion', 'online',
-                'Online', NULL, 300,
+                'Virtual Event', 'Online', 300,
                 'https://teams.microsoft.com/l/meetup-join/19',
-                'Hear from software engineers at Spotify, Monzo, and Revolut about their career journeys.',
+                'Hear from software engineers at Spotify, Monzo, and Revolut about their career journeys. Learn about breaking into tech, interview tips, and what it''s really like working at top tech companies. Q&A session included.',
                 'https://images.unsplash.com/photo-1591115765373-5207764f72e7',
                 '2024-11-18', '19:00:00', '20:30:00', true
             ),
@@ -554,12 +573,12 @@ const insertEvents = async () => {
             (
                 'Virtual Coding Bootcamp', 'Google',
                 'https://logo.clearbit.com/google.com',
-                'Google UK',
+                'Google UK - Building the future of technology together',
                 'https://careers.google.com',
                 'Technology', 'workshop', 'online',
-                'Online', NULL, 1000,
+                'Virtual Event', 'Online', 1000,
                 'https://meet.google.com/abc-defg-hij',
-                'Free 3-hour coding workshop covering Python basics and data structures. All levels welcome.',
+                'Free 3-hour coding workshop covering Python basics and data structures. All levels welcome. Learn from Google engineers and get hands-on practice with real coding challenges. Certificate of completion provided.',
                 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
                 '2024-11-28', '10:00:00', '13:00:00', true
             )
