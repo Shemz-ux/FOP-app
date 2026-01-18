@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Upload } from 'lucide-react';
-import AdminSelect from '../Components/AdminSelect';
+import CustomDropdown from '../../components/Admin/CustomDropdown';
+import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
 
 export function EditResourceForm({ resource, onCancel }) {
   const [formData, setFormData] = React.useState({

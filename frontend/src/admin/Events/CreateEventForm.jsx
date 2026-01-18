@@ -1,11 +1,17 @@
 import React from 'react';
 import { ArrowLeft, Upload } from 'lucide-react';
-import AdminSelect from '../Components/AdminSelect';
+import { Users } from 'lucide-react';
+import CustomDropdown from '../../components/Admin/CustomDropdown';
+import DateInput from '../../components/Ui/DateInput';
+import TimeInput from '../../components/Ui/TimeInput';
+import NumberInput from '../../components/Ui/NumberInput';
+import { EVENT_INDUSTRIES, EVENT_TYPES, EVENT_LOCATION_TYPES } from '../../utils/dropdownOptions';
 
 export function CreateEventForm({ onCancel }) {
   const [formData, setFormData] = React.useState({
     title: '',
     organizer: '',
+    industry: '',
     shortDescription: '',
     location: '',
     address: '',
@@ -14,7 +20,8 @@ export function CreateEventForm({ onCancel }) {
     event_date: '',
     event_time: '',
     capacity: '',
-    event_type: 'in-person',
+    event_type: '',
+    location_type: '',
     is_active: true,
     descriptionSections: [
       { header: 'About This Event', content: [''] },
@@ -127,32 +134,51 @@ export function CreateEventForm({ onCancel }) {
             </div>
 
             <div>
-              <label htmlFor="capacity" className="block text-sm mb-2 text-foreground">
-                Capacity
-              </label>
-              <input
-                id="capacity"
-                type="number"
+              <NumberInput
+                label="Capacity"
+                name="capacity"
                 value={formData.capacity}
                 onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
                 placeholder="Maximum attendees"
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                min="1"
+                icon={Users}
               />
             </div>
 
             <div>
-              <label htmlFor="event-type" className="block text-sm mb-2 text-foreground">
-                Event Type *
-              </label>
-              <AdminSelect
+              <CustomDropdown
+                label="Industry"
+                name="industry"
+                options={EVENT_INDUSTRIES}
+                value={formData.industry}
+                onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                required
+                showVariantPreview
+                className="text-left"
+              />
+            </div>
+
+            <div>
+              <CustomDropdown
+                label="Event Type"
+                name="event_type"
+                options={EVENT_TYPES}
                 value={formData.event_type}
-                onValueChange={(value) => setFormData({ ...formData, event_type: value })}
-                placeholder="Select type"
-                options={[
-                  { value: 'in-person', label: 'In-Person' },
-                  { value: 'virtual', label: 'Virtual' },
-                  { value: 'hybrid', label: 'Hybrid' }
-                ]}
+                onChange={(e) => setFormData({ ...formData, event_type: e.target.value })}
+                required
+                className="text-left"
+              />
+            </div>
+
+            <div>
+              <CustomDropdown
+                label="Location Type"
+                name="location_type"
+                options={EVENT_LOCATION_TYPES}
+                value={formData.location_type}
+                onChange={(e) => setFormData({ ...formData, location_type: e.target.value })}
+                required
+                className="text-left"
               />
             </div>
 
@@ -186,29 +212,21 @@ export function CreateEventForm({ onCancel }) {
             </div>
 
             <div>
-              <label htmlFor="event-date" className="block text-sm mb-2 text-foreground">
-                Event Date *
-              </label>
-              <input
-                id="event-date"
-                type="date"
+              <DateInput
+                label="Event Date"
+                name="event_date"
                 value={formData.event_date}
                 onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="event-time" className="block text-sm mb-2 text-foreground">
-                Event Time *
-              </label>
-              <input
-                id="event-time"
-                type="time"
+              <TimeInput
+                label="Event Time"
+                name="event_time"
                 value={formData.event_time}
                 onChange={(e) => setFormData({ ...formData, event_time: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>

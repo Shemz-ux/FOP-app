@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Upload } from 'lucide-react';
-import AdminSelect from '../Components/AdminSelect';
+import CustomDropdown from '../../components/Admin/CustomDropdown';
+import { RESOURCE_CATEGORIES, RESOURCE_FILE_TYPES } from '../../utils/dropdownOptions';
 
 export function CreateResourceForm({ onCancel }) {
   const [formData, setFormData] = React.useState({
@@ -67,25 +68,15 @@ export function CreateResourceForm({ onCancel }) {
           </div>
 
           <div>
-            <label htmlFor="resource-category" className="block text-sm mb-2 text-foreground">
-              Category *
-            </label>
-            <AdminSelect
+            <CustomDropdown
+              label="Category"
+              name="category"
+              options={RESOURCE_CATEGORIES}
               value={formData.category}
-              onValueChange={(value) => setFormData({ ...formData, category: value })}
-              placeholder="Select category"
-              options={[
-                { value: 'Resume', label: 'Resume' },
-                { value: 'Interview', label: 'Interview' },
-                { value: 'Cover Letter', label: 'Cover Letter' },
-                { value: 'Career Tips', label: 'Career Tips' },
-                { value: 'LinkedIn', label: 'LinkedIn' },
-                { value: 'Portfolio', label: 'Portfolio' },
-                { value: 'Remote Work', label: 'Remote Work' },
-                { value: 'Career Resources', label: 'Career Resources' },
-                { value: 'Interview Preparation', label: 'Interview Preparation' },
-                { value: 'Technical Skills', label: 'Technical Skills' }
-              ]}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              required
+              showVariantPreview
+              className="text-left"
             />
           </div>
 
@@ -104,41 +95,10 @@ export function CreateResourceForm({ onCancel }) {
             />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="resource-icon-type" className="block text-sm mb-2 text-foreground">
-                Icon Type *
-              </label>
-              <AdminSelect
-                value={formData.iconType}
-                onValueChange={(value) => setFormData({ ...formData, iconType: value })}
-                placeholder="Select icon"
-                options={[
-                  { value: 'FileText', label: 'File Text' },
-                  { value: 'BookOpen', label: 'Book Open' },
-                  { value: 'File', label: 'File' }
-                ]}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="resource-category-variant" className="block text-sm mb-2 text-foreground">
-                Category Color *
-              </label>
-              <AdminSelect
-                value={formData.categoryVariant}
-                onValueChange={(value) => setFormData({ ...formData, categoryVariant: value })}
-                placeholder="Select color"
-                options={[
-                  { value: 'purple', label: 'Purple' },
-                  { value: 'green', label: 'Green' },
-                  { value: 'orange', label: 'Orange' },
-                  { value: 'pink', label: 'Pink' },
-                  { value: 'blue', label: 'Blue' },
-                  { value: 'teal', label: 'Teal' }
-                ]}
-              />
-            </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Note: Icon type and category color will be automatically assigned based on your category selection.
+            </p>
           </div>
 
           <div>

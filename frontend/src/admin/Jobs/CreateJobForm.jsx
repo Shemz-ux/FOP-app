@@ -1,6 +1,8 @@
 import React from 'react';
 import { ArrowLeft, Upload } from 'lucide-react';
-import AdminSelect from '../Components/AdminSelect';
+import CustomDropdown from '../../components/Admin/CustomDropdown';
+import DateInput from '../../components/Ui/DateInput';
+import { JOB_INDUSTRIES, JOB_ROLE_TYPES, JOB_WORK_TYPES, JOB_EXPERIENCE_LEVELS } from '../../utils/dropdownOptions';
 
 export function CreateJobForm({ onCancel }) {
   const [formData, setFormData] = React.useState({
@@ -129,17 +131,15 @@ export function CreateJobForm({ onCancel }) {
             </div>
 
             <div>
-              <label htmlFor="industry" className="block text-sm mb-2 text-foreground">
-                Industry *
-              </label>
-              <input
-                id="industry"
-                type="text"
+              <CustomDropdown
+                label="Industry"
+                name="industry"
+                options={JOB_INDUSTRIES}
                 value={formData.industry}
                 onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                placeholder="e.g. Technology, Finance, Healthcare"
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
+                showVariantPreview
+                className="text-left"
               />
             </div>
 
@@ -159,53 +159,38 @@ export function CreateJobForm({ onCancel }) {
             </div>
 
             <div>
-              <label htmlFor="job-level" className="block text-sm mb-2 text-foreground">
-                Job Level *
-              </label>
-              <AdminSelect
+              <CustomDropdown
+                label="Experience Level"
+                name="job_level"
+                options={JOB_EXPERIENCE_LEVELS}
                 value={formData.job_level}
-                onValueChange={(value) => setFormData({ ...formData, job_level: value })}
-                placeholder="Select level"
-                options={[
-                  { value: 'Entry-level', label: 'Entry-level' },
-                  { value: 'Mid-level', label: 'Mid-level' },
-                  { value: 'Senior', label: 'Senior' },
-                  { value: 'Lead', label: 'Lead' },
-                  { value: 'Manager', label: 'Manager' }
-                ]}
+                onChange={(e) => setFormData({ ...formData, job_level: e.target.value })}
+                required
+                className="text-left"
               />
             </div>
 
             <div>
-              <label htmlFor="role-type" className="block text-sm mb-2 text-foreground">
-                Role Type *
-              </label>
-              <AdminSelect
+              <CustomDropdown
+                label="Role Type"
+                name="role_type"
+                options={JOB_ROLE_TYPES}
                 value={formData.role_type}
-                onValueChange={(value) => setFormData({ ...formData, role_type: value })}
-                placeholder="Select type"
-                options={[
-                  { value: 'Full-time', label: 'Full-time' },
-                  { value: 'Part-time', label: 'Part-time' },
-                  { value: 'Internship', label: 'Internship' },
-                  { value: 'Contract', label: 'Contract' }
-                ]}
+                onChange={(e) => setFormData({ ...formData, role_type: e.target.value })}
+                required
+                className="text-left"
               />
             </div>
 
             <div>
-              <label htmlFor="work-mode" className="block text-sm mb-2 text-foreground">
-                Work Mode *
-              </label>
-              <AdminSelect
+              <CustomDropdown
+                label="Work Type"
+                name="work_mode"
+                options={JOB_WORK_TYPES}
                 value={formData.work_mode}
-                onValueChange={(value) => setFormData({ ...formData, work_mode: value })}
-                placeholder="Select mode"
-                options={[
-                  { value: 'Remote', label: 'Remote' },
-                  { value: 'In-person', label: 'In-person' },
-                  { value: 'Hybrid', label: 'Hybrid' }
-                ]}
+                onChange={(e) => setFormData({ ...formData, work_mode: e.target.value })}
+                required
+                className="text-left"
               />
             </div>
 
@@ -253,15 +238,11 @@ export function CreateJobForm({ onCancel }) {
             </div>
 
             <div>
-              <label htmlFor="deadline" className="block text-sm mb-2 text-foreground">
-                Application Deadline
-              </label>
-              <input
-                id="deadline"
-                type="date"
+              <DateInput
+                label="Application Deadline"
+                name="deadline"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 

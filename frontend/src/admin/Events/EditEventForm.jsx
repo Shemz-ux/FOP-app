@@ -1,6 +1,10 @@
 import React from 'react';
-import { ArrowLeft, Upload } from 'lucide-react';
-import AdminSelect from '../Components/AdminSelect';
+import { ArrowLeft, Upload, Users } from 'lucide-react';
+import CustomDropdown from '../../components/Admin/CustomDropdown';
+import DateInput from '../../components/Ui/DateInput';
+import TimeInput from '../../components/Ui/TimeInput';
+import NumberInput from '../../components/Ui/NumberInput';
+import { EVENT_INDUSTRIES, EVENT_TYPES, EVENT_LOCATION_TYPES } from '../../utils/dropdownOptions';
 
 export function EditEventForm({ event, onCancel }) {
   const [formData, setFormData] = React.useState({
@@ -105,8 +109,15 @@ export function EditEventForm({ event, onCancel }) {
               <input id="edit-event-organizer" type="text" value={formData.organizer} onChange={(e) => setFormData({ ...formData, organizer: e.target.value })} placeholder="e.g., TechConnect, Design Masters Inc" className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
             </div>
             <div>
-              <label htmlFor="edit-event-capacity" className="block text-sm mb-2 text-foreground">Capacity</label>
-              <input id="edit-event-capacity" type="number" value={formData.capacity} onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} placeholder="Maximum attendees" className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
+              <NumberInput
+                label="Capacity"
+                name="capacity"
+                value={formData.capacity}
+                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                placeholder="Maximum attendees"
+                min="1"
+                icon={Users}
+              />
             </div>
             <div>
               <label htmlFor="edit-event-type" className="block text-sm mb-2 text-foreground">Event Type *</label>
@@ -130,12 +141,22 @@ export function EditEventForm({ event, onCancel }) {
               <input id="edit-event-address" type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder={formData.event_type === 'virtual' ? 'Online via Zoom' : 'Full street address'} className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" />
             </div>
             <div>
-              <label htmlFor="edit-event-date" className="block text-sm mb-2 text-foreground">Event Date *</label>
-              <input id="edit-event-date" type="date" value={formData.event_date} onChange={(e) => setFormData({ ...formData, event_date: e.target.value })} className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
+              <DateInput
+                label="Event Date"
+                name="event_date"
+                value={formData.event_date}
+                onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
+                required
+              />
             </div>
             <div>
-              <label htmlFor="edit-event-time" className="block text-sm mb-2 text-foreground">Event Time *</label>
-              <input id="edit-event-time" type="time" value={formData.event_time} onChange={(e) => setFormData({ ...formData, event_time: e.target.value })} className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
+              <TimeInput
+                label="Event Time"
+                name="event_time"
+                value={formData.event_time}
+                onChange={(e) => setFormData({ ...formData, event_time: e.target.value })}
+                required
+              />
             </div>
             <div>
               <label htmlFor="edit-contact-email" className="block text-sm mb-2 text-foreground">Contact Email *</label>
