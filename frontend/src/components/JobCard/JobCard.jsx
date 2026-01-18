@@ -80,7 +80,10 @@ export default function JobCard({
       {/* Description */}
       <div className="flex-grow">
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed text-left">
-          {description}
+          {description?.split('\n').filter(line => {
+            const trimmed = line.trim();
+            return trimmed && !trimmed.match(/^About the Role$/i);
+          }).slice(0, 2).join(' ') || description}
         </p>
       </div>
 

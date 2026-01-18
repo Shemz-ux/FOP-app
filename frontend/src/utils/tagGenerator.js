@@ -90,26 +90,23 @@ export const generateEventTags = (event) => {
 
   // Add event type tag
   if (event.event_type) {
-    const label = event.event_type.replace(/_/g, ' ')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    // Find matching option by label (seed data uses formatted labels)
+    const matchingOption = EVENT_TYPES.find(opt => opt.label === event.event_type);
     
     tags.push({
-      label: label,
-      variant: getEventTypeVariant(event.event_type)
+      label: event.event_type,
+      variant: matchingOption?.variant || 'gray'
     });
   }
 
   // Add location type tag
   if (event.location_type) {
-    const label = event.location_type === 'online' ? 'Online/Virtual' : 
-                  event.location_type === 'in_person' ? 'In-Person' : 
-                  event.location_type.charAt(0).toUpperCase() + event.location_type.slice(1);
+    // Find matching option by label
+    const matchingOption = EVENT_LOCATION_TYPES.find(opt => opt.label === event.location_type);
     
     tags.push({
-      label: label,
-      variant: getEventLocationVariant(event.location_type)
+      label: event.location_type,
+      variant: matchingOption?.variant || 'gray'
     });
   }
 

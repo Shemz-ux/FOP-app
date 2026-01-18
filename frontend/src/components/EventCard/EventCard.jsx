@@ -2,6 +2,7 @@ import React from "react";
 import { Heart, Clock, Calendar, MapPin, Users } from "lucide-react";
 import JobBadge from "../Ui/JobBadge";
 import { Link } from "react-router-dom";
+import { formatTimeAgo } from "../../utils/timeFormatter";
 
 export default function EventCard({
   title,
@@ -16,6 +17,7 @@ export default function EventCard({
   isFavorite = false,
   onFavoriteClick,
   eventId,
+  createdAt,
 }) {
   // Generate event ID from title if not provided
   const generatedEventId =
@@ -55,7 +57,7 @@ export default function EventCard({
       <div className="p-6">
         {/* Header */}
         <div className="mb-4 text-left">
-          <h3 className="text-card-foreground mb-2 text-left">
+          <h3 className="text-card-foreground mb-2 text-left line-clamp-2">
             {title}
           </h3>
           <p className="text-muted-foreground text-sm text-left">
@@ -74,7 +76,10 @@ export default function EventCard({
 
         {/* Description */}
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2 text-left">
-          {description}
+          {description?.split('\n').filter(line => {
+            const trimmed = line.trim();
+            return trimmed && !trimmed.match(/^About the Event$/i);
+          }).slice(0, 2).join(' ') || description}
         </p>
 
         {/* Event Details */}
@@ -98,8 +103,9 @@ export default function EventCard({
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-border">
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            {/* <Users className="w-4 h-4" /> */}
-            {/* <span>{attendees} attending</span> */}
+            {createdAt && (
+              <span className="text-xs">{formatTimeAgo(createdAt)}</span>
+            )}
           </div>
 
           <button
@@ -108,7 +114,7 @@ export default function EventCard({
               e.stopPropagation();
               // Handle registration
             }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-sm"
           >
             Register
           </button>

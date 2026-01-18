@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function CompanyLogo({ logo, color = '#0D7DFF', companyName = '' }) {
+export default function CompanyLogo({ logo, color = '#0D7DFF', companyName }) {
   const getInitial = () => {
-    if (companyName) {
+    if (companyName && typeof companyName === 'string' && companyName.length > 0) {
       return companyName.charAt(0).toUpperCase();
     }
     return 'C';

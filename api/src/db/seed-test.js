@@ -735,10 +735,29 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/kcl.ac.uk',
                 'Leading university in London connecting students with top employers',
                 'https://kcl.ac.uk',
-                'Technology', 'career_fair', 'in_person',
+                'Technology', 'Career Fair', 'In Person',
                 'London', 'Strand Campus, King''s College London, WC2R 2LS', 500,
-                NULL,
-                'Meet with recruiters from Google, Meta, Amazon, Microsoft, and 50+ tech companies. Bring multiple copies of your CV and dress in business casual attire. Free professional headshots available. Register early as spaces are limited.',
+                'https://www.kcl.ac.uk/events/tech-career-fair-2025',
+                'About the Event
+Meet with recruiters from Google, Meta, Amazon, Microsoft, and 50+ tech companies at London''s largest tech career fair.
+
+What to Expect
+- 50+ companies with open positions
+- One-on-one conversations with recruiters
+- Free professional headshots
+- CV review stations
+- Panel discussions on breaking into tech
+
+What to Bring
+- Multiple copies of your CV
+- Business casual attire
+- Questions for recruiters
+- Portfolio or GitHub profile (if applicable)
+
+Event Details
+- Register early as spaces are limited
+- Lunch and refreshments provided
+- Networking reception at 4pm',
                 'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
                 '2025-02-15', '10:00:00', '16:00:00', true
             ),
@@ -747,10 +766,28 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/icbusiness.com',
                 'Imperial College Business Society - Connecting students with top finance firms',
                 'https://icbusiness.com',
-                'Finance', 'networking', 'online',
+                'Finance', 'Networking', 'Online',
                 'Virtual Event', 'Online via Zoom', 200,
                 'https://zoom.us/j/123456789',
-                'Connect with finance and consulting professionals from Goldman Sachs, JP Morgan, McKinsey, and Bain. Speed networking sessions, career insights panel, and Q&A. Zoom link sent 24 hours before event. Business attire recommended.',
+                'About the Event
+Connect with finance and consulting professionals from Goldman Sachs, JP Morgan, McKinsey, and Bain in this exclusive virtual networking evening.
+
+Agenda
+- 6:00pm - Welcome and introductions
+- 6:15pm - Speed networking sessions (5 mins each)
+- 7:30pm - Career insights panel
+- 8:00pm - Live Q&A session
+
+Who Should Attend
+- Students interested in finance or consulting
+- Those preparing for spring weeks or internships
+- Anyone seeking career advice from industry professionals
+
+How to Prepare
+- Business attire recommended
+- Prepare your elevator pitch
+- Have questions ready
+- Zoom link sent 24 hours before event',
                 'https://images.unsplash.com/photo-1559136555-9303baea8ebd',
                 '2025-02-08', '18:00:00', '20:30:00', true
             ),
@@ -759,10 +796,30 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/datasciencesoc.com',
                 'University Data Science Society - Advancing AI education',
                 'https://datasciencesoc.com',
-                'AI & Machine Learning', 'workshop', 'hybrid',
+                'AI & Machine Learning', 'Workshop', 'Hybrid',
                 'London', 'Computer Science Building, Room 3.02', 80,
-                NULL,
-                'Hands-on workshop on building ML models with TensorFlow and PyTorch. Covers neural networks, CNNs, and practical applications. Bring your laptop. Suitable for intermediate Python users. In-person and online options available.',
+                'https://www.eventbrite.com/e/ai-machine-learning-workshop',
+                'About the Workshop
+Hands-on workshop on building machine learning models with TensorFlow and PyTorch. Perfect for students looking to gain practical ML experience.
+
+Topics Covered
+- Neural networks fundamentals
+- Convolutional Neural Networks (CNNs)
+- Model training and optimization
+- Practical applications and case studies
+- Best practices for production ML
+
+Requirements
+- Bring your laptop
+- Intermediate Python knowledge
+- Basic understanding of ML concepts
+- Install TensorFlow and PyTorch beforehand
+
+Format
+- In-person and online options available
+- Hands-on coding exercises
+- Group projects
+- Certificate of completion provided',
                 'https://images.unsplash.com/photo-1677442136019-21780ecad995',
                 '2025-02-12', '14:00:00', '17:00:00', true
             ),
@@ -771,10 +828,30 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/financesoc.com',
                 'University Finance Society',
                 'https://financesoc.com',
-                'Investment Banking', 'panel_discussion', 'online',
+                'Investment Banking', 'Panel Discussion', 'Online',
                 'Virtual Event', 'Online via Microsoft Teams', 300,
                 'https://teams.microsoft.com/l/meetup-join/19',
-                'Hear from analysts and associates at top investment banks about their career journeys. Learn about spring weeks, summer internships, and graduate schemes. Cover interview tips, technical questions, and day-to-day life in IB. Live Q&A session.',
+                'About the Panel
+Hear from analysts and associates at top investment banks about their career journeys and get insider tips on breaking into investment banking.
+
+Panel Topics
+- Spring weeks and summer internships
+- Graduate schemes and training programs
+- Interview preparation and technical questions
+- Day-to-day life in investment banking
+- Work-life balance and career progression
+
+Panelists From
+- Goldman Sachs
+- JP Morgan
+- Morgan Stanley
+- Barclays
+
+Format
+- 30-minute panel discussion
+- 30-minute live Q&A session
+- Networking in breakout rooms
+- Recording available after event',
                 'https://images.unsplash.com/photo-1591115765373-5207764f72e7',
                 '2025-01-25', '19:00:00', '20:30:00', true
             ),
@@ -783,10 +860,31 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/gchq.gov.uk',
                 'GCHQ and National Crime Agency',
                 'https://www.gchq-careers.co.uk',
-                'Cybersecurity', 'conference', 'in_person',
+                'Cybersecurity', 'Conference', 'In Person',
                 'Cheltenham', 'GCHQ Headquarters, Hubble Road, GL51 0EX', 250,
-                NULL,
-                'Full-day conference on careers in cybersecurity. Keynote speakers from GCHQ, NCA, and leading cybersecurity firms. Workshops on ethical hacking, threat intelligence, and incident response. Lunch and refreshments provided. Security clearance not required.',
+                'https://www.gchq-careers.co.uk/events/cybersecurity-conference-2025',
+                'About the Conference
+Full-day conference exploring careers in cybersecurity with keynote speakers from GCHQ, NCA, and leading cybersecurity firms.
+
+Schedule
+- 9:00am - Registration and breakfast
+- 9:30am - Keynote: Future of Cybersecurity
+- 11:00am - Workshop sessions
+- 1:00pm - Lunch and networking
+- 2:00pm - Career panel discussion
+- 4:00pm - Closing remarks
+
+Workshop Topics
+- Ethical hacking fundamentals
+- Threat intelligence analysis
+- Incident response procedures
+- Career paths in cybersecurity
+
+What''s Included
+- Lunch and refreshments
+- Conference materials
+- Certificate of attendance
+- Security clearance not required',
                 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b',
                 '2025-03-05', '09:00:00', '17:00:00', true
             ),
@@ -795,7 +893,7 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/designcollective.com',
                 'Design Collective - Empowering creative professionals',
                 'https://designcollective.com',
-                'Design', 'webinar', 'online',
+                'Design', 'Webinar', 'Online',
                 'Virtual Event', 'Online', 500,
                 'https://meet.google.com/abc-defg-hij',
                 'Learn how to build a standout UX design portfolio from senior designers at Figma, Adobe, and Airbnb. Cover case study structure, showcasing process, and presenting your work. Includes portfolio review session. Recording available to all registrants.',
@@ -807,9 +905,9 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/lawsoc.com',
                 'University Law Society',
                 'https://lawsoc.com',
-                'Law', 'seminar', 'in_person',
+                'Law', 'Seminar', 'In Person',
                 'London', 'Law Faculty Building, Lecture Theatre 1', 120,
-                NULL,
+                'https://www.lawsociety.org.uk/events/law-careers-seminar',
                 'Explore different career paths in law including commercial law, criminal law, human rights, and in-house roles. Hear from solicitors, barristers, and legal executives. Learn about vacation schemes, training contracts, and pupillages. Networking reception afterwards.',
                 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f',
                 '2025-02-18', '17:00:00', '19:00:00', true
@@ -819,9 +917,9 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/entrepreneursoc.com',
                 'Student Entrepreneurs Society',
                 'https://entrepreneursoc.com',
-                'Management', 'meetup', 'hybrid',
-                'Manchester', 'Innovation Hub, Oxford Road', 60,
-                NULL,
+                'Management', 'Meetup', 'Hybrid',
+                'Manchester', 'Innovation Hub, 123 Tech Street', 60,
+                'https://www.eventbrite.com/e/startup-entrepreneurship-meetup',
                 'Monthly meetup for aspiring entrepreneurs and startup enthusiasts. Pitch your ideas, find co-founders, and learn from successful founders. This month: guest speaker from a Series A fintech startup. Pizza and drinks provided.',
                 'https://images.unsplash.com/photo-1556761175-b413da4baf72',
                 '2025-02-22', '18:30:00', '21:00:00', true
@@ -831,7 +929,7 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/medsoc.com',
                 'University Medical Society',
                 'https://medsoc.com',
-                'Healthcare', 'career_fair', 'online',
+                'Healthcare', 'Career Fair', 'Online',
                 'Virtual Event', 'Online Platform', 1000,
                 'https://virtualfair.medsoc.com',
                 'Virtual career fair featuring NHS trusts, pharmaceutical companies, medical device firms, and healthcare consultancies. Virtual booths, live chat with recruiters, and webinar sessions on different healthcare careers. Open to all students.',
@@ -843,9 +941,9 @@ const insertEvents = async () => {
                 'https://logo.clearbit.com/marketingsoc.com',
                 'Student Marketing Society',
                 'https://marketingsoc.com',
-                'Marketing', 'panel_discussion', 'in_person',
+                'Marketing', 'Panel Discussion', 'In Person',
                 'London', 'Business School, Room 2.15', 100,
-                NULL,
+                'https://www.eventbrite.com/e/marketing-pr-industry-panel',
                 'Panel discussion with marketing directors and PR managers from Unilever, Ogilvy, and Edelman. Topics include digital marketing, brand strategy, influencer marketing, and breaking into the industry. Networking session with free refreshments.',
                 'https://images.unsplash.com/photo-1557804506-669a67965ba0',
                 '2025-02-28', '18:00:00', '20:00:00', true

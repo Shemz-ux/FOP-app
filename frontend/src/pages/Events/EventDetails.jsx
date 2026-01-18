@@ -1,11 +1,14 @@
 import {useState, useEffect} from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Bookmark, Share2, MapPin, Clock, Users, Calendar } from 'lucide-react';
+import { ArrowLeft, Bookmark, Share2, MapPin, Clock, Users, Calendar, Building, ExternalLink } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
+import CompanyLogo from '../../components/Ui/CompanyLogo';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import { eventsService } from '../../services';
+import { generateEventTags } from '../../utils/tagGenerator';
+import { formatTimeAgo } from '../../utils/timeFormatter';
 
 export default function EventDetails() {
   const { eventId } = useParams();
@@ -14,6 +17,7 @@ export default function EventDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
   // Fetch event details
@@ -91,8 +95,16 @@ export default function EventDetails() {
   }
 
   const handleRegister = () => {
-    setIsRegistered(true);
-    // In a real app, this would submit the registration
+    setIsRegistering(true);
+    
+    setTimeout(() => {
+      setIsRegistered(true);
+      if (event?.event_link) {
+        setTimeout(() => {
+          window.open(event.event_link, '_blank');
+        }, 1500);
+      }
+    }, 1000);
   };
 
   const spotsLeft = event.capacity ? (event.capacity - (event.attendees || 0)) : null;
@@ -102,45 +114,59 @@ export default function EventDetails() {
       {/* Header */}
       <div className="border-b border-border bg-secondary/30">
         <div className="container mx-auto px-6 py-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Events
+            </button>
 
-          {/* Hero Image */}
-          <div className="mb-6 rounded-2xl overflow-hidden">
-            <img
-              src={event.image}
-              alt={event.title}
-              className="w-full h-64 lg:h-96 object-cover"
-            />
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 text-left">
-            <div>
-              <h1 className="text-3xl mb-3 text-foreground">{event.title}</h1>
-              <div className="flex flex-wrap items-center gap-2 text-muted-foreground mb-3">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {event.date}
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  {event.time}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground mb-4">
-                <MapPin className="w-4 h-4" />
-                <span>{event.location}</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {event.tags.map((tag, index) => (
-                  <JobBadge key={index} label={tag.label} variant={tag.variant} />
-                ))}
+            <div className="flex items-start gap-4">
+              <CompanyLogo 
+                logo={event.organiser_logo} 
+                color={event.organiser_color || '#0D7DFF'} 
+                companyName={event.organiser}
+              />
+              <div>
+                <h1 className="text-3xl mb-2 text-foreground font-semibold">
+                  {event.title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2 text-muted-foreground mb-3">
+                  <span className="flex items-center gap-1">
+                    <Building className="w-4 h-4" />
+                    {event.organiser}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {event.event_start_time?.slice(0, 5)} - {event.event_end_time?.slice(0, 5)}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {event.location}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {generateEventTags(event).map((tag, index) => (
+                    <JobBadge
+                      key={index}
+                      variant={tag.variant}
+                    >
+                      {tag.label}
+                    </JobBadge>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -185,20 +211,33 @@ export default function EventDetails() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-foreground mb-1">You're Registered!</p>
-                    <p className="text-sm text-muted-foreground">Check your email for details</p>
+                    <p className="text-foreground font-medium mb-1">Redirecting you...</p>
+                    <p className="text-sm text-muted-foreground">You'll be directed to the event registration page</p>
+                  </div>
+                ) : isRegistering ? (
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto mb-3">
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                    <p className="text-foreground font-medium">Preparing registration...</p>
                   </div>
                 ) : (
                   <>
                     <button
                       onClick={handleRegister}
-                      className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity mb-3"
+                      className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 mb-3"
                     >
                       Register Now
+                      {event.event_link && <ExternalLink className="w-4 h-4" />}
                     </button>
-                    {spotsLeft > 0 && spotsLeft < 50 && (
-                      <p className="text-sm text-orange-400 text-center">
-                        Only {spotsLeft} spots left!
+                    {event.event_link && (
+                      <p className="text-xs text-muted-foreground text-center mb-3">
+                        You'll be redirected to the event page
+                      </p>
+                    )}
+                    {event.capacity && (
+                      <p className="text-sm text-muted-foreground text-center">
+                        {event.capacity - (event.attendee_count || 0)} spots remaining
                       </p>
                     )}
                   </>
@@ -213,8 +252,8 @@ export default function EventDetails() {
                   <Calendar className="w-5 h-5 text-primary mt-0.5" />
                   <div>
                     <div className="text-sm text-muted-foreground mb-0.5">Date & Time</div>
-                    <div className="text-foreground">{event.date}</div>
-                    <div className="text-foreground">{event.time}</div>
+                    <div className="text-foreground">{new Date(event.event_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                    <div className="text-foreground">{event.event_start_time?.slice(0, 5)} - {event.event_end_time?.slice(0, 5)}</div>
                   </div>
                 </div>
 
@@ -223,41 +262,51 @@ export default function EventDetails() {
                   <div>
                     <div className="text-sm text-muted-foreground mb-0.5">Location</div>
                     <div className="text-foreground">{event.location}</div>
-                    <div className="text-sm text-muted-foreground">{event.address}</div>
+                    {event.address && <div className="text-sm text-muted-foreground">{event.address}</div>}
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-primary mt-0.5" />
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-0.5">Attendees</div>
-                    <div className="text-foreground">{event.attendees} registered</div>
-                    <div className="text-sm text-muted-foreground">{event.capacity} capacity</div>
+                {event.capacity && (
+                  <div className="flex items-start gap-3">
+                    <Users className="w-5 h-5 text-primary mt-0.5" />
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-0.5">Capacity</div>
+                      <div className="text-foreground">{event.attendee_count || 0} / {event.capacity} registered</div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Organizer Info */}
               <div className="bg-card border border-border rounded-2xl p-6">
                 <h3 className="text-foreground mb-4">Organized By</h3>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center">
-                    {event.organizer.charAt(0)}
-                  </div>
+                  <CompanyLogo 
+                    logo={event.organiser_logo} 
+                    color={event.organiser_color || '#0D7DFF'} 
+                    companyName={event.organiser}
+                  />
                   <div>
-                    <div className="text-foreground">{event.organizer}</div>
+                    <div className="text-foreground">{event.organiser || 'Unknown Organizer'}</div>
                     <div className="text-sm text-muted-foreground">Event Organizer</div>
                   </div>
                 </div>
-                <p className="text-muted-foreground text-sm mb-4">
-                  {event.organizer} is dedicated to creating valuable networking and learning opportunities for professionals in the tech industry.
-                </p>
-                <Link
-                  to={`/organizer/${event.organizer.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="text-primary hover:opacity-80 text-sm"
-                >
-                  View more events →
-                </Link>
+                {event.organiser_description && (
+                  <p className="text-muted-foreground text-sm mb-4">
+                    {event.organiser_description}
+                  </p>
+                )}
+                {event.organiser_website && (
+                  <a
+                    href={event.organiser_website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:opacity-80 text-sm flex items-center gap-1"
+                  >
+                    Visit website
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
               </div>
             </div>
           </div>

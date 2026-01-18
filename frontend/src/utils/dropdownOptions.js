@@ -144,8 +144,8 @@ export const EVENT_TYPES = [
 ];
 
 export const EVENT_LOCATION_TYPES = [
-  { value: 'online', label: 'Online/Virtual', variant: 'emerald' },
-  { value: 'in_person', label: 'In-Person', variant: 'amber' },
+  { value: 'online', label: 'Online', variant: 'emerald' },
+  { value: 'in_person', label: 'In Person', variant: 'amber' },
   { value: 'hybrid', label: 'Hybrid', variant: 'violet' },
   { value: 'Other', label: 'Other', variant: 'gray' }
 ];

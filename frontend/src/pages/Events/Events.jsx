@@ -62,16 +62,18 @@ export default function Events() {
       if (selectedCategory) filters.event_type = selectedCategory;
 
       const sortMap = {
-        'recent': 'created_at',
-        'date': 'event_date',
-        'title': 'title'
+        'recent': { sort_by: 'created_at', sort_order: 'desc' },
+        'relevant': { sort_by: 'attendee_count', sort_order: 'desc' },
+        'date': { sort_by: 'event_date', sort_order: 'asc' }
       };
-      filters.sort_by = sortMap[sortBy] || 'event_date';
-      filters.sort_order = 'asc';
+      
+      const sortConfig = sortMap[sortBy] || sortMap['date'];
+      filters.sort_by = sortConfig.sort_by;
+      filters.sort_order = sortConfig.sort_order;
 
       const response = await eventsService.getEventsAdvanced(filters);
       setEvents(response.events || []);
-      setTotalEvents(response.total || 0);
+      setTotalEvents(response.pagination?.totalCount || 0);
     } catch (err) {
       console.error('Error fetching events:', err);
       setError(err.message || 'Failed to load events');
@@ -192,13 +194,17 @@ export default function Events() {
                   key={event.event_id}
                   eventId={event.event_id}
                   title={event.title}
-                  organizer={event.organizer}
-                  date={event.event_date}
-                  time={event.event_time}
+                  organizer={event.organiser}
+                  date={new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  time={`${event.event_start_time?.slice(0, 5)} - ${event.event_end_time?.slice(0, 5)}`}
                   location={event.location}
+                  attendees={event.attendee_count || 0}
+                  description={event.description}
                   tags={event.tags || []}
+                  image={event.event_image}
                   isFavorite={favorites.has(event.event_id)}
                   onFavoriteClick={() => toggleFavorite(event.event_id)}
+                  createdAt={event.created_at}
                 />
               ))}
             </div>
