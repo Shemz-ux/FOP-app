@@ -147,7 +147,6 @@ const createJobsTable = () => {
         role_type VARCHAR(255),
         work_type VARCHAR(255),
         job_link VARCHAR(255),
-        salary VARCHAR(255),
         deadline DATE,
         is_active BOOLEAN DEFAULT TRUE,
         applicant_count INT DEFAULT 0,
@@ -292,7 +291,7 @@ const createSocietyEventsSavedTable = () => {
 };
 
 const createAdminUsersTable = () => {
-    return testDb.query(`CREATE TABLE IF NOT EXISTS admin_users (
+    return testDb.query(`CREATE TABLE admin_users (
         admin_id SERIAL PRIMARY KEY,
         first_name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
@@ -300,6 +299,7 @@ const createAdminUsersTable = () => {
         password_hash VARCHAR(255) NOT NULL,
         role VARCHAR(50) DEFAULT 'admin',
         is_active BOOLEAN DEFAULT TRUE,
+        created_by INT REFERENCES admin_users(admin_id),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
         last_login TIMESTAMP
@@ -330,6 +330,309 @@ const createResourcesTable = () => {
     )`).then(()=>{
         console.log("Resources table created!✅")
     });
+};
+
+// Seed data insertion functions
+const insertAdminUsers = async () => {
+    const bcrypt = await import('bcrypt');
+    const hashedPassword = await bcrypt.default.hash('Admin123!', 10);
+    
+    await testDb.query(`
+        INSERT INTO admin_users (first_name, last_name, email, password_hash, role, is_active)
+        VALUES 
+            ('Sarah', 'Johnson', 'admin@fop.com', $1, 'super_admin', true),
+            ('John', 'Smith', 'john.admin@fop.com', $1, 'admin', true),
+            ('Emma', 'Williams', 'emma.admin@fop.com', $1, 'admin', true)
+    `, [hashedPassword]);
+    console.log('✅ Admin users seeded');
+};
+
+const insertJobseekers = async () => {
+    const bcrypt = await import('bcrypt');
+    const hashedPassword = await bcrypt.default.hash('Student123!', 10);
+    
+    // University students
+    await testDb.query(`
+        INSERT INTO jobseekers (
+            first_name, last_name, email, password_hash, phone_number, date_of_birth,
+            gender, ethnicity, school_meal_eligible, first_gen_to_go_uni,
+            education_level, institution_name, uni_year, degree_type, area_of_study,
+            role_interest_option_one, role_interest_option_two, society, linkedin
+        ) VALUES 
+            (
+                'Alex', 'Chen', 'alex.chen@student.com', $1, '+447700900001', '2003-05-15',
+                'male', 'Chinese', false, false,
+                'undergraduate', 'King''s College London', '2nd', 'bsc', 'Computer Science',
+                'Software Developer', 'Data Scientist', 'Tech Society', 'https://linkedin.com/in/alexchen'
+            ),
+            (
+                'Maya', 'Patel', 'maya.patel@student.com', $1, '+447700900002', '2002-08-22',
+                'female', 'Indian', false, true,
+                'undergraduate', 'Imperial College London', '3rd', 'beng', 'Mechanical Engineering',
+                'Mechanical Engineer', 'Project Manager', 'Engineering Society', 'https://linkedin.com/in/mayapatel'
+            ),
+            (
+                'James', 'Wilson', 'james.wilson@student.com', $1, '+447700900003', '2004-11-30',
+                'male', 'White British', true, false,
+                'undergraduate', 'University of Manchester', '1st', 'ba', 'Economics',
+                'Financial Analyst', 'Economist', 'Business Society', 'https://linkedin.com/in/jameswilson'
+            )
+    `, [hashedPassword]);
+    
+    // A-Level students
+    await testDb.query(`
+        INSERT INTO jobseekers (
+            first_name, last_name, email, password_hash, phone_number, date_of_birth,
+            gender, ethnicity, school_meal_eligible, first_gen_to_go_uni,
+            education_level, institution_name, subject_one, subject_two, subject_three, subject_four,
+            role_interest_option_one, role_interest_option_two
+        ) VALUES 
+            (
+                'Sophie', 'Brown', 'sophie.brown@student.com', $1, '+447700900004', '2006-03-10',
+                'female', 'White British', false, false,
+                'a_level_or_btec', 'Harris Academy Barking', 'Mathematics', 'Physics', 'Chemistry', 'Further Mathematics',
+                'Software Developer', 'Data Analyst'
+            ),
+            (
+                'Oliver', 'Davis', 'oliver.davis@student.com', $1, '+447700900005', '2006-07-18',
+                'male', 'Black British', true, true,
+                'a_level_or_btec', 'Newham Sixth Form College', 'English Literature', 'History', 'Politics', 'Economics',
+                'Policy Analyst', 'Journalist'
+            )
+    `, [hashedPassword]);
+    
+    console.log('✅ Jobseekers seeded (3 university + 2 A-level students)');
+};
+
+const insertSocieties = async () => {
+    const bcrypt = await import('bcrypt');
+    const hashedPassword = await bcrypt.default.hash('Society123!', 10);
+    
+    await testDb.query(`
+        INSERT INTO societies (name, email, password_hash, description, university)
+        VALUES 
+            (
+                'Tech Society', 'tech@society.com', $1,
+                'Connecting students with opportunities in technology and software development',
+                'King''s College London'
+            ),
+            (
+                'Business Society', 'business@society.com', $1,
+                'Empowering future business leaders through networking and career opportunities',
+                'Imperial College London'
+            ),
+            (
+                'Engineering Society', 'engineering@society.com', $1,
+                'Supporting engineering students in their career journey',
+                'University of Manchester'
+            )
+    `, [hashedPassword]);
+    
+    console.log('✅ Societies seeded');
+};
+
+const insertJobs = async () => {
+    await testDb.query(`
+        INSERT INTO jobs (
+            title, company, description, location, work_type,
+            role_type, deadline, company_logo, is_active
+        ) VALUES 
+            (
+                'Software Engineering Intern', 'Google UK', 
+                'Join our team to work on cutting-edge technology projects. You will collaborate with experienced engineers to develop scalable solutions.',
+                'London', 'Hybrid',
+                'Internship', '2024-12-31',
+                'https://logo.clearbit.com/google.com', true
+            ),
+            (
+                'Data Analyst Graduate', 'Deloitte', 
+                'Analyze complex datasets to drive business insights. Work with clients across various industries.',
+                'Manchester', 'In-person',
+                'Graduate Scheme', '2024-11-30',
+                'https://logo.clearbit.com/deloitte.com', true
+            ),
+            (
+                'Remote Software Developer', 'Stripe', 
+                'Build payment infrastructure for the internet. Fully remote position with flexible hours.',
+                'Remote', 'Remote',
+                'Full-time', '2025-01-15',
+                'https://logo.clearbit.com/stripe.com', true
+            ),
+            (
+                'Marketing Intern', 'Unilever', 
+                'Gain hands-on experience in brand marketing and consumer insights.',
+                'London', 'Hybrid',
+                'Internship', '2024-12-20',
+                'https://logo.clearbit.com/unilever.com', true
+            ),
+            (
+                'Mechanical Engineering Graduate', 'Rolls-Royce', 
+                'Design and develop next-generation aerospace systems.',
+                'Derby', 'In-person',
+                'Graduate Scheme', '2024-12-15',
+                'https://logo.clearbit.com/rolls-royce.com', true
+            ),
+            (
+                'Virtual Finance Analyst', 'HSBC', 
+                'Analyze financial data and support investment decisions. Work from anywhere in the UK.',
+                'Remote', 'Remote',
+                'Full-time', '2025-01-31',
+                'https://logo.clearbit.com/hsbc.com', true
+            )
+    `);
+    
+    console.log('✅ Jobs seeded (3 in-person/hybrid + 3 remote/virtual)');
+};
+
+const insertEvents = async () => {
+    await testDb.query(`
+        INSERT INTO events (
+            title, organiser, organiser_logo, organiser_description, organiser_website,
+            industry, event_type, location_type, location, address, capacity, event_link,
+            description, event_image, event_date, event_start_time, event_end_time, is_active
+        ) VALUES 
+            (
+                'Tech Career Fair 2024', 'King''s College London',
+                'https://logo.clearbit.com/kcl.ac.uk',
+                'Leading university in London connecting students with top employers',
+                'https://kcl.ac.uk',
+                'Technology', 'career_fair', 'in_person',
+                'London', 'Strand Campus, King''s College London, WC2R 2LS', 500,
+                NULL,
+                'Meet with recruiters from Google, Meta, Amazon, and more. Bring your CV and dress professionally.',
+                'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
+                '2024-11-25', '10:00:00', '16:00:00', true
+            ),
+            (
+                'Virtual Networking Night: Finance Careers', 'Business Society',
+                'https://logo.clearbit.com/icbusiness.com',
+                'Imperial College Business Society',
+                'https://icbusiness.com',
+                'Finance', 'networking', 'online',
+                'Online', NULL, 200,
+                'https://zoom.us/j/123456789',
+                'Connect with finance professionals from Goldman Sachs, JP Morgan, and Barclays. Online via Zoom.',
+                'https://images.unsplash.com/photo-1559136555-9303baea8ebd',
+                '2024-11-20', '18:00:00', '20:00:00', true
+            ),
+            (
+                'Engineering Workshop: CAD Fundamentals', 'Engineering Society',
+                'https://logo.clearbit.com/manchestereng.com',
+                'University of Manchester Engineering Society',
+                'https://manchestereng.com',
+                'Engineering', 'workshop', 'in_person',
+                'Manchester', 'Engineering Building A, University of Manchester, M13 9PL', 50,
+                NULL,
+                'Hands-on workshop learning AutoCAD and SolidWorks. Laptops will be provided.',
+                'https://images.unsplash.com/photo-1581092160562-40aa08e78837',
+                '2024-11-22', '14:00:00', '17:00:00', true
+            ),
+            (
+                'Online Panel: Breaking into Tech', 'Tech Society',
+                'https://logo.clearbit.com/kcltech.com',
+                'King''s College London Tech Society',
+                'https://kcltech.com',
+                'Technology', 'panel_discussion', 'online',
+                'Online', NULL, 300,
+                'https://teams.microsoft.com/l/meetup-join/19',
+                'Hear from software engineers at Spotify, Monzo, and Revolut about their career journeys.',
+                'https://images.unsplash.com/photo-1591115765373-5207764f72e7',
+                '2024-11-18', '19:00:00', '20:30:00', true
+            ),
+            (
+                'CV Review Drop-in Session', 'Careers Service',
+                'https://logo.clearbit.com/kcl.ac.uk',
+                'King''s College London Careers Service',
+                'https://kcl.ac.uk/careers',
+                'General', 'workshop', 'in_person',
+                'London', 'Careers Centre, King''s College London, WC2R 2LS', 30,
+                NULL,
+                'Get your CV reviewed by careers advisors. No booking required, drop in anytime.',
+                'https://images.unsplash.com/photo-1586281380349-632531db7ed4',
+                '2024-11-21', '12:00:00', '15:00:00', true
+            ),
+            (
+                'Virtual Coding Bootcamp', 'Google',
+                'https://logo.clearbit.com/google.com',
+                'Google UK',
+                'https://careers.google.com',
+                'Technology', 'workshop', 'online',
+                'Online', NULL, 1000,
+                'https://meet.google.com/abc-defg-hij',
+                'Free 3-hour coding workshop covering Python basics and data structures. All levels welcome.',
+                'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
+                '2024-11-28', '10:00:00', '13:00:00', true
+            )
+    `);
+    
+    console.log('✅ Events seeded (3 in-person + 3 online)');
+};
+
+const insertResources = async () => {
+    await testDb.query(`
+        INSERT INTO resources (
+            title, description, detailed_description, whats_included, category,
+            file_name, file_size, file_type, storage_key, storage_url,
+            uploaded_by, is_active
+        ) VALUES 
+            (
+                'CV Writing Guide 2024', 
+                'Comprehensive guide to writing an effective CV for graduate applications',
+                'This detailed guide covers everything you need to know about creating a standout CV. Learn about formatting, content structure, and what recruiters look for.',
+                '• 20-page PDF guide\n• CV templates\n• Industry-specific examples\n• Common mistakes to avoid',
+                'CV & Cover Letters',
+                'cv-writing-guide-2024.pdf', '2.5 MB', 'application/pdf',
+                'resources/cv-writing-guide-2024.pdf',
+                'https://storage.fop.com/resources/cv-writing-guide-2024.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Technical Interview Preparation', 
+                'Master coding interviews with practice problems and solutions',
+                'Prepare for technical interviews at top tech companies. Includes data structures, algorithms, and system design questions.',
+                '• 150+ coding problems\n• Video solutions\n• Time complexity analysis\n• Mock interview tips',
+                'Interview Prep',
+                'technical-interview-prep.pdf', '5.8 MB', 'application/pdf',
+                'resources/technical-interview-prep.pdf',
+                'https://storage.fop.com/resources/technical-interview-prep.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Finance Career Pathways', 
+                'Explore different career paths in finance and banking',
+                'Understand the various roles available in finance, from investment banking to asset management.',
+                '• Career path diagrams\n• Role descriptions\n• Salary expectations\n• Required qualifications',
+                'Career Guides',
+                'finance-career-pathways.pdf', '3.2 MB', 'application/pdf',
+                'resources/finance-career-pathways.pdf',
+                'https://storage.fop.com/resources/finance-career-pathways.pdf',
+                'FOP Team', true
+            ),
+            (
+                'LinkedIn Optimization Checklist', 
+                'Step-by-step guide to creating a professional LinkedIn profile',
+                'Optimize your LinkedIn profile to attract recruiters and build your professional network.',
+                '• Profile checklist\n• Headline examples\n• Summary templates\n• Networking strategies',
+                'Professional Development',
+                'linkedin-optimization.pdf', '1.8 MB', 'application/pdf',
+                'resources/linkedin-optimization.pdf',
+                'https://storage.fop.com/resources/linkedin-optimization.pdf',
+                'FOP Team', true
+            ),
+            (
+                'Assessment Centre Success Guide', 
+                'Navigate assessment centres with confidence',
+                'Learn what to expect at assessment centres and how to excel in group exercises, presentations, and case studies.',
+                '• Assessment centre overview\n• Group exercise tips\n• Presentation frameworks\n• Case study examples',
+                'Interview Prep',
+                'assessment-centre-guide.pdf', '4.1 MB', 'application/pdf',
+                'resources/assessment-centre-guide.pdf',
+                'https://storage.fop.com/resources/assessment-centre-guide.pdf',
+                'FOP Team', true
+            )
+    `);
+    
+    console.log('✅ Resources seeded');
 };
 
 const runTestSeed = async () => {
@@ -363,7 +666,15 @@ const runTestSeed = async () => {
         await createAdminUsersTable();
         await createResourcesTable();
         
-        console.log('✅ Test database seeded successfully!');
+        // Insert seed data
+        await insertAdminUsers();
+        await insertJobseekers();
+        await insertSocieties();
+        await insertJobs();
+        await insertEvents();
+        await insertResources();
+        
+        console.log('✅ Test database seeded successfully with data!');
         await testDb.end();
     } catch (err) {
         console.error('❌ Test database seed failed:', err.message);
