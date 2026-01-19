@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Eye, Trash2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
-import { apiGet } from '../../services/api';
+import ConfirmModal from '../../components/Ui/ConfirmModal';
+import Toast from '../../components/Ui/Toast';
+import { apiGet, apiDelete } from '../../services/api';
 
 export default function JobDetail() {
   const { id } = useParams();
@@ -11,6 +13,8 @@ export default function JobDetail() {
   const [job, setJob] = useState(null);
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false });
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -40,6 +44,29 @@ export default function JobDetail() {
     
     fetchJobDetails();
   }, [id]);
+
+  const handleDeleteClick = () => {
+    setConfirmModal({ isOpen: true });
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await apiDelete(`/jobs/${job.job_id}`);
+      setToast({
+        message: `"${job.title}" has been deleted successfully`,
+        type: 'success'
+      });
+      setTimeout(() => {
+        navigate('/admin/jobs');
+      }, 1500);
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      setToast({
+        message: 'Failed to delete job. Please try again.',
+        type: 'error'
+      });
+    }
+  };
 
   // If viewing an applicant profile
   if (selectedApplicantId) {
@@ -108,17 +135,25 @@ export default function JobDetail() {
             href={`/jobs/${job.job_id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
             View on Website
           </a>
           <Link
             to={`/admin/jobs/${job.job_id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary"
+            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary"
           >
-            Edit Job
+            <Pencil className="w-4 h-4" />
+            Edit
           </Link>
+          <button
+            onClick={handleDeleteClick}
+            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </button>
         </div>
       </div>
 
@@ -135,7 +170,15 @@ export default function JobDetail() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Deadline</p>
-            <p className="text-foreground font-medium">{job.deadline ? new Date(job.deadline).toLocaleDateString() : 'Rolling Deadline'}</p>
+            <p className="text-foreground font-medium">
+              {job.deadline 
+                ? new Date(job.deadline).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  })
+                : 'Rolling Deadline'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Role Type</p>
@@ -146,14 +189,14 @@ export default function JobDetail() {
             <p className="text-foreground font-medium">{job.work_type || 'N/A'}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Job Link</p>
-            {job.job_link ? (
-              <a href={job.job_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium text-sm">
-                View Link
-              </a>
-            ) : (
-              <p className="text-foreground font-medium">N/A</p>
-            )}
+            <p className="text-sm text-muted-foreground mb-1">Status</p>
+            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+              job.is_active
+                ? 'bg-green-500/20 text-green-500'
+                : 'bg-red-500/20 text-red-500'
+            }`}>
+              {job.is_active ? 'Active' : 'Inactive'}
+            </span>
           </div>
         </div>
       </div>
@@ -246,6 +289,28 @@ export default function JobDetail() {
       </div>
         </div>
       </div>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Job"
+        message={job ? `Are you sure you want to delete "${job.title}"? This will permanently remove the job and all associated applications. This action cannot be undone.` : ''}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmVariant="danger"
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          duration={3000}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

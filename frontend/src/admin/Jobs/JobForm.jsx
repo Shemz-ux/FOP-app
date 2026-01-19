@@ -190,7 +190,6 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                 value={formData.industry}
                 onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                 required
-                showVariantPreview
                 className="text-left"
               />
             </div>
@@ -266,6 +265,13 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                 Application Deadline <span className="text-red-500">*</span>
               </label>
               <div className="space-y-2">
+                {!isRollingDeadline && (
+                  <DateInput
+                    name="deadline"
+                    value={formData.deadline}
+                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                  />
+                )}
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -280,13 +286,6 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                   />
                   <span className="text-sm text-foreground">Rolling deadline</span>
                 </label>
-                {!isRollingDeadline && (
-                  <DateInput
-                    name="deadline"
-                    value={formData.deadline}
-                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                  />
-                )}
               </div>
             </div>
 
