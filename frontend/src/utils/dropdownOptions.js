@@ -217,12 +217,10 @@ export const JOB_INDUSTRIES = [
 
 export const JOB_ROLE_TYPES = [
   // Student & Graduate Opportunities
-  { value: 'Summer Intern', label: 'Summer Intern', variant: 'cyan' },
+  { value: 'Internship', label: 'Internship', variant: 'cyan' },
   { value: 'Spring Week', label: 'Spring Week', variant: 'sky' },
-  { value: 'Winter Intern', label: 'Winter Intern', variant: 'blue' },
-  { value: 'Year Placement', label: 'Year Placement', variant: 'indigo' },
   { value: 'Placement', label: 'Placement', variant: 'pink' },
-  { value: 'Grad Scheme', label: 'Grad Scheme', variant: 'purple' },
+  { value: 'Graduate Scheme', label: 'Graduate Scheme', variant: 'purple' },
   { value: 'Apprenticeship', label: 'Apprenticeship', variant: 'teal' },
   { value: 'Degree Apprentice', label: 'Degree Apprentice', variant: 'emerald' },
   { value: 'Insight Day', label: 'Insight Day', variant: 'lime' },
@@ -249,15 +247,12 @@ export const JOB_WORK_TYPES = [
 
 export const JOB_EXPERIENCE_LEVELS = [
   // Student & Early Career
-  { value: 'No Experience', label: 'No Experience', variant: 'sky' },
+  { value: 'School Leaver', label: 'School Leaver', variant: 'sky' },
   { value: 'Student', label: 'Student', variant: 'cyan' },
-  { value: 'Penultimate Year', label: 'Penultimate Year', variant: 'blue' },
-  { value: 'Final Year', label: 'Final Year', variant: 'indigo' },
   { value: 'Graduate', label: 'Graduate', variant: 'violet' },
   { value: 'Entry Level', label: 'Entry Level', variant: 'purple' },
   
   // Experienced
-  { value: 'Associate', label: 'Associate', variant: 'pink' },
   { value: 'Mid Level', label: 'Mid Level', variant: 'rose' },
   { value: 'Senior', label: 'Senior', variant: 'orange' },
   { value: 'Lead', label: 'Lead', variant: 'amber' },

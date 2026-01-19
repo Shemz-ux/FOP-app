@@ -5,22 +5,25 @@ import DateInput from '../../components/Ui/DateInput';
 import TimeInput from '../../components/Ui/TimeInput';
 import NumberInput from '../../components/Ui/NumberInput';
 import { EVENT_INDUSTRIES, EVENT_TYPES, EVENT_LOCATION_TYPES } from '../../utils/dropdownOptions';
+import { apiPatch } from '../../services/api';
 
 export function EditEventForm({ event, onCancel }) {
   const [formData, setFormData] = React.useState({
     title: event?.title || '',
-    organizer: event?.organizer || '',
-    shortDescription: event?.shortDescription || event?.description || '',
+    organiser: event?.organiser || '',
+    industry: event?.industry || '',
+    shortDescription: event?.short_description || event?.description || '',
     location: event?.location || '',
     address: event?.address || '',
     event_link: event?.event_link || '',
     contact_email: event?.contact_email || '',
-    event_date: event?.date || '',
+    event_date: event?.event_date || event?.date || '',
     event_time: event?.event_time || event?.time || '',
     capacity: event?.capacity || '',
     event_type: event?.event_type || 'in-person',
-    is_active: event?.status === 'upcoming',
-    descriptionSections: event?.descriptionSections || [
+    location_type: event?.location_type || '',
+    is_active: event?.is_active !== undefined ? event.is_active : true,
+    descriptionSections: event?.description_sections || [
       { header: 'About This Event', content: [''] },
       { header: 'What to Expect', content: [''] },
       { header: 'Who Should Attend', content: [''] },
@@ -77,11 +80,34 @@ export function EditEventForm({ event, onCancel }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Update Event:', { id: event.id, ...formData });
-    console.log('Event Image:', imageFile);
-    onCancel();
+    
+    try {
+      const eventData = {
+        title: formData.title,
+        organiser: formData.organiser,
+        short_description: formData.shortDescription,
+        location: formData.location,
+        address: formData.address,
+        event_link: formData.event_link,
+        contact_email: formData.contact_email,
+        event_date: formData.event_date,
+        event_time: formData.event_time,
+        capacity: formData.capacity,
+        event_type: formData.event_type,
+        is_active: formData.is_active,
+        description_sections: formData.descriptionSections
+      };
+      
+      await apiPatch(`/events/${event.event_id}`, eventData);
+      
+      alert('Event updated successfully!');
+      onCancel();
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert('Failed to update event. Please try again.');
+    }
   };
 
   return (
@@ -105,8 +131,8 @@ export function EditEventForm({ event, onCancel }) {
               <input id="edit-event-title" type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
             </div>
             <div>
-              <label htmlFor="edit-event-organizer" className="block text-sm mb-2 text-foreground">Organizer *</label>
-              <input id="edit-event-organizer" type="text" value={formData.organizer} onChange={(e) => setFormData({ ...formData, organizer: e.target.value })} placeholder="e.g., TechConnect, Design Masters Inc" className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
+              <label htmlFor="edit-event-organiser" className="block text-sm mb-2 text-foreground">Organiser *</label>
+              <input id="edit-event-organiser" type="text" value={formData.organiser} onChange={(e) => setFormData({ ...formData, organiser: e.target.value })} placeholder="e.g., TechConnect, Design Masters Inc" className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary" required />
             </div>
             <div>
               <NumberInput

@@ -1,21 +1,71 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Eye, Trash2 } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
-import { mockJobs, mockApplicants, mockApplicantProfiles } from '../../services/Admin/admin-analytics';
+import { apiGet } from '../../services/api';
 
 export default function JobDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedApplicantId, setSelectedApplicantId] = useState(null);
+  const [job, setJob] = useState(null);
+  const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const job = mockJobs.find(j => j.id === parseInt(id));
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await apiGet(`/jobs/${id}`);
+        console.log('Job API response:', response);
+        const jobData = response.job || response;
+        console.log('Job data:', jobData);
+        setJob(jobData);
+        
+        // Fetch applicants for this job
+        try {
+          const applicantsData = await apiGet(`/jobs/${id}/applications`);
+          console.log('Applicants data:', applicantsData);
+          setApplicants(applicantsData.applications || []);
+        } catch (appError) {
+          console.error('Error fetching applicants:', appError);
+          setApplicants([]);
+        }
+      } catch (error) {
+        console.error('Error fetching job details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchJobDetails();
+  }, [id]);
 
   // If viewing an applicant profile
   if (selectedApplicantId) {
-    const profile = mockApplicantProfiles[selectedApplicantId];
+    const applicant = applicants.find(a => a.application_id === selectedApplicantId);
+    const profile = applicant ? {
+      name: `${applicant.jobseeker?.first_name || ''} ${applicant.jobseeker?.last_name || ''}`.trim(),
+      email: applicant.jobseeker?.email || 'N/A',
+      phone: applicant.jobseeker?.phone_number || 'N/A',
+      university: applicant.jobseeker?.institution_name || 'N/A',
+      course: applicant.jobseeker?.area_of_study || 'N/A',
+      year: applicant.jobseeker?.uni_year || 'N/A',
+      cvUrl: applicant.jobseeker?.cvUrl
+    } : null;
     
     return <ProfileView profile={profile} onClose={() => setSelectedApplicantId(null)} type="applicant" />;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading job details...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!job) {
@@ -55,7 +105,7 @@ export default function JobDetail() {
         </div>
         <div className="flex gap-2">
           <a
-            href={`/jobs/${job.id}`}
+            href={`/jobs/${job.job_id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
@@ -64,7 +114,7 @@ export default function JobDetail() {
             View on Website
           </a>
           <Link
-            to={`/admin/jobs/${job.id}/edit`}
+            to={`/admin/jobs/${job.job_id}/edit`}
             className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary"
           >
             Edit Job
@@ -72,23 +122,65 @@ export default function JobDetail() {
         </div>
       </div>
 
+      {/* Job Info Header */}
+      <div className="bg-card border border-border rounded-xl p-6">
+        <div className="grid md:grid-cols-3 gap-6">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Industry</p>
+            <p className="text-foreground font-medium">{job.industry || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Location</p>
+            <p className="text-foreground font-medium">{job.location || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Deadline</p>
+            <p className="text-foreground font-medium">{job.deadline ? new Date(job.deadline).toLocaleDateString() : 'Rolling Deadline'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Role Type</p>
+            <p className="text-foreground font-medium">{job.role_type || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Work Type</p>
+            <p className="text-foreground font-medium">{job.work_type || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Job Link</p>
+            {job.job_link ? (
+              <a href={job.job_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium text-sm">
+                View Link
+              </a>
+            ) : (
+              <p className="text-foreground font-medium">N/A</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Job Stats */}
       <div className="grid md:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Total Applicants</p>
-          <p className="text-2xl text-foreground">{job.applicants}</p>
+          <p className="text-2xl text-foreground">{applicants.length}</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Pending Review</p>
-          <p className="text-2xl text-foreground">28</p>
+          <p className="text-2xl text-foreground">
+            {applicants.filter(a => a.status === 'pending' || !a.status).length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Shortlisted</p>
-          <p className="text-2xl text-foreground">12</p>
+          <p className="text-2xl text-foreground">
+            {applicants.filter(a => a.status === 'shortlisted').length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Reviewed</p>
-          <p className="text-2xl text-foreground">5</p>
+          <p className="text-2xl text-foreground">
+            {applicants.filter(a => a.status === 'reviewed').length}
+          </p>
         </div>
       </div>
 
@@ -110,12 +202,14 @@ export default function JobDetail() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {mockApplicants.map(applicant => (
-                <tr key={applicant.id} className="hover:bg-secondary/50 transition-colors">
-                  <td className="px-6 py-4 text-foreground">{applicant.name}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{applicant.email}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{applicant.university}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{applicant.appliedDate}</td>
+              {applicants.map(applicant => (
+                <tr key={applicant.application_id} className="hover:bg-secondary/50 transition-colors">
+                  <td className="px-6 py-4 text-foreground">
+                    {`${applicant.jobseeker?.first_name || ''} ${applicant.jobseeker?.last_name || ''}`.trim() || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground">{applicant.jobseeker?.email || 'N/A'}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{applicant.jobseeker?.institution_name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{new Date(applicant.applied_at || applicant.created_at).toLocaleDateString()}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs ${
                       applicant.status === 'shortlisted'
@@ -124,13 +218,13 @@ export default function JobDetail() {
                         ? 'bg-blue-500/20 text-blue-500'
                         : 'bg-yellow-500/20 text-yellow-500'
                     }`}>
-                      {applicant.status}
+                      {applicant.status || 'pending'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setSelectedApplicantId(applicant.id)}
+                        onClick={() => setSelectedApplicantId(applicant.application_id)}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
                         title="View profile"
                       >

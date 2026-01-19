@@ -15,7 +15,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function JobDetails() {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const { user, isLoggedIn, isJobseeker, isSociety } = useAuth();
+  const { user, isLoggedIn, isJobseeker, isSociety, isAdmin } = useAuth();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -247,6 +247,17 @@ export default function JobDetails() {
             </div>
 
             <div className="flex gap-3 shrink-0">
+              {isAdmin() && (
+                <Link
+                  to={`/admin/jobs/${job.job_id}/edit`}
+                  className="px-4 py-2 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span className="hidden sm:inline">Edit</span>
+                </Link>
+              )}
               <button
                 onClick={handleSave}
                 disabled={savingJob}
@@ -368,19 +379,19 @@ export default function JobDetails() {
                   </div>
                 </div>
 
-                {job.deadline && (
-                  <div className="flex items-start gap-3">
-                    <Calendar className="w-5 h-5 text-primary mt-0.5" />
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-0.5">
-                        Application Deadline
-                      </div>
-                      <div className="text-foreground">
-                        {new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </div>
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-primary mt-0.5" />
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-0.5">
+                      Application Deadline
+                    </div>
+                    <div className="text-foreground">
+                      {job.deadline 
+                        ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : 'Rolling Deadline'}
                     </div>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Company Info */}

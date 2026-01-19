@@ -1,18 +1,40 @@
 import db from "../db/db.js";
 
 export const fetchEvents = () => {
-    return db.query(`SELECT * FROM events ORDER BY event_date ASC, event_start_time ASC`).then(({rows}) => {
-        return rows;
+    return db.query(`
+        SELECT 
+            e.*,
+            COUNT(jea.jobseeker_id) as applicant_count
+        FROM events e
+        LEFT JOIN jobseekers_events_applied jea ON e.event_id = jea.event_id
+        GROUP BY e.event_id
+        ORDER BY e.event_date ASC, e.event_start_time ASC
+    `).then(({rows}) => {
+        return rows.map(row => ({
+            ...row,
+            applicant_count: parseInt(row.applicant_count) || 0
+        }));
     });
 };
 
 export const fetchEventById = (id) => {
-    return db.query(`SELECT * FROM events WHERE event_id = $1`, [id])
+    return db.query(`
+        SELECT 
+            e.*,
+            COUNT(jea.jobseeker_id) as applicant_count
+        FROM events e
+        LEFT JOIN jobseekers_events_applied jea ON e.event_id = jea.event_id
+        WHERE e.event_id = $1
+        GROUP BY e.event_id
+    `, [id])
     .then(({rows}) => {
         if (rows.length === 0) {
             return Promise.reject({status: 404, msg: 'Event not found'});
         }
-        return rows[0];
+        return {
+            ...rows[0],
+            applicant_count: parseInt(rows[0].applicant_count) || 0
+        };
     });
 };
 
@@ -110,13 +132,37 @@ export const removeEvent = (id) => {
 };
 
 export const fetchActiveEvents = () => {
-    return db.query(`SELECT * FROM events WHERE is_active = true ORDER BY event_date ASC, event_start_time ASC`).then(({rows}) => {
-        return rows;
+    return db.query(`
+        SELECT 
+            e.*,
+            COUNT(jea.jobseeker_id) as applicant_count
+        FROM events e
+        LEFT JOIN jobseekers_events_applied jea ON e.event_id = jea.event_id
+        WHERE e.is_active = true
+        GROUP BY e.event_id
+        ORDER BY e.event_date ASC, e.event_start_time ASC
+    `).then(({rows}) => {
+        return rows.map(row => ({
+            ...row,
+            applicant_count: parseInt(row.applicant_count) || 0
+        }));
     });
 };
 
 export const fetchUpcomingEvents = () => {
-    return db.query(`SELECT * FROM events WHERE event_date >= CURRENT_DATE AND is_active = true ORDER BY event_date ASC, event_start_time ASC`).then(({rows}) => {
-        return rows;
+    return db.query(`
+        SELECT 
+            e.*,
+            COUNT(jea.jobseeker_id) as applicant_count
+        FROM events e
+        LEFT JOIN jobseekers_events_applied jea ON e.event_id = jea.event_id
+        WHERE e.event_date >= CURRENT_DATE AND e.is_active = true
+        GROUP BY e.event_id
+        ORDER BY e.event_date ASC, e.event_start_time ASC
+    `).then(({rows}) => {
+        return rows.map(row => ({
+            ...row,
+            applicant_count: parseInt(row.applicant_count) || 0
+        }));
     });
 };

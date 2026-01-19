@@ -1,19 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Eye, BarChart, Trash2, Edit, Home } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
-import { mockJobs } from '../../services/Admin/admin-analytics';
+import { apiGet, apiDelete } from '../../services/api';
 
 export default function JobsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredJobs = mockJobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         job.company.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        const data = await apiGet('/jobs');
+        setJobs(data.jobs || []);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchJobs();
+  }, []);
+
+  const handleDelete = async (jobId) => {
+    if (!window.confirm('Are you sure you want to delete this job?')) return;
+    
+    try {
+      await apiDelete(`/jobs/${jobId}`);
+      setJobs(jobs.filter(job => job.job_id !== jobId));
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      alert('Failed to delete job');
+    }
+  };
+
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = (job.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (job.company || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || job.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading jobs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,39 +128,38 @@ export default function JobsList() {
             </thead>
             <tbody className="divide-y divide-border">
               {filteredJobs.map(job => (
-                <tr key={job.id} className="hover:bg-secondary/50 transition-colors">
+                <tr key={job.job_id} className="hover:bg-secondary/50 transition-colors">
                   <td className="px-6 py-4 text-foreground">{job.title}</td>
                   <td className="px-6 py-4 text-muted-foreground">{job.company}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{job.location}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{job.applicants}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{job.location || 'N/A'}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{job.applicant_count || 0}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs ${
-                      job.status === 'active'
+                      job.is_active
                         ? 'bg-green-500/20 text-green-500'
-                        : job.status === 'closed'
-                        ? 'bg-red-500/20 text-red-500'
-                        : 'bg-yellow-500/20 text-yellow-500'
+                        : 'bg-red-500/20 text-red-500'
                     }`}>
-                      {job.status}
+                      {job.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Link
-                        to={`/admin/jobs/${job.id}`}
+                        to={`/admin/jobs/${job.job_id}`}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
                         title="View details"
                       >
                         <BarChart className="w-4 h-4 text-foreground" />
                       </Link>
                       <Link
-                        to={`/admin/jobs/${job.id}/edit`}
+                        to={`/admin/jobs/${job.job_id}/edit`}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
                         title="Edit job"
                       >
                         <Edit className="w-4 h-4 text-foreground" />
                       </Link>
                       <button
+                        onClick={() => handleDelete(job.job_id)}
                         className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Delete job"
                       >

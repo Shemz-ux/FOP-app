@@ -37,12 +37,12 @@ export default function AuthModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm text-left">
       <div className="bg-card border border-border rounded-2xl w-full max-w-md mx-4 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b border-border text-cent">
           <h2 className="text-2xl font-semibold text-foreground">
-            Welcome Back
+            Login to continue!
           </h2>
           <button
             onClick={onClose}

@@ -1,5 +1,6 @@
 import express from "express";
 import { deleteJob, getJob, getJobs, patchJob, postJob } from "../controllers/jobs.js";
+import { getJobApplications } from "../controllers/job-applications.js";
 import adminChecker from "../middleware/adminChecker.js";
 
 const jobRouter = express.Router();
@@ -14,5 +15,9 @@ jobRouter
 .get(getJob)
 .patch(adminChecker, patchJob)
 .delete(adminChecker, deleteJob);
+
+jobRouter
+.route("/:job_id/applications")
+.get(adminChecker, getJobApplications);
 
 export default jobRouter;

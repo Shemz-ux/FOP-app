@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, BarChart, Download, X, User, GraduationCap, MapPin, Eye, Home } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
 import AdminSelect from '../Components/AdminSelect';
-import { mockStudents } from '../../services/Admin/admin-analytics';
+import { apiGet } from '../../services/api';
 
 export default function StudentsManagement() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,39 +13,69 @@ export default function StudentsManagement() {
   const [filterFreeMeal, setFilterFreeMeal] = useState(false);
   const [filterFirstGen, setFilterFirstGen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredStudents = mockStudents.filter(student => {
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        const data = await apiGet('/jobseekers');
+        setStudents(data.jobseekers || []);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStudents();
+  }, []);
+
+  const filteredStudents = students.filter(student => {
+    const fullName = `${student.first_name || ''} ${student.last_name || ''}`.trim();
     const matchesSearch = 
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.university.toLowerCase().includes(searchTerm.toLowerCase());
+      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (student.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (student.institution_name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesGender = filterGender === 'all' || student.gender === filterGender;
-    const matchesEducation = filterEducation === 'all' || student.year === filterEducation;
-    const matchesUniversity = filterUniversity === 'all' || student.university.includes(filterUniversity);
-    const matchesFreeMeal = !filterFreeMeal || student.free_meal_eligible === true;
-    const matchesFirstGen = !filterFirstGen || student.first_generation === true;
+    const matchesEducation = filterEducation === 'all' || student.uni_year === filterEducation;
+    const matchesUniversity = filterUniversity === 'all' || (student.institution_name || '').includes(filterUniversity);
+    const matchesFreeMeal = !filterFreeMeal || student.school_meal_eligible === true;
+    const matchesFirstGen = !filterFirstGen || student.first_gen_to_go_uni === true;
     
     return matchesSearch && matchesGender && matchesEducation && matchesUniversity && matchesFreeMeal && matchesFirstGen;
   });
 
-  const universities = [...new Set(mockStudents.map(s => s.university))];
-  const years = [...new Set(mockStudents.map(s => s.year))];
+  const universities = [...new Set(students.map(s => s.institution_name).filter(Boolean))];
+  const years = [...new Set(students.map(s => s.uni_year).filter(Boolean))];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading students...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (selectedStudentId) {
-    const student = mockStudents.find(s => s.id === selectedStudentId);
+    const student = students.find(s => s.jobseeker_id === selectedStudentId);
     // Transform student data to match profile format
     const profile = student ? {
-      name: student.name,
+      name: `${student.first_name || ''} ${student.last_name || ''}`.trim(),
       email: student.email,
-      phone: student.phone || 'N/A',
+      phone: student.phone_number || 'N/A',
       linkedIn: student.linkedIn || 'N/A',
-      university: student.university,
-      course: student.course,
-      year: student.year,
+      university: student.institution_name,
+      course: student.area_of_study,
+      year: student.uni_year,
       education_level: student.education_level || 'undergraduate',
       degree_type: student.degree_type || 'bsc',
-      area_of_study: student.area_of_study || student.course,
+      area_of_study: student.area_of_study,
       role_interest_option_one: student.role_interest_option_one,
       role_interest_option_two: student.role_interest_option_two,
       society: student.society,
@@ -185,7 +215,7 @@ export default function StudentsManagement() {
           <div className="grid md:grid-cols-4 gap-4">
             <div className="bg-card border border-border rounded-xl p-4">
               <p className="text-sm text-muted-foreground mb-1">Total Students</p>
-              <p className="text-2xl text-foreground">{mockStudents.length}</p>
+              <p className="text-2xl text-foreground">{students.length}</p>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
               <p className="text-sm text-muted-foreground mb-1">Filtered Results</p>
@@ -198,7 +228,7 @@ export default function StudentsManagement() {
             <div className="bg-card border border-border rounded-xl p-4">
               <p className="text-sm text-muted-foreground mb-1">Courses</p>
               <p className="text-2xl text-foreground">
-                {[...new Set(mockStudents.map(s => s.course))].length}
+                {[...new Set(students.map(s => s.area_of_study).filter(Boolean))].length}
               </p>
             </div>
           </div>
@@ -219,18 +249,18 @@ export default function StudentsManagement() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {filteredStudents.map(student => (
-                    <tr key={student.id} className="hover:bg-secondary/50 transition-colors">
-                      <td className="px-6 py-4 text-foreground">{student.name}</td>
+                    <tr key={student.jobseeker_id} className="hover:bg-secondary/50 transition-colors">
+                      <td className="px-6 py-4 text-foreground">{`${student.first_name || ''} ${student.last_name || ''}`.trim()}</td>
                       <td className="px-6 py-4 text-muted-foreground">{student.email}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{student.university}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{student.year}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{student.course}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{student.institution_name || 'N/A'}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{student.uni_year || 'N/A'}</td>
+                      <td className="px-6 py-4 text-muted-foreground">{student.area_of_study || 'N/A'}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => setSelectedStudentId(student.id)}
+                            onClick={() => setSelectedStudentId(student.jobseeker_id)}
                             className="p-2 hover:bg-secondary rounded-lg transition-colors"
-                            title="View analytics"
+                            title="View profile"
                           >
                             <Eye className="w-4 h-4 text-foreground" />
                           </button>

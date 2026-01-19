@@ -1,19 +1,69 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Eye, BarChart, Trash2, Edit, Home } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
-import { mockEvents } from '../../services/Admin/admin-analytics';
+import { apiGet, apiDelete } from '../../services/api';
 
 export default function EventsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredEvents = mockEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || event.status === filterStatus;
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const data = await apiGet('/events');
+        setEvents(data.events || []);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchEvents();
+  }, []);
+
+  const handleDelete = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) return;
+    
+    try {
+      await apiDelete(`/events/${eventId}`);
+      setEvents(events.filter(event => event.event_id !== eventId));
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Failed to delete event');
+    }
+  };
+
+  const getEventStatus = (event) => {
+    const eventDate = new Date(event.event_date);
+    const now = new Date();
+    if (eventDate > now) return 'upcoming';
+    if (eventDate < now) return 'past';
+    return 'ongoing';
+  };
+
+  const filteredEvents = events.filter(event => {
+    const matchesSearch = (event.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (event.organiser || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const status = getEventStatus(event);
+    const matchesFilter = filterStatus === 'all' || status === filterStatus;
     return matchesSearch && matchesFilter;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,40 +136,41 @@ export default function EventsList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredEvents.map(event => (
-                <tr key={event.id} className="hover:bg-secondary/50 transition-colors">
+              {filteredEvents.map(event => {
+                const status = getEventStatus(event);
+                return (
+                <tr key={event.event_id} className="hover:bg-secondary/50 transition-colors">
                   <td className="px-6 py-4 text-foreground">{event.title}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{event.organizer}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{event.date}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{event.attendees}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{event.organiser || 'N/A'}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{new Date(event.event_date).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{event.applicant_count || 0}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs ${
-                      event.status === 'upcoming'
-                        ? 'bg-blue-500/20 text-blue-500'
-                        : event.status === 'ongoing'
+                      event.is_active
                         ? 'bg-green-500/20 text-green-500'
-                        : 'bg-gray-500/20 text-gray-500'
+                        : 'bg-red-500/20 text-red-500'
                     }`}>
-                      {event.status}
+                      {event.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <Link
-                        to={`/admin/events/${event.id}`}
+                        to={`/admin/events/${event.event_id}`}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
                         title="View details"
                       >
                         <BarChart className="w-4 h-4 text-foreground" />
                       </Link>
                       <Link
-                        to={`/admin/events/${event.id}/edit`}
+                        to={`/admin/events/${event.event_id}/edit`}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
                         title="Edit event"
                       >
                         <Edit className="w-4 h-4 text-foreground" />
                       </Link>
                       <button
+                        onClick={() => handleDelete(event.event_id)}
                         className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Delete event"
                       >
@@ -128,7 +179,8 @@ export default function EventsList() {
                     </div>
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { 
   Briefcase, 
   Calendar, 
@@ -9,18 +10,67 @@ import {
   Plus,
   ArrowRight
 } from 'lucide-react';
-import { mockJobs, mockEvents, mockStudents, mockSocieties } from '../services/Admin/admin-analytics';
+import { useAuth } from '../contexts/AuthContext';
+import { apiGet } from '../services/api';
 
 export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    activeJobs: 0,
+    totalEvents: 0,
+    upcomingEvents: 0,
+    totalStudents: 0,
+    totalSocieties: 0,
+  });
+  const [recentJobs, setRecentJobs] = useState([]);
+  const [recentEvents, setRecentEvents] = useState([]);
 
-  const stats = {
-    totalJobs: mockJobs.length,
-    activeJobs: mockJobs.filter(j => j.status === 'active').length,
-    totalEvents: mockEvents.length,
-    upcomingEvents: mockEvents.filter(e => e.status === 'upcoming').length,
-    totalStudents: mockStudents.length,
-    totalSocieties: mockSocieties.length,
-  };
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        
+        // Fetch jobs count
+        const jobsData = await apiGet('/jobs');
+        const jobs = jobsData.jobs || [];
+        
+        // Fetch events count
+        const eventsData = await apiGet('/events');
+        const events = eventsData.events || [];
+        
+        // Fetch students count
+        const studentsData = await apiGet('/jobseekers');
+        const students = studentsData.jobseekers || [];
+        
+        // Fetch societies count
+        const societiesData = await apiGet('/societies');
+        const societies = societiesData.societies || [];
+        
+        setStats({
+          totalJobs: jobs.length,
+          activeJobs: jobs.filter(j => j.status === 'active' || !j.status).length,
+          totalEvents: events.length,
+          upcomingEvents: events.filter(e => new Date(e.event_date) > new Date()).length,
+          totalStudents: students.length,
+          totalSocieties: societies.length,
+        });
+        
+        // Set recent jobs and events for quick view
+        setRecentJobs(jobs.slice(0, 3));
+        setRecentEvents(events.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchDashboardData();
+  }, [user]);
 
   const StatCard = ({ icon: Icon, title, value, subtitle, color }) => (
     <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
@@ -37,14 +87,24 @@ export default function AdminDashboard() {
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <div className="space-y-8 text-left">
           <div>
             <h1 className="text-3xl mb-2 text-foreground">Admin Dashboard</h1>
-            {/* // TODO: Get user name from API */}
-            <p className="text-muted-foreground">Welcome back John! Here's what's happening today.</p>
+            <p className="text-muted-foreground">Welcome back {user?.name || 'Admin'}! Here's what's happening today.</p>
           </div>
 
       {/* Stats Grid */}
@@ -135,14 +195,14 @@ export default function AdminDashboard() {
             </Link>
           </div>
           <div className="space-y-3">
-            {mockJobs.slice(0, 3).map(job => (
-              <div key={job.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+            {recentJobs.map(job => (
+              <div key={job.job_id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                 <div>
                   <p className="text-foreground font-medium">{job.title}</p>
                   <p className="text-sm text-muted-foreground">{job.company}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{job.applicants} applicants</p>
+                  <p className="text-sm text-primary">{job.applicants || 0} applicants</p>
                 </div>
               </div>
             ))}
@@ -160,14 +220,14 @@ export default function AdminDashboard() {
             </Link>
           </div>
           <div className="space-y-3">
-            {mockEvents.slice(0, 3).map(event => (
-              <div key={event.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+            {recentEvents.map(event => (
+              <div key={event.event_id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                 <div>
                   <p className="text-foreground font-medium">{event.title}</p>
-                  <p className="text-sm text-muted-foreground">{event.date}</p>
+                  <p className="text-sm text-muted-foreground">{event.organiser || 'N/A'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{event.attendees} attendees</p>
+                  <p className="text-sm text-primary">{event.attendees || 0} attendees</p>
                 </div>
               </div>
             ))}

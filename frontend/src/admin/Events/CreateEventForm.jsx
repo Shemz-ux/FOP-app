@@ -6,11 +6,12 @@ import DateInput from '../../components/Ui/DateInput';
 import TimeInput from '../../components/Ui/TimeInput';
 import NumberInput from '../../components/Ui/NumberInput';
 import { EVENT_INDUSTRIES, EVENT_TYPES, EVENT_LOCATION_TYPES } from '../../utils/dropdownOptions';
+import { apiPost } from '../../services/api';
 
 export function CreateEventForm({ onCancel }) {
   const [formData, setFormData] = React.useState({
     title: '',
-    organizer: '',
+    organiser: '',
     industry: '',
     shortDescription: '',
     location: '',
@@ -80,11 +81,36 @@ export function CreateEventForm({ onCancel }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Create Event:', formData);
-    console.log('Event Image:', imageFile);
-    onCancel();
+    
+    try {
+      const eventData = {
+        title: formData.title,
+        organiser: formData.organiser,
+        industry: formData.industry,
+        short_description: formData.shortDescription,
+        location: formData.location,
+        address: formData.address,
+        event_link: formData.event_link,
+        contact_email: formData.contact_email,
+        event_date: formData.event_date,
+        event_time: formData.event_time,
+        capacity: formData.capacity,
+        event_type: formData.event_type,
+        location_type: formData.location_type,
+        is_active: formData.is_active,
+        description_sections: formData.descriptionSections
+      };
+      
+      await apiPost('/events', eventData);
+      
+      alert('Event created successfully!');
+      onCancel();
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert('Failed to create event. Please try again.');
+    }
   };
 
   return (
@@ -119,14 +145,14 @@ export function CreateEventForm({ onCancel }) {
             </div>
 
             <div>
-              <label htmlFor="organizer" className="block text-sm mb-2 text-foreground">
-                Organizer *
+              <label htmlFor="organiser" className="block text-sm mb-2 text-foreground">
+                Organiser *
               </label>
               <input
-                id="organizer"
+                id="organiser"
                 type="text"
-                value={formData.organizer}
-                onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+                value={formData.organiser}
+                onChange={(e) => setFormData({ ...formData, organiser: e.target.value })}
                 placeholder="e.g. TechConnect, Design Masters Inc"
                 className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required

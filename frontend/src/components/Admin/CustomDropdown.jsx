@@ -71,7 +71,7 @@ const CustomDropdown = ({
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-between text-left"
+            className={`w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-between text-left ${className.includes('font-bold') ? 'font-bold' : ''}`}
           >
             <span className={displayValue ? 'text-foreground' : 'text-muted-foreground'}>
               {displayValue || placeholder}

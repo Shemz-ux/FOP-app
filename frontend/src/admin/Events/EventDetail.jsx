@@ -1,21 +1,70 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Eye, Trash2 } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
-import { mockEvents, mockAttendees, mockAttendeeProfiles } from '../../services/Admin/admin-analytics';
+import { apiGet } from '../../services/api';
 
 export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [selectedAttendeeId, setSelectedAttendeeId] = useState(null);
+  const [event, setEvent] = useState(null);
+  const [attendees, setAttendees] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const event = mockEvents.find(e => e.id === parseInt(id));
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await apiGet(`/events/${id}`);
+        console.log('Event API response:', response);
+        const eventData = response.event || response;
+        console.log('Event data:', eventData);
+        setEvent(eventData);
+        
+        // Fetch attendees for this event
+        try {
+          const attendeesData = await apiGet(`/events/${id}/registrations`);
+          console.log('Attendees data:', attendeesData);
+          setAttendees(attendeesData.registrations || []);
+        } catch (regError) {
+          console.error('Error fetching attendees:', regError);
+          setAttendees([]);
+        }
+      } catch (error) {
+        console.error('Error fetching event details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchEventDetails();
+  }, [id]);
 
   // If viewing an attendee profile
   if (selectedAttendeeId) {
-    const profile = mockAttendeeProfiles[selectedAttendeeId];
+    const attendee = attendees.find(a => a.registration_id === selectedAttendeeId);
+    const profile = attendee ? {
+      name: `${attendee.jobseeker?.first_name || ''} ${attendee.jobseeker?.last_name || ''}`.trim(),
+      email: attendee.jobseeker?.email || 'N/A',
+      phone: attendee.jobseeker?.phone_number || 'N/A',
+      university: attendee.jobseeker?.institution_name || 'N/A',
+      course: attendee.jobseeker?.area_of_study || 'N/A',
+      year: attendee.jobseeker?.uni_year || 'N/A'
+    } : null;
     
     return <ProfileView profile={profile} onClose={() => setSelectedAttendeeId(null)} type="attendee" />;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading event details...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!event) {
@@ -51,11 +100,11 @@ export default function EventDetail() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl mb-2 text-foreground">{event.title}</h1>
-          <p className="text-muted-foreground">{event.organizer}</p>
+          <p className="text-muted-foreground">{event.organiser}</p>
         </div>
         <div className="flex gap-2">
           <a
-            href={`/events/${event.id}`}
+            href={`/events/${event.event_id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
@@ -64,7 +113,7 @@ export default function EventDetail() {
             View on Website
           </a>
           <Link
-            to={`/admin/events/${event.id}/edit`}
+            to={`/admin/events/${event.event_id}/edit`}
             className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary"
           >
             Edit Event
@@ -72,23 +121,63 @@ export default function EventDetail() {
         </div>
       </div>
 
+      {/* Event Info Header */}
+      <div className="bg-card border border-border rounded-xl p-6">
+        <div className="grid md:grid-cols-3 gap-6">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Event Date</p>
+            <p className="text-foreground font-medium">{event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Event Time</p>
+            <p className="text-foreground font-medium">
+              {event.event_start_time || 'N/A'}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Location</p>
+            <p className="text-foreground font-medium">{event.location || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Event Type</p>
+            <p className="text-foreground font-medium">{event.event_type || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Capacity</p>
+            <p className="text-foreground font-medium">{event.capacity || 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Status</p>
+            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+              event.is_active ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
+            }`}>
+              {event.is_active ? 'Active' : 'Inactive'}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Event Stats */}
       <div className="grid md:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Total Attendees</p>
-          <p className="text-2xl text-foreground">{event.attendees}</p>
+          <p className="text-2xl text-foreground">{attendees.length}</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Confirmed</p>
-          <p className="text-2xl text-foreground">42</p>
+          <p className="text-2xl text-foreground">
+            {attendees.filter(a => a.status === 'confirmed').length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Waitlist</p>
-          <p className="text-2xl text-foreground">8</p>
+          <p className="text-2xl text-foreground">
+            {attendees.filter(a => a.status === 'waitlist').length}
+          </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Capacity</p>
-          <p className="text-2xl text-foreground">100</p>
+          <p className="text-2xl text-foreground">{event?.capacity || 'N/A'}</p>
         </div>
       </div>
 
@@ -110,12 +199,14 @@ export default function EventDetail() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {mockAttendees.map(attendee => (
-                <tr key={attendee.id} className="hover:bg-secondary/50 transition-colors">
-                  <td className="px-6 py-4 text-foreground">{attendee.name}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{attendee.email}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{attendee.university}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{attendee.registrationDate}</td>
+              {attendees.map(attendee => (
+                <tr key={attendee.registration_id} className="hover:bg-secondary/50 transition-colors">
+                  <td className="px-6 py-4 text-foreground">
+                    {`${attendee.jobseeker?.first_name || ''} ${attendee.jobseeker?.last_name || ''}`.trim() || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 text-muted-foreground">{attendee.jobseeker?.email || 'N/A'}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{attendee.jobseeker?.institution_name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-muted-foreground">{new Date(attendee.registered_at || attendee.created_at).toLocaleDateString()}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs ${
                       attendee.status === 'confirmed'
@@ -130,7 +221,7 @@ export default function EventDetail() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setSelectedAttendeeId(attendee.id)}
+                        onClick={() => setSelectedAttendeeId(attendee.registration_id)}
                         className="p-2 hover:bg-secondary rounded-lg transition-colors"
                         title="View profile"
                       >

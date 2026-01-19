@@ -1,18 +1,40 @@
 import db from "../db/db.js";
 
 export const fetchJobs = () => {
-    return db.query(`SELECT * FROM jobs ORDER BY created_at DESC`).then(({rows}) => {
-        return rows;
+    return db.query(`
+        SELECT 
+            j.*,
+            COUNT(jja.jobseeker_id) as applicant_count
+        FROM jobs j
+        LEFT JOIN jobseekers_jobs_applied jja ON j.job_id = jja.job_id
+        GROUP BY j.job_id
+        ORDER BY j.created_at DESC
+    `).then(({rows}) => {
+        return rows.map(row => ({
+            ...row,
+            applicant_count: parseInt(row.applicant_count) || 0
+        }));
     });
 };
 
 export const fetchJobById = (id) => {
-    return db.query(`SELECT * FROM jobs WHERE job_id = $1`, [id])
+    return db.query(`
+        SELECT 
+            j.*,
+            COUNT(jja.jobseeker_id) as applicant_count
+        FROM jobs j
+        LEFT JOIN jobseekers_jobs_applied jja ON j.job_id = jja.job_id
+        WHERE j.job_id = $1
+        GROUP BY j.job_id
+    `, [id])
     .then(({rows}) => {
         if (rows.length === 0) {
             return Promise.reject({status: 404, msg: 'Job not found'});
         }
-        return rows[0];
+        return {
+            ...rows[0],
+            applicant_count: parseInt(rows[0].applicant_count) || 0
+        };
     });
 };
 
@@ -103,13 +125,37 @@ export const removeJob = (id) => {
 };
 
 export const fetchActiveJobs = () => {
-    return db.query(`SELECT * FROM jobs WHERE is_active = true ORDER BY created_at DESC`).then(({rows}) => {
-        return rows;
+    return db.query(`
+        SELECT 
+            j.*,
+            COUNT(jja.jobseeker_id) as applicant_count
+        FROM jobs j
+        LEFT JOIN jobseekers_jobs_applied jja ON j.job_id = jja.job_id
+        WHERE j.is_active = true
+        GROUP BY j.job_id
+        ORDER BY j.created_at DESC
+    `).then(({rows}) => {
+        return rows.map(row => ({
+            ...row,
+            applicant_count: parseInt(row.applicant_count) || 0
+        }));
     });
 };
 
 export const fetchJobsByCompany = (company) => {
-    return db.query(`SELECT * FROM jobs WHERE company ILIKE $1 ORDER BY created_at DESC`, [`%${company}%`]).then(({rows}) => {
-        return rows;
+    return db.query(`
+        SELECT 
+            j.*,
+            COUNT(jja.jobseeker_id) as applicant_count
+        FROM jobs j
+        LEFT JOIN jobseekers_jobs_applied jja ON j.job_id = jja.job_id
+        WHERE j.company ILIKE $1
+        GROUP BY j.job_id
+        ORDER BY j.created_at DESC
+    `, [`%${company}%`]).then(({rows}) => {
+        return rows.map(row => ({
+            ...row,
+            applicant_count: parseInt(row.applicant_count) || 0
+        }));
     });
 };

@@ -1,51 +1,80 @@
 import React from 'react';
-import { parseDescription, formatContent } from '../../utils/descriptionFormatter';
 
 /**
  * Renders a structured description with consistent heading styles
- * Supports sections with headings, paragraphs, and bullet lists
+ * 
+ * Logic:
+ * - If line matches exact heading (About the Role, Responsibilities, Requirements, Benefits) -> make it bold
+ * - Content under "About the Role" -> paragraph text
+ * - Content under other headings -> bullet points
  */
 export default function StructuredDescription({ description, className = '' }) {
   if (!description) return null;
 
-  const sections = parseDescription(description);
-  console.log('Parsed sections:', sections);
+  const VALID_HEADINGS = ['About the role', 'Responsibilities', 'Requirements', 'Benefits'];
+  
+  // Split description into lines
+  const lines = description.split('\n').map(l => l.trim()).filter(l => l);
+  
+  const sections = [];
+  let currentSection = null;
+  
+  for (const line of lines) {
+    // Check if this line is exactly one of our headings
+    if (VALID_HEADINGS.includes(line)) {
+      // Save previous section
+      if (currentSection) {
+        sections.push(currentSection);
+      }
+      // Start new section
+      currentSection = {
+        heading: line,
+        content: []
+      };
+    } else if (currentSection) {
+      // Add content to current section
+      currentSection.content.push(line);
+    } else {
+      // No heading yet, create default "About the role" section
+      currentSection = {
+        heading: 'About the role',
+        content: [line]
+      };
+    }
+  }
+  
+  // Add last section
+  if (currentSection) {
+    sections.push(currentSection);
+  }
 
   return (
     <div className={`structured-description ${className}`}>
       {sections.map((section, sectionIndex) => (
         <div key={sectionIndex} className="mb-6 last:mb-0">
-          {section.heading && (
-            <h3 className="text-foreground font-semibold text-lg mb-3">
-              {section.heading}
-            </h3>
-          )}
+          {/* Bold heading */}
+          <h3 className="text-foreground font-bold text-lg mb-3">
+            {section.heading}
+          </h3>
           
-          <div className="space-y-3">
-            {formatContent(section.content).map((block, blockIndex) => {
-              if (block.type === 'paragraph') {
-                return (
-                  <p key={blockIndex} className="text-muted-foreground leading-relaxed">
-                    {block.content}
-                  </p>
-                );
-              }
-              
-              if (block.type === 'list') {
-                return (
-                  <ul key={blockIndex} className="list-disc ml-6 space-y-1.5 text-muted-foreground">
-                    {block.items.map((item, itemIndex) => (
-                      <li key={itemIndex}>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                );
-              }
-              
-              return null;
-            })}
-          </div>
+          {/* Content: paragraph for "About the role", bullets for others */}
+          {section.heading === 'About the role' ? (
+            <div className="space-y-2">
+              {section.content.map((line, lineIndex) => (
+                <p key={lineIndex} className="text-muted-foreground leading-relaxed">
+                  {line}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <ul className="list-disc ml-6 space-y-1.5">
+              {section.content.map((line, lineIndex) => (
+                <li key={lineIndex} className="text-muted-foreground">
+                  {line.replace(/^[-•*]\s*/, '')}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       ))}
     </div>
