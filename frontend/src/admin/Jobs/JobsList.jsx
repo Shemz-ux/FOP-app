@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Eye, BarChart, Trash2, Edit, Home } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
+import ConfirmModal from '../../components/Ui/ConfirmModal';
+import Toast from '../../components/Ui/Toast';
 import { apiGet, apiDelete } from '../../services/api';
 
 export default function JobsList() {
@@ -9,6 +11,8 @@ export default function JobsList() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, job: null });
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -26,15 +30,27 @@ export default function JobsList() {
     fetchJobs();
   }, []);
 
-  const handleDelete = async (jobId) => {
-    if (!window.confirm('Are you sure you want to delete this job?')) return;
-    
+  const handleDeleteClick = (job) => {
+    setConfirmModal({ isOpen: true, job });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const job = confirmModal.job;
+    if (!job) return;
+
     try {
-      await apiDelete(`/jobs/${jobId}`);
-      setJobs(jobs.filter(job => job.job_id !== jobId));
+      await apiDelete(`/jobs/${job.job_id}`);
+      setJobs(jobs.filter(j => j.job_id !== job.job_id));
+      setToast({
+        message: `"${job.title}" has been deleted successfully`,
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error deleting job:', error);
-      alert('Failed to delete job');
+      setToast({
+        message: 'Failed to delete job. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -159,7 +175,7 @@ export default function JobsList() {
                         <Edit className="w-4 h-4 text-foreground" />
                       </Link>
                       <button
-                        onClick={() => handleDelete(job.job_id)}
+                        onClick={() => handleDeleteClick(job)}
                         className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Delete job"
                       >
@@ -175,6 +191,28 @@ export default function JobsList() {
       </div>
         </div>
       </div>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false, job: null })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Job"
+        message={confirmModal.job ? `Are you sure you want to delete "${confirmModal.job.title}"? This action cannot be undone.` : ''}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmVariant="danger"
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          duration={3000}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

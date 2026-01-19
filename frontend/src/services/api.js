@@ -5,10 +5,6 @@
 // Note: Vite uses import.meta.env instead of process.env
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
-// Log the API URL in development mode (helps with debugging)
-if (import.meta.env.DEV) {
-  console.log('🔗 API Base URL:', API_BASE_URL);
-}
 
 // Helper function to handle API responses
 export const handleResponse = async (response) => {
@@ -53,12 +49,18 @@ export const apiGet = async (endpoint, options = {}) => {
 // Generic POST request
 export const apiPost = async (endpoint, data, options = {}) => {
   try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
       body: JSON.stringify(data),
       ...options,
     });
@@ -95,12 +97,18 @@ export const apiPatch = async (endpoint, data, options = {}) => {
 // Generic DELETE request
 export const apiDelete = async (endpoint, options = {}) => {
   try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
       ...options,
     });
     return handleResponse(response);
