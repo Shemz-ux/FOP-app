@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import CustomSelect from "../../components/Ui/CustomSelect";
 import { apiGet } from "../../services/api";
+import { getUniversityOptions } from "../../data/universities";
+import { createJobseeker } from "../../services/Jobseekers/jobseekersService";
+import { createSociety } from "../../services/Societies/societiesService";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -21,6 +24,13 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [societies, setSocieties] = useState([]);
+  const [showCustomInstitution, setShowCustomInstitution] = useState(false);
+  const [customInstitution, setCustomInstitution] = useState('');
+  const [showCustomSocietyInstitution, setShowCustomSocietyInstitution] = useState(false);
+  const [customSocietyInstitution, setCustomSocietyInstitution] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     // Fetch societies for dropdown
@@ -60,7 +70,7 @@ export default function SignUp() {
 
   const [societyData, setSocietyData] = useState({
     name: '',
-    university: '',
+    institution: '',
     description: '',
     email: '',
     password: '',
@@ -94,7 +104,7 @@ export default function SignUp() {
     setCurrentStep('review');
   };
 
-  const handleSocietySubmit = (e) => {
+  const handleSocietySubmit = async (e) => {
     e.preventDefault();
     
     // Validate passwords match
@@ -104,13 +114,51 @@ export default function SignUp() {
     }
     
     setPasswordError('');
-    console.log('Society Registration:', societyData);
-    navigate('/');
+    setIsSubmitting(true);
+    setSubmitError('');
+    
+    try {
+      // Prepare data for API (remove confirm_password)
+      const { confirm_password, ...registrationData } = societyData;
+      
+      await createSociety(registrationData);
+      
+      // Show success message
+      setSubmitSuccess(true);
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      console.error('Society registration error:', error);
+      setSubmitError(error.message || 'Failed to create account. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
-  const handleFinalSubmit = () => {
-    console.log('Job Seeker Registration:', jobSeekerData);
-    navigate('/');
+  const handleFinalSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError('');
+    
+    try {
+      // Prepare data for API (remove confirm_password)
+      const { confirm_password, ...registrationData } = jobSeekerData;
+      
+      await createJobseeker(registrationData);
+      
+      // Show success message
+      setSubmitSuccess(true);
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (error) {
+      console.error('Job seeker registration error:', error);
+      setSubmitError(error.message || 'Failed to create account. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   /* ---------------- RENDER SECTIONS ---------------- */
@@ -479,16 +527,46 @@ export default function SignUp() {
             <label htmlFor="institution_name" className="block text-sm mb-2 text-foreground">
               Institution Name *
             </label>
-            <input
+            <CustomSelect
               id="institution_name"
-              type="text"
-              value={jobSeekerData.institution_name}
-              onChange={(e) => setJobSeekerData({ ...jobSeekerData, institution_name: e.target.value })}
-              placeholder="e.g. University of London - King's College"
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              value={showCustomInstitution ? 'Other' : jobSeekerData.institution_name}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === 'Other') {
+                  setShowCustomInstitution(true);
+                  setJobSeekerData({ ...jobSeekerData, institution_name: '' });
+                } else {
+                  setShowCustomInstitution(false);
+                  setCustomInstitution('');
+                  setJobSeekerData({ ...jobSeekerData, institution_name: value });
+                }
+              }}
+              placeholder="Select your institution"
               required
+              options={getUniversityOptions()}
             />
           </div>
+
+          {/* Custom Institution Input */}
+          {showCustomInstitution && (
+            <div>
+              <label htmlFor="custom_institution" className="block text-sm mb-2 text-foreground">
+                Enter Institution Name *
+              </label>
+              <input
+                id="custom_institution"
+                type="text"
+                value={customInstitution}
+                onChange={(e) => {
+                  setCustomInstitution(e.target.value);
+                  setJobSeekerData({ ...jobSeekerData, institution_name: e.target.value });
+                }}
+                placeholder="Enter your institution name"
+                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+          )}
 
           {/* University Year and Degree Type */}
           <div className="grid md:grid-cols-2 gap-4">
@@ -632,6 +710,26 @@ export default function SignUp() {
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-8 text-left">
+        {/* Success Message */}
+        {submitSuccess && (
+          <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
+              <Check className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-green-500 font-medium">Account created successfully!</p>
+              <p className="text-green-500 text-sm">Redirecting to login page...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {submitError && (
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl">
+            <p className="text-red-500">{submitError}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSocietySubmit} className="space-y-6">
           {/* Society Name */}
           <div>
@@ -649,21 +747,51 @@ export default function SignUp() {
             />
           </div>
 
-          {/* University */}
+          {/* Institution */}
           <div>
-            <label htmlFor="university" className="block text-sm mb-2 text-foreground">
-              University *
+            <label htmlFor="institution" className="block text-sm mb-2 text-foreground">
+              Institution *
             </label>
-            <input
-              id="university"
-              type="text"
-              value={societyData.university}
-              onChange={(e) => setSocietyData({ ...societyData, university: e.target.value })}
-              placeholder="e.g. University of London - King's College"
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            <CustomSelect
+              id="institution"
+              value={showCustomSocietyInstitution ? 'Other' : societyData.institution}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === 'Other') {
+                  setShowCustomSocietyInstitution(true);
+                  setSocietyData({ ...societyData, institution: '' });
+                } else {
+                  setShowCustomSocietyInstitution(false);
+                  setCustomSocietyInstitution('');
+                  setSocietyData({ ...societyData, institution: value });
+                }
+              }}
+              placeholder="Select your institution"
               required
+              options={getUniversityOptions()}
             />
           </div>
+
+          {/* Custom Institution Input */}
+          {showCustomSocietyInstitution && (
+            <div>
+              <label htmlFor="custom_society_institution" className="block text-sm mb-2 text-foreground">
+                Enter Institution Name *
+              </label>
+              <input
+                id="custom_society_institution"
+                type="text"
+                value={customSocietyInstitution}
+                onChange={(e) => {
+                  setCustomSocietyInstitution(e.target.value);
+                  setSocietyData({ ...societyData, institution: e.target.value });
+                }}
+                placeholder="Enter your institution name"
+                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                required
+              />
+            </div>
+          )}
 
           {/* Description */}
           <div>
@@ -756,10 +884,20 @@ export default function SignUp() {
           <div className="flex justify-end pt-4">
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
+              disabled={isSubmitting || submitSuccess}
+              className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Check className="w-4 h-4" />
-              Create Society Account
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" />
+                  Create Society Account
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -894,6 +1032,26 @@ export default function SignUp() {
 
         {/* Submit Button */}
         <div className="bg-card border border-border rounded-2xl p-6 text-left">
+          {/* Success Message */}
+          {submitSuccess && (
+            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
+                <Check className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-green-500 font-medium">Account created successfully!</p>
+                <p className="text-green-500 text-sm">Redirecting to login page...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {submitError && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl">
+              <p className="text-red-500">{submitError}</p>
+            </div>
+          )}
+
           <div className="flex items-start gap-3 mb-6">
             <input
               type="checkbox"
@@ -907,10 +1065,20 @@ export default function SignUp() {
           </div>
           <button
             onClick={handleFinalSubmit}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
+            disabled={isSubmitting || submitSuccess}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check className="w-5 h-5" />
-            Create My Account
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                Creating Account...
+              </>
+            ) : (
+              <>
+                <Check className="w-5 h-5" />
+                Create My Account
+              </>
+            )}
           </button>
         </div>
       </div>

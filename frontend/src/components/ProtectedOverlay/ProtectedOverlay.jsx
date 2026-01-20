@@ -1,15 +1,11 @@
 import { Lock, X } from 'lucide-react';
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthModal from '../AuthModal/AuthModal';
 
 export default function ProtectedOverlay({ message = "Sign in to access this content" }) {
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <>
-      <div className="fixed inset-0 backdrop-blur-lg bg-background/50 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 backdrop-blur-lg bg-background/50 z-50 flex items-center justify-center">
         <div className="bg-card border border-border rounded-2xl p-10 max-w-lg mx-4 text-center shadow-2xl relative">
           <button
             onClick={() => navigate('/')}
@@ -28,12 +24,12 @@ export default function ProtectedOverlay({ message = "Sign in to access this con
             {message}
           </p>
           <div className="flex gap-4 justify-center">
-            <button
-              onClick={() => setShowAuthModal(true)}
+            <Link
+              to="/login"
               className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity font-medium"
             >
               Sign In
-            </button>
+            </Link>
             <Link
               to="/signUp"
               className="px-8 py-3 border border-border rounded-xl hover:bg-secondary transition-colors font-medium"
@@ -43,11 +39,5 @@ export default function ProtectedOverlay({ message = "Sign in to access this con
           </div>
         </div>
       </div>
-
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)}
-      />
-    </>
   );
 }

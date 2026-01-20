@@ -3,7 +3,6 @@ import { Bell, Menu, X, LogIn, Shield } from 'lucide-react';
 import { useState } from 'react';
 import ThemeToggle from '../Ui/ThemeToggle.jsx';
 import UserMenu from '../UserMenu/UserMenu.jsx';
-import AuthModal from '../AuthModal/AuthModal.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 
 export default function Navbar({
@@ -11,7 +10,6 @@ export default function Navbar({
   onNotificationClick
 }) {
   const { isLoggedIn, isAdmin } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -151,13 +149,13 @@ export default function Navbar({
             {isLoggedIn() ? (
               <UserMenu />
             ) : (
-              <button
-                onClick={() => setShowAuthModal(true)}
+              <Link
+                to="/login"
                 className="flex items-center gap-2 px-4 py-2 text-foreground hover:text-primary transition-colors"
               >
                 <LogIn className="w-4 h-4" />
                 <span className="font-medium">Sign In</span>
-              </button>
+              </Link>
             )}
           </div>
         </div>
@@ -276,12 +274,6 @@ export default function Navbar({
 
         </div>
       </div>
-
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
     </header>
   );
 }

@@ -5,6 +5,7 @@ import JobBadge from '../../components/Ui/JobBadge';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
+import ProtectedOverlay from '../../components/ProtectedOverlay/ProtectedOverlay';
 import { resourcesService } from '../../services';
 import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
 import { formatTimeAgo } from '../../utils/timeFormatter';
@@ -19,10 +20,11 @@ const iconMap = {
 export default function ResourceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isLoggedIn } = useAuth();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showProtectedOverlay, setShowProtectedOverlay] = useState(false);
 
   useEffect(() => {
     const fetchResource = async () => {
@@ -43,6 +45,12 @@ export default function ResourceDetail() {
   }, [id]);
 
   const handleDownload = async () => {
+    // Check if user is logged in before allowing download
+    if (!isLoggedIn()) {
+      setShowProtectedOverlay(true);
+      return;
+    }
+
     try {
       const downloadUrl = await resourcesService.downloadResource(id);
       window.open(downloadUrl, '_blank');
@@ -102,6 +110,11 @@ export default function ResourceDetail() {
     );
   }
 
+  // Show protected overlay when user tries to download without being logged in
+  if (showProtectedOverlay) {
+    return <ProtectedOverlay message="Sign in to download resources" />;
+  }
+
   const categoryInfo = RESOURCE_CATEGORIES.find(c => c.value === resource.category);
   const IconComponent = iconMap[categoryInfo?.icon] || FileText;
 
@@ -128,10 +141,10 @@ export default function ResourceDetail() {
                 <div className="flex-1">
                   <h1 className="text-3xl mb-3 text-foreground text-left">{resource.title}</h1>
                   <div className="flex flex-wrap items-center gap-2 text-muted-foreground mb-3 text-left">
-                    <span className="flex items-center gap-1">
+                    {/* <span className="flex items-center gap-1">
                       <Download className="w-4 h-4" />
                       {resource.download_count?.toLocaleString() || 0} downloads
-                    </span>
+                    </span> */}
                     {resource.created_at && (
                       <>
                         <span>•</span>
@@ -203,13 +216,13 @@ export default function ResourceDetail() {
                     {resource.file_type}
                   </p>
                 </div>
-                <div className="text-left">
+                {/* <div className="text-left">
                   <p className="text-sm text-muted-foreground mb-1">Downloads</p>
                   <p className="text-foreground font-medium flex items-center gap-2">
                     <Download className="w-4 h-4" />
                     {resource.download_count?.toLocaleString() || 0}
                   </p>
-                </div>
+                </div> */}
 
                 <div className="pt-4 border-t border-border space-y-3">
                   {isAdmin() && (
@@ -256,7 +269,7 @@ export default function ResourceDetail() {
                     <User className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm text-muted-foreground">Uploaded By</p>
-                      <p className="text-foreground">{resource.uploaded_by}</p>
+                      <p className="text-foreground">{resource.created_by}</p>
                     </div>
                   </div>
                 )}
