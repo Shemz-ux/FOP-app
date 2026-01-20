@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     activeJobs: 0,
     totalEvents: 0,
     upcomingEvents: 0,
-    totalStudents: 0,
+    totalJobseekers: 0,
     totalSocieties: 0,
   });
   const [recentJobs, setRecentJobs] = useState([]);
@@ -42,9 +42,9 @@ export default function AdminDashboard() {
         const eventsData = await apiGet('/events');
         const events = eventsData.events || [];
         
-        // Fetch students count
-        const studentsData = await apiGet('/jobseekers');
-        const students = studentsData.jobseekers || [];
+        // Fetch jobseekers count
+        const jobseekersData = await apiGet('/jobseekers');
+        const jobseekers = jobseekersData.jobseekers || [];
         
         // Fetch societies count
         const societiesData = await apiGet('/societies');
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
           activeJobs: jobs.filter(j => j.status === 'active' || !j.status).length,
           totalEvents: events.length,
           upcomingEvents: events.filter(e => new Date(e.event_date) > new Date()).length,
-          totalStudents: students.length,
+          totalJobseekers: jobseekers.length,
           totalSocieties: societies.length,
         });
         
@@ -125,8 +125,8 @@ export default function AdminDashboard() {
         />
         <StatCard
           icon={Users}
-          title="Students"
-          value={stats.totalStudents}
+          title="Jobseekers"
+          value={stats.totalJobseekers}
           subtitle="Registered users"
           color="bg-green-500"
         />
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
         </Link>
 
         <Link
-          to="/admin/students"
+          to="/admin/jobseekers"
           className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
         >
           <div className="flex items-center justify-between mb-4">
@@ -288,8 +288,8 @@ export default function AdminDashboard() {
             </div>
             <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
-          <h3 className="text-xl text-foreground mb-2">Students</h3>
-          <p className="text-sm text-muted-foreground">View and manage student profiles</p>
+          <h3 className="text-xl text-foreground mb-2">Jobseekers</h3>
+          <p className="text-sm text-muted-foreground">View and manage jobseeker profiles</p>
         </Link>
 
         <Link

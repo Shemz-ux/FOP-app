@@ -34,7 +34,7 @@ import ResourcesList from './admin/Resource/ResourcesList.jsx'
 import AdminResourceDetail from './admin/Resource/ResourceDetail.jsx'
 import ResourceCreate from './admin/Resource/ResourceCreate.jsx'
 import ResourceEdit from './admin/Resource/ResourceEdit.jsx'
-import StudentsManagement from './admin/Management/StudentsManagement.jsx'
+import JobseekersManagement from './admin/Management/JobseekersManagement.jsx'
 import SocietiesManagement from './admin/Management/SocietiesManagement.jsx'
 
 function App() {
@@ -172,8 +172,8 @@ function App() {
       element: <Layout><ResourceEdit /></Layout>
     },
     {
-      path: "/admin/students",
-      element: <Layout><StudentsManagement /></Layout>
+      path: "/admin/jobseekers",
+      element: <Layout><JobseekersManagement /></Layout>
     },
     {
       path: "/admin/societies",

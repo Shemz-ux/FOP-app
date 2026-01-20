@@ -43,13 +43,13 @@ adminRouter.get("/jobs/:job_id/applications", getJobApplicationsByJobId);
 adminRouter.get("/events/applications", getEventApplicationStats);
 adminRouter.get("/events/:event_id/applications", getEventApplicationsByEventId);
 
-// Student filtering endpoints
-adminRouter.get("/students/gender/:gender", getStudentsByGender);
-adminRouter.get("/students/university/:university", getStudentsByUniversity);
-adminRouter.get("/students/society/:society", getStudentsBySociety);
-adminRouter.get("/students/free-meals", getStudentsEligibleForFreeMeals);
-adminRouter.get("/students/first-gen", getFirstGenStudents);
-adminRouter.get("/students/education/:education_level", getStudentsByEducationStatus);
+// Jobseeker filtering endpoints
+adminRouter.get("/jobseekers/gender/:gender", getStudentsByGender);
+adminRouter.get("/jobseekers/university/:university", getStudentsByUniversity);
+adminRouter.get("/jobseekers/society/:society", getStudentsBySociety);
+adminRouter.get("/jobseekers/free-meals", getStudentsEligibleForFreeMeals);
+adminRouter.get("/jobseekers/first-gen", getFirstGenStudents);
+adminRouter.get("/jobseekers/education/:education_level", getStudentsByEducationStatus);
 adminRouter.get("/users/name/:name", getUserByName);
 
 // Admin user management routes

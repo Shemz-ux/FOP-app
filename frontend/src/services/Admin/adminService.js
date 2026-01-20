@@ -94,9 +94,9 @@ export const getEventApplicationsByEventId = async (eventId, adminToken) => {
   return data.event_applications;
 };
 
-// Get students by gender
+// Get jobseekers by gender
 export const getStudentsByGender = async (gender, adminToken) => {
-  const data = await apiGet(`/admin/analytics/students/gender/${gender}`, {
+  const data = await apiGet(`/admin/analytics/jobseekers/gender/${gender}`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -104,9 +104,9 @@ export const getStudentsByGender = async (gender, adminToken) => {
   return data.students;
 };
 
-// Get students by university
+// Get jobseekers by university
 export const getStudentsByUniversity = async (university, adminToken) => {
-  const data = await apiGet(`/admin/analytics/students/university/${encodeURIComponent(university)}`, {
+  const data = await apiGet(`/admin/analytics/jobseekers/university/${encodeURIComponent(university)}`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -114,9 +114,9 @@ export const getStudentsByUniversity = async (university, adminToken) => {
   return data.students;
 };
 
-// Get students by society
+// Get jobseekers by society
 export const getStudentsBySociety = async (society, adminToken) => {
-  const data = await apiGet(`/admin/analytics/students/society/${encodeURIComponent(society)}`, {
+  const data = await apiGet(`/admin/analytics/jobseekers/society/${encodeURIComponent(society)}`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -124,9 +124,9 @@ export const getStudentsBySociety = async (society, adminToken) => {
   return data.students;
 };
 
-// Get students eligible for free meals
+// Get jobseekers eligible for free meals
 export const getStudentsEligibleForFreeMeals = async (adminToken) => {
-  const data = await apiGet('/admin/analytics/students/free-meals', {
+  const data = await apiGet('/admin/analytics/jobseekers/free-meals', {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -134,9 +134,9 @@ export const getStudentsEligibleForFreeMeals = async (adminToken) => {
   return data.students;
 };
 
-// Get first generation students
+// Get first generation jobseekers
 export const getFirstGenStudents = async (adminToken) => {
-  const data = await apiGet('/admin/analytics/students/first-gen', {
+  const data = await apiGet('/admin/analytics/jobseekers/first-gen', {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }
@@ -144,9 +144,9 @@ export const getFirstGenStudents = async (adminToken) => {
   return data.students;
 };
 
-// Get students by education status
+// Get jobseekers by education status
 export const getStudentsByEducationStatus = async (educationLevel, adminToken) => {
-  const data = await apiGet(`/admin/analytics/students/education/${educationLevel}`, {
+  const data = await apiGet(`/admin/analytics/jobseekers/education/${educationLevel}`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }

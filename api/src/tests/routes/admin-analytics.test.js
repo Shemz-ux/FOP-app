@@ -300,10 +300,10 @@ describe('Admin Analytics API Endpoints', () => {
         });
     });
 
-    describe('Student Filtering Endpoints', () => {
-        it('should return students by gender', async () => {
+    describe('Jobseeker Filtering Endpoints', () => {
+        it('should return jobseekers by gender', async () => {
             const response = await request(app)
-                .get('/api/admin/students/gender/male')
+                .get('/api/admin/jobseekers/gender/male')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -316,16 +316,16 @@ describe('Admin Analytics API Endpoints', () => {
 
         it('should return 400 for invalid gender', async () => {
             const response = await request(app)
-                .get('/api/admin/students/gender/invalid_gender')
+                .get('/api/admin/jobseekers/gender/invalid_gender')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(400);
 
             expect(response.body).toHaveProperty('msg', 'Invalid gender parameter');
         });
 
-        it('should return students by university', async () => {
+        it('should return jobseekers by university', async () => {
             const response = await request(app)
-                .get('/api/admin/students/university/London')
+                .get('/api/admin/jobseekers/university/London')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -335,9 +335,9 @@ describe('Admin Analytics API Endpoints', () => {
             expect(response.body.students.length).toBeGreaterThan(0);
         });
 
-        it('should return students by society', async () => {
+        it('should return jobseekers by society', async () => {
             const response = await request(app)
-                .get('/api/admin/students/society/Tech')
+                .get('/api/admin/jobseekers/society/Tech')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -347,9 +347,9 @@ describe('Admin Analytics API Endpoints', () => {
             expect(response.body.students.length).toBeGreaterThan(0);
         });
 
-        it('should return students eligible for free meals', async () => {
+        it('should return jobseekers eligible for free meals', async () => {
             const response = await request(app)
-                .get('/api/admin/students/free-meals')
+                .get('/api/admin/jobseekers/free-meals')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -363,9 +363,9 @@ describe('Admin Analytics API Endpoints', () => {
             });
         });
 
-        it('should return first generation students', async () => {
+        it('should return first generation jobseekers', async () => {
             const response = await request(app)
-                .get('/api/admin/students/first-gen')
+                .get('/api/admin/jobseekers/first-gen')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -379,9 +379,9 @@ describe('Admin Analytics API Endpoints', () => {
             });
         });
 
-        it('should return students by education status', async () => {
+        it('should return jobseekers by education status', async () => {
             const response = await request(app)
-                .get('/api/admin/students/education/undergraduate')
+                .get('/api/admin/jobseekers/education/undergraduate')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -394,7 +394,7 @@ describe('Admin Analytics API Endpoints', () => {
 
         it('should return 400 for invalid education level', async () => {
             const response = await request(app)
-                .get('/api/admin/students/education/invalid_level')
+                .get('/api/admin/jobseekers/education/invalid_level')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(400);
 
@@ -429,7 +429,7 @@ describe('Admin Analytics API Endpoints', () => {
     describe('Parameter Validation', () => {
         it('should handle URL encoding in parameters', async () => {
             const response = await request(app)
-                .get('/api/admin/students/university/University%20College%20London')
+                .get('/api/admin/jobseekers/university/University%20College%20London')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -482,14 +482,14 @@ describe('Admin Analytics API Endpoints', () => {
     });
 
     describe('Response Format Consistency', () => {
-        it('should have consistent response format for all student endpoints', async () => {
+        it('should have consistent response format for all jobseeker endpoints', async () => {
             const endpoints = [
-                '/api/admin/students/gender/male',
-                '/api/admin/students/university/London',
-                '/api/admin/students/society/Tech',
-                '/api/admin/students/free-meals',
-                '/api/admin/students/first-gen',
-                '/api/admin/students/education/undergraduate'
+                '/api/admin/jobseekers/gender/male',
+                '/api/admin/jobseekers/university/London',
+                '/api/admin/jobseekers/society/Tech',
+                '/api/admin/jobseekers/free-meals',
+                '/api/admin/jobseekers/first-gen',
+                '/api/admin/jobseekers/education/undergraduate'
             ];
 
             for (const endpoint of endpoints) {

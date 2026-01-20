@@ -334,8 +334,8 @@ export default function SignUp() {
                 options={[
                   { value: "male", label: "Male" },
                   { value: "female", label: "Female" },
-                  { value: "non-binary", label: "Non-binary" },
-                  { value: "prefer-not-to-say", label: "Prefer not to say" }
+                  { value: "non_binary", label: "Non-binary" },
+                  { value: "prefer_not_to_say", label: "Prefer not to say" }
                 ]}
               />
             </div>
@@ -448,11 +448,11 @@ export default function SignUp() {
               placeholder="Select education level"
               required
               options={[
+                { value: "gcse", label: "GCSE" },
+                { value: "a_level_or_btec", label: "A-Levels/BTEC" },
                 { value: "undergraduate", label: "Undergraduate" },
                 { value: "postgraduate", label: "Postgraduate" },
                 { value: "doctorate", label: "Doctorate" },
-                { value: "a-levels", label: "A-Levels" },
-                { value: "gcse", label: "GCSE" }
               ]}
             />
           </div>
