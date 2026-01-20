@@ -303,37 +303,25 @@ export default function Profile() {
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* LEFT COLUMN */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Education Card - Only for Jobseekers */}
-            {isJobseeker() ? (
+          {isJobseeker() && (
+            <div className="lg:col-span-1 space-y-6">
+              {/* Education Card - Only for Jobseekers */}
               <EducationCard
                 educationData={educationData}
                 onSave={handleSaveEducation}
               />
-            ) : (
-              <div className="bg-card border border-border rounded-2xl p-6">
-                <h3 className="text-xl font-semibold mb-4 text-foreground">Education</h3>
-                <p className="text-muted-foreground">N/A</p>
-              </div>
-            )}
 
-            {/* CV Upload Card - Only for Jobseekers */}
-            {isJobseeker() ? (
+              {/* CV Upload Card - Only for Jobseekers */}
               <CVUploadCard
                 uploadedCV={uploadedCV}
                 onUpload={handleCVUpload}
                 onDelete={handleCVDelete}
               />
-            ) : (
-              <div className="bg-card border border-border rounded-2xl p-6">
-                <h3 className="text-xl font-semibold mb-4 text-foreground">CV</h3>
-                <p className="text-muted-foreground">N/A</p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* RIGHT COLUMN */}
-          <div className="lg:col-span-3">
+          <div className={isJobseeker() ? "lg:col-span-3" : "lg:col-span-4"}>
             {/* Mobile Dropdown */}
             <div className="relative md:hidden mb-6">
               <select

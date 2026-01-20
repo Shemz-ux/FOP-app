@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, Trash2, Save } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { profileService } from "../../services";
 import CustomSelect from "../../components/Ui/CustomSelect";
+import { getUniversityOptions } from "../../data/universities";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,11 +20,16 @@ import ForgotPassword from "../../components/ui/ForgotPassword";
 
 export default function Settings() {
   const { user, isJobseeker } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [passwordUpdated, setPasswordUpdated] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [showCustomUniversity, setShowCustomUniversity] = useState(false);
+  const [customUniversity, setCustomUniversity] = useState('');
 
   const [personalInfo, setPersonalInfo] = useState({
     firstName: "",
@@ -32,6 +38,7 @@ export default function Settings() {
     phone: "",
     gender: "",
     ethnicity: "",
+    university: "",
     school_meal_eligible: false,
     first_gen_to_go_uni: false,
   });
@@ -70,6 +77,7 @@ export default function Settings() {
             phone: profile.society.phone_number ?? "",
             gender: "",
             ethnicity: "",
+            university: profile.society.university ?? "",
             school_meal_eligible: false,
             first_gen_to_go_uni: false,
           });
@@ -106,6 +114,7 @@ export default function Settings() {
       
       if (user.userType === 'society') {
         updateData.name = personalInfo.firstName;
+        updateData.university = personalInfo.university;
       } else {
         updateData.first_name = personalInfo.firstName;
         updateData.last_name = personalInfo.lastName;
@@ -127,19 +136,72 @@ export default function Settings() {
     }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setPasswordError('');
+    
+    // Validate all fields are filled
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setPasswordError('Please fill in all password fields');
+      return;
+    }
+    
+    // Validate passwords match
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+    
+    // Validate password length
+    if (passwordData.newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters long');
+      return;
+    }
+    
+    try {
+      // Update password via API
+      await profileService.updateUserProfile(user.userId, user.userType, {
+        password: passwordData.newPassword
+      });
+      
+      // Clear form and show success
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setPasswordUpdated(true);
+      setTimeout(() => setPasswordUpdated(false), 5000);
+    } catch (error) {
+      console.error('Error updating password:', error);
+      
+      // Handle specific error cases
+      if (error.message && error.message.includes('password')) {
+        setPasswordError('Failed to update password. Please check your current password and try again.');
+      } else {
+        setPasswordError('Failed to update password. Please try again.');
+      }
+    }
   };
 
-  const handleDeleteAccount = () => {
-    console.log("Account deleted");
+  const handleDeleteAccount = async () => {
+    try {
+      // Delete account via API based on user type
+      if (user.userType === 'jobseeker') {
+        await profileService.deleteJobseeker(user.userId);
+      } else if (user.userType === 'society') {
+        await profileService.deleteSociety(user.userId);
+      } else if (user.userType === 'admin') {
+        await profileService.deleteAdmin(user.userId);
+      }
+      
+      // Logout and redirect to home
+      localStorage.clear();
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again.');
+    }
   };
 
   if (loading) {
@@ -191,19 +253,67 @@ export default function Settings() {
           
           <form onSubmit={handleSave} className="space-y-5">
             {user.userType === 'society' ? (
-              <div>
-                <label htmlFor="firstName" className="block text-sm mb-2 text-foreground">
-                  Society Name
-                </label>
-                <input
-                  id="firstName"
-                  type="text"
-                  value={personalInfo.firstName}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, firstName: e.target.value })}
-                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  required
-                />
-              </div>
+              <>
+                <div>
+                  <label htmlFor="firstName" className="block text-sm mb-2 text-foreground">
+                    Society Name
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={personalInfo.firstName}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, firstName: e.target.value })}
+                    className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                {/* Institution/University */}
+                <div>
+                  <label htmlFor="university" className="block text-sm mb-2 text-foreground">
+                    Institution
+                  </label>
+                  <CustomSelect
+                    id="university"
+                    value={showCustomUniversity ? 'Other' : personalInfo.university}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === 'Other') {
+                        setShowCustomUniversity(true);
+                        setPersonalInfo({ ...personalInfo, university: '' });
+                      } else {
+                        setShowCustomUniversity(false);
+                        setCustomUniversity('');
+                        setPersonalInfo({ ...personalInfo, university: value });
+                      }
+                    }}
+                    placeholder="Select your institution"
+                    required
+                    options={getUniversityOptions()}
+                  />
+                </div>
+
+                {/* Custom Institution Input */}
+                {showCustomUniversity && (
+                  <div>
+                    <label htmlFor="custom_university" className="block text-sm mb-2 text-foreground">
+                      Enter Institution Name
+                    </label>
+                    <input
+                      id="custom_university"
+                      type="text"
+                      value={customUniversity}
+                      onChange={(e) => {
+                        setCustomUniversity(e.target.value);
+                        setPersonalInfo({ ...personalInfo, university: e.target.value });
+                      }}
+                      placeholder="Enter your institution name"
+                      className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      required
+                    />
+                  </div>
+                )}
+              </>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -380,6 +490,26 @@ export default function Settings() {
           </div>
           <p className="text-muted-foreground text-sm mb-6">Update your password to keep your account secure</p>
           
+          {/* Password Success Message */}
+          {passwordUpdated && (
+            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center">
+                <Save className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-green-500 font-medium">Password updated successfully!</p>
+                <p className="text-green-500 text-sm">Your password has been changed.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Password Error Message */}
+          {passwordError && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl">
+              <p className="text-red-500">{passwordError}</p>
+            </div>
+          )}
+          
           <form onSubmit={handlePasswordChange} className="space-y-5">
             <div>
               <label htmlFor="currentPassword" className="block text-sm mb-2 text-foreground">
@@ -481,7 +611,7 @@ export default function Settings() {
             <AlertDialogContent className="bg-card border-border">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-foreground">Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription className="text-muted-foreground">
+                <AlertDialogDescription className="text-muted-foreground text-base">
                   This action cannot be undone. This will permanently delete your account and remove your data from our servers.
                 </AlertDialogDescription>
               </AlertDialogHeader>

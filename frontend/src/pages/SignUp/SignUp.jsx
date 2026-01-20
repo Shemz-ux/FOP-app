@@ -70,7 +70,7 @@ export default function SignUp() {
 
   const [societyData, setSocietyData] = useState({
     name: '',
-    institution: '',
+    university: '',
     description: '',
     email: '',
     password: '',
@@ -107,9 +107,41 @@ export default function SignUp() {
   const handleSocietySubmit = async (e) => {
     e.preventDefault();
     
+    // Validate all required fields
+    const requiredFields = [
+      { field: 'name', label: 'Society Name' },
+      { field: 'university', label: 'Institution' },
+      { field: 'description', label: 'Society Description' },
+      { field: 'email', label: 'Society Email' },
+      { field: 'password', label: 'Password' },
+      { field: 'confirm_password', label: 'Confirm Password' }
+    ];
+
+    const missingFields = requiredFields.filter(({ field }) => !societyData[field] || societyData[field].trim() === '');
+    
+    if (missingFields.length > 0) {
+      const fieldNames = missingFields.map(({ label }) => label).join(', ');
+      setSubmitError(`Please fill in the following required fields: ${fieldNames}`);
+      return;
+    }
+    
     // Validate passwords match
     if (societyData.password !== societyData.confirm_password) {
       setPasswordError('Passwords do not match');
+      setSubmitError('Passwords do not match. Please ensure both password fields are identical.');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(societyData.email)) {
+      setSubmitError('Please enter a valid email address.');
+      return;
+    }
+    
+    // Validate password length
+    if (societyData.password.length < 8) {
+      setSubmitError('Password must be at least 8 characters long.');
       return;
     }
     
@@ -120,6 +152,8 @@ export default function SignUp() {
     try {
       // Prepare data for API (remove confirm_password)
       const { confirm_password, ...registrationData } = societyData;
+      
+      console.log('Submitting society data:', registrationData);
       
       await createSociety(registrationData);
       
@@ -132,7 +166,23 @@ export default function SignUp() {
       }, 2000);
     } catch (error) {
       console.error('Society registration error:', error);
-      setSubmitError(error.message || 'Failed to create account. Please try again.');
+      
+      // Parse error message to provide more specific feedback
+      let errorMessage = 'Failed to create account. Please try again.';
+      
+      if (error.message) {
+        if (error.message.includes('email')) {
+          errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+        } else if (error.message.includes('name')) {
+          errorMessage = 'This society name is already taken. Please choose a different name.';
+        } else if (error.message.includes('required')) {
+          errorMessage = 'Some required fields are missing. Please check all fields and try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      setSubmitError(errorMessage);
       setIsSubmitting(false);
     }
   };
@@ -145,6 +195,8 @@ export default function SignUp() {
       // Prepare data for API (remove confirm_password)
       const { confirm_password, ...registrationData } = jobSeekerData;
       
+      console.log('Submitting job seeker data:', registrationData);
+      
       await createJobseeker(registrationData);
       
       // Show success message
@@ -156,7 +208,23 @@ export default function SignUp() {
       }, 2000);
     } catch (error) {
       console.error('Job seeker registration error:', error);
-      setSubmitError(error.message || 'Failed to create account. Please try again.');
+      
+      // Parse error message to provide more specific feedback
+      let errorMessage = 'Failed to create account. Please try again.';
+      
+      if (error.message) {
+        if (error.message.includes('email')) {
+          errorMessage = 'This email is already registered. Please use a different email or try logging in.';
+        } else if (error.message.includes('required')) {
+          errorMessage = 'Some required fields are missing. Please review all sections and ensure all required fields are filled.';
+        } else if (error.message.includes('password')) {
+          errorMessage = 'Password does not meet requirements. Please ensure it is at least 8 characters long.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      setSubmitError(errorMessage);
       setIsSubmitting(false);
     }
   };
@@ -754,16 +822,16 @@ export default function SignUp() {
             </label>
             <CustomSelect
               id="institution"
-              value={showCustomSocietyInstitution ? 'Other' : societyData.institution}
+              value={showCustomSocietyInstitution ? 'Other' : societyData.university}
               onChange={(e) => {
                 const value = e.target.value;
                 if (value === 'Other') {
                   setShowCustomSocietyInstitution(true);
-                  setSocietyData({ ...societyData, institution: '' });
+                  setSocietyData({ ...societyData, university: '' });
                 } else {
                   setShowCustomSocietyInstitution(false);
                   setCustomSocietyInstitution('');
-                  setSocietyData({ ...societyData, institution: value });
+                  setSocietyData({ ...societyData, university: value });
                 }
               }}
               placeholder="Select your institution"
@@ -784,7 +852,7 @@ export default function SignUp() {
                 value={customSocietyInstitution}
                 onChange={(e) => {
                   setCustomSocietyInstitution(e.target.value);
-                  setSocietyData({ ...societyData, institution: e.target.value });
+                  setSocietyData({ ...societyData, university: e.target.value });
                 }}
                 placeholder="Enter your institution name"
                 className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
