@@ -71,7 +71,9 @@ export default function EducationCard({ educationData, onSave }) {
               onChange={(e) => setLocalEducationData({ ...localEducationData, education_level: e.target.value })}
               placeholder="Select education level"
               options={[
-                { value: "a_level_or_btec", label: "A-Level / BTEC" },
+                { value: "gcse", label: "GCSE" },
+                { value: "a_level", label: "A-Level" },
+                { value: "btec", label: "BTEC" },
                 { value: "undergraduate", label: "Undergraduate" },
                 { value: "postgraduate", label: "Postgraduate" },
                 { value: "phd", label: "PhD" },
@@ -83,19 +85,19 @@ export default function EducationCard({ educationData, onSave }) {
 
           <div>
             <label className="text-sm text-muted-foreground mb-1 block text-left">
-              {localEducationData.education_level === 'a_level_or_btec' ? 'School/College' : 'Institution'}
+              {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'School/College' : 'Institution'}
             </label>
             <input
               type="text"
               value={localEducationData.institution_name || ''}
               onChange={(e) => setLocalEducationData({ ...educationData, institution_name: e.target.value })}
-              placeholder={localEducationData.education_level === 'a_level_or_btec' ? 'e.g. Sixth Form College' : 'e.g. University of London'}
+              placeholder={['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'e.g. Sixth Form College' : 'e.g. University of London'}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
 
-          {/* A-Level/BTEC Students - Show Subjects */}
-          {localEducationData.education_level === 'a_level_or_btec' ? (
+          {/* GCSE/A-Level/BTEC Students - Show Subjects */}
+          {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? (
             <>
               <div>
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Subject 1 *</label>
@@ -247,19 +249,19 @@ export default function EducationCard({ educationData, onSave }) {
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">Education Level</div>
             <div className="text-foreground capitalize text-left">
-              {localEducationData.education_level === 'a_level_or_btec' ? 'A-Level / BTEC' : (localEducationData.education_level || 'Not specified')}
+              {localEducationData.education_level === 'a_level' ? 'A-Level' : localEducationData.education_level === 'btec' ? 'BTEC' : (localEducationData.education_level?.replace(/_/g, ' ') || 'Not specified')}
             </div>
           </div>
 
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">
-              {localEducationData.education_level === 'a_level_or_btec' ? 'School/College' : 'Institution'}
+              {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'School/College' : 'Institution'}
             </div>
             <div className="text-foreground text-left">{localEducationData.institution_name || 'Not specified'}</div>
           </div>
 
-          {/* A-Level/BTEC Students - Show Subjects */}
-          {localEducationData.education_level === 'a_level_or_btec' && (
+          {/* GCSE/A-Level/BTEC Students - Show Subjects */}
+          {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) && (
             <div>
               <div className="text-sm text-muted-foreground mb-1 text-left">Subjects</div>
               <div className="text-foreground text-left">
@@ -271,7 +273,7 @@ export default function EducationCard({ educationData, onSave }) {
           )}
 
           {/* University Students - Show Degree Fields */}
-          {localEducationData.education_level !== 'a_level_or_btec' && localEducationData.education_level && (
+          {!['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) && localEducationData.education_level && (
             <>
               <div>
                 <div className="text-sm text-muted-foreground mb-1 text-left">Year</div>

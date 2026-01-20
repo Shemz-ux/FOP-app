@@ -111,7 +111,7 @@ export const getFirstGenStudents = (req, res, next) => {
 
 export const getStudentsByEducationStatus = (req, res, next) => {
     const { education_level } = req.params;
-    const validLevels = ['a_level_or_btec', 'undergraduate', 'postgraduate', 'phd', 'other'];
+    const validLevels = ['gcse', 'a_level', 'btec', 'undergraduate', 'postgraduate', 'phd', 'other'];
     
     if (!validLevels.includes(education_level)) {
         return res.status(400).send({ msg: 'Invalid education level parameter' });

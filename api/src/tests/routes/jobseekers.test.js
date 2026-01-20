@@ -317,7 +317,7 @@ describe.only('Jobseekers API Endpoints', () => {
         last_name: 'Johnson',
         email: `alevel.${timestamp}@test.com`,
         password: testPassword,
-        education_level: 'a_level_or_btec',
+        education_level: 'a_level',
         institution_name: 'Harris Academy Barking',
         subject_one: 'Mathematics',
         subject_two: 'Physics',
@@ -330,7 +330,7 @@ describe.only('Jobseekers API Endpoints', () => {
         .send(alevelStudent)
         .expect(201);
 
-      expect(response.body.newJobseeker.education_level).toBe('a_level_or_btec');
+      expect(response.body.newJobseeker.education_level).toBe('a_level');
       expect(response.body.newJobseeker.subject_one).toBe('Mathematics');
     });
 

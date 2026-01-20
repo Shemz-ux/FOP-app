@@ -20,7 +20,7 @@ const createJobseekersTable = () => {
         -- Create ENUM types first
         DO $$ BEGIN
             CREATE TYPE education_level_enum AS ENUM (
-                'a_level_or_btec', 'undergraduate', 'postgraduate', 'phd', 'other'
+                'gcse', 'a_level', 'btec', 'undergraduate', 'postgraduate', 'phd', 'other'
             );
         EXCEPTION
             WHEN duplicate_object THEN null;
@@ -94,10 +94,10 @@ const createJobseekersTable = () => {
                 education_level NOT IN ('undergraduate', 'postgraduate', 'phd')
             ),
             
-            -- Subjects are ONLY required for A-level/BTEC students (university students don't need them)
+            -- Subjects are ONLY required for GCSE/A-level/BTEC students (university students don't need them)
             CONSTRAINT subjects_check CHECK (
-                (education_level = 'a_level_or_btec' AND subject_one IS NOT NULL) OR 
-                education_level != 'a_level_or_btec'
+                (education_level IN ('gcse', 'a_level', 'btec') AND subject_one IS NOT NULL) OR 
+                education_level NOT IN ('gcse', 'a_level', 'btec')
             ),
             
             -- PhD students should have graduated uni_year or specific PhD years
@@ -379,7 +379,7 @@ const insertJobseekers = async () => {
             )
     `, [hashedPassword]);
     
-    // A-Level students
+    // GCSE/A-Level/BTEC students
     await testDb.query(`
         INSERT INTO jobseekers (
             first_name, last_name, email, password_hash, phone_number, date_of_birth,
@@ -388,20 +388,26 @@ const insertJobseekers = async () => {
             role_interest_option_one, role_interest_option_two
         ) VALUES 
             (
-                'Sophie', 'Brown', 'sophie.brown@student.com', $1, '+447700900004', '2006-03-10',
+                'Emily', 'Taylor', 'emily.taylor@student.com', $1, '+447700900004', '2008-09-15',
+                'female', 'White British', true, false,
+                'gcse', 'Eastbrook School', 'Mathematics', 'English', 'Science', 'History',
+                'Teacher', 'Social Worker'
+            ),
+            (
+                'Sophie', 'Brown', 'sophie.brown@student.com', $1, '+447700900005', '2006-03-10',
                 'female', 'White British', false, false,
-                'a_level_or_btec', 'Harris Academy Barking', 'Mathematics', 'Physics', 'Chemistry', 'Further Mathematics',
+                'a_level', 'Harris Academy Barking', 'Mathematics', 'Physics', 'Chemistry', 'Further Mathematics',
                 'Software Developer', 'Data Analyst'
             ),
             (
-                'Oliver', 'Davis', 'oliver.davis@student.com', $1, '+447700900005', '2006-07-18',
+                'Oliver', 'Davis', 'oliver.davis@student.com', $1, '+447700900006', '2006-07-18',
                 'male', 'Black British', true, true,
-                'a_level_or_btec', 'Newham Sixth Form College', 'English Literature', 'History', 'Politics', 'Economics',
+                'btec', 'Newham Sixth Form College', 'Business Studies', 'IT', 'Media Studies', 'Law',
                 'Policy Analyst', 'Journalist'
             )
     `, [hashedPassword]);
     
-    console.log('✅ Jobseekers seeded (3 university + 2 A-level students)');
+    console.log('✅ Jobseekers seeded (3 university + 1 GCSE + 1 A-level + 1 BTEC students)');
 };
 
 const insertSocieties = async () => {
@@ -1147,6 +1153,18 @@ const runTestSeed = async () => {
         await testDb.query('DROP TABLE IF EXISTS jobs CASCADE');
         await testDb.query('DROP TABLE IF EXISTS societies CASCADE');
         await testDb.query('DROP TABLE IF EXISTS jobseekers CASCADE');
+        
+        // Drop enum types to allow recreation with new values
+        await testDb.query('DROP TYPE IF EXISTS education_level_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS uni_year_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS gender_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS degree_type_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS event_type_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS location_type_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS experience_level_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS role_type_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS work_type_enum CASCADE');
+        await testDb.query('DROP TYPE IF EXISTS resource_category_enum CASCADE');
         
         await createJobseekersTable();
         await createSocietiesTable();

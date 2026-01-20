@@ -449,7 +449,8 @@ export default function SignUp() {
               required
               options={[
                 { value: "gcse", label: "GCSE" },
-                { value: "a_level_or_btec", label: "A-Levels/BTEC" },
+                { value: "a_level", label: "A-Level" },
+                { value: "btec", label: "BTEC" },
                 { value: "undergraduate", label: "Undergraduate" },
                 { value: "postgraduate", label: "Postgraduate" },
                 { value: "doctorate", label: "Doctorate" },

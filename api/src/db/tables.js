@@ -62,7 +62,7 @@ const createJobseekersTable = () => {
         -- Create ENUM types first
         DO $$ BEGIN
             CREATE TYPE education_level_enum AS ENUM (
-                'a_level_or_btec', 'undergraduate', 'postgraduate', 'phd', 'other'
+                'gcse', 'a_level', 'btec', 'undergraduate', 'postgraduate', 'phd', 'other'
             );
         EXCEPTION
             WHEN duplicate_object THEN null;
@@ -136,10 +136,10 @@ const createJobseekersTable = () => {
                 education_level NOT IN ('undergraduate', 'postgraduate', 'phd')
             ),
             
-            -- Subjects are ONLY required for A-level/BTEC students (university students don't need them)
+            -- Subjects are ONLY required for GCSE/A-level/BTEC students (university students don't need them)
             CONSTRAINT subjects_check CHECK (
-                (education_level = 'a_level_or_btec' AND subject_one IS NOT NULL) OR 
-                education_level != 'a_level_or_btec'
+                (education_level IN ('gcse', 'a_level', 'btec') AND subject_one IS NOT NULL) OR 
+                education_level NOT IN ('gcse', 'a_level', 'btec')
             ),
             
             -- PhD students should have graduated uni_year or specific PhD years

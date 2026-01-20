@@ -65,7 +65,13 @@ export default function JobseekersManagement() {
   if (selectedJobseekerId) {
     const jobseeker = jobseekers.find(j => j.jobseeker_id === selectedJobseekerId);
     // Transform jobseeker data to match profile format
+    // Combine subject fields into a single string
+    const subjects = [jobseeker?.subject_one, jobseeker?.subject_two, jobseeker?.subject_three, jobseeker?.subject_four]
+      .filter(Boolean)
+      .join(', ');
+    
     const profile = jobseeker ? {
+      jobseeker_id: jobseeker.jobseeker_id,
       name: `${jobseeker.first_name || ''} ${jobseeker.last_name || ''}`.trim(),
       email: jobseeker.email,
       phone: jobseeker.phone_number || 'N/A',
@@ -76,6 +82,7 @@ export default function JobseekersManagement() {
       education_level: jobseeker.education_level || 'undergraduate',
       degree_type: jobseeker.degree_type || 'bsc',
       area_of_study: jobseeker.area_of_study,
+      subjects: subjects || null,
       role_interest_option_one: jobseeker.role_interest_option_one,
       role_interest_option_two: jobseeker.role_interest_option_two,
       society: jobseeker.society,
@@ -174,7 +181,7 @@ export default function JobseekersManagement() {
               {filterEducation !== 'all' && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-lg text-sm">
                   <GraduationCap className="w-3 h-3 text-purple-500" />
-                  <span className="text-foreground">Education: <span className="font-medium">{filterEducation === 'gcse' ? 'GCSE' : filterEducation === 'a_level_or_btec' ? 'A-Level/BTEC' : filterEducation === 'undergraduate' ? 'Undergraduate' : filterEducation === 'postgraduate' ? 'Postgraduate' : filterEducation === 'phd' ? 'PhD' : 'Other'}</span></span>
+                  <span className="text-foreground">Education: <span className="font-medium">{filterEducation === 'gcse' ? 'GCSE' : filterEducation === 'a_level' ? 'A-Level' : filterEducation === 'btec' ? 'BTEC' : filterEducation === 'undergraduate' ? 'Undergraduate' : filterEducation === 'postgraduate' ? 'Postgraduate' : filterEducation === 'phd' ? 'PhD' : 'Other'}</span></span>
                   <button onClick={() => setFilterEducation('all')} className="text-purple-500 hover:text-purple-500/80">
                     <X className="w-3 h-3" />
                   </button>
@@ -235,7 +242,8 @@ export default function JobseekersManagement() {
                 options={[
                   { value: 'all', label: 'All Levels' },
                   { value: 'gcse', label: 'GCSE' },
-                  { value: 'a_level_or_btec', label: 'A-Level/BTEC' },
+                  { value: 'a_level', label: 'A-Level' },
+                  { value: 'btec', label: 'BTEC' },
                   { value: 'undergraduate', label: 'Undergraduate' },
                   { value: 'postgraduate', label: 'Postgraduate' },
                   { value: 'phd', label: 'PhD' },
@@ -303,9 +311,9 @@ export default function JobseekersManagement() {
               <p className="text-2xl text-foreground">{universities.length}</p>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
-              <p className="text-sm text-muted-foreground mb-1">Courses</p>
+              <p className="text-sm text-muted-foreground mb-1">Free Meal Eligible</p>
               <p className="text-2xl text-foreground">
-                {[...new Set(jobseekers.map(j => j.area_of_study).filter(Boolean))].length}
+                {jobseekers.filter(j => j.school_meal_eligible === true).length}
               </p>
             </div>
           </div>
