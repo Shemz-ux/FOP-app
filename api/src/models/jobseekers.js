@@ -51,11 +51,11 @@ export const createJobseeker = (newJobseeker) => {
         role_interest_option_two,
         society,
         linkedin,
-        cv_file_name,
-        cv_file_size,
-        cv_storage_key,
-        cv_storage_url,
-        cv_uploaded_at
+        cv_file_name = null,
+        cv_file_size = null,
+        cv_storage_key = null,
+        cv_storage_url = null,
+        cv_uploaded_at = null
     } = newJobseeker;
     
     return db.query(`

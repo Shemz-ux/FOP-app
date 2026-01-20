@@ -102,8 +102,60 @@ export default function Profile() {
 
   const handleSaveEducation = async (newData) => {
     try {
-      await profileService.updateUserProfile(user.userId, user.userType, newData);
-      setEducationData(newData);
+      // Clean up data based on education level (similar to signup form logic)
+      const cleanedData = { ...newData };
+      
+      if (cleanedData.education_level === 'gcse') {
+        // GCSE students don't need university fields or subjects
+        cleanedData.uni_year = null;
+        cleanedData.degree_type = null;
+        cleanedData.area_of_study = null;
+        // Keep subject fields as they might be filled
+      } else if (['a_level', 'btec'].includes(cleanedData.education_level)) {
+        // A-Level/BTEC students don't need university-specific fields
+        cleanedData.uni_year = null;
+        cleanedData.degree_type = null;
+        cleanedData.area_of_study = null;
+        // Keep subject fields
+      } else if (['undergraduate', 'postgraduate', 'phd'].includes(cleanedData.education_level)) {
+        // University students don't need subject fields
+        cleanedData.subject_one = null;
+        cleanedData.subject_two = null;
+        cleanedData.subject_three = null;
+        cleanedData.subject_four = null;
+      }
+      
+      // Convert empty strings to null for optional fields
+      Object.keys(cleanedData).forEach(key => {
+        if (cleanedData[key] === '') {
+          cleanedData[key] = null;
+        }
+      });
+      
+      await profileService.updateUserProfile(user.userId, user.userType, cleanedData);
+      
+      // Refetch profile data to ensure we have the latest from backend
+      const updatedProfile = await profileService.getUserProfile(user.userId, user.userType);
+      setProfileData(updatedProfile);
+      
+      // Update education data with fresh data from backend
+      if (updatedProfile.jobseeker) {
+        setEducationData({
+          education_level: updatedProfile.jobseeker.education_level ?? "",
+          institution_name: updatedProfile.jobseeker.institution_name ?? "",
+          uni_year: updatedProfile.jobseeker.uni_year ?? "",
+          degree_type: updatedProfile.jobseeker.degree_type ?? "",
+          area_of_study: updatedProfile.jobseeker.area_of_study ?? "",
+          subject_one: updatedProfile.jobseeker.subject_one ?? "",
+          subject_two: updatedProfile.jobseeker.subject_two ?? "",
+          subject_three: updatedProfile.jobseeker.subject_three ?? "",
+          subject_four: updatedProfile.jobseeker.subject_four ?? "",
+          role_interest_option_one: updatedProfile.jobseeker.role_interest_option_one ?? "",
+          role_interest_option_two: updatedProfile.jobseeker.role_interest_option_two ?? "",
+          society: updatedProfile.jobseeker.society ?? ""
+        });
+      }
+      
       console.log('Education details saved successfully');
     } catch (error) {
       console.error('Error saving education:', error);
@@ -248,7 +300,18 @@ export default function Profile() {
               </h1>
               <p className="text-muted-foreground mb-4">
                 {isJobseeker() && profileData?.jobseeker ? 
-                  `${profileData.jobseeker.area_of_study || 'Student'} • ${profileData.jobseeker.institution_name || 'University'}` :
+                  (() => {
+                    const educationLevel = profileData.jobseeker.education_level;
+                    const educationDisplay = educationLevel === 'gcse' ? 'GCSE' : 
+                                            educationLevel === 'a_level' ? 'A-Level' :
+                                            educationLevel === 'btec' ? 'BTEC' :
+                                            educationLevel === 'phd' ? 'PhD' :
+                                            educationLevel ? educationLevel.charAt(0).toUpperCase() + educationLevel.slice(1) : 'Student';
+                    const institution = profileData.jobseeker.institution_name || educationDisplay;
+                    return educationLevel === 'gcse' ? 
+                      `${educationDisplay} Student • ${institution}` :
+                      `${educationDisplay} • ${institution}`;
+                  })() :
                   isSociety() && profileData?.society ?
                   `${profileData.society.society_name || 'Society'}` :
                   isAdmin() ?

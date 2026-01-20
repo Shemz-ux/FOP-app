@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { GraduationCap, Edit } from "lucide-react";
 import CustomSelect from "../Ui/CustomSelect";
 import Toast from "../Ui/Toast";
+import { getUniversityOptions } from "../../data/universities";
+import { getSchoolsCollegesOptions } from "../../data/schools";
 
 export default function EducationCard({ educationData, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -9,6 +11,10 @@ export default function EducationCard({ educationData, onSave }) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
+  const [showCustomSchool, setShowCustomSchool] = useState(false);
+  const [customSchool, setCustomSchool] = useState('');
+  const [showCustomUniversity, setShowCustomUniversity] = useState(false);
+  const [customUniversity, setCustomUniversity] = useState('');
 
   // Sync local state when prop changes
   useEffect(() => {
@@ -18,7 +24,69 @@ export default function EducationCard({ educationData, onSave }) {
   }, [educationData]);
 
   const handleSave = async () => {
+    // Validate required fields based on education level
+    const educationLevel = localEducationData.education_level;
+    
+    // Check if education level is selected
+    if (!educationLevel) {
+      setToastMessage('Please select an education level');
+      setToastType('error');
+      setShowToast(true);
+      return;
+    }
+    
+    // Check if institution is filled
+    if (!localEducationData.institution_name || localEducationData.institution_name.trim() === '') {
+      const institutionLabel = educationLevel === 'gcse' ? 'school' :
+                              ['a_level', 'btec'].includes(educationLevel) ? 'school/college' :
+                              'university';
+      setToastMessage(`Please enter your ${institutionLabel} name`);
+      setToastType('error');
+      setShowToast(true);
+      return;
+    }
+    
+    // Validate subject_one for GCSE/A-Level/BTEC students (compulsory)
+    if (['gcse', 'a_level', 'btec'].includes(educationLevel)) {
+      if (!localEducationData.subject_one || localEducationData.subject_one.trim() === '') {
+        setToastMessage('Please enter at least one subject (Subject 1 is required)');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+    }
+    
+    // Validate university-specific fields for undergraduate/postgraduate/phd
+    if (['undergraduate', 'postgraduate', 'phd'].includes(educationLevel)) {
+      if (!localEducationData.uni_year) {
+        setToastMessage('Please select your year of study');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+      
+      if (!localEducationData.degree_type) {
+        setToastMessage('Please select your degree type');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+      
+      if (!localEducationData.area_of_study || localEducationData.area_of_study.trim() === '') {
+        setToastMessage('Please enter your area of study');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+    }
+    
     setIsEditing(false);
+    // Reset custom input states
+    setShowCustomSchool(false);
+    setCustomSchool('');
+    setShowCustomUniversity(false);
+    setCustomUniversity('');
+    
     if (onSave) {
       try {
         await onSave(localEducationData);
@@ -36,6 +104,11 @@ export default function EducationCard({ educationData, onSave }) {
   const handleCancel = () => {
     setIsEditing(false);
     setLocalEducationData(educationData || {});
+    // Reset custom input states
+    setShowCustomSchool(false);
+    setCustomSchool('');
+    setShowCustomUniversity(false);
+    setCustomUniversity('');
   };
 
   return (
@@ -83,21 +156,102 @@ export default function EducationCard({ educationData, onSave }) {
             />
           </div>
 
-          <div>
-            <label className="text-sm text-muted-foreground mb-1 block text-left">
-              {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'School/College' : 'Institution'}
-            </label>
-            <input
-              type="text"
-              value={localEducationData.institution_name || ''}
-              onChange={(e) => setLocalEducationData({ ...localEducationData, institution_name: e.target.value })}
-              placeholder={['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'e.g. Sixth Form College' : 'e.g. University of London'}
-              className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
-            />
-          </div>
+          {/* School/College for GCSE/A-Level/BTEC */}
+          {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) && (
+            <>
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block text-left">
+                  {localEducationData.education_level === 'gcse' ? 'School' : 'School/College'}
+                </label>
+                <CustomSelect
+                  value={showCustomSchool ? 'Other' : localEducationData.institution_name || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'Other') {
+                      setShowCustomSchool(true);
+                      setLocalEducationData({ ...localEducationData, institution_name: '' });
+                    } else {
+                      setShowCustomSchool(false);
+                      setCustomSchool('');
+                      setLocalEducationData({ ...localEducationData, institution_name: value });
+                    }
+                  }}
+                  placeholder={localEducationData.education_level === 'gcse' ? 'Select your school' : 'Select your school/college'}
+                  options={[...getSchoolsCollegesOptions(), { value: 'Other', label: 'Other (Not Listed)' }]}
+                  className="text-sm"
+                />
+              </div>
 
-          {/* GCSE/A-Level/BTEC Students - Show Subjects */}
-          {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? (
+              {/* Custom School Input */}
+              {showCustomSchool && (
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block text-left">
+                    Enter School/College Name
+                  </label>
+                  <input
+                    type="text"
+                    value={customSchool}
+                    onChange={(e) => {
+                      setCustomSchool(e.target.value);
+                      setLocalEducationData({ ...localEducationData, institution_name: e.target.value });
+                    }}
+                    placeholder="Enter your school/college name"
+                    className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* University for Undergraduate/Postgraduate/PhD */}
+          {['undergraduate', 'postgraduate', 'phd'].includes(localEducationData.education_level) && (
+            <>
+              <div>
+                <label className="text-sm text-muted-foreground mb-1 block text-left">
+                  University
+                </label>
+                <CustomSelect
+                  value={showCustomUniversity ? 'Other' : localEducationData.institution_name || ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'Other') {
+                      setShowCustomUniversity(true);
+                      setLocalEducationData({ ...localEducationData, institution_name: '' });
+                    } else {
+                      setShowCustomUniversity(false);
+                      setCustomUniversity('');
+                      setLocalEducationData({ ...localEducationData, institution_name: value });
+                    }
+                  }}
+                  placeholder="Select your university"
+                  options={getUniversityOptions()}
+                  className="text-sm"
+                />
+              </div>
+
+              {/* Custom University Input */}
+              {showCustomUniversity && (
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block text-left">
+                    Enter University Name
+                  </label>
+                  <input
+                    type="text"
+                    value={customUniversity}
+                    onChange={(e) => {
+                      setCustomUniversity(e.target.value);
+                      setLocalEducationData({ ...localEducationData, institution_name: e.target.value });
+                    }}
+                    placeholder="Enter your university name"
+                    className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* A-Level/BTEC Students - Show Subjects (NOT GCSE) */}
+          {['a_level', 'btec'].includes(localEducationData.education_level) && (
             <>
               <div>
                 <label className="text-sm text-muted-foreground mb-1 block text-left">Subject 1 *</label>
@@ -141,8 +295,10 @@ export default function EducationCard({ educationData, onSave }) {
                 />
               </div>
             </>
-          ) : (
-            /* University Students - Show Degree Fields */
+          )}
+
+          {/* University Students - Show Degree Fields (NOT GCSE/A-Level/BTEC) */}
+          {['undergraduate', 'postgraduate', 'phd'].includes(localEducationData.education_level) && (
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -249,19 +405,23 @@ export default function EducationCard({ educationData, onSave }) {
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">Education Level</div>
             <div className="text-foreground capitalize text-left">
-              {localEducationData.education_level === 'a_level' ? 'A-Level' : localEducationData.education_level === 'btec' ? 'BTEC' : (localEducationData.education_level?.replace(/_/g, ' ') || 'Not specified')}
+              {localEducationData.education_level === 'gcse' ? 'GCSE' :
+               localEducationData.education_level === 'a_level' ? 'A-Level' :
+               localEducationData.education_level === 'btec' ? 'BTEC' :
+               localEducationData.education_level === 'phd' ? 'PhD' :
+               (localEducationData.education_level?.replace(/_/g, ' ') || 'Not specified')}
             </div>
           </div>
 
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">
-              {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'School/College' : 'Institution'}
+              {localEducationData.education_level === 'gcse' ? 'School' : ['a_level', 'btec'].includes(localEducationData.education_level) ? 'School/College' : 'Institution'}
             </div>
             <div className="text-foreground text-left">{localEducationData.institution_name || 'Not specified'}</div>
           </div>
 
-          {/* GCSE/A-Level/BTEC Students - Show Subjects */}
-          {['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) && (
+          {/* A-Level/BTEC Students - Show Subjects (NOT GCSE) */}
+          {['a_level', 'btec'].includes(localEducationData.education_level) && (
             <div>
               <div className="text-sm text-muted-foreground mb-1 text-left">Subjects</div>
               <div className="text-foreground text-left">

@@ -9,10 +9,13 @@ import {
   Edit,
   Eye,
   EyeOff,
+  Upload,
+  X,
 } from "lucide-react";
 import CustomSelect from "../../components/Ui/CustomSelect";
 import { apiGet } from "../../services/api";
 import { getUniversityOptions } from "../../data/universities";
+import { getSchoolsCollegesOptions } from "../../data/schools";
 import { createJobseeker } from "../../services/Jobseekers/jobseekersService";
 import { createSociety } from "../../services/Societies/societiesService";
 
@@ -26,6 +29,8 @@ export default function SignUp() {
   const [societies, setSocieties] = useState([]);
   const [showCustomInstitution, setShowCustomInstitution] = useState(false);
   const [customInstitution, setCustomInstitution] = useState('');
+  const [showCustomSchool, setShowCustomSchool] = useState(false);
+  const [customSchool, setCustomSchool] = useState('');
   const [showCustomSocietyInstitution, setShowCustomSocietyInstitution] = useState(false);
   const [customSocietyInstitution, setCustomSocietyInstitution] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,9 +68,14 @@ export default function SignUp() {
     uni_year: '',
     degree_type: '',
     area_of_study: '',
+    subject_one: '',
+    subject_two: '',
+    subject_three: '',
+    subject_four: '',
     role_interest_option_one: '',
     role_interest_option_two: '',
     society: '',
+    cv_file: null,
   });
 
   const [societyData, setSocietyData] = useState({
@@ -192,8 +202,33 @@ export default function SignUp() {
     setSubmitError('');
     
     try {
-      // Prepare data for API (remove confirm_password)
-      const { confirm_password, ...registrationData } = jobSeekerData;
+      // Prepare data for API (remove confirm_password and cv_file)
+      const { confirm_password, cv_file, ...registrationData } = jobSeekerData;
+      
+      // Clean up conditional fields based on education level
+      if (registrationData.education_level === 'gcse') {
+        // GCSE students need subject_one (required by DB) but not university fields
+        // Use a placeholder since subjects are optional in UI but required in DB
+        registrationData.subject_one = 'N/A';
+        registrationData.uni_year = null;
+        registrationData.degree_type = null;
+        registrationData.area_of_study = null;
+      } else if (['a_level', 'btec'].includes(registrationData.education_level)) {
+        // A-Level/BTEC students need subject_one from their subjects list
+        registrationData.subject_one = registrationData.area_of_study || 'N/A';
+        registrationData.uni_year = null;
+        registrationData.degree_type = null;
+        registrationData.area_of_study = null;
+      } else {
+        // University students (undergraduate, postgraduate, phd) have all fields
+        // No changes needed - they don't need subject_one
+        registrationData.subject_one = null;
+      }
+      
+      // Handle society field - convert 'None' to null
+      if (registrationData.society === 'None' || registrationData.society === '') {
+        registrationData.society = null;
+      }
       
       console.log('Submitting job seeker data:', registrationData);
       
@@ -585,116 +620,199 @@ export default function SignUp() {
                 { value: "btec", label: "BTEC" },
                 { value: "undergraduate", label: "Undergraduate" },
                 { value: "postgraduate", label: "Postgraduate" },
-                { value: "doctorate", label: "Doctorate" },
+                { value: "phd", label: "PhD" },
               ]}
             />
           </div>
 
-          {/* Institution Name */}
-          <div>
-            <label htmlFor="institution_name" className="block text-sm mb-2 text-foreground">
-              Institution Name *
-            </label>
-            <CustomSelect
-              id="institution_name"
-              value={showCustomInstitution ? 'Other' : jobSeekerData.institution_name}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === 'Other') {
-                  setShowCustomInstitution(true);
-                  setJobSeekerData({ ...jobSeekerData, institution_name: '' });
-                } else {
-                  setShowCustomInstitution(false);
-                  setCustomInstitution('');
-                  setJobSeekerData({ ...jobSeekerData, institution_name: value });
-                }
-              }}
-              placeholder="Select your institution"
-              required
-              options={getUniversityOptions()}
-            />
-          </div>
+          {/* Conditional Fields Based on Education Level */}
+          {jobSeekerData.education_level && (
+            <>
+              {/* School/College for GCSE/A-Level/BTEC */}
+              {['gcse', 'a_level', 'btec'].includes(jobSeekerData.education_level) && (
+                <>
+                  <div>
+                    <label htmlFor="school_name" className="block text-sm mb-2 text-foreground">
+                      {jobSeekerData.education_level === 'gcse' ? 'School Name *' : 'School/College Name *'}
+                    </label>
+                    <CustomSelect
+                      id="school_name"
+                      value={showCustomSchool ? 'Other' : jobSeekerData.institution_name}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === 'Other') {
+                          setShowCustomSchool(true);
+                          setJobSeekerData({ ...jobSeekerData, institution_name: '' });
+                        } else {
+                          setShowCustomSchool(false);
+                          setCustomSchool('');
+                          setJobSeekerData({ ...jobSeekerData, institution_name: value });
+                        }
+                      }}
+                      placeholder={jobSeekerData.education_level === 'gcse' ? 'Select your school' : 'Select your school/college'}
+                      required
+                      options={[...getSchoolsCollegesOptions(), { value: 'Other', label: 'Other (Not Listed)' }]}
+                    />
+                  </div>
 
-          {/* Custom Institution Input */}
-          {showCustomInstitution && (
+                  {/* Custom School Input */}
+                  {showCustomSchool && (
+                    <div>
+                      <label htmlFor="custom_school" className="block text-sm mb-2 text-foreground">
+                        Enter School/College Name *
+                      </label>
+                      <input
+                        id="custom_school"
+                        type="text"
+                        value={customSchool}
+                        onChange={(e) => {
+                          setCustomSchool(e.target.value);
+                          setJobSeekerData({ ...jobSeekerData, institution_name: e.target.value });
+                        }}
+                        placeholder="Enter your school/college name"
+                        className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        required
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* University for Undergraduate/Postgraduate/PhD */}
+              {['undergraduate', 'postgraduate', 'phd'].includes(jobSeekerData.education_level) && (
+                <>
+                  <div>
+                    <label htmlFor="institution_name" className="block text-sm mb-2 text-foreground">
+                      University Name *
+                    </label>
+                    <CustomSelect
+                      id="institution_name"
+                      value={showCustomInstitution ? 'Other' : jobSeekerData.institution_name}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === 'Other') {
+                          setShowCustomInstitution(true);
+                          setJobSeekerData({ ...jobSeekerData, institution_name: '' });
+                        } else {
+                          setShowCustomInstitution(false);
+                          setCustomInstitution('');
+                          setJobSeekerData({ ...jobSeekerData, institution_name: value });
+                        }
+                      }}
+                      placeholder="Select your university"
+                      required
+                      options={getUniversityOptions()}
+                    />
+                  </div>
+
+                  {/* Custom University Input */}
+                  {showCustomInstitution && (
+                    <div>
+                      <label htmlFor="custom_institution" className="block text-sm mb-2 text-foreground">
+                        Enter University Name *
+                      </label>
+                      <input
+                        id="custom_institution"
+                        type="text"
+                        value={customInstitution}
+                        onChange={(e) => {
+                          setCustomInstitution(e.target.value);
+                          setJobSeekerData({ ...jobSeekerData, institution_name: e.target.value });
+                        }}
+                        placeholder="Enter your university name"
+                        className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        required
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+
+          {/* University Fields - Only for Undergraduate/Postgraduate/PhD */}
+          {['undergraduate', 'postgraduate', 'phd'].includes(jobSeekerData.education_level) && (
+            <>
+              {/* University Year and Degree Type */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="uni_year" className="block text-sm mb-2 text-foreground">
+                    Year of Study *
+                  </label>
+                  <CustomSelect
+                    id="uni_year"
+                    value={jobSeekerData.uni_year}
+                    onChange={(e) => setJobSeekerData({ ...jobSeekerData, uni_year: e.target.value })}
+                    placeholder="Select year"
+                    required
+                    options={[
+                      { value: "1st", label: "1st Year" },
+                      { value: "2nd", label: "2nd Year" },
+                      { value: "3rd", label: "3rd Year" },
+                      { value: "4th", label: "4th Year" },
+                      { value: "final", label: "Final Year" }
+                    ]}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="degree_type" className="block text-sm mb-2 text-foreground">
+                    Degree Type *
+                  </label>
+                  <CustomSelect
+                    id="degree_type"
+                    value={jobSeekerData.degree_type}
+                    onChange={(e) => setJobSeekerData({ ...jobSeekerData, degree_type: e.target.value })}
+                    placeholder="Select degree type"
+                    required
+                    options={[
+                      { value: "bsc", label: "BSc" },
+                      { value: "ba", label: "BA" },
+                      { value: "beng", label: "BEng" },
+                      { value: "msc", label: "MSc" },
+                      { value: "ma", label: "MA" },
+                      { value: "meng", label: "MEng" },
+                      { value: "phd", label: "PhD" }
+                    ]}
+                  />
+                </div>
+              </div>
+
+              {/* Area of Study */}
+              <div>
+                <label htmlFor="area_of_study" className="block text-sm mb-2 text-foreground">
+                  Area of Study *
+                </label>
+                <input
+                  id="area_of_study"
+                  type="text"
+                  value={jobSeekerData.area_of_study}
+                  onChange={(e) => setJobSeekerData({ ...jobSeekerData, area_of_study: e.target.value })}
+                  placeholder="e.g. Computer Science"
+                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          {/* Subject Fields - Only for A-Level/BTEC */}
+          {['a_level', 'btec'].includes(jobSeekerData.education_level) && (
             <div>
-              <label htmlFor="custom_institution" className="block text-sm mb-2 text-foreground">
-                Enter Institution Name *
+              <label htmlFor="area_of_study" className="block text-sm mb-2 text-foreground">
+                Subjects *
               </label>
               <input
-                id="custom_institution"
+                id="area_of_study"
                 type="text"
-                value={customInstitution}
-                onChange={(e) => {
-                  setCustomInstitution(e.target.value);
-                  setJobSeekerData({ ...jobSeekerData, institution_name: e.target.value });
-                }}
-                placeholder="Enter your institution name"
+                value={jobSeekerData.area_of_study}
+                onChange={(e) => setJobSeekerData({ ...jobSeekerData, area_of_study: e.target.value })}
+                placeholder="e.g. Maths, Physics, Chemistry, Further Maths"
                 className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
+              <p className="text-xs text-muted-foreground mt-2">List your subjects separated by commas</p>
             </div>
           )}
-
-          {/* University Year and Degree Type */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="uni_year" className="block text-sm mb-2 text-foreground">
-                Year of Study *
-              </label>
-              <CustomSelect
-                id="uni_year"
-                value={jobSeekerData.uni_year}
-                onChange={(e) => setJobSeekerData({ ...jobSeekerData, uni_year: e.target.value })}
-                placeholder="Select year"
-                required
-                options={[
-                  { value: "1st", label: "1st Year" },
-                  { value: "2nd", label: "2nd Year" },
-                  { value: "3rd", label: "3rd Year" },
-                  { value: "4th", label: "4th Year" },
-                  { value: "final", label: "Final Year" }
-                ]}
-              />
-            </div>
-            <div>
-              <label htmlFor="degree_type" className="block text-sm mb-2 text-foreground">
-                Degree Type *
-              </label>
-              <CustomSelect
-                id="degree_type"
-                value={jobSeekerData.degree_type}
-                onChange={(e) => setJobSeekerData({ ...jobSeekerData, degree_type: e.target.value })}
-                placeholder="Select degree type"
-                required
-                options={[
-                  { value: "bsc", label: "BSc" },
-                  { value: "ba", label: "BA" },
-                  { value: "beng", label: "BEng" },
-                  { value: "msc", label: "MSc" },
-                  { value: "ma", label: "MA" },
-                  { value: "meng", label: "MEng" },
-                  { value: "phd", label: "PhD" }
-                ]}
-              />
-            </div>
-          </div>
-
-          {/* Area of Study */}
-          <div>
-            <label htmlFor="area_of_study" className="block text-sm mb-2 text-foreground">
-              Area of Study *
-            </label>
-            <input
-              id="area_of_study"
-              type="text"
-              value={jobSeekerData.area_of_study}
-              onChange={(e) => setJobSeekerData({ ...jobSeekerData, area_of_study: e.target.value })}
-              placeholder="e.g. Computer Science"
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              required
-            />
-          </div>
 
           {/* Career Interests */}
           <div className="pt-4 border-t border-border">
@@ -738,14 +856,73 @@ export default function SignUp() {
               Society Membership (Optional)
             </label>
             <CustomSelect
+              id="society"
               value={jobSeekerData.society}
-              onValueChange={(value) => setJobSeekerData({ ...jobSeekerData, society: value === 'none' ? null : value })}
+              onChange={(e) => setJobSeekerData({ ...jobSeekerData, society: e.target.value === 'none' ? 'None' : e.target.value })}
               placeholder="Select a society"
               options={[
                 { value: 'none', label: 'None' },
                 ...societies.map(society => ({ value: society.name, label: society.name }))
               ]}
             />
+          </div>
+
+          {/* CV Upload */}
+          <div className="pt-4 border-t border-border">
+            <label className="block text-sm mb-2 text-foreground">
+              Upload CV (Optional)
+            </label>
+            <p className="text-xs text-muted-foreground mb-3">
+              Upload your CV in PDF format (max 5MB)
+            </p>
+            
+            {jobSeekerData.cv_file ? (
+              <div className="flex items-center justify-between p-4 bg-input-background border border-input rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{jobSeekerData.cv_file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {(jobSeekerData.cv_file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setJobSeekerData({ ...jobSeekerData, cv_file: null })}
+                  className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4 text-destructive" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-input rounded-xl cursor-pointer hover:border-primary transition-colors">
+                <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                <p className="text-sm text-foreground mb-1">Click to upload CV</p>
+                <p className="text-xs text-muted-foreground">PDF format, max 5MB</p>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 5 * 1024 * 1024) {
+                        alert('File size must be less than 5MB');
+                        return;
+                      }
+                      if (file.type !== 'application/pdf') {
+                        alert('Only PDF files are allowed');
+                        return;
+                      }
+                      setJobSeekerData({ ...jobSeekerData, cv_file: file });
+                    }
+                  }}
+                  className="hidden"
+                />
+              </label>
+            )}
           </div>
 
           {/* Navigation */}
@@ -1061,24 +1238,53 @@ export default function SignUp() {
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground mb-1">Education Level</p>
-              <p className="text-foreground capitalize">{jobSeekerData.education_level}</p>
+              <p className="text-foreground capitalize">{jobSeekerData.education_level.replace('_', '-')}</p>
             </div>
-            <div>
-              <p className="text-muted-foreground mb-1">Institution</p>
-              <p className="text-foreground">{jobSeekerData.institution_name}</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground mb-1">Year of Study</p>
-              <p className="text-foreground">{jobSeekerData.uni_year} Year</p>
-            </div>
-            <div>
-              <p className="text-muted-foreground mb-1">Degree Type</p>
-              <p className="text-foreground uppercase">{jobSeekerData.degree_type}</p>
-            </div>
-            <div className="md:col-span-2">
-              <p className="text-muted-foreground mb-1">Area of Study</p>
-              <p className="text-foreground">{jobSeekerData.area_of_study}</p>
-            </div>
+            
+            {/* Institution - Show for all education levels with appropriate label */}
+            {jobSeekerData.institution_name && (
+              <div>
+                <p className="text-muted-foreground mb-1">
+                  {jobSeekerData.education_level === 'gcse' ? 'School' :
+                   ['a_level', 'btec'].includes(jobSeekerData.education_level) ? 'School/College' :
+                   'University'}
+                </p>
+                <p className="text-foreground">{jobSeekerData.institution_name}</p>
+              </div>
+            )}
+            
+            {/* University Fields - Only for Undergraduate/Postgraduate/PhD */}
+            {['undergraduate', 'postgraduate', 'phd'].includes(jobSeekerData.education_level) && (
+              <>
+                {jobSeekerData.uni_year && (
+                  <div>
+                    <p className="text-muted-foreground mb-1">Year of Study</p>
+                    <p className="text-foreground">{jobSeekerData.uni_year} Year</p>
+                  </div>
+                )}
+                {jobSeekerData.degree_type && (
+                  <div>
+                    <p className="text-muted-foreground mb-1">Degree Type</p>
+                    <p className="text-foreground uppercase">{jobSeekerData.degree_type}</p>
+                  </div>
+                )}
+                {jobSeekerData.area_of_study && (
+                  <div className="md:col-span-2">
+                    <p className="text-muted-foreground mb-1">Area of Study</p>
+                    <p className="text-foreground">{jobSeekerData.area_of_study}</p>
+                  </div>
+                )}
+              </>
+            )}
+            
+            {/* Subjects - Only for A-Level/BTEC */}
+            {['a_level', 'btec'].includes(jobSeekerData.education_level) && jobSeekerData.area_of_study && (
+              <div className="md:col-span-2">
+                <p className="text-muted-foreground mb-1">Subjects</p>
+                <p className="text-foreground">{jobSeekerData.area_of_study}</p>
+              </div>
+            )}
+            
             <div>
               <p className="text-muted-foreground mb-1">Primary Role Interest</p>
               <p className="text-foreground">{jobSeekerData.role_interest_option_one}</p>
@@ -1089,10 +1295,19 @@ export default function SignUp() {
                 <p className="text-foreground">{jobSeekerData.role_interest_option_two}</p>
               </div>
             )}
-            {jobSeekerData.society && (
+            {jobSeekerData.society && jobSeekerData.society !== 'None' && (
               <div className="md:col-span-2">
                 <p className="text-muted-foreground mb-1">Society Membership</p>
                 <p className="text-foreground">{jobSeekerData.society}</p>
+              </div>
+            )}
+            {jobSeekerData.cv_file && (
+              <div className="md:col-span-2">
+                <p className="text-muted-foreground mb-1">CV Uploaded</p>
+                <div className="flex items-center gap-2">
+                  <Upload className="w-4 h-4 text-primary" />
+                  <p className="text-foreground">{jobSeekerData.cv_file.name}</p>
+                </div>
               </div>
             )}
           </div>
