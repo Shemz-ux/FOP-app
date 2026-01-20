@@ -157,18 +157,18 @@ export default function Profile() {
         // Set education data for jobseekers
         if (isJobseeker() && profile.jobseeker) {
           setEducationData({
-            education_level: profile.jobseeker.education_level,
-            institution_name: profile.jobseeker.institution_name,
-            uni_year: profile.jobseeker.uni_year,
-            degree_type: profile.jobseeker.degree_type,
-            area_of_study: profile.jobseeker.area_of_study,
-            subject_one: profile.jobseeker.subject_one,
-            subject_two: profile.jobseeker.subject_two,
-            subject_three: profile.jobseeker.subject_three,
-            subject_four: profile.jobseeker.subject_four,
-            role_interest_option_one: profile.jobseeker.role_interest_option_one,
-            role_interest_option_two: profile.jobseeker.role_interest_option_two,
-            society: profile.jobseeker.society
+            education_level: profile.jobseeker.education_level ?? "",
+            institution_name: profile.jobseeker.institution_name ?? "",
+            uni_year: profile.jobseeker.uni_year ?? "",
+            degree_type: profile.jobseeker.degree_type ?? "",
+            area_of_study: profile.jobseeker.area_of_study ?? "",
+            subject_one: profile.jobseeker.subject_one ?? "",
+            subject_two: profile.jobseeker.subject_two ?? "",
+            subject_three: profile.jobseeker.subject_three ?? "",
+            subject_four: profile.jobseeker.subject_four ?? "",
+            role_interest_option_one: profile.jobseeker.role_interest_option_one ?? "",
+            role_interest_option_two: profile.jobseeker.role_interest_option_two ?? "",
+            society: profile.jobseeker.society ?? ""
           });
           
           // Set CV data if exists
@@ -290,9 +290,9 @@ export default function Profile() {
               </div>
               <div>
                 <div className="text-2xl mb-1 text-foreground">
-                  {registeredEventsData.length}
+                  {isSociety() ? savedEventsData.length : registeredEventsData.length}
                 </div>
-                <div className="text-muted-foreground text-sm">Events</div>
+                <div className="text-muted-foreground text-sm">{isSociety() ? 'Saved Events' : 'Events'}</div>
               </div>
             </div>
           </div>
@@ -344,18 +344,18 @@ export default function Profile() {
                 <option value="saved-jobs">Saved Jobs</option>
                 {isJobseeker() && <option value="applied-jobs">Applied Jobs</option>}
                 <option value="saved-events">Saved Events</option>
-                <option value="registered-events">Registered Events</option>
+                {isJobseeker() && <option value="registered-events">Registered Events</option>}
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
             </div>
 
             {/* Desktop Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className={`hidden md:grid ${isSociety() ? 'grid-cols-3' : 'grid-cols-4'} mb-8 w-full`}>
+              <TabsList className={`hidden md:grid ${isSociety() ? 'grid-cols-2' : 'grid-cols-4'} mb-8 w-full`}>
                 <TabsTrigger value="saved-jobs">Saved Jobs</TabsTrigger>
                 {isJobseeker() && <TabsTrigger value="applied-jobs">Applied Jobs</TabsTrigger>}
                 <TabsTrigger value="saved-events">Saved Events</TabsTrigger>
-                <TabsTrigger value="registered-events">Registered Events</TabsTrigger>
+                {isJobseeker() && <TabsTrigger value="registered-events">Registered Events</TabsTrigger>}
               </TabsList>
 
               <TabsContent value="saved-jobs">

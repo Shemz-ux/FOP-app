@@ -9,7 +9,6 @@ import JobBadge from "../../components/Ui/JobBadge";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
-import ProtectedOverlay from "../../components/ProtectedOverlay/ProtectedOverlay";
 import { resourcesService } from "../../services";
 import { RESOURCE_CATEGORIES } from "../../utils/dropdownOptions";
 import { useAuth } from "../../contexts/AuthContext";
@@ -137,6 +136,11 @@ export default function Resources() {
   };
 
   const handleDownload = async (resourceId) => {
+    if (!isLoggedIn()) {
+      navigate('/login');
+      return;
+    }
+    
     try {
       const downloadUrl = await resourcesService.downloadResource(resourceId);
       window.open(downloadUrl, '_blank');
@@ -294,8 +298,6 @@ export default function Resources() {
         </div>
       </div>
 
-      {/* Protected Overlay - Show when not logged in */}
-      {!isLoggedIn() && <ProtectedOverlay message="Create an account or sign in to access our career resources" />}
     </div>
   );
 }

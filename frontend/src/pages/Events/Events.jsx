@@ -12,7 +12,6 @@ import EmptyState from "../../components/Ui/EmptyState";
 import { eventsService } from "../../services";
 import { useAuth } from "../../contexts/AuthContext";
 import * as eventActionsService from "../../services/Events/eventActions";
-import AuthModal from "../../components/AuthModal/AuthModal"
 
 
 export default function Events() {
@@ -27,12 +26,11 @@ export default function Events() {
   const [searchQuery, setSearchQuery] = useState('');
   const [totalEvents, setTotalEvents] = useState(0);
   const [categories, setCategories] = useState([]);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const eventsPerPage = 6;
 
   const toggleFavorite = async (eventId) => {
     if (!isLoggedIn()) {
-      setShowAuthModal(true);
+      navigate('/login');
       return;
     }
 
@@ -254,11 +252,6 @@ export default function Events() {
         )}
       </div>
 
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
     </div>
   );
 }

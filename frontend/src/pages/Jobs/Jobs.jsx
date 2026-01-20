@@ -11,7 +11,6 @@ import EmptyState from "../../components/Ui/EmptyState";
 import { jobsService } from "../../services";
 import { useAuth } from "../../contexts/AuthContext";
 import * as jobActionsService from "../../services/Jobs/jobActions";
-import AuthModal from "../../components/AuthModal/AuthModal";
 
 export default function Jobs() {
   const { user, isLoggedIn } = useAuth();
@@ -24,7 +23,6 @@ export default function Jobs() {
   const [searchFilters, setSearchFilters] = useState({ query: '', location: '' });
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [totalJobs, setTotalJobs] = useState(0);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const jobsPerPage = 9;
 
   const [jobTypes, setJobTypes] = useState([
@@ -59,7 +57,7 @@ export default function Jobs() {
 
   const toggleFavorite = async (jobId) => {
     if (!isLoggedIn()) {
-      setShowAuthModal(true);
+      navigate('/login');
       return;
     }
 
@@ -362,11 +360,6 @@ export default function Jobs() {
         </div>
       </div>
 
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
     </div>
   );
 }

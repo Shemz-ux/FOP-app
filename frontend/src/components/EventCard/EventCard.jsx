@@ -115,10 +115,10 @@ export default function EventCard({
               </>
             )}
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground text-xs">
+          {/* <div className="flex items-center gap-2 text-muted-foreground text-xs">
             <Users className="w-3.5 h-3.5" />
             <span>{attendees || 0}</span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

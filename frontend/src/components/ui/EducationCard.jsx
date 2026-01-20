@@ -90,7 +90,7 @@ export default function EducationCard({ educationData, onSave }) {
             <input
               type="text"
               value={localEducationData.institution_name || ''}
-              onChange={(e) => setLocalEducationData({ ...educationData, institution_name: e.target.value })}
+              onChange={(e) => setLocalEducationData({ ...localEducationData, institution_name: e.target.value })}
               placeholder={['gcse', 'a_level', 'btec'].includes(localEducationData.education_level) ? 'e.g. Sixth Form College' : 'e.g. University of London'}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
@@ -104,7 +104,7 @@ export default function EducationCard({ educationData, onSave }) {
                 <input
                   type="text"
                   value={localEducationData.subject_one || ''}
-                  onChange={(e) => setLocalEducationData({ ...educationData, subject_one: e.target.value })}
+                  onChange={(e) => setLocalEducationData({ ...localEducationData, subject_one: e.target.value })}
                   placeholder="e.g. Mathematics"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                   required
@@ -115,7 +115,7 @@ export default function EducationCard({ educationData, onSave }) {
                 <input
                   type="text"
                   value={localEducationData.subject_two || ''}
-                  onChange={(e) => setLocalEducationData({ ...educationData, subject_two: e.target.value })}
+                  onChange={(e) => setLocalEducationData({ ...localEducationData, subject_two: e.target.value })}
                   placeholder="e.g. Physics"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -125,7 +125,7 @@ export default function EducationCard({ educationData, onSave }) {
                 <input
                   type="text"
                   value={localEducationData.subject_three || ''}
-                  onChange={(e) => setLocalEducationData({ ...educationData, subject_three: e.target.value })}
+                  onChange={(e) => setLocalEducationData({ ...localEducationData, subject_three: e.target.value })}
                   placeholder="e.g. Computer Science"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -135,7 +135,7 @@ export default function EducationCard({ educationData, onSave }) {
                 <input
                   type="text"
                   value={localEducationData.subject_four || ''}
-                  onChange={(e) => setLocalEducationData({ ...educationData, subject_four: e.target.value })}
+                  onChange={(e) => setLocalEducationData({ ...localEducationData, subject_four: e.target.value })}
                   placeholder="e.g. Further Mathematics"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -149,7 +149,7 @@ export default function EducationCard({ educationData, onSave }) {
                   <label className="text-sm text-muted-foreground mb-1 block text-left">Year</label>
                   <CustomSelect
                     value={localEducationData.uni_year || ''}
-                    onChange={(e) => setLocalEducationData({ ...educationData, uni_year: e.target.value })}
+                    onChange={(e) => setLocalEducationData({ ...localEducationData, uni_year: e.target.value })}
                     placeholder="Select year"
                     options={[
                       { value: "foundation", label: "Foundation" },
@@ -173,7 +173,7 @@ export default function EducationCard({ educationData, onSave }) {
                   <label className="text-sm text-muted-foreground mb-1 block text-left">Degree</label>
                   <CustomSelect
                     value={localEducationData.degree_type || ''}
-                    onChange={(e) => setLocalEducationData({ ...educationData, degree_type: e.target.value })}
+                    onChange={(e) => setLocalEducationData({ ...localEducationData, degree_type: e.target.value })}
                     placeholder="Select degree"
                     options={[
                       { value: "ba", label: "BA" },
@@ -199,7 +199,7 @@ export default function EducationCard({ educationData, onSave }) {
                 <input
                   type="text"
                   value={localEducationData.area_of_study || ''}
-                  onChange={(e) => setLocalEducationData({ ...educationData, area_of_study: e.target.value })}
+                  onChange={(e) => setLocalEducationData({ ...localEducationData, area_of_study: e.target.value })}
                   placeholder="e.g. Computer Science"
                   className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
                 />
@@ -212,7 +212,7 @@ export default function EducationCard({ educationData, onSave }) {
             <input
               type="text"
               value={localEducationData.role_interest_option_one || ''}
-              onChange={(e) => setLocalEducationData({ ...educationData, role_interest_option_one: e.target.value })}
+              onChange={(e) => setLocalEducationData({ ...localEducationData, role_interest_option_one: e.target.value })}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
@@ -222,7 +222,7 @@ export default function EducationCard({ educationData, onSave }) {
             <input
               type="text"
               value={localEducationData.role_interest_option_two || ''}
-              onChange={(e) => setLocalEducationData({ ...educationData, role_interest_option_two: e.target.value })}
+              onChange={(e) => setLocalEducationData({ ...localEducationData, role_interest_option_two: e.target.value })}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>
@@ -232,7 +232,7 @@ export default function EducationCard({ educationData, onSave }) {
             <input
               type="text"
               value={localEducationData.society || ''}
-              onChange={(e) => setLocalEducationData({ ...educationData, society: e.target.value })}
+              onChange={(e) => setLocalEducationData({ ...localEducationData, society: e.target.value })}
               className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
             />
           </div>

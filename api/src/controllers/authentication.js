@@ -82,9 +82,11 @@ async function createToken(req, res) {
     if (userType === 'jobseeker') {
       userName = `${user.first_name} ${user.last_name}`;
     } else if (userType === 'society') {
-      userName = user.society_name;
-    } else if (userType === 'admin') {
       userName = user.name;
+    } else if (userType === 'admin') {
+      console.log('Auth - Admin user data:', { first_name: user.first_name, last_name: user.last_name });
+      userName = `${user.first_name} ${user.last_name}`;
+      console.log('Auth - Admin userName constructed:', userName);
     }
     
     const response = { 
@@ -94,6 +96,13 @@ async function createToken(req, res) {
       name: userName,
       message: "OK" 
     };
+    
+    // Include first_name for admin users
+    if (userType === 'admin') {
+      response.first_name = user.first_name;
+    }
+    
+    console.log('Auth - Response being sent:', response);
 
     // Include role in response for admin users
     if (userRole) {

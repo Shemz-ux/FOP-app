@@ -27,6 +27,14 @@ export const getCurrentUser = () => {
   const role = localStorage.getItem('role');
   const name = localStorage.getItem('userName');
   
+  console.log('authService - getCurrentUser - Retrieved from localStorage:', { 
+    hasToken: !!token, 
+    userType, 
+    userId, 
+    role, 
+    name 
+  });
+  
   if (token && userType && userId) {
     return {
       token,
@@ -42,15 +50,16 @@ export const getCurrentUser = () => {
 
 // Save user to local storage
 export const saveUser = (token, userType, userId, role = null, name = null) => {
+  console.log('authService - saveUser called with:', { token: '***', userType, userId, role, name });
   localStorage.setItem('token', token);
   localStorage.setItem('userType', userType);
   localStorage.setItem('userId', userId);
   if (role) {
     localStorage.setItem('role', role);
   }
-  if (name) {
-    localStorage.setItem('userName', name);
-  }
+  // Always set userName, even if null/empty
+  localStorage.setItem('userName', name || '');
+  console.log('authService - userName saved to localStorage:', localStorage.getItem('userName'));
 };
 
 // Check if user is authenticated

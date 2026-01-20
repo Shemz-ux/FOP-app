@@ -28,8 +28,17 @@ export default function AdminDashboard() {
   const [recentEvents, setRecentEvents] = useState([]);
 
   useEffect(() => {
+    console.log('AdminDashboard - User object:', user);
+    console.log('AdminDashboard - User name:', user?.name);
+    console.log('AdminDashboard - User type:', user?.userType);
+  }, [user]);
+
+  useEffect(() => {
     const fetchDashboardData = async () => {
-      if (!user) return;
+      if (!user) {
+        console.log('AdminDashboard - No user found, skipping data fetch');
+        return;
+      }
       
       try {
         setLoading(true);
@@ -72,19 +81,21 @@ export default function AdminDashboard() {
     fetchDashboardData();
   }, [user]);
 
-  const StatCard = ({ icon: Icon, title, value, subtitle, color }) => (
-    <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground mb-1">{title}</p>
-          <h3 className="text-3xl mb-1 text-foreground">{value}</h3>
-          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
-        </div>
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
-          <Icon className="w-6 h-6 text-white" />
+  const StatCard = ({ icon: Icon, title, value, subtitle, color, link }) => (
+    <Link to={link} className="block group">
+      <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary hover:scale-105 transition-all duration-200 cursor-pointer">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1 group-hover:text-primary transition-colors">{title}</p>
+            <h3 className="text-3xl mb-1 text-foreground">{value}</h3>
+            {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+          </div>
+          <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+            <Icon className="w-6 h-6 text-white" />
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   if (loading) {
@@ -104,7 +115,7 @@ export default function AdminDashboard() {
         <div className="space-y-8 text-left">
           <div>
             <h1 className="text-3xl mb-2 text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back {user?.name || 'Admin'}! Here's what's happening today.</p>
+            <p className="text-muted-foreground">Welcome back {user?.first_name || user?.name || 'Admin'}! Here's what's happening today...</p>
           </div>
 
       {/* Stats Grid */}
@@ -115,6 +126,7 @@ export default function AdminDashboard() {
           value={stats.totalJobs}
           subtitle={`${stats.activeJobs} active`}
           color="bg-blue-500"
+          link="/admin/jobs"
         />
         <StatCard
           icon={Calendar}
@@ -122,6 +134,7 @@ export default function AdminDashboard() {
           value={stats.totalEvents}
           subtitle={`${stats.upcomingEvents} upcoming`}
           color="bg-purple-500"
+          link="/admin/events"
         />
         <StatCard
           icon={Users}
@@ -129,6 +142,7 @@ export default function AdminDashboard() {
           value={stats.totalJobseekers}
           subtitle="Registered users"
           color="bg-green-500"
+          link="/admin/jobseekers"
         />
         <StatCard
           icon={Building2}
@@ -136,6 +150,7 @@ export default function AdminDashboard() {
           value={stats.totalSocieties}
           subtitle="Active societies"
           color="bg-orange-500"
+          link="/admin/societies"
         />
       </div>
 
@@ -202,7 +217,7 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">{job.company}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{job.applicants || 0} applicants</p>
+                  <p className="text-sm text-primary">{job.applicant_count || 0} applicants</p>
                 </div>
               </div>
             ))}
@@ -227,7 +242,7 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">{event.organiser || 'N/A'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{event.attendees || 0} attendees</p>
+                  <p className="text-sm text-primary">{event.attendee_count || 0} attendees</p>
                 </div>
               </div>
             ))}

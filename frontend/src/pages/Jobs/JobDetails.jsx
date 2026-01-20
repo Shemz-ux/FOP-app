@@ -6,7 +6,6 @@ import CompanyLogo from '../../components/Ui/CompanyLogo';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
-import AuthModal from '../../components/AuthModal/AuthModal';
 import { jobsService, jobActionsService } from '../../services';
 import { generateJobTags } from '../../utils/tagGenerator';
 import { formatTimeAgo } from '../../utils/timeFormatter';
@@ -22,7 +21,6 @@ export default function JobDetails() {
   const [isSaved, setIsSaved] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [savingJob, setSavingJob] = useState(false);
 
   useEffect(() => {
@@ -108,7 +106,7 @@ export default function JobDetails() {
 
   const handleSave = async () => {
     if (!isLoggedIn()) {
-      setShowAuthModal(true);
+      navigate('/login');
       return;
     }
 
@@ -130,7 +128,7 @@ export default function JobDetails() {
 
   const handleApply = async () => {
     if (!isLoggedIn()) {
-      setShowAuthModal(true);
+      navigate('/login');
       return;
     }
 
@@ -425,12 +423,6 @@ export default function JobDetails() {
           </div>
         </div>
       </div>
-
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
 
       <style>{`
         .job-description-content ul {

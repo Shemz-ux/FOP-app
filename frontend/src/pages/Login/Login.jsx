@@ -2,18 +2,46 @@ import {useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import ForgotPassword from "../../components/ui/ForgotPassword";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // In a real app, this would authenticate the user
-    console.log('Login:', { loginEmail, loginPassword });
-    navigate('/');
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await login(loginEmail, loginPassword);
+      
+      if (result.success) {
+        // Redirect based on user type
+        const userType = result.data.user_type;
+        if (userType === 'admin') {
+          navigate('/admin');
+        } else if (userType === 'jobseeker') {
+          navigate('/profile');
+        } else if (userType === 'society') {
+          navigate('/profile');
+        } else {
+          navigate('/');
+        }
+      } else {
+        setError(result.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +59,13 @@ export default function Login() {
         {/* Auth Card */}
         <div className="bg-card border border-border rounded-2xl p-8 text-left">
           <h2 className="text-2xl font-semibold mb-6 text-foreground text-center">Log In</h2>
+          
+          {error && (
+            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleLogin} className="space-y-4">
                 <div>
                   <label htmlFor="login-email" className="block text-sm mb-2 text-foreground">
@@ -80,9 +115,10 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
+                  disabled={loading}
+                  className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  Log In
+                  {loading ? 'Signing in...' : 'Log In'}
                 </button>
 
                 {/* <div className="relative my-6">

@@ -6,7 +6,6 @@ import CompanyLogo from '../../components/Ui/CompanyLogo';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
-import AuthModal from '../../components/AuthModal/AuthModal';
 import { eventsService, eventActionsService } from '../../services';
 import { generateEventTags } from '../../utils/tagGenerator';
 import { formatTimeAgo } from '../../utils/timeFormatter';
@@ -22,7 +21,6 @@ export default function EventDetails() {
   const [isSaved, setIsSaved] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [savingEvent, setSavingEvent] = useState(false);
 
   // Fetch event details
@@ -114,7 +112,7 @@ export default function EventDetails() {
 
   const handleSave = async () => {
     if (!isLoggedIn()) {
-      setShowAuthModal(true);
+      navigate('/login');
       return;
     }
 
@@ -136,7 +134,7 @@ export default function EventDetails() {
 
   const handleRegister = async () => {
     if (!isLoggedIn()) {
-      setShowAuthModal(true);
+      navigate('/login');
       return;
     }
 
@@ -417,11 +415,6 @@ export default function EventDetails() {
         }
       `}</style>
 
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
     </div>
   );
 }

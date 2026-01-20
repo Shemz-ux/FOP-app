@@ -50,25 +50,24 @@ export default function Settings() {
       try {
         setLoading(true);
         const profile = await profileService.getUserProfile(user.userId, user.userType);
-        console.log('Settings - User type:', user.userType);
         
         if (isJobseeker() && profile.jobseeker) {
           setPersonalInfo({
-            firstName: profile.jobseeker.first_name || "",
-            lastName: profile.jobseeker.last_name || "",
-            email: profile.jobseeker.email || "",
-            phone: profile.jobseeker.phone_number || "",
-            gender: profile.jobseeker.gender || "",
-            ethnicity: profile.jobseeker.ethnicity || "",
-            school_meal_eligible: profile.jobseeker.school_meal_eligible || false,
-            first_gen_to_go_uni: profile.jobseeker.first_gen_to_go_uni || false,
+            firstName: profile.jobseeker.first_name ?? "",
+            lastName: profile.jobseeker.last_name ?? "",
+            email: profile.jobseeker.email ?? "",
+            phone: profile.jobseeker.phone_number ?? "",
+            gender: profile.jobseeker.gender ?? "",
+            ethnicity: profile.jobseeker.ethnicity ?? "",
+            school_meal_eligible: profile.jobseeker.school_meal_eligible ?? false,
+            first_gen_to_go_uni: profile.jobseeker.first_gen_to_go_uni ?? false,
           });
         } else if (profile.society) {
           setPersonalInfo({
-            firstName: profile.society.society_name || "",
+            firstName: profile.society.name ?? profile.society.society_name ?? "",
             lastName: "",
-            email: profile.society.email || "",
-            phone: profile.society.phone_number || "",
+            email: profile.society.email ?? "",
+            phone: profile.society.phone_number ?? "",
             gender: "",
             ethnicity: "",
             school_meal_eligible: false,
@@ -76,12 +75,12 @@ export default function Settings() {
           });
         } else if (profile.admin_user) {
           setPersonalInfo({
-            firstName: profile.admin_user.first_name || "",
-            lastName: profile.admin_user.last_name || "",
-            email: profile.admin_user.email || "",
-            phone: profile.admin_user.phone_number || "",
-            gender: profile.admin_user.gender || "",
-            ethnicity: profile.admin_user.ethnicity || "",
+            firstName: profile.admin_user.first_name ?? "",
+            lastName: profile.admin_user.last_name ?? "",
+            email: profile.admin_user.email ?? "",
+            phone: profile.admin_user.phone_number ?? "",
+            gender: profile.admin_user.gender ?? "",
+            ethnicity: profile.admin_user.ethnicity ?? "",
             school_meal_eligible: false,
             first_gen_to_go_uni: false,
           });
@@ -101,13 +100,18 @@ export default function Settings() {
     
     try {
       const updateData = {
-        first_name: personalInfo.firstName,
-        last_name: personalInfo.lastName,
         email: personalInfo.email,
         phone_number: personalInfo.phone,
-        gender: personalInfo.gender,
-        ethnicity: personalInfo.ethnicity,
       };
+      
+      if (user.userType === 'society') {
+        updateData.name = personalInfo.firstName;
+      } else {
+        updateData.first_name = personalInfo.firstName;
+        updateData.last_name = personalInfo.lastName;
+        updateData.gender = personalInfo.gender;
+        updateData.ethnicity = personalInfo.ethnicity;
+      }
       
       if (isJobseeker()) {
         updateData.school_meal_eligible = personalInfo.school_meal_eligible;
@@ -186,10 +190,10 @@ export default function Settings() {
           <h2 className="text-foreground mb-6">Personal Information</h2>
           
           <form onSubmit={handleSave} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {user.userType === 'society' ? (
               <div>
                 <label htmlFor="firstName" className="block text-sm mb-2 text-foreground">
-                  First Name
+                  Society Name
                 </label>
                 <input
                   id="firstName"
@@ -200,21 +204,37 @@ export default function Settings() {
                   required
                 />
               </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm mb-2 text-foreground">
+                    First Name
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    value={personalInfo.firstName}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, firstName: e.target.value })}
+                    className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="lastName" className="block text-sm mb-2 text-foreground">
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
-                  type="text"
-                  value={personalInfo.lastName}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, lastName: e.target.value })}
-                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  required
-                />
+                <div>
+                  <label htmlFor="lastName" className="block text-sm mb-2 text-foreground">
+                    Last Name
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={personalInfo.lastName}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, lastName: e.target.value })}
+                    className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label htmlFor="email" className="block text-sm mb-2 text-foreground">
@@ -230,60 +250,74 @@ export default function Settings() {
               />
             </div>
 
-            <div>
-              <label htmlFor="phone" className="block text-sm mb-2 text-foreground">
-                Phone Number
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                value={personalInfo.phone}
-                onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {user.userType !== 'society' && (
               <div>
-                <label htmlFor="gender" className="block text-sm mb-2 text-foreground">
-                  Gender
+                <label htmlFor="phone" className="block text-sm mb-2 text-foreground">
+                  Phone Number
                 </label>
-                <CustomSelect
-                  id="gender"
-                  value={personalInfo.gender}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, gender: e.target.value })}
-                  placeholder="Select gender"
-                  options={[
-                    { value: "prefer_not_to_say", label: "Prefer not to say" },
-                    { value: "male", label: "Male" },
-                    { value: "female", label: "Female" },
-                    { value: "non_binary", label: "Non-binary" },
-                    { value: "other", label: "Other" }
-                  ]}
+                <input
+                  id="phone"
+                  type="tel"
+                  value={personalInfo.phone}
+                  onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
+                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
+            )}
 
-              <div>
-                <label htmlFor="ethnicity" className="block text-sm mb-2 text-foreground">
-                  Ethnicity
-                </label>
-                <CustomSelect
-                  id="ethnicity"
-                  value={personalInfo.ethnicity}
-                  onChange={(e) => setPersonalInfo({ ...personalInfo, ethnicity: e.target.value })}
-                  placeholder="Select ethnicity"
-                  options={[
-                    { value: "prefer_not_to_say", label: "Prefer not to say" },
-                    { value: "asian", label: "Asian" },
-                    { value: "black", label: "Black / African" },
-                    { value: "hispanic", label: "Hispanic / Latino" },
-                    { value: "white", label: "White / Caucasian" },
-                    { value: "mixed", label: "Mixed / Multiple" },
-                    { value: "other", label: "Other" }
-                  ]}
-                />
+            {user.userType !== 'society' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="gender" className="block text-sm mb-2 text-foreground">
+                    Gender
+                  </label>
+                  <CustomSelect
+                    id="gender"
+                    value={personalInfo.gender}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, gender: e.target.value })}
+                    placeholder="Select gender"
+                    options={[
+                      { value: "prefer_not_to_say", label: "Prefer not to say" },
+                      { value: "male", label: "Male" },
+                      { value: "female", label: "Female" },
+                      { value: "non_binary", label: "Non-binary" },
+                      { value: "other", label: "Other" }
+                    ]}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="ethnicity" className="block text-sm mb-2 text-foreground">
+                    Ethnicity
+                  </label>
+                  <CustomSelect
+                    id="ethnicity"
+                    value={personalInfo.ethnicity}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, ethnicity: e.target.value })}
+                    placeholder="Select ethnicity"
+                    options={[
+                        { value: "White British", label: "White British" },
+                        { value: "White Irish", label: "White Irish" },
+                        { value: "White Other", label: "White Other" },
+                        { value: "Mixed White and Black Caribbean", label: "Mixed White and Black Caribbean" },
+                        { value: "Mixed White and Black African", label: "Mixed White and Black African" },
+                        { value: "Mixed White and Asian", label: "Mixed White and Asian" },
+                        { value: "Mixed Other", label: "Mixed Other" },
+                        { value: "Asian or Asian British Indian", label: "Asian or Asian British Indian" },
+                        { value: "Asian or Asian British Pakistani", label: "Asian or Asian British Pakistani" },
+                        { value: "Asian or Asian British Bangladeshi", label: "Asian or Asian British Bangladeshi" },
+                        { value: "Asian Other", label: "Asian Other" },
+                        { value: "Black or Black British Caribbean", label: "Black or Black British Caribbean" },
+                        { value: "Black or Black British African", label: "Black or Black British African" },
+                        { value: "Black Other", label: "Black Other" },
+                        { value: "Chinese", label: "Chinese" },
+                        { value: "Other", label: "Other" },
+                        { value: "Prefer not to say", label: "Prefer not to say" }
+                    ]}
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             {isJobseeker() && (
               <div className="space-y-4 pt-4 border-t border-border">
