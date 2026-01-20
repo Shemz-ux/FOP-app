@@ -105,12 +105,12 @@ export default function JobseekersManagement() {
               <h1 className="text-3xl mb-2 text-foreground">Jobseeker Management</h1>
               <p className="text-muted-foreground">View and manage all registered jobseekers</p>
             </div>
-            <button
+            {/* <button
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
             >
               <Download className="w-4 h-4" />
               Export Data
-            </button>
+            </button> */}
           </div>
 
           {/* Search and Filters */}
@@ -120,7 +120,7 @@ export default function JobseekersManagement() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search by name, email, or university..."
+              placeholder="Search by name, email, or institution..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -183,7 +183,7 @@ export default function JobseekersManagement() {
               {filterUniversity !== 'all' && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-sm">
                   <MapPin className="w-3 h-3 text-teal-500" />
-                  <span className="text-foreground">University: <span className="font-medium">{filterUniversity}</span></span>
+                  <span className="text-foreground">Institution: <span className="font-medium">{filterUniversity}</span></span>
                   <button onClick={() => setFilterUniversity('all')} className="text-teal-500 hover:text-teal-500/80">
                     <X className="w-3 h-3" />
                   </button>
@@ -245,13 +245,13 @@ export default function JobseekersManagement() {
             </div>
 
             <div>
-              <label className="block text-sm mb-2 text-foreground">University</label>
+              <label className="block text-sm mb-2 text-foreground">Institution</label>
               <AdminSelect
                 value={filterUniversity}
                 onValueChange={setFilterUniversity}
-                placeholder="All Universities"
+                placeholder="All Institutions"
                 options={[
-                  { value: 'all', label: 'All Universities' },
+                  { value: 'all', label: 'All Institutions' },
                   ...universities.map(uni => ({ value: uni, label: uni }))
                 ]}
               />
@@ -299,7 +299,7 @@ export default function JobseekersManagement() {
               <p className="text-2xl text-foreground">{filteredJobseekers.length}</p>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
-              <p className="text-sm text-muted-foreground mb-1">Universities</p>
+              <p className="text-sm text-muted-foreground mb-1">Institutions</p>
               <p className="text-2xl text-foreground">{universities.length}</p>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
@@ -318,7 +318,7 @@ export default function JobseekersManagement() {
                   <tr>
                     <th className="text-left px-6 py-4 text-sm text-foreground">Name</th>
                     <th className="text-left px-6 py-4 text-sm text-foreground">Email</th>
-                    <th className="text-left px-6 py-4 text-sm text-foreground">University</th>
+                    <th className="text-left px-6 py-4 text-sm text-foreground">Institution</th>
                     <th className="text-left px-6 py-4 text-sm text-foreground">Free School Meal</th>
                     <th className="text-left px-6 py-4 text-sm text-foreground">First Gen</th>
                     <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>
