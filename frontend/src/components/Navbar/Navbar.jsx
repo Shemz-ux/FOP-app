@@ -76,7 +76,7 @@ export default function Navbar({
             </Link>
 
             {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-8 ml-5">
               <Link
                 to="/jobs"
                 className={`transition-colors ${
@@ -85,7 +85,7 @@ export default function Navbar({
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                Find Jobs
+                Jobs
               </Link>
               <Link
                 to="/events"
@@ -206,13 +206,13 @@ export default function Navbar({
               <Link
                 to="/jobs"
                 onClick={closeMobileMenu}
-                className={`block px-4 py-3 rounded-lg transition-colors ${
+                className={`block px-4 py-3 gap-6 rounded-lg transition-colors ${
                   isActive('/jobs')
                     ? 'bg-primary text-primary-foreground'
                     : 'text-foreground hover:bg-secondary'
                 }`}
               >
-                Find Jobs
+                Jobs
               </Link>
               <Link
                 to="/events"

@@ -59,7 +59,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link to="/jobs" className="text-muted-foreground hover:text-primary text-sm transition-colors">
-                  Find Jobs
+                  Jobs
                 </Link>
               </li>
               <li>
