@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Briefcase, Calendar } from 'lucide-react';
+import { ArrowLeft, Briefcase, Calendar, FileText, Download } from 'lucide-react';
 import { CVViewCard } from './CVViewCard';
 import { apiGet } from '../../services/api';
 
@@ -161,54 +161,89 @@ export function ProfileView({ profile, onClose, type = 'applicant' }) {
                     </div>
                   </div>
                 )}
+
+                {/* CV Section */}
+                <div className="md:col-span-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">CV / Resume</p>
+                  {profile.cvUrl ? (
+                    <div className="p-4 bg-secondary/30 rounded-xl border border-border">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-foreground text-sm mb-1 truncate">
+                              {profile.cvUrl.split('/').pop().replace(/-/g, ' ')}
+                            </div>
+                            <div className="text-muted-foreground text-xs">
+                              Uploaded CV
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-border flex gap-2">
+                        <a 
+                          href={profile.cvUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-center"
+                        >
+                          View
+                        </a>
+                        <a 
+                          href={profile.cvUrl} 
+                          download
+                          className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-secondary/30 rounded-xl border border-border">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-muted/20 text-muted-foreground flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">No CV uploaded</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Additional Info Grid - Status & CV */}
-          {((type === 'applicant' || type === 'attendee') || profile.cvUrl) && (
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Application/Registration Status */}
-              {(type === 'applicant' || type === 'attendee') && (
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <h2 className="text-xl font-semibold mb-4 text-foreground border-b border-border pb-2">
-                    {type === 'applicant' ? 'Application Status' : 'Registration Status'}
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                        {type === 'applicant' ? 'Applied Date' : 'Registered Date'}
-                      </p>
-                      <p className="text-sm text-foreground">{profile.appliedDate || profile.registeredDate}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Status</p>
-                      <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-medium ${
-                        profile.status === 'shortlisted' || profile.status === 'confirmed'
-                          ? 'bg-green-500/20 text-green-500'
-                          : profile.status === 'reviewed' || profile.status === 'waitlist'
-                          ? 'bg-blue-500/20 text-blue-500'
-                          : 'bg-yellow-500/20 text-yellow-500'
-                      }`}>
-                        {profile.status}
-                      </span>
-                    </div>
-                  </div>
+          {/* Additional Info Grid - Status */}
+          {(type === 'applicant' || type === 'attendee') && (
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <h2 className="text-xl font-semibold mb-4 text-foreground border-b border-border pb-2">
+                {type === 'applicant' ? 'Application Status' : 'Registration Status'}
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                    {type === 'applicant' ? 'Applied Date' : 'Registered Date'}
+                  </p>
+                  <p className="text-sm text-foreground">{profile.appliedDate || profile.registeredDate}</p>
                 </div>
-              )}
-
-              {/* CV Section */}
-              {profile.cvUrl && (
-                <div className="shadow-sm">
-                  <CVViewCard 
-                    cvData={{
-                      name: profile.cvUrl.split('/').pop().replace(/-/g, ' '),
-                      size: '245 KB',
-                      uploadedDate: type === 'applicant' ? profile.appliedDate : type === 'attendee' ? profile.registeredDate : 'January 2, 2026'
-                    }}
-                  />
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Status</p>
+                  <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-medium ${
+                    profile.status === 'shortlisted' || profile.status === 'confirmed'
+                      ? 'bg-green-500/20 text-green-500'
+                      : profile.status === 'reviewed' || profile.status === 'waitlist'
+                      ? 'bg-blue-500/20 text-blue-500'
+                      : 'bg-yellow-500/20 text-yellow-500'
+                  }`}>
+                    {profile.status}
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           )}
 
