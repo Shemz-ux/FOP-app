@@ -6,7 +6,7 @@ import { formatTimeAgo } from "../../utils/timeFormatter";
 
 export default function EventCard({
   title,
-  organizer,
+  organiser,
   date,
   time,
   location,
@@ -25,34 +25,36 @@ export default function EventCard({
 
   const cardContent = (
     <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col min-h-[300px] max-h-[600px] shadow-sm overflow-hidden">
-      {/* Event Image */}
-      {image && (
-        <div className="relative h-48">
+      {/* Event Image or Default Background */}
+      <div className="relative h-48">
+        {image ? (
           <img
             src={image}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] group-hover:from-[#1e293b] group-hover:to-[#475569] transition-all duration-300" />
+        )}
 
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onFavoriteClick?.();
-            }}
-            className="absolute top-4 right-4 p-2 bg-card/90 backdrop-blur-sm hover:bg-card rounded-lg transition-colors"
-            aria-label={isFavorite ? "Remove from saved" : "Save event"}
-          >
-            <Bookmark
-              className={`w-5 h-5 transition-colors ${
-                isFavorite
-                  ? "fill-primary stroke-primary"
-                  : "stroke-muted-foreground"
-              }`}
-            />
-          </button>
-        </div>
-      )}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onFavoriteClick?.();
+          }}
+          className="absolute top-4 right-4 p-2 bg-card/90 backdrop-blur-sm hover:bg-card rounded-lg transition-colors"
+          aria-label={isFavorite ? "Remove from saved" : "Save event"}
+        >
+          <Bookmark
+            className={`w-5 h-5 transition-colors ${
+              isFavorite
+                ? "fill-primary stroke-primary"
+                : "stroke-muted-foreground"
+            }`}
+          />
+        </button>
+      </div>
 
       <div className="p-6 flex-1 flex flex-col">
         {/* Header */}
@@ -61,7 +63,7 @@ export default function EventCard({
             {title}
           </h3>
           <p className="text-muted-foreground text-sm text-left truncate overflow-hidden">
-            <span className="font-medium">{organizer}</span>
+            <span className="font-medium">{organiser}</span>
           </p>
         </div>
 
@@ -80,7 +82,8 @@ export default function EventCard({
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2 text-left overflow-hidden">
           {description?.split('\n').filter(line => {
             const trimmed = line.trim();
-            return trimmed && !trimmed.match(/^About the Event$/i);
+            const lower = trimmed.toLowerCase();
+            return trimmed && !lower.startsWith('about the event') && !trimmed.endsWith(':');
           }).slice(0, 2).join(' ') || description}
         </p>
 

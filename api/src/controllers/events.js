@@ -2,9 +2,14 @@ import { createEvent, fetchEvents, fetchEventById, updateEvent, removeEvent, fet
 
 export const postEvent = (req, res, next) => {
     const newEvent = req.body;
+    console.log('📝 Creating event with data:', JSON.stringify(newEvent, null, 2));
     createEvent(newEvent).then((event) => {
+        console.log('✅ Event created successfully:', event.event_id);
         res.status(201).send({newEvent: event});
     }).catch((err) => {
+        console.error('❌ Error creating event:', err);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
         next(err);
     });
 };

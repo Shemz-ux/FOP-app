@@ -132,21 +132,21 @@ export const EVENT_INDUSTRIES = [
 ];
 
 export const EVENT_TYPES = [
-  { value: 'career_fair', label: 'Career Fair', variant: 'blue' },
-  { value: 'networking', label: 'Networking', variant: 'purple' },
-  { value: 'workshop', label: 'Workshop', variant: 'green' },
-  { value: 'panel_discussion', label: 'Panel Discussion', variant: 'orange' },
-  { value: 'seminar', label: 'Seminar', variant: 'pink' },
+  { value: 'Career Fair', label: 'Career Fair', variant: 'blue' },
+  { value: 'Networking', label: 'Networking', variant: 'purple' },
+  { value: 'Workshop', label: 'Workshop', variant: 'green' },
+  { value: 'Panel Discussion', label: 'Panel Discussion', variant: 'orange' },
+  { value: 'Seminar', label: 'Seminar', variant: 'pink' },
   { value: 'conference', label: 'Conference', variant: 'red' },
-  { value: 'webinar', label: 'Webinar', variant: 'cyan' },
-  { value: 'meetup', label: 'Meetup', variant: 'teal' },
+  { value: 'Webinar', label: 'Webinar', variant: 'cyan' },
+  { value: 'Meetup', label: 'Meetup', variant: 'teal' },
   { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 export const EVENT_LOCATION_TYPES = [
-  { value: 'online', label: 'Online', variant: 'emerald' },
-  { value: 'in_person', label: 'In Person', variant: 'amber' },
-  { value: 'hybrid', label: 'Hybrid', variant: 'violet' },
+  { value: 'Online', label: 'Online', variant: 'emerald' },
+  { value: 'In_person', label: 'In Person', variant: 'amber' },
+  { value: 'Hybrid', label: 'Hybrid', variant: 'violet' },
   { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 

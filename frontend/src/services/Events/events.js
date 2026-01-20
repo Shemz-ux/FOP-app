@@ -2,7 +2,7 @@ export const mockEvents = [
   {
     id: 'tech-career-fair-2026',
     title: 'Tech Career Fair 2026',
-    organizer: 'TechConnect',
+    organiser: 'TechConnect',
     date: 'January 15, 2026',
     time: '10:00 AM - 4:00 PM',
     location: 'San Francisco Convention Center',
@@ -18,7 +18,7 @@ export const mockEvents = [
   {
     id: 'ux-design-workshop',
     title: 'UX Design Workshop',
-    organizer: 'Design Masters Inc',
+    organiser: 'Design Masters Inc',
     date: 'January 20, 2026',
     time: '2:00 PM - 5:00 PM',
     location: 'Virtual Event',
@@ -34,7 +34,7 @@ export const mockEvents = [
   {
     id: 'startup-networking-night',
     title: 'Startup Networking Night',
-    organizer: 'StartupHub',
+    organiser: 'StartupHub',
     date: 'January 25, 2026',
     time: '6:00 PM - 9:00 PM',
     location: 'Downtown Tech Hub',
@@ -49,7 +49,7 @@ export const mockEvents = [
   },
   {
     title: 'Data Science Summit',
-    organizer: 'DataPro Association',
+    organiser: 'DataPro Association',
     date: 'February 1, 2026',
     time: '9:00 AM - 6:00 PM',
     location: 'Boston Convention Center',
@@ -64,7 +64,7 @@ export const mockEvents = [
   },
   {
     title: 'Product Management Bootcamp',
-    organizer: 'PM Academy',
+    organiser: 'PM Academy',
     date: 'February 5, 2026',
     time: '1:00 PM - 4:00 PM',
     location: 'Virtual Event',
@@ -79,7 +79,7 @@ export const mockEvents = [
   },
   {
     title: 'Women in Tech Panel',
-    organizer: 'WomenTech Global',
+    organiser: 'WomenTech Global',
     date: 'February 10, 2026',
     time: '7:00 PM - 9:00 PM',
     location: 'Tech Campus Auditorium',
@@ -98,7 +98,7 @@ export const mockEventDetails = [
   {
     id: 'tech-career-fair-2026',
     title: 'Tech Career Fair 2026',
-    organizer: 'TechConnect',
+    organiser: 'TechConnect',
     date: 'January 15, 2026',
     time: '10:00 AM - 4:00 PM',
     location: 'San Francisco Convention Center',
@@ -156,7 +156,7 @@ export const mockEventDetails = [
   {
     id: 'ux-design-workshop',
     title: 'UX Design Workshop',
-    organizer: 'Design Masters Inc',
+    organiser: 'Design Masters Inc',
     date: 'January 20, 2026',
     time: '2:00 PM - 5:00 PM',
     location: 'Virtual Event',
@@ -207,7 +207,7 @@ export const mockEventDetails = [
   {
     id: 'startup-networking-night',
     title: 'Startup Networking Night',
-    organizer: 'StartupHub',
+    organiser: 'StartupHub',
     date: 'January 25, 2026',
     time: '6:00 PM - 9:00 PM',
     location: 'WeWork Market Street',

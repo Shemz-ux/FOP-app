@@ -4,15 +4,13 @@ import React from 'react';
  * Renders a structured description with consistent heading styles
  * 
  * Logic:
- * - If line matches exact heading (About the Role, Responsibilities, Requirements, Benefits) -> make it bold
- * - Content under "About the Role" -> paragraph text
- * - Content under other headings -> bullet points
+ * - Detects headings (lines ending with : or matching specific patterns)
+ * - First section or sections with specific headers -> paragraph text
+ * - Other sections -> bullet points
  */
 export default function StructuredDescription({ description, className = '' }) {
   if (!description) return null;
 
-  const VALID_HEADINGS = ['About the role', 'Responsibilities', 'Requirements', 'Benefits'];
-  
   // Split description into lines
   const lines = description.split('\n').map(l => l.trim()).filter(l => l);
   
@@ -20,24 +18,35 @@ export default function StructuredDescription({ description, className = '' }) {
   let currentSection = null;
   
   for (const line of lines) {
-    // Check if this line is exactly one of our headings
-    if (VALID_HEADINGS.includes(line)) {
+    const lowerLine = line.toLowerCase();
+    
+    // Check if this line is a heading (ends with : or is a known header pattern - case insensitive)
+    const isHeading = line.endsWith(':') || 
+                      lowerLine === 'about the role' || 
+                      lowerLine === 'about the event' ||
+                      lowerLine === 'responsibilities' || 
+                      lowerLine === 'requirements' || 
+                      lowerLine === 'benefits' ||
+                      lowerLine === 'what to expect' ||
+                      lowerLine === 'who should attend';
+    
+    if (isHeading) {
       // Save previous section
       if (currentSection) {
         sections.push(currentSection);
       }
       // Start new section
       currentSection = {
-        heading: line,
+        heading: line.replace(':', ''),
         content: []
       };
     } else if (currentSection) {
       // Add content to current section
       currentSection.content.push(line);
     } else {
-      // No heading yet, create default "About the role" section
+      // No heading yet, start first section without a heading
       currentSection = {
-        heading: 'About the role',
+        heading: '',
         content: [line]
       };
     }
@@ -53,16 +62,18 @@ export default function StructuredDescription({ description, className = '' }) {
       {sections.map((section, sectionIndex) => (
         <div key={sectionIndex} className="mb-6 last:mb-0">
           {/* Bold heading */}
-          <h3 className="text-foreground font-bold text-lg mb-3">
-            {section.heading}
-          </h3>
+          {section.heading && (
+            <h3 className="text-foreground font-bold text-lg mb-3">
+              {section.heading}
+            </h3>
+          )}
           
-          {/* Content: paragraph for "About the role", bullets for others */}
-          {section.heading === 'About the role' ? (
+          {/* Content: paragraph for first section or "About" sections, bullets for others */}
+          {(sectionIndex === 0 || section.heading.includes('About')) ? (
             <div className="space-y-2">
               {section.content.map((line, lineIndex) => (
                 <p key={lineIndex} className="text-muted-foreground leading-relaxed">
-                  {line}
+                  {line.replace(/^[-•*]\s*/, '')}
                 </p>
               ))}
             </div>

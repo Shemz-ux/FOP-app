@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Eye, Trash2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
-import { apiGet } from '../../services/api';
+import ConfirmModal from '../../components/Ui/ConfirmModal';
+import Toast from '../../components/Ui/Toast';
+import { apiGet, apiDelete } from '../../services/api';
 
 export default function EventDetail() {
   const { id } = useParams();
@@ -11,6 +13,8 @@ export default function EventDetail() {
   const [event, setEvent] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false });
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -40,6 +44,29 @@ export default function EventDetail() {
     
     fetchEventDetails();
   }, [id]);
+
+  const handleDeleteClick = () => {
+    setConfirmModal({ isOpen: true });
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await apiDelete(`/events/${event.event_id}`);
+      setToast({
+        message: `"${event.title}" has been deleted successfully`,
+        type: 'success'
+      });
+      setTimeout(() => {
+        navigate('/admin/events');
+      }, 1500);
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      setToast({
+        message: 'Failed to delete event. Please try again.',
+        type: 'error'
+      });
+    }
+  };
 
   // If viewing an attendee profile
   if (selectedAttendeeId) {
@@ -100,24 +127,32 @@ export default function EventDetail() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl mb-2 text-foreground">{event.title}</h1>
-          <p className="text-muted-foreground">{event.organiser}</p>
+          <p className="text-muted-foreground">{event.organiser || event.organiser}</p>
         </div>
         <div className="flex gap-2">
           <a
             href={`/events/${event.event_id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
             View on Website
           </a>
           <Link
             to={`/admin/events/${event.event_id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary"
+            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary"
           >
-            Edit Event
+            <Pencil className="w-4 h-4" />
+            Edit
           </Link>
+          <button
+            onClick={handleDeleteClick}
+            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </button>
         </div>
       </div>
 
@@ -126,12 +161,20 @@ export default function EventDetail() {
         <div className="grid md:grid-cols-3 gap-6">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Event Date</p>
-            <p className="text-foreground font-medium">{event.event_date ? new Date(event.event_date).toLocaleDateString() : 'N/A'}</p>
+            <p className="text-foreground font-medium">
+              {event.event_date 
+                ? new Date(event.event_date).toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  })
+                : 'N/A'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Event Time</p>
             <p className="text-foreground font-medium">
-              {event.event_start_time || 'N/A'}
+              {event.event_start_time?.slice(0, 5) || 'N/A'}
             </p>
           </div>
           <div>
@@ -141,10 +184,6 @@ export default function EventDetail() {
           <div>
             <p className="text-sm text-muted-foreground mb-1">Event Type</p>
             <p className="text-foreground font-medium">{event.event_type || 'N/A'}</p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Capacity</p>
-            <p className="text-foreground font-medium">{event.capacity || 'N/A'}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Status</p>
@@ -158,7 +197,7 @@ export default function EventDetail() {
       </div>
 
       {/* Event Stats */}
-      <div className="grid md:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Total Attendees</p>
           <p className="text-2xl text-foreground">{attendees.length}</p>
@@ -168,16 +207,6 @@ export default function EventDetail() {
           <p className="text-2xl text-foreground">
             {attendees.filter(a => a.status === 'confirmed').length}
           </p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-sm text-muted-foreground mb-1">Waitlist</p>
-          <p className="text-2xl text-foreground">
-            {attendees.filter(a => a.status === 'waitlist').length}
-          </p>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-sm text-muted-foreground mb-1">Capacity</p>
-          <p className="text-2xl text-foreground">{event?.capacity || 'N/A'}</p>
         </div>
       </div>
 
@@ -243,6 +272,28 @@ export default function EventDetail() {
       </div>
         </div>
       </div>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ isOpen: false })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Event"
+        message={event ? `Are you sure you want to delete "${event.title}"? This action cannot be undone.` : ''}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmVariant="danger"
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          duration={3000}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

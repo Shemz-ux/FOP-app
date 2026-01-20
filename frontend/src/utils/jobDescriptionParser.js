@@ -14,14 +14,19 @@
  */
 export function parseDescriptionToSections(description) {
   if (!description) return [
-    { header: 'About the role', content: [''] },
+    { header: 'About the Role', content: [''] },
     { header: 'Responsibilities', content: [''] },
     { header: 'Requirements', content: [''] },
     { header: 'Benefits', content: [''] },
   ];
   
-  // Exact headings we're looking for
-  const VALID_HEADINGS = ['About the role', 'Responsibilities', 'Requirements', 'Benefits'];
+  // Exact headings we're looking for (case-insensitive) with normalized output
+  const HEADING_MAP = {
+    'about the role': 'About the Role',
+    'responsibilities': 'Responsibilities',
+    'requirements': 'Requirements',
+    'benefits': 'Benefits'
+  };
   
   const sections = [];
   const lines = description.split('\n').map(l => l.trim());
@@ -31,25 +36,27 @@ export function parseDescriptionToSections(description) {
     // Skip empty lines
     if (!line) continue;
     
-    // Check if this line is exactly one of our headings
-    if (VALID_HEADINGS.includes(line)) {
+    const lowerLine = line.toLowerCase();
+    
+    // Check if this line matches one of our headings (case-insensitive)
+    if (HEADING_MAP[lowerLine]) {
       // Save previous section if exists
       if (currentSection) {
         sections.push(currentSection);
       }
       
-      // Start new section
+      // Start new section with normalized capitalization
       currentSection = {
-        header: line,
+        header: HEADING_MAP[lowerLine],
         content: []
       };
     } else if (currentSection) {
       // Add content to current section (keep bullets as-is)
       currentSection.content.push(line);
     } else {
-      // No header yet, create default "About the role" section
+      // No header yet, create default "About the Role" section
       currentSection = {
-        header: 'About the role',
+        header: 'About the Role',
         content: [line]
       };
     }
@@ -63,7 +70,7 @@ export function parseDescriptionToSections(description) {
   // If no sections found, create default structure
   if (sections.length === 0) {
     return [{
-      header: 'About the role',
+      header: 'About the Role',
       content: [description]
     }];
   }

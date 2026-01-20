@@ -15,7 +15,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function EventDetails() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { user, isLoggedIn, isSociety, isJobseeker } = useAuth();
+  const { user, isLoggedIn, isSociety, isJobseeker, isAdmin } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -200,8 +200,6 @@ export default function EventDetails() {
     }
   };
 
-  const spotsLeft = event.capacity ? (event.capacity - (event.attendee_count || 0)) : null;
-
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -264,6 +262,14 @@ export default function EventDetails() {
             </div>
 
             <div className="flex gap-3 shrink-0">
+              {isAdmin() && (
+                <Link
+                  to={`/admin/events/${event.event_id}/edit`}
+                  className="px-4 py-2 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors flex items-center gap-2"
+                >
+                  <span className="text-sm font-medium">Edit Event</span>
+                </Link>
+              )}
               <button
                 onClick={handleSave}
                 disabled={savingEvent}
@@ -353,20 +359,11 @@ export default function EventDetails() {
                   </div>
                 </div>
 
-                {event.capacity && (
-                  <div className="flex items-start gap-3">
-                    <Users className="w-5 h-5 text-primary mt-0.5" />
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-0.5">Capacity</div>
-                      <div className="text-foreground">{event.attendee_count || 0} / {event.capacity} registered</div>
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Organizer Info */}
+              {/* Organiser Info */}
               <div className="bg-card border border-border rounded-2xl p-6">
-                <h3 className="text-foreground mb-4">Organized By</h3>
+                <h3 className="text-foreground mb-4">Organised By</h3>
                 <div className="flex items-center gap-3 mb-4">
                   <CompanyLogo 
                     logo={event.organiser_logo} 
@@ -374,8 +371,8 @@ export default function EventDetails() {
                     companyName={event.organiser}
                   />
                   <div>
-                    <div className="text-foreground">{event.organiser || 'Unknown Organizer'}</div>
-                    <div className="text-sm text-muted-foreground">Event Organizer</div>
+                    <div className="text-foreground">{event.organiser || 'Unknown Organiser'}</div>
+                    <div className="text-sm text-muted-foreground">Event Organiser</div>
                   </div>
                 </div>
                 {event.organiser_description && (

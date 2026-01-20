@@ -6,9 +6,9 @@ export const mockJobs = [
 ];
 
 export const mockEvents = [
-  { id: 1, title: 'Career Fair 2025', date: '2025-02-15', attendees: 150, organizer: 'Tech Society', status: 'upcoming' },
-  { id: 2, title: 'Networking Night', date: '2025-01-28', attendees: 85, organizer: 'Business Society', status: 'upcoming' },
-  { id: 3, title: 'Workshop: Resume Writing', date: '2025-01-05', attendees: 60, organizer: 'Career Services', status: 'completed' },
+  { id: 1, title: 'Career Fair 2025', date: '2025-02-15', attendees: 150, organiser: 'Tech Society', status: 'upcoming' },
+  { id: 2, title: 'Networking Night', date: '2025-01-28', attendees: 85, organiser: 'Business Society', status: 'upcoming' },
+  { id: 3, title: 'Workshop: Resume Writing', date: '2025-01-05', attendees: 60, organiser: 'Career Services', status: 'completed' },
 ];
 
 export const mockResources = [

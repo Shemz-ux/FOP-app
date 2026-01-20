@@ -17,10 +17,6 @@ const CustomDropdown = ({
   className = ''
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isOtherSelected, setIsOtherSelected] = useState(value === 'Other' || !options.some(opt => opt.value === value));
-  const [customValue, setCustomValue] = useState(
-    !options.some(opt => opt.value === value) && value !== 'Other' ? value : ''
-  );
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -35,26 +31,12 @@ const CustomDropdown = ({
   }, []);
 
   const handleOptionClick = (selectedValue) => {
-    if (selectedValue === 'Other') {
-      setIsOtherSelected(true);
-      setCustomValue('');
-      onChange({ target: { name, value: '' } });
-    } else {
-      setIsOtherSelected(false);
-      setCustomValue('');
-      onChange({ target: { name, value: selectedValue } });
-    }
+    onChange({ target: { name, value: selectedValue } });
     setIsOpen(false);
   };
 
-  const handleCustomInputChange = (e) => {
-    const newValue = e.target.value;
-    setCustomValue(newValue);
-    onChange({ target: { name, value: newValue } });
-  };
-
   const selectedOption = options.find(opt => opt.value === value);
-  const displayValue = isOtherSelected && customValue ? customValue : (selectedOption?.label || '');
+  const displayValue = selectedOption?.label || '';
 
   return (
     <div className={className}>
@@ -97,25 +79,8 @@ const CustomDropdown = ({
           )}
         </div>
 
-        {/* Custom Input (shown when "Other" is selected) */}
-        {isOtherSelected && (
-          <div className="space-y-2">
-            <input
-              type="text"
-              value={customValue}
-              onChange={handleCustomInputChange}
-              placeholder="Enter custom value..."
-              required={required}
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <p className="text-xs text-muted-foreground">
-              Custom entries will use default styling (gray variant)
-            </p>
-          </div>
-        )}
-
         {/* Variant Preview */}
-        {showVariantPreview && selectedOption && !isOtherSelected && (
+        {showVariantPreview && selectedOption && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Preview:</span>
             <span className={`px-2 py-1 rounded text-xs bg-${selectedOption.variant}-100 text-${selectedOption.variant}-700 border border-${selectedOption.variant}-300`}>

@@ -229,7 +229,7 @@ export default function Events() {
                   key={event.event_id}
                   eventId={event.event_id}
                   title={event.title}
-                  organizer={event.organiser}
+                  organiser={event.organiser}
                   date={new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   time={`${event.event_start_time?.slice(0, 5)} - ${event.event_end_time?.slice(0, 5)}`}
                   location={event.location}

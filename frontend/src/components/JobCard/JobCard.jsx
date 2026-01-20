@@ -82,7 +82,8 @@ export default function JobCard({
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2 leading-relaxed text-left">
           {description?.split('\n').filter(line => {
             const trimmed = line.trim();
-            return trimmed && !trimmed.match(/^About the Role$/i);
+            const lower = trimmed.toLowerCase();
+            return trimmed && !lower.startsWith('about the role') && !trimmed.endsWith(':');
           }).slice(0, 2).join(' ') || description}
         </p>
       </div>

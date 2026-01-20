@@ -213,7 +213,7 @@ export default function Employers() {
               </div>
               <h3 className="text-foreground mb-3">Review Applications</h3>
               <p className="text-muted-foreground text-sm">
-                AI ranks candidates by fit score. Review profiles, portfolios, and assessment results in one organized dashboard.
+                AI ranks candidates by fit score. Review profiles, portfolios, and assessment results in one organised dashboard.
               </p>
             </div>
             {/* Connector line - hidden on mobile */}

@@ -1,7 +1,7 @@
 export const savedEvents = [
   {
     title: 'Tech Career Fair 2026',
-    organizer: 'TechConnect',
+    organiser: 'TechConnect',
     date: 'January 15, 2026',
     time: '10:00 AM - 4:00 PM',
     location: 'San Francisco Convention Center',

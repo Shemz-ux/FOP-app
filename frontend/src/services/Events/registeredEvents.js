@@ -1,7 +1,7 @@
 export const registeredEvents = [
   {
     title: 'UX Design Workshop',
-    organizer: 'Design Masters Inc',
+    organiser: 'Design Masters Inc',
     date: 'January 20, 2026',
     time: '2:00 PM - 5:00 PM',
     location: 'Virtual Event',

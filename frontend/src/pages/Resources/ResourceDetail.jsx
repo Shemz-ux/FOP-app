@@ -8,6 +8,7 @@ import ErrorMessage from '../../components/Ui/ErrorMessage';
 import { resourcesService } from '../../services';
 import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
 import { formatTimeAgo } from '../../utils/timeFormatter';
+import { useAuth } from '../../contexts/AuthContext';
 
 const iconMap = {
   FileText: FileText,
@@ -18,6 +19,7 @@ const iconMap = {
 export default function ResourceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -210,6 +212,14 @@ export default function ResourceDetail() {
                 </div>
 
                 <div className="pt-4 border-t border-border space-y-3">
+                  {isAdmin() && (
+                    <Link
+                      to={`/admin/resources/${resource.resource_id}/edit`}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-border rounded-xl hover:bg-secondary transition-colors"
+                    >
+                      <span className="text-sm font-medium">Edit Resource</span>
+                    </Link>
+                  )}
                   <button
                     onClick={handleDownload}
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"

@@ -25,7 +25,7 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
     deadline: job?.deadline || '',
     is_active: job?.is_active !== undefined ? job.is_active : true,
     descriptionSections: job?.description_sections || parseDescriptionToSections(job?.description) || [
-      { header: 'About the role', content: [''] },
+      { header: 'About the Role', content: [''] },
       { header: 'Responsibilities', content: [''] },
       { header: 'Requirements', content: [''] },
       { header: 'Benefits', content: [''] },
@@ -367,7 +367,7 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                   <div className="flex gap-2">
                     {sectionIndex === 0 ? (
                       <div className="flex-1 px-4 py-3 bg-input-background border border-input rounded-xl text-foreground font-bold">
-                        About the role
+                        About the Role
                       </div>
                     ) : (
                       <>

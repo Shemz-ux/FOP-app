@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Eye, BarChart, Trash2, Edit, Home } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
+import ConfirmModal from '../../components/Ui/ConfirmModal';
+import Toast from '../../components/Ui/Toast';
 import { apiGet, apiDelete } from '../../services/api';
 
 export default function EventsList() {
@@ -9,6 +11,9 @@ export default function EventsList() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -26,15 +31,30 @@ export default function EventsList() {
     fetchEvents();
   }, []);
 
-  const handleDelete = async (eventId) => {
-    if (!window.confirm('Are you sure you want to delete this event?')) return;
+  const handleDeleteClick = (event) => {
+    setEventToDelete(event);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!eventToDelete) return;
     
     try {
-      await apiDelete(`/events/${eventId}`);
-      setEvents(events.filter(event => event.event_id !== eventId));
+      await apiDelete(`/events/${eventToDelete.event_id}`);
+      setEvents(events.filter(event => event.event_id !== eventToDelete.event_id));
+      setToast({
+        message: 'Event deleted successfully',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error deleting event:', error);
-      alert('Failed to delete event');
+      setToast({
+        message: 'Failed to delete event',
+        type: 'error'
+      });
+    } finally {
+      setShowDeleteModal(false);
+      setEventToDelete(null);
     }
   };
 
@@ -100,7 +120,7 @@ export default function EventsList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search events by title or organizer..."
+              placeholder="Search events by title or organiser..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -128,7 +148,7 @@ export default function EventsList() {
             <thead className="bg-secondary">
               <tr>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Event Title</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Organizer</th>
+                <th className="text-left px-6 py-4 text-sm text-foreground">Organiser</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Date</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Attendees</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Status</th>
@@ -170,7 +190,7 @@ export default function EventsList() {
                         <Edit className="w-4 h-4 text-foreground" />
                       </Link>
                       <button
-                        onClick={() => handleDelete(event.event_id)}
+                        onClick={() => handleDeleteClick(event)}
                         className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Delete event"
                       >
@@ -187,6 +207,26 @@ export default function EventsList() {
       </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Event"
+        message={`Are you sure you want to delete "${eventToDelete?.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
