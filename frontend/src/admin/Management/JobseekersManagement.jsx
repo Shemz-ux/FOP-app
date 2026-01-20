@@ -74,8 +74,8 @@ export default function JobseekersManagement() {
       jobseeker_id: jobseeker.jobseeker_id,
       name: `${jobseeker.first_name || ''} ${jobseeker.last_name || ''}`.trim(),
       email: jobseeker.email,
-      phone: jobseeker.phone_number || 'N/A',
-      linkedIn: jobseeker.linkedIn || 'N/A',
+      phone: jobseeker.phone_number || null,
+      linkedIn: jobseeker.linkedin || null,
       university: jobseeker.institution_name,
       course: jobseeker.area_of_study,
       year: jobseeker.uni_year,
@@ -86,7 +86,7 @@ export default function JobseekersManagement() {
       role_interest_option_one: jobseeker.role_interest_option_one,
       role_interest_option_two: jobseeker.role_interest_option_two,
       society: jobseeker.society,
-      graduationDate: jobseeker.graduationDate || 'N/A',
+      graduationDate: jobseeker.graduationDate || null,
       cvUrl: jobseeker.cvUrl
     } : null;
     

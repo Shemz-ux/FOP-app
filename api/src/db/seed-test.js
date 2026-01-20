@@ -124,6 +124,7 @@ const createSocietiesTable = () => {
         description TEXT,
         email VARCHAR(255) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
+        member_count INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
         )`).then(()=>{
@@ -385,25 +386,25 @@ const insertJobseekers = async () => {
             first_name, last_name, email, password_hash, phone_number, date_of_birth,
             gender, ethnicity, school_meal_eligible, first_gen_to_go_uni,
             education_level, institution_name, subject_one, subject_two, subject_three, subject_four,
-            role_interest_option_one, role_interest_option_two
+            role_interest_option_one, role_interest_option_two, society
         ) VALUES 
             (
                 'Emily', 'Taylor', 'emily.taylor@student.com', $1, '+447700900004', '2008-09-15',
                 'female', 'White British', true, false,
                 'gcse', 'Eastbrook School', 'Mathematics', 'English', 'Science', 'History',
-                'Teacher', 'Social Worker'
+                'Teacher', 'Social Worker', NULL
             ),
             (
                 'Sophie', 'Brown', 'sophie.brown@student.com', $1, '+447700900005', '2006-03-10',
                 'female', 'White British', false, false,
                 'a_level', 'Harris Academy Barking', 'Mathematics', 'Physics', 'Chemistry', 'Further Mathematics',
-                'Software Developer', 'Data Analyst'
+                'Software Developer', 'Data Analyst', 'Tech Society'
             ),
             (
                 'Oliver', 'Davis', 'oliver.davis@student.com', $1, '+447700900006', '2006-07-18',
                 'male', 'Black British', true, true,
                 'btec', 'Newham Sixth Form College', 'Business Studies', 'IT', 'Media Studies', 'Law',
-                'Policy Analyst', 'Journalist'
+                'Policy Analyst', 'Journalist', NULL
             )
     `, [hashedPassword]);
     
@@ -415,22 +416,22 @@ const insertSocieties = async () => {
     const hashedPassword = await bcrypt.default.hash('Society123!', 10);
     
     await testDb.query(`
-        INSERT INTO societies (name, email, password_hash, description, university)
+        INSERT INTO societies (name, email, password_hash, description, university, member_count)
         VALUES 
             (
                 'Tech Society', 'tech@society.com', $1,
                 'Connecting students with opportunities in technology and software development',
-                'King''s College London'
+                'King''s College London', 2
             ),
             (
                 'Business Society', 'business@society.com', $1,
                 'Empowering future business leaders through networking and career opportunities',
-                'Imperial College London'
+                'Imperial College London', 1
             ),
             (
                 'Engineering Society', 'engineering@society.com', $1,
                 'Supporting engineering students in their career journey',
-                'University of Manchester'
+                'University of Manchester', 1
             )
     `, [hashedPassword]);
     

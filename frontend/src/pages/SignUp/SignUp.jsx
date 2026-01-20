@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Users,
@@ -11,6 +11,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import CustomSelect from "../../components/Ui/CustomSelect";
+import { apiGet } from "../../services/api";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -19,6 +20,21 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
+  const [societies, setSocieties] = useState([]);
+
+  useEffect(() => {
+    // Fetch societies for dropdown
+    const fetchSocieties = async () => {
+      try {
+        const data = await apiGet('/societies/names');
+        setSocieties(data.societies || []);
+      } catch (error) {
+        console.error('Error fetching societies:', error);
+      }
+    };
+    
+    fetchSocieties();
+  }, []);
 
   const [jobSeekerData, setJobSeekerData] = useState({
     first_name: '',
@@ -573,15 +589,16 @@ export default function SignUp() {
           {/* Society Membership */}
           <div>
             <label htmlFor="society" className="block text-sm mb-2 text-foreground">
-              Society Membership
+              Society Membership (Optional)
             </label>
-            <input
-              id="society"
-              type="text"
+            <CustomSelect
               value={jobSeekerData.society}
-              onChange={(e) => setJobSeekerData({ ...jobSeekerData, society: e.target.value })}
-              placeholder="e.g. Tech Society"
-              className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              onValueChange={(value) => setJobSeekerData({ ...jobSeekerData, society: value === 'none' ? null : value })}
+              placeholder="Select a society"
+              options={[
+                { value: 'none', label: 'None' },
+                ...societies.map(society => ({ value: society.name, label: society.name }))
+              ]}
             />
           </div>
 

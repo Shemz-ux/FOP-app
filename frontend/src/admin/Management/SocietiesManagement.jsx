@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, BarChart, Users, Download, Eye, ArrowLeft, Home } from 'lucide-react';
+import { Search, Filter, BarChart, Users, Download, Eye, ArrowLeft, Home, X } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
 import { apiGet } from '../../services/api';
 
@@ -30,11 +30,11 @@ export default function SocietiesManagement() {
 
   const filteredSocieties = societies.filter(society => {
     const matchesSearch = 
-      (society.society_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (society.institution_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (society.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (society.university || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (society.email || '').toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesUniversity = filterUniversity === 'all' || (society.institution_name || '').includes(filterUniversity);
+    const matchesUniversity = filterUniversity === 'all' || (society.university || '').includes(filterUniversity);
     
     let matchesMemberCount = true;
     const memberCount = society.member_count || 0;
@@ -45,7 +45,7 @@ export default function SocietiesManagement() {
     return matchesSearch && matchesUniversity && matchesMemberCount;
   });
 
-  const universities = [...new Set(societies.map(s => s.institution_name).filter(Boolean))];
+  const universities = [...new Set(societies.map(s => s.university).filter(Boolean))];
   const totalMembers = societies.reduce((sum, s) => sum + (s.member_count || 0), 0);
 
   if (loading) {
@@ -76,8 +76,8 @@ export default function SocietiesManagement() {
         </button>
         
         <div>
-          <h1 className="text-3xl mb-2 text-foreground">{society.society_name}</h1>
-          <p className="text-muted-foreground">{society.institution_name}</p>
+          <h1 className="text-3xl mb-2 text-foreground">{society.name}</h1>
+          <p className="text-muted-foreground">{society.university}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -86,8 +86,8 @@ export default function SocietiesManagement() {
             <p className="text-2xl text-foreground">{society.member_count || 0}</p>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-sm text-muted-foreground mb-1">University</p>
-            <p className="text-xl text-foreground">{society.institution_name || 'N/A'}</p>
+            <p className="text-sm text-muted-foreground mb-1">Institution</p>
+            <p className="text-xl text-foreground">{society.university || 'N/A'}</p>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
             <p className="text-sm text-muted-foreground mb-1">Contact</p>
@@ -100,11 +100,15 @@ export default function SocietiesManagement() {
           <div className="space-y-4">
             <div>
               <p className="text-sm text-muted-foreground">Society Name</p>
-              <p className="text-foreground">{society.society_name}</p>
+              <p className="text-foreground">{society.name}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">University</p>
-              <p className="text-foreground">{society.institution_name || 'N/A'}</p>
+              <p className="text-sm text-muted-foreground">Institution</p>
+              <p className="text-foreground">{society.university || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Description</p>
+              <p className="text-foreground">{society.description || 'No description provided'}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Member Count</p>
@@ -118,10 +122,10 @@ export default function SocietiesManagement() {
               <p className="text-foreground">{society.email || 'N/A'}</p>
             </div>
             <div className="flex gap-4">
-              <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary">
+              {/* <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary">
                 <Download className="w-4 h-4 inline mr-2" />
                 Export Members
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -150,12 +154,12 @@ export default function SocietiesManagement() {
           <h1 className="text-3xl mb-2 text-foreground">Society Management</h1>
           <p className="text-muted-foreground">View and manage all registered societies</p>
         </div>
-        <button
+        {/* <button
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
         >
           <Download className="w-4 h-4" />
           Export Data
-        </button>
+        </button> */}
       </div>
 
       {/* Search and Filters */}
@@ -179,13 +183,13 @@ export default function SocietiesManagement() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm mb-2 text-foreground">University</label>
+              <label className="block text-sm mb-2 text-foreground">Institution</label>
               <AdminSelect
                 value={filterUniversity}
                 onValueChange={setFilterUniversity}
-                placeholder="All Universities"
+                placeholder="All Institutions"
                 options={[
-                  { value: 'all', label: 'All Universities' },
+                  { value: 'all', label: 'All Institutions' },
                   ...universities.map(uni => ({ value: uni, label: uni }))
                 ]}
               />
@@ -206,11 +210,44 @@ export default function SocietiesManagement() {
               />
             </div>
           </div>
+
+          {/* Active Filters */}
+          {(searchTerm || filterUniversity !== 'all' || filterMemberCount !== 'all') && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {searchTerm && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-lg text-sm">
+                  <Search className="w-3 h-3 text-primary" />
+                  <span className="text-foreground">Search: <span className="font-medium">{searchTerm}</span></span>
+                  <button onClick={() => setSearchTerm('')} className="text-primary hover:text-primary/80">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+              {filterUniversity !== 'all' && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-lg text-sm">
+                  <Users className="w-3 h-3 text-teal-500" />
+                  <span className="text-foreground">Institution: <span className="font-medium">{filterUniversity}</span></span>
+                  <button onClick={() => setFilterUniversity('all')} className="text-teal-500 hover:text-teal-500/80">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+              {filterMemberCount !== 'all' && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-lg text-sm">
+                  <Users className="w-3 h-3 text-purple-500" />
+                  <span className="text-foreground">Size: <span className="font-medium">{filterMemberCount === 'small' ? 'Small (< 100)' : filterMemberCount === 'medium' ? 'Medium (100-199)' : 'Large (200+)'}</span></span>
+                  <button onClick={() => setFilterMemberCount('all')} className="text-purple-500 hover:text-purple-500/80">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid md:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-2 gap-4">
       <div className="bg-card border border-border rounded-xl p-4">
         <p className="text-sm text-muted-foreground mb-1">Total Societies</p>
         <p className="text-2xl text-foreground">{societies.length}</p>
@@ -218,16 +255,6 @@ export default function SocietiesManagement() {
       <div className="bg-card border border-border rounded-xl p-4">
         <p className="text-sm text-muted-foreground mb-1">Filtered Results</p>
         <p className="text-2xl text-foreground">{filteredSocieties.length}</p>
-      </div>
-      <div className="bg-card border border-border rounded-xl p-4">
-        <p className="text-sm text-muted-foreground mb-1">Total Members</p>
-        <p className="text-2xl text-foreground">{totalMembers}</p>
-      </div>
-      <div className="bg-card border border-border rounded-xl p-4">
-        <p className="text-sm text-muted-foreground mb-1">Avg Members</p>
-        <p className="text-2xl text-foreground">
-          {societies.length > 0 ? Math.round(totalMembers / societies.length) : 0}
-        </p>
       </div>
     </div>
 
@@ -238,7 +265,7 @@ export default function SocietiesManagement() {
           <thead className="bg-secondary">
             <tr>
               <th className="text-left px-6 py-4 text-sm text-foreground">Society Name</th>
-              <th className="text-left px-6 py-4 text-sm text-foreground">University</th>
+              <th className="text-left px-6 py-4 text-sm text-foreground">Institution</th>
               <th className="text-left px-6 py-4 text-sm text-foreground">Members</th>
               <th className="text-left px-6 py-4 text-sm text-foreground">Contact</th>
               <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>
@@ -247,8 +274,8 @@ export default function SocietiesManagement() {
           <tbody className="divide-y divide-border">
             {filteredSocieties.map(society => (
               <tr key={society.society_id} className="hover:bg-secondary/50 transition-colors">
-                <td className="px-6 py-4 text-foreground">{society.society_name}</td>
-                <td className="px-6 py-4 text-muted-foreground">{society.institution_name || 'N/A'}</td>
+                <td className="px-6 py-4 text-foreground">{society.name}</td>
+                <td className="px-6 py-4 text-muted-foreground">{society.university || 'N/A'}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-muted-foreground" />

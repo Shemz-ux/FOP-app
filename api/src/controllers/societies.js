@@ -1,5 +1,13 @@
-import { createSociety, fetchSocieties, fetchSocietyById, updateSociety, removeSociety } from "../models/societies.js";
+import { createSociety, fetchSocieties, fetchSocietyById, updateSociety, removeSociety, fetchSocietyNames } from "../models/societies.js";
 import bcrypt from "bcrypt";
+
+export const getSocietyNames = (req, res, next) => {
+    fetchSocietyNames().then((societies) => {
+        res.status(200).send({societies: societies});
+    }).catch((err) => {
+        next(err);
+    });
+};
 
 export const postSociety = async (req, res, next) => {
     try {

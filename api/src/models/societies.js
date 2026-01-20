@@ -1,8 +1,33 @@
 import db from "../db/db.js";
 
 export const fetchSocieties = () => {
-    return db.query(`SELECT * FROM societies`).then(({rows}) => {
+    return db.query(`
+        SELECT 
+            s.*,
+            COUNT(j.jobseeker_id) as member_count
+        FROM societies s
+        LEFT JOIN jobseekers j ON s.name = j.society
+        GROUP BY s.society_id
+        ORDER BY s.name ASC
+    `).then(({rows}) => {
         return rows;
+    });
+};
+
+export const fetchSocietyNames = () => {
+    return db.query(`SELECT society_id, name FROM societies ORDER BY name ASC`).then(({rows}) => {
+        return rows;
+    });
+};
+
+export const incrementSocietyMemberCount = (societyName) => {
+    return db.query(`
+        UPDATE societies 
+        SET member_count = member_count + 1 
+        WHERE name = $1
+        RETURNING *
+    `, [societyName]).then(({rows}) => {
+        return rows[0];
     });
 };
 

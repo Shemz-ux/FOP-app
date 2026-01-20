@@ -1,4 +1,5 @@
 import { createJobseeker, fetchJobseekerById, fetchJobseekers, removeJobseeker, updateJobseeker } from "../models/jobseekers.js";
+import { incrementSocietyMemberCount } from "../models/societies.js";
 import bcrypt from "bcrypt";
 
 export const postJobseeker = async (req, res, next) => {
@@ -26,6 +27,12 @@ export const postJobseeker = async (req, res, next) => {
         delete jobseekerData.password; // Remove plaintext password
         
         const jobseeker = await createJobseeker(jobseekerData);
+        
+        // Increment society member count if society is selected
+        if (jobseeker.society && jobseeker.society !== 'None') {
+            await incrementSocietyMemberCount(jobseeker.society);
+        }
+        
         res.status(201).send({newJobseeker: jobseeker});
     } catch (err) {
         next(err);

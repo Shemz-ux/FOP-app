@@ -166,6 +166,7 @@ const createSocietiesTable = () => {
         description TEXT,
         email VARCHAR(255) NOT NULL unique,
         password_hash VARCHAR(255) NOT NULL,
+        member_count INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
         )`).then(()=>{
