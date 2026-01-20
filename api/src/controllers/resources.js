@@ -53,7 +53,8 @@ const getResources = async (req, res) => {
             sort_by: req.query.sort_by,
             sort_order: req.query.sort_order,
             page: req.query.page || 1,
-            limit: req.query.limit || 20
+            limit: req.query.limit || 20,
+            include_inactive: req.query.include_inactive === 'true'
         };
 
         const result = await fetchResources(filters);
@@ -101,58 +102,105 @@ const getResourceById = async (req, res) => {
     }
 };
 
-// Create new resource with file upload
+// Create new resource with file upload or video link
 const postResource = async (req, res) => {
     try {
-        const { title, description, detailed_description, whats_included, category, uploaded_by } = req.body;
+        const { title, description, detailed_description, whats_included, category, uploaded_by, upload_type, video_link } = req.body;
         const file = req.file;
 
         // Validate required fields
-        if (!title || !category || !file) {
+        if (!title || !category) {
             return res.status(400).json({ 
-                msg: 'Title, category, and file are required' 
+                msg: 'Title and category are required' 
             });
         }
 
-        // Validate file size
-        if (!validateFileSize(file.size)) {
+        // Check if it's a video link or file upload (prioritize file presence)
+        if (file) {
+            // Handle file upload
+
+            // Validate file size
+            if (!validateFileSize(file.size)) {
+                return res.status(400).json({ 
+                    msg: 'File size exceeds 50MB limit' 
+                });
+            }
+
+            // Upload file to R2
+            const uploadResult = await uploadFile(
+                file.buffer,
+                file.originalname,
+                file.mimetype,
+                category
+            );
+
+            // Create resource record in database
+            const resourceData = {
+                title,
+                description: description || null,
+                detailed_description: detailed_description || null,
+                whats_included: whats_included || null,
+                category,
+                file_name: file.originalname,
+                file_size: formatFileSize(file.size),
+                file_type: file.mimetype,
+                storage_key: uploadResult.storageKey,
+                storage_url: uploadResult.publicUrl,
+                created_by: uploaded_by || 'FOP',  // Company/person name
+                uploaded_by: req.user_id || null    // Admin user ID
+            };
+
+            const newResource = await createResource(resourceData);
+
+            return res.status(201).json({
+                msg: 'Resource created successfully',
+                resource: newResource
+            });
+        } else if (upload_type === 'link') {
+            // Handle video link resource
+            if (!video_link) {
+                return res.status(400).json({ 
+                    msg: 'Video link is required for link type resources' 
+                });
+            }
+
+            const resourceData = {
+                title,
+                description: description || null,
+                detailed_description: detailed_description || null,
+                whats_included: whats_included || null,
+                category,
+                file_name: 'Video Link',
+                file_size: 'N/A',
+                file_type: 'video/link',
+                storage_key: video_link,
+                storage_url: video_link,
+                created_by: uploaded_by || 'FOP',  // Company/person name
+                uploaded_by: req.user_id || null    // Admin user ID
+            };
+
+            const newResource = await createResource(resourceData);
+
+            return res.status(201).json({
+                msg: 'Video resource created successfully',
+                resource: newResource
+            });
+        } else {
             return res.status(400).json({ 
-                msg: 'File size exceeds 50MB limit' 
+                msg: 'Either a file or video link is required' 
             });
         }
-
-        // Upload file to R2
-        const uploadResult = await uploadFile(
-            file.buffer,
-            file.originalname,
-            file.mimetype,
-            category
-        );
-
-        // Create resource record in database
-        const resourceData = {
-            title,
-            description: description || null,
-            detailed_description: detailed_description || null,
-            whats_included: whats_included || null,
-            category,
-            file_name: file.originalname,
-            file_size: formatFileSize(file.size),
-            file_type: file.mimetype,
-            storage_key: uploadResult.storageKey,
-            storage_url: uploadResult.publicUrl,
-            uploaded_by: uploaded_by || 'FOP',
-            created_by: req.user_id || null
-        };
-
-        const newResource = await createResource(resourceData);
-
-        res.status(201).json({
-            msg: 'Resource created successfully',
-            resource: newResource
-        });
     } catch (error) {
         console.error('Create resource error:', error);
+        
+        // Check for duplicate storage_key (unique constraint violation)
+        if (error.code === '23505' && error.constraint === 'resources_storage_key_key') {
+            return res.status(400).json({ 
+                msg: 'This file or video has already been uploaded. Please upload a different resource or update the existing one.',
+                error: 'Duplicate resource'
+            });
+        }
+        
         res.status(500).json({ 
             msg: 'Failed to create resource',
             error: error.message 
@@ -177,7 +225,17 @@ const patchResource = async (req, res) => {
         }
 
         // Validate update fields
-        const allowedFields = ['title', 'description', 'category', 'is_active'];
+        const allowedFields = [
+            'title', 
+            'description', 
+            'detailed_description',
+            'whats_included',
+            'category', 
+            'uploaded_by',  // Maps to created_by in DB (company/person name)
+            'upload_type',
+            'video_link',
+            'is_active'
+        ];
         const invalidFields = Object.keys(updateData).filter(
             field => !allowedFields.includes(field)
         );
@@ -230,12 +288,15 @@ const deleteResourceById = async (req, res) => {
             return res.status(404).json({ msg: 'Resource not found' });
         }
 
-        // Delete file from R2 storage
-        try {
-            await deleteFile(resource.storage_key);
-        } catch (r2Error) {
-            console.error('R2 deletion error:', r2Error);
-            // Continue even if R2 deletion fails - resource is already soft deleted
+        // Delete file from R2 storage only if it's not a video link
+        if (resource.file_type !== 'video/link' && resource.storage_key && !resource.storage_key.includes('youtube.com') && !resource.storage_key.includes('vimeo.com')) {
+            try {
+                await deleteFile(resource.storage_key);
+            } catch (r2Error) {
+                console.error('R2 deletion error:', r2Error);
+                // Continue even if R2 deletion fails - resource is already soft deleted
+                // This is expected if Cloudflare R2 is not configured
+            }
         }
 
         res.status(200).json({
@@ -245,6 +306,39 @@ const deleteResourceById = async (req, res) => {
         console.error('Delete resource error:', error);
         res.status(500).json({ 
             msg: 'Failed to delete resource',
+            error: error.message 
+        });
+    }
+};
+
+// Toggle resource active status
+const toggleResourceActive = async (req, res) => {
+    try {
+        const { resource_id } = req.params;
+
+        if (!resource_id || isNaN(resource_id)) {
+            return res.status(400).json({ msg: 'Invalid resource ID' });
+        }
+
+        // Get current resource
+        const resource = await fetchResourceById(resource_id);
+        if (!resource) {
+            return res.status(404).json({ msg: 'Resource not found' });
+        }
+
+        // Toggle the is_active status
+        const updatedResource = await updateResource(resource_id, {
+            is_active: !resource.is_active
+        });
+
+        res.status(200).json({
+            msg: `Resource ${updatedResource.is_active ? 'activated' : 'deactivated'} successfully`,
+            resource: updatedResource
+        });
+    } catch (error) {
+        console.error('Toggle resource active error:', error);
+        res.status(500).json({ 
+            msg: 'Failed to toggle resource status',
             error: error.message 
         });
     }
@@ -358,6 +452,7 @@ export {
     postResource,
     patchResource,
     deleteResourceById,
+    toggleResourceActive,
     downloadResource,
     streamResource,
     getResourceCategories,

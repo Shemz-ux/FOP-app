@@ -322,8 +322,8 @@ const createResourcesTable = () => {
         storage_key VARCHAR(500) NOT NULL UNIQUE,
         storage_url VARCHAR(1000),
         download_count INT DEFAULT 0,
-        uploaded_by VARCHAR(255),
-        created_by INT REFERENCES admin_users(admin_id),
+        created_by VARCHAR(255),
+        uploaded_by INT REFERENCES admin_users(admin_id),
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
@@ -958,7 +958,7 @@ const insertResources = async () => {
         INSERT INTO resources (
             title, description, detailed_description, whats_included, category,
             file_name, file_size, file_type, storage_key, storage_url,
-            uploaded_by, is_active
+            created_by, uploaded_by, is_active
         ) VALUES 
             (
                 'CV Writing Guide 2025', 
@@ -969,7 +969,7 @@ const insertResources = async () => {
                 'cv-writing-guide-2025.pdf', '2.5 MB', 'application/pdf',
                 'resources/cv-writing-guide-2025.pdf',
                 'https://storage.fop.com/resources/cv-writing-guide-2025.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Cover Letter Templates & Examples', 
@@ -980,7 +980,7 @@ const insertResources = async () => {
                 'cover-letter-templates.pdf', '1.8 MB', 'application/pdf',
                 'resources/cover-letter-templates.pdf',
                 'https://storage.fop.com/resources/cover-letter-templates.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Technical Interview Mastery', 
@@ -991,7 +991,7 @@ const insertResources = async () => {
                 'technical-interview-mastery.pdf', '6.2 MB', 'application/pdf',
                 'resources/technical-interview-mastery.pdf',
                 'https://storage.fop.com/resources/technical-interview-mastery.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Assessment Centre Success Guide', 
@@ -1002,7 +1002,7 @@ const insertResources = async () => {
                 'assessment-centre-guide.pdf', '3.4 MB', 'application/pdf',
                 'resources/assessment-centre-guide.pdf',
                 'https://storage.fop.com/resources/assessment-centre-guide.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'LinkedIn Profile Optimization', 
@@ -1013,7 +1013,7 @@ const insertResources = async () => {
                 'linkedin-optimization-2025.pdf', '2.1 MB', 'application/pdf',
                 'resources/linkedin-optimization-2025.pdf',
                 'https://storage.fop.com/resources/linkedin-optimization-2025.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Graduate Scheme Application Guide', 
@@ -1024,7 +1024,7 @@ const insertResources = async () => {
                 'graduate-scheme-guide.pdf', '4.1 MB', 'application/pdf',
                 'resources/graduate-scheme-guide.pdf',
                 'https://storage.fop.com/resources/graduate-scheme-guide.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Networking for Students', 
@@ -1035,7 +1035,7 @@ const insertResources = async () => {
                 'networking-for-students.pdf', '2.3 MB', 'application/pdf',
                 'resources/networking-for-students.pdf',
                 'https://storage.fop.com/resources/networking-for-students.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Career Planning Workbook', 
@@ -1046,7 +1046,7 @@ const insertResources = async () => {
                 'career-planning-workbook.pdf', '3.7 MB', 'application/pdf',
                 'resources/career-planning-workbook.pdf',
                 'https://storage.fop.com/resources/career-planning-workbook.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Finance Industry Insights 2025', 
@@ -1057,7 +1057,7 @@ const insertResources = async () => {
                 'finance-industry-insights.pdf', '3.9 MB', 'application/pdf',
                 'resources/finance-industry-insights.pdf',
                 'https://storage.fop.com/resources/finance-industry-insights.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Internship Application Checklist', 
@@ -1068,7 +1068,7 @@ const insertResources = async () => {
                 'internship-application-checklist.pdf', '1.9 MB', 'application/pdf',
                 'resources/internship-application-checklist.pdf',
                 'https://storage.fop.com/resources/internship-application-checklist.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Personal Branding for Graduates', 
@@ -1079,7 +1079,7 @@ const insertResources = async () => {
                 'personal-branding-guide.pdf', '2.6 MB', 'application/pdf',
                 'resources/personal-branding-guide.pdf',
                 'https://storage.fop.com/resources/personal-branding-guide.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Salary Negotiation Guide', 
@@ -1090,7 +1090,7 @@ const insertResources = async () => {
                 'salary-negotiation-guide.pdf', '2.2 MB', 'application/pdf',
                 'resources/salary-negotiation-guide.pdf',
                 'https://storage.fop.com/resources/salary-negotiation-guide.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Skills Development Roadmap', 
@@ -1101,7 +1101,7 @@ const insertResources = async () => {
                 'skills-development-roadmap.pdf', '3.5 MB', 'application/pdf',
                 'resources/skills-development-roadmap.pdf',
                 'https://storage.fop.com/resources/skills-development-roadmap.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'First Job Survival Guide', 
@@ -1112,7 +1112,7 @@ const insertResources = async () => {
                 'first-job-survival-guide.pdf', '2.4 MB', 'application/pdf',
                 'resources/first-job-survival-guide.pdf',
                 'https://storage.fop.com/resources/first-job-survival-guide.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             ),
             (
                 'Remote Work Best Practices', 
@@ -1123,7 +1123,7 @@ const insertResources = async () => {
                 'remote-work-best-practices.pdf', '2.8 MB', 'application/pdf',
                 'resources/remote-work-best-practices.pdf',
                 'https://storage.fop.com/resources/remote-work-best-practices.pdf',
-                'FOP Team', true
+                'FOP Team', 1, true
             )
     `);
     

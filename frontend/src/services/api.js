@@ -9,10 +9,15 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 // Helper function to handle API responses
 export const handleResponse = async (response) => {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ 
+    const errorData = await response.json().catch(() => ({ 
       message: 'An error occurred' 
     }));
-    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+    const error = new Error(errorData.msg || errorData.message || `HTTP error! status: ${response.status}`);
+    error.response = {
+      status: response.status,
+      data: errorData
+    };
+    throw error;
   }
   return response.json();
 };

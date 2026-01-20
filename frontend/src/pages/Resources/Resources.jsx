@@ -249,6 +249,7 @@ export default function Resources() {
                   categoryVariant={RESOURCE_CATEGORIES.find(c => c.value === resource.category)?.variant || 'gray'}
                   onDownload={() => handleDownload(resource.resource_id)}
                   createdAt={resource.created_at}
+                  storageUrl={resource.storage_url}
                 />
               ))}
             </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, BookOpen, File, Share2, Clock, User, Calendar } from 'lucide-react';
+import { ArrowLeft, Download, FileText, BookOpen, File, Share2, Clock, User, Calendar, Eye } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
@@ -224,8 +224,17 @@ export default function ResourceDetail() {
                     onClick={handleDownload}
                     className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
                   >
-                    <Download className="w-5 h-5" />
-                    Download Resource
+                    {resource.file_type?.toLowerCase().includes('video') || resource.file_type === 'video/link' || resource.storage_url?.includes('youtube.com') || resource.storage_url?.includes('vimeo.com') || resource.storage_url?.includes('youtu.be') ? (
+                      <>
+                        <Eye className="w-5 h-5" />
+                        Watch Video
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-5 h-5" />
+                        Download Resource
+                      </>
+                    )}
                   </button>
                   <button
                     onClick={handleShare}

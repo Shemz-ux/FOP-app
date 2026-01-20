@@ -366,8 +366,8 @@ const createResourcesTable = () => {
         storage_key VARCHAR(500) NOT NULL UNIQUE,
         storage_url VARCHAR(1000),
         download_count INT DEFAULT 0,
-        uploaded_by VARCHAR(255),
-        created_by INT REFERENCES admin_users(admin_id),
+        created_by VARCHAR(255),
+        uploaded_by INT REFERENCES admin_users(admin_id),
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()

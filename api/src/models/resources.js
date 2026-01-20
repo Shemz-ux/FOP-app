@@ -20,7 +20,7 @@ const createResource = async (resourceData) => {
     const query = `
         INSERT INTO resources (
             title, description, detailed_description, whats_included, category, file_name, file_size, 
-            file_type, storage_key, storage_url, uploaded_by, created_by
+            file_type, storage_key, storage_url, created_by, uploaded_by
         ) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
         RETURNING *
@@ -28,7 +28,7 @@ const createResource = async (resourceData) => {
 
     const values = [
         title, description, detailed_description, whats_included, category, file_name, file_size,
-        file_type, storage_key, storage_url, uploaded_by, created_by
+        file_type, storage_key, storage_url, created_by, uploaded_by
     ];
 
     try {
@@ -41,7 +41,7 @@ const createResource = async (resourceData) => {
 
 // Get all resources with optional filtering
 const fetchResources = async (filters = {}) => {
-    let whereClause = `WHERE r.is_active = TRUE`;
+    let whereClause = filters.include_inactive ? `WHERE 1=1` : `WHERE r.is_active = TRUE`;
     const values = [];
     let paramCount = 0;
 
@@ -124,7 +124,7 @@ const fetchResourceById = async (resourceId) => {
     const query = `
         SELECT r.*
         FROM resources r
-        WHERE r.resource_id = $1 AND r.is_active = TRUE
+        WHERE r.resource_id = $1
     `;
 
     try {
@@ -146,7 +146,9 @@ const updateResource = async (resourceId, updateData) => {
     for (const [key, value] of Object.entries(updateData)) {
         if (allowedFields.includes(key) && value !== undefined) {
             paramCount++;
-            updates.push(`${key} = $${paramCount}`);
+            // Map uploaded_by to created_by in database (field names were swapped)
+            const dbColumn = key === 'uploaded_by' ? 'created_by' : key;
+            updates.push(`${dbColumn} = $${paramCount}`);
             values.push(value);
         }
     }
@@ -167,7 +169,7 @@ const updateResource = async (resourceId, updateData) => {
     const query = `
         UPDATE resources 
         SET ${updates.join(', ')} 
-        WHERE resource_id = $${paramCount} AND is_active = TRUE
+        WHERE resource_id = $${paramCount}
         RETURNING *
     `;
 
@@ -179,12 +181,11 @@ const updateResource = async (resourceId, updateData) => {
     }
 };
 
-// Soft delete resource
+// Hard delete resource
 const deleteResource = async (resourceId) => {
     const query = `
-        UPDATE resources 
-        SET is_active = FALSE, updated_at = NOW() 
-        WHERE resource_id = $1 AND is_active = TRUE
+        DELETE FROM resources 
+        WHERE resource_id = $1
         RETURNING *
     `;
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Plus, Eye, BarChart, Trash2, Edit, Home } from 'lucide-react';
+import { Search, Plus, Eye, BarChart, Trash2, Edit, Home, CheckCircle, XCircle, Briefcase } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
@@ -100,6 +100,32 @@ export default function JobsList() {
         </Link>
       </div>
 
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Total Jobs</p>
+              <p className="text-3xl mb-1 text-foreground text-foreground">{jobs.length}</p>
+            </div>
+            <div className="p-3 rounded-xl bg-primary/10">
+              <Briefcase className="w-8 h-8 text-primary" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-card border border-border rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Active Jobs</p>
+              <p className="text-3xl mb-1 text-foreground text-green-500">{jobs.filter(j => j.is_active).length}</p>
+            </div>
+            <div className="p-3 rounded-xl bg-green-500/10">
+              <CheckCircle className="w-8 h-8 text-green-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Search and Filters */}
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex flex-col md:flex-row gap-4">
@@ -150,12 +176,22 @@ export default function JobsList() {
                   <td className="px-6 py-4 text-muted-foreground">{job.location || 'N/A'}</td>
                   <td className="px-6 py-4 text-muted-foreground">{job.applicant_count || 0}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs ${
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium ${
                       job.is_active
-                        ? 'bg-green-500/20 text-green-500'
-                        : 'bg-red-500/20 text-red-500'
+                        ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                        : 'bg-red-500/10 text-red-500 border border-red-500/20'
                     }`}>
-                      {job.is_active ? 'Active' : 'Inactive'}
+                      {job.is_active ? (
+                        <>
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          Active
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-3.5 h-3.5" />
+                          Inactive
+                        </>
+                      )}
                     </span>
                   </td>
                   <td className="px-6 py-4">

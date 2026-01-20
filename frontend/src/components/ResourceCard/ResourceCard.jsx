@@ -23,6 +23,7 @@ export default function ResourceCard({
   onDownload,
   onPreview,
   createdAt,
+  storageUrl,
 }) {
   const IconComponent = iconMap[iconType] || FileText;
 
@@ -60,13 +61,15 @@ export default function ResourceCard({
           <IconComponent className="w-4 h-4" />
           {fileType}
         </span>
-        <span>{fileSize}</span>
-        {downloads !== undefined && downloads > 0 && (
+        {!(fileType?.toLowerCase().includes('video') || fileType === 'video/link') && (
+          <span>{fileSize}</span>
+        )}
+        {/* {downloads !== undefined && downloads > 0 && (
           <span className="flex items-center gap-1">
             <Download className="w-4 h-4" />
             {downloads}
           </span>
-        )}
+        )} */}
       </div>
 
       {/* Actions */}
@@ -84,12 +87,26 @@ export default function ResourceCard({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onDownload?.();
+              const isVideo = fileType?.toLowerCase().includes('video') || fileType === 'video/link';
+              if (isVideo && storageUrl) {
+                window.open(storageUrl, '_blank');
+              } else {
+                onDownload?.();
+              }
             }}
             className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity flex items-center gap-1.5 text-sm"
           >
-            <Download className="w-3.5 h-3.5" />
-            Download
+            {fileType?.toLowerCase().includes('video') || fileType === 'video/link' ? (
+              <>
+                <Eye className="w-3.5 h-3.5" />
+                Watch
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                Download
+              </>
+            )}
           </button>
         </div>
       </div>
