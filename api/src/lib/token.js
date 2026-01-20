@@ -14,6 +14,6 @@ export function generateToken(user_id, user_type = 'jobseeker', role = null) {
   return jwt.sign(
     payload,
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "8h" }
   );
 }
