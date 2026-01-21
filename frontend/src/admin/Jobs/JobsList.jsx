@@ -59,7 +59,23 @@ export default function JobsList() {
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = (job.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (job.company || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || job.status === filterStatus;
+    
+    // Determine job status based on is_active and deadline
+    let jobStatus = 'draft';
+    if (job.is_active) {
+      // Check if deadline has passed
+      if (job.deadline) {
+        const deadlineDate = new Date(job.deadline);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        jobStatus = deadlineDate < today ? 'closed' : 'active';
+      } else {
+        // No deadline means rolling deadline - it's active
+        jobStatus = 'active';
+      }
+    }
+    
+    const matchesFilter = filterStatus === 'all' || jobStatus === filterStatus;
     return matchesSearch && matchesFilter;
   });
 

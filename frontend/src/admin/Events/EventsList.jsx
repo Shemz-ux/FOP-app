@@ -61,8 +61,16 @@ export default function EventsList() {
   };
 
   const getEventStatus = (event) => {
+    // Check if event is published
+    if (!event.is_active) {
+      return 'draft';
+    }
+    
+    // For published events, check date
     const eventDate = new Date(event.event_date);
     const now = new Date();
+    now.setHours(0, 0, 0, 0); // Reset time to start of day
+    
     if (eventDate > now) return 'upcoming';
     if (eventDate < now) return 'past';
     return 'ongoing';
@@ -173,6 +181,7 @@ export default function EventsList() {
               { value: 'all', label: 'All Status' },
               { value: 'upcoming', label: 'Upcoming' },
               { value: 'past', label: 'Past' },
+              { value: 'draft', label: 'Draft' }
             ]}
             className="w-full md:w-[180px]"
           />
