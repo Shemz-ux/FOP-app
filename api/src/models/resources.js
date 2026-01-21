@@ -137,7 +137,20 @@ const fetchResourceById = async (resourceId) => {
 
 // Update resource
 const updateResource = async (resourceId, updateData) => {
-    const allowedFields = ['title', 'description', 'detailed_description', 'whats_included', 'category', 'uploaded_by', 'is_active'];
+    const allowedFields = [
+        'title', 
+        'description', 
+        'detailed_description', 
+        'whats_included', 
+        'category', 
+        'uploaded_by', 
+        'is_active',
+        'file_name',
+        'file_size',
+        'file_type',
+        'storage_key',
+        'storage_url'
+    ];
     const updates = [];
     const values = [];
     let paramCount = 0;

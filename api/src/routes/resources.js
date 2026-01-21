@@ -26,7 +26,7 @@ router.get('/:resource_id/stream', streamResource);
 
 // Admin-only routes - require authentication for create, update, delete
 router.post('/', adminChecker, upload.single('file'), postResource);
-router.patch('/:resource_id', adminChecker, patchResource);
+router.patch('/:resource_id', adminChecker, upload.single('file'), patchResource);
 router.get('/:resource_id/toggle-active', adminChecker, toggleResourceActive);
 router.delete('/:resource_id', adminChecker, deleteResourceById);
 

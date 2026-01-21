@@ -54,6 +54,34 @@ export default function ResourceDetail() {
     setConfirmModal({ isOpen: false });
   };
 
+  const handleViewResource = async () => {
+    try {
+      // Get presigned URL with inline disposition for viewing
+      const response = await apiGet(`/resources/${id}/download?disposition=inline`);
+      window.open(response.download_url, '_blank');
+    } catch (error) {
+      console.error('Error viewing resource:', error);
+      setToast({
+        message: 'Failed to view resource. Please try again.',
+        type: 'error'
+      });
+    }
+  };
+
+  const handleDownloadResource = async () => {
+    try {
+      // Get presigned URL with attachment disposition for downloading
+      const response = await apiGet(`/resources/${id}/download`);
+      window.open(response.download_url, '_blank');
+    } catch (error) {
+      console.error('Error downloading resource:', error);
+      setToast({
+        message: 'Failed to download resource. Please try again.',
+        type: 'error'
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -116,33 +144,34 @@ export default function ResourceDetail() {
         <span>Back to Resources</span>
       </button>
       
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl mb-2 text-foreground">{resource.title}</h1>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-3xl mb-2 text-foreground break-words">{resource.title}</h1>
           <div className="flex items-center gap-3">
-            <p className="text-muted-foreground">{resource.category}</p>
+            <p className="text-sm sm:text-base text-muted-foreground">{resource.category}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <a
             href={`/resources/${resource.resource_id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm whitespace-nowrap"
           >
             <ExternalLink className="w-4 h-4" />
-            View on Website
+            <span className="hidden sm:inline">View on Website</span>
+            <span className="sm:hidden">View</span>
           </a>
           <Link
             to={`/admin/resources/${resource.resource_id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary text-sm whitespace-nowrap"
           >
             <Pencil className="w-4 h-4" />
             Edit
           </Link>
           <button
             onClick={handleDeleteClick}
-            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors text-sm whitespace-nowrap"
           >
             <Trash2 className="w-4 h-4" />
             Delete
@@ -151,8 +180,8 @@ export default function ResourceDetail() {
       </div>
 
       {/* Resource Info Header */}
-      <div className="bg-card border border-border rounded-xl p-6">
-        <div className="grid md:grid-cols-3 gap-6">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Resource Type</p>
             <p className="text-foreground font-medium">
@@ -212,16 +241,16 @@ export default function ResourceDetail() {
 
       {/* Resource Access */}
       {resource.storage_url && (
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-xl text-foreground mb-4">Access Resource</h2>
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl text-foreground mb-4">Access Resource</h2>
           {resource.file_type?.toLowerCase().includes('video') || resource.file_type === 'video/link' || resource.storage_url.includes('youtube.com') || resource.storage_url.includes('vimeo.com') || resource.storage_url.includes('youtu.be') ? (
             <div className="space-y-4">
-              <p className="text-muted-foreground">This resource is a video hosted externally.</p>
+              <p className="text-sm sm:text-base text-muted-foreground">This resource is a video hosted externally.</p>
               <a
                 href={resource.storage_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+                className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 text-sm sm:text-base"
               >
                 <Eye className="w-4 h-4" />
                 Watch Video
@@ -229,34 +258,41 @@ export default function ResourceDetail() {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-muted-foreground">Download or view this resource file.</p>
-              <a
-                href={resource.storage_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
-              >
-                <Download className="w-4 h-4" />
-                Download Resource
-              </a>
+              <p className="text-sm sm:text-base text-muted-foreground">Download or view this resource file.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleViewResource}
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm sm:text-base"
+                >
+                  <Eye className="w-4 h-4" />
+                  View Resource
+                </button>
+                <button
+                  onClick={handleDownloadResource}
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 text-sm sm:text-base"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Resource
+                </button>
+              </div>
             </div>
           )}
         </div>
       )}
 
       {/* Description */}
-      <div className="bg-card border border-border rounded-xl p-6">
-        <h2 className="text-xl text-foreground mb-4">Short Description</h2>
-        <p className="text-muted-foreground leading-relaxed">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl text-foreground mb-4">Short Description</h2>
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
           {resource.description}
         </p>
       </div>
 
       {/* Detailed Description */}
       {resource.detailed_description && (
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-xl text-foreground mb-4">About This Resource</h2>
-          <p className="text-foreground leading-relaxed whitespace-pre-line">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl text-foreground mb-4">About This Resource</h2>
+          <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-line">
             {resource.detailed_description}
           </p>
         </div>
@@ -264,17 +300,17 @@ export default function ResourceDetail() {
 
       {/* What's Included */}
       {resource.whats_included && (
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-xl text-foreground mb-4">What's Included</h2>
-          <ul className="space-y-3">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl text-foreground mb-4">What's Included</h2>
+          <ul className="space-y-2 sm:space-y-3">
             {resource.whats_included.split('\n').filter(item => item.trim()).map((item, index) => (
-              <li key={index} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <li key={index} className="flex items-start gap-2 sm:gap-3">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="text-foreground">{item.trim()}</span>
+                <span className="text-sm sm:text-base text-foreground">{item.trim()}</span>
               </li>
             ))}
           </ul>

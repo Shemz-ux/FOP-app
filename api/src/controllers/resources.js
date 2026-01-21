@@ -208,11 +208,24 @@ const postResource = async (req, res) => {
     }
 };
 
-// Update resource metadata (not the file)
+// Update resource metadata and optionally replace file
 const patchResource = async (req, res) => {
     try {
         const { resource_id } = req.params;
         const updateData = req.body;
+        const file = req.file;
+
+        console.log('📝 Resource update request received');
+        console.log('Resource ID:', resource_id);
+        console.log('File present:', !!file);
+        if (file) {
+            console.log('File details:', {
+                name: file.originalname,
+                size: file.size,
+                type: file.mimetype
+            });
+        }
+        console.log('Update data keys:', Object.keys(updateData));
 
         if (!resource_id || isNaN(resource_id)) {
             return res.status(400).json({ msg: 'Invalid resource ID' });
@@ -222,6 +235,84 @@ const patchResource = async (req, res) => {
         const existingResource = await fetchResourceById(resource_id);
         if (!existingResource) {
             return res.status(404).json({ msg: 'Resource not found' });
+        }
+
+        console.log('Existing resource:', {
+            id: existingResource.resource_id,
+            title: existingResource.title,
+            storage_key: existingResource.storage_key
+        });
+
+        // If a new file is being uploaded, handle file replacement
+        if (file) {
+            console.log('🔄 Replacing file...');
+            // Validate file size
+            if (!validateFileSize(file.size)) {
+                return res.status(400).json({ 
+                    msg: 'File size exceeds 50MB limit' 
+                });
+            }
+
+            // Delete old file from R2 if it's not a video link
+            if (existingResource.file_type !== 'video/link' && 
+                existingResource.storage_key && 
+                !existingResource.storage_key.includes('youtube.com') && 
+                !existingResource.storage_key.includes('vimeo.com')) {
+                try {
+                    await deleteFile(existingResource.storage_key);
+                } catch (r2Error) {
+                    console.error('R2 deletion error during update:', r2Error);
+                    // Continue with upload even if deletion fails
+                }
+            }
+
+            // Upload new file to R2
+            const uploadResult = await uploadFile(
+                file.buffer,
+                file.originalname,
+                file.mimetype,
+                updateData.category || existingResource.category
+            );
+
+            console.log('✅ File uploaded to R2:', {
+                storageKey: uploadResult.storageKey,
+                publicUrl: uploadResult.publicUrl
+            });
+
+            // Add file metadata to update data
+            updateData.file_name = file.originalname;
+            updateData.file_size = formatFileSize(file.size);
+            updateData.file_type = file.mimetype;
+            updateData.storage_key = uploadResult.storageKey;
+            updateData.storage_url = uploadResult.publicUrl;
+
+            console.log('📋 File metadata added to update data');
+        } else if (updateData.upload_type === 'link' && updateData.video_link) {
+            // Changing from file to video link
+            console.log('🔄 Changing to video link...');
+            
+            // Delete old file from R2 if it exists
+            if (existingResource.file_type !== 'video/link' && 
+                existingResource.storage_key && 
+                !existingResource.storage_key.includes('youtube.com') && 
+                !existingResource.storage_key.includes('vimeo.com')) {
+                try {
+                    await deleteFile(existingResource.storage_key);
+                    console.log('✅ Old file deleted from R2');
+                } catch (r2Error) {
+                    console.error('R2 deletion error during conversion to link:', r2Error);
+                    // Continue even if deletion fails
+                }
+            }
+
+            // Set video link metadata
+            updateData.file_name = 'Video Link';
+            updateData.file_size = 'N/A';
+            updateData.file_type = 'video/link';
+            updateData.storage_key = updateData.video_link;
+            updateData.storage_url = updateData.video_link;
+
+            console.log('📋 Video link metadata set');
         }
 
         // Validate update fields
@@ -234,7 +325,12 @@ const patchResource = async (req, res) => {
             'uploaded_by',  // Maps to created_by in DB (company/person name)
             'upload_type',
             'video_link',
-            'is_active'
+            'is_active',
+            'file_name',
+            'file_size',
+            'file_type',
+            'storage_key',
+            'storage_url'
         ];
         const invalidFields = Object.keys(updateData).filter(
             field => !allowedFields.includes(field)
@@ -348,6 +444,7 @@ const toggleResourceActive = async (req, res) => {
 const downloadResource = async (req, res) => {
     try {
         const { resource_id } = req.params;
+        const { disposition } = req.query;
 
         if (!resource_id || isNaN(resource_id)) {
             return res.status(400).json({ msg: 'Invalid resource ID' });
@@ -362,14 +459,20 @@ const downloadResource = async (req, res) => {
         // Increment download count
         await incrementDownloadCount(resource_id);
 
-        // Generate presigned download URL (expires in 1 hour) with forced download
-        const downloadUrl = await generateDownloadUrl(resource.storage_key, 3600, resource.file_name);
+        // Generate presigned download URL (expires in 1 hour)
+        // disposition can be 'inline' (view) or 'attachment' (download)
+        const downloadUrl = await generateDownloadUrl(
+            resource.storage_key, 
+            3600, 
+            resource.file_name,
+            disposition || 'attachment'
+        );
 
         res.status(200).json({
-            downloadUrl,
-            fileName: resource.file_name,
-            fileSize: resource.file_size,
-            expiresIn: 3600 // seconds
+            download_url: downloadUrl,
+            file_name: resource.file_name,
+            file_size: resource.file_size,
+            expires_in: 3600 // seconds
         });
     } catch (error) {
         console.error('Download resource error:', error);

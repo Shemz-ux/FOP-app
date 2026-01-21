@@ -55,20 +55,36 @@ export const apiGet = async (endpoint, options = {}) => {
 export const apiPost = async (endpoint, data, options = {}) => {
   try {
     const token = localStorage.getItem('token');
+    const isFormData = data instanceof FormData;
+    
     const headers = {
-      'Content-Type': 'application/json',
       ...options.headers,
     };
+    
+    // Only set Content-Type for non-FormData requests
+    // FormData sets its own Content-Type with boundary
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const fetchOptions = {
       method: 'POST',
       headers,
-      body: JSON.stringify(data),
       ...options,
-    });
+    };
+    
+    // Set body based on data type
+    if (isFormData) {
+      fetchOptions.body = data;
+    } else {
+      fetchOptions.body = JSON.stringify(data);
+    }
+    
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, fetchOptions);
     return handleResponse(response);
   } catch (error) {
     return handleError(error);
@@ -79,20 +95,36 @@ export const apiPost = async (endpoint, data, options = {}) => {
 export const apiPatch = async (endpoint, data, options = {}) => {
   try {
     const token = localStorage.getItem('token');
+    const isFormData = data instanceof FormData;
+    
     const headers = {
-      'Content-Type': 'application/json',
       ...options.headers,
     };
+    
+    // Only set Content-Type for non-FormData requests
+    // FormData sets its own Content-Type with boundary
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const fetchOptions = {
       method: 'PATCH',
       headers,
-      body: JSON.stringify(data),
       ...options,
-    });
+    };
+    
+    // Set body based on data type
+    if (isFormData) {
+      fetchOptions.body = data;
+    } else {
+      fetchOptions.body = JSON.stringify(data);
+    }
+    
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, fetchOptions);
     return handleResponse(response);
   } catch (error) {
     return handleError(error);

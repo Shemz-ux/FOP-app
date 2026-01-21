@@ -6,8 +6,6 @@ export default function ResourceCreate() {
   const navigate = useNavigate();
 
   const handleSubmit = async (resourceData) => {
-    const token = localStorage.getItem('token');
-    
     if (resourceData.upload_type === 'file' && resourceData.file) {
       // Handle file upload with FormData
       const formData = new FormData();
@@ -29,11 +27,7 @@ export default function ResourceCreate() {
         formData.append('file', resourceData.file);
       }
 
-      await apiPost('/resources', formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      await apiPost('/resources', formData);
     } else {
       // Handle video link with JSON
       const jsonData = {
@@ -47,12 +41,7 @@ export default function ResourceCreate() {
         video_link: resourceData.video_link,
       };
       
-      await apiPost('/resources', jsonData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      await apiPost('/resources', jsonData);
     }
     
     navigate('/admin/resources');

@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ResourceForm } from './ResourceForm';
 import { apiGet, apiPatch } from '../../services/api';
+import Toast from '../../components/Ui/Toast';
 
 export default function ResourceEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const fetchResource = async () => {
@@ -17,6 +19,10 @@ export default function ResourceEdit() {
         setResource(data.resource);
       } catch (error) {
         console.error('Error fetching resource:', error);
+        setToast({
+          message: 'Failed to load resource',
+          type: 'error'
+        });
       } finally {
         setLoading(false);
       }
@@ -26,63 +32,68 @@ export default function ResourceEdit() {
   }, [id]);
 
   const handleSubmit = async (resourceData) => {
-    const token = localStorage.getItem('token');
-    
-    if (resourceData.file) {
-      // Handle file upload with FormData
-      const formData = new FormData();
-      
-      // Append all resource data except file and internal fields
-      Object.keys(resourceData).forEach(key => {
-        if (key !== 'file' && 
-            key !== 'existing_file_name' && 
-            key !== 'existing_file_size' && 
-            resourceData[key] !== null && 
-            resourceData[key] !== undefined && 
-            resourceData[key] !== '') {
-          formData.append(key, resourceData[key]);
-        }
-      });
-      
-      // Append file
-      formData.append('file', resourceData.file);
+    try {
+      if (resourceData.file) {
+        // Handle file upload with FormData
+        const formData = new FormData();
+        
+        // Append all resource data except file and internal fields
+        Object.keys(resourceData).forEach(key => {
+          if (key !== 'file' && 
+              key !== 'existing_file_name' && 
+              key !== 'existing_file_size' && 
+              resourceData[key] !== null && 
+              resourceData[key] !== undefined && 
+              resourceData[key] !== '') {
+            formData.append(key, resourceData[key]);
+          }
+        });
+        
+        // Append file
+        formData.append('file', resourceData.file);
 
-      await apiPatch(`/resources/${id}`, formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        await apiPatch(`/resources/${id}`, formData);
+      } else {
+        // Handle JSON update (no file change)
+        const jsonData = {
+          title: resourceData.title,
+          category: resourceData.category,
+          description: resourceData.description,
+          detailed_description: resourceData.detailed_description,
+          whats_included: resourceData.whats_included,
+          uploaded_by: resourceData.uploaded_by,
+          is_active: resourceData.is_active,
+        };
+        
+        // Only add upload_type if it's being changed
+        if (resourceData.upload_type) {
+          jsonData.upload_type = resourceData.upload_type;
+        }
+        
+        // Add video link if it's a link type
+        if (resourceData.upload_type === 'link' && resourceData.video_link) {
+          jsonData.video_link = resourceData.video_link;
+        }
+        
+        await apiPatch(`/resources/${id}`, jsonData);
+      }
+      
+      setToast({
+        message: 'Resource updated successfully!',
+        type: 'success'
       });
-    } else {
-      // Handle JSON update (no file change)
-      const jsonData = {
-        title: resourceData.title,
-        category: resourceData.category,
-        description: resourceData.description,
-        detailed_description: resourceData.detailed_description,
-        whats_included: resourceData.whats_included,
-        uploaded_by: resourceData.uploaded_by,
-        is_active: resourceData.is_active,
-      };
-      
-      // Only add upload_type if it's being changed
-      if (resourceData.upload_type) {
-        jsonData.upload_type = resourceData.upload_type;
-      }
-      
-      // Add video link if it's a link type
-      if (resourceData.upload_type === 'link' && resourceData.video_link) {
-        jsonData.video_link = resourceData.video_link;
-      }
-      
-      await apiPatch(`/resources/${id}`, jsonData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+
+      setTimeout(() => {
+        navigate(`/admin/resources/${id}`);
+      }, 1500);
+    } catch (error) {
+      console.error('Error updating resource:', error);
+      const errorMessage = error.response?.data?.msg || error.message || 'Failed to update resource. Please try again.';
+      setToast({
+        message: errorMessage,
+        type: 'error'
       });
     }
-    
-    navigate(`/admin/resources/${id}`);
   };
 
   if (loading) {
@@ -106,11 +117,20 @@ export default function ResourceEdit() {
   }
 
   return (
-    <ResourceForm 
-      resource={resource}
-      onSubmit={handleSubmit}
-      onCancel={() => navigate(`/admin/resources/${id}`)} 
-      isEdit={true}
-    />
+    <>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <ResourceForm 
+        resource={resource}
+        onSubmit={handleSubmit}
+        onCancel={() => navigate(`/admin/resources/${id}`)} 
+        isEdit={true}
+      />
+    </>
   );
 }

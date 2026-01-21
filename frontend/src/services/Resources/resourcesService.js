@@ -40,11 +40,7 @@ export const updateResource = async (resourceId, resourceData, adminToken) => {
 
 // Delete resource (admin only)
 export const deleteResource = async (resourceId, adminToken) => {
-  const data = await apiDelete(`/resources/${resourceId}`, {
-    headers: {
-      'Authorization': `Bearer ${adminToken}`
-    }
-  });
+  const data = await apiDelete(`/resources/${resourceId}`);
   return data.msg;
 };
 
