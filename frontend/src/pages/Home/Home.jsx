@@ -12,6 +12,8 @@ import {
   CircleCheck,
   GraduationCap,
   Building2,
+  User,
+  Quote,
 } from "lucide-react";
 import landingVideo from "../../assets/landing_video.MP4";
 
@@ -27,6 +29,37 @@ const companyLogos = [
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png", alt: "EY" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg", alt: "PWC"}
+];
+
+const testimonials = [
+  {
+    name: "Sarah Johnson",
+    role: "Investment Banking Analyst",
+    company: "JP Morgan",
+    testimonial: "This platform transformed my job search. Within weeks, I landed my dream role at JP Morgan. The resources and networking events were invaluable.",
+    avatar: "SJ"
+  },
+  {
+    name: "Michael Chen",
+    role: "Software Engineer",
+    company: "Accenture",
+    testimonial: "The career guidance and CV templates helped me stand out. I went from dozens of rejections to multiple offers. Couldn't be happier!",
+    avatar: "MC"
+  },
+  {
+    name: "Emily Rodriguez",
+    role: "Management Consultant",
+    company: "EY",
+    testimonial: "The networking events connected me directly with hiring managers. The personalized job recommendations saved me hours of searching.",
+    avatar: "ER"
+  },
+  {
+    name: "James Williams",
+    role: "Data Analyst",
+    company: "Barclays",
+    testimonial: "From student to professional in 3 months. The platform's resources and mentorship program gave me the confidence to succeed.",
+    avatar: "JW"
+  }
 ];
 
 export default function HomePage() {
@@ -66,8 +99,8 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
-              Accelerate Your Career <br />
-              <span className="text-primary">Journey Today</span>
+              Empowering Young Talent<br />
+              <span className="text-primary">Kickstarting Careers</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -112,7 +145,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl mb-4 text-foreground">Kickstart your career journey</h2>
@@ -161,6 +194,52 @@ export default function HomePage() {
                 Download templates, guides, and tools created by industry experts to boost your success
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-secondary/30 border-y border-border">
+        <div className="container mx-auto px-6 py-20">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl mb-4 text-foreground">Success Stories</h2>
+            <p className="text-muted-foreground">
+              Hear from professionals who transformed their careers through our platform
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative overflow-hidden ${
+                  index % 2 === 0 ? 'bg-card' : 'bg-secondary/30'
+                }`}
+              >
+                <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/10" />
+                
+                <div className="flex flex-col items-center text-center mb-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-semibold text-lg mb-3 ring-2 ring-primary/20">
+                    {testimonial.avatar}
+                  </div>
+                  <h3 className="text-foreground font-semibold mb-1">
+                    {testimonial.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {testimonial.role}
+                  </p>
+                  <p className="text-xs text-primary font-semibold">
+                    {testimonial.company}
+                  </p>
+                </div>
+
+                <div className="flex-1 flex items-start">
+                  <p className="text-muted-foreground text-sm leading-relaxed italic">
+                    "{testimonial.testimonial}"
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

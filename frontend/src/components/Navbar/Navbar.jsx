@@ -77,56 +77,7 @@ export default function Navbar({
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center gap-8 ml-5">
-              <Link
-                to="/jobs"
-                className={`transition-colors ${
-                  isActive('/jobs')
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Jobs
-              </Link>
-              <Link
-                to="/events"
-                className={`transition-colors ${
-                  isActive('/events')
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Events
-              </Link>
-              <Link
-                to="/resources"
-                className={`transition-colors ${
-                  isActive('/resources')
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Resources
-              </Link>
-              <Link
-                to="/students"
-                className={`transition-colors ${
-                  isActive('/students')
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Students
-              </Link>
-              <Link
-                to="/employers"
-                className={`transition-colors ${
-                  isActive('/employers')
-                    ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Employers
-              </Link>
+
               <Link
                 to="/about"
                 className={`transition-colors ${
@@ -137,6 +88,62 @@ export default function Navbar({
               >
                 About Us
               </Link>
+
+              <Link
+                to="/employers"
+                className={`transition-colors ${
+                  isActive('/employers')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Employers
+              </Link>
+
+              <Link
+                to="/students"
+                className={`transition-colors ${
+                  isActive('/students')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Students
+              </Link>
+
+              <Link
+                to="/jobs"
+                className={`transition-colors ${
+                  isActive('/jobs')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Jobs
+              </Link>
+
+              <Link
+                to="/resources"
+                className={`transition-colors ${
+                  isActive('/resources')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Resources
+              </Link>
+
+              <Link
+                to="/events"
+                className={`transition-colors ${
+                  isActive('/events')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Events
+              </Link>
+              
             </nav>
           </div>
 
