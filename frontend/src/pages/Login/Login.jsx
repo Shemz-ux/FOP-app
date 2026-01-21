@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import ForgotPassword from "../../components/ui/ForgotPassword";
 import { useAuth } from "../../contexts/AuthContext";
+import landingVideo from "../../assets/landing_video.MP4";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -45,15 +46,30 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center py-12 px-6 overflow-hidden">
+      {/* Video Background */}
+      <div className="absolute inset-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-60"
+        >
+          <source src={landingVideo} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80" />
+      </div>
+      
+      {/* Content */}
+      <div className="w-full max-w-md relative z-10">
         {/* Logo/Header */}
         <div className="text-center mb-8">
           {/* <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/20 text-primary mb-4">
             <Briefcase className="w-8 h-8" />
           </div> */}
-          <h1 className="text-3xl mb-2 text-foreground">Welcome Back</h1>
-          <p className="text-muted-foreground">Sign in to continue your career journey!</p>
+          <h1 className="text-3xl mb-2 text-foreground">Welcome!</h1>
+          <p className="text-muted-foreground">Log In to continue your career journey!</p>
         </div>
 
         {/* Auth Card */}

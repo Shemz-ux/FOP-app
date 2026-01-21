@@ -143,7 +143,7 @@ export default function Navbar({
           {/* Right Section - Always visible */}
           <div className="flex items-center gap-4">
             {/* Theme Toggle */}
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
 
             {/* Auth Section */}
             {isLoggedIn() ? (
@@ -154,7 +154,7 @@ export default function Navbar({
                 className="flex items-center gap-2 px-4 py-2 text-foreground hover:text-primary transition-colors"
               >
                 <LogIn className="w-4 h-4" />
-                <span className="font-medium">Sign In</span>
+                <span className="font-medium">Log In</span>
               </Link>
             )}
           </div>

@@ -58,7 +58,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80" />
         </div>
 
-        <div className="container mx-auto px-6 py-20 lg:py-32 relative z-10">
+        <div className="container mx-auto px-6 py-34 lg:py-48 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
               <TrendingUp className="w-4 h-4" />
@@ -76,14 +76,14 @@ export default function HomePage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/student"
+                to="/students"
                 className="px-8 py-3 border border-border rounded-xl flex items-center justify-center gap-2 hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
               >
                 <GraduationCap className="w-5 h-5" />
                 For Students
               </Link>
               <Link
-                to="/employer"
+                to="/employers"
                 className="px-8 py-3 border bg-primary/10 border-border rounded-xl flex items-center justify-center gap-2 text-primary hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
               >
                 <Building2 className="w-5 h-5" />

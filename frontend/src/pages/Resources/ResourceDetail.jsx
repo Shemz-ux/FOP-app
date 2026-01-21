@@ -147,7 +147,7 @@ export default function ResourceDetail() {
                     </span> */}
                     {resource.created_at && (
                       <>
-                        <span>•</span>
+                        {/* <span>•</span> */}
                         <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
                           {formatTimeAgo(resource.created_at)}

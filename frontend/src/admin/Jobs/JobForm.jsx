@@ -397,11 +397,11 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                     <label className="block text-xs text-muted-foreground">Content Items</label>
                     {section.content.map((item, contentIndex) => (
                       <div key={`${sectionIndex}-${contentIndex}`} className="flex gap-2">
-                        {section.header === 'About the role' ? (
+                        {section.header === 'About the Role' ? (
                           <textarea
                             value={item}
                             onChange={(e) => updateContentItem(sectionIndex, contentIndex, e.target.value)}
-                            placeholder="Content paragraph"
+                            placeholder="Full Job Description"
                             rows={3}
                             className="flex-1 px-4 py-2 bg-input-background border border-input rounded-lg text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm resize-none"
                             required

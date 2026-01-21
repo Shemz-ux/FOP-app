@@ -1,8 +1,9 @@
 import React from 'react';
 import SearchBar from '../SearchBar/SearchBar';
+import { Briefcase, ChartBar, ZoomInIcon} from 'lucide-react';
 
 export default function Hero({
-  title = 'Find Your Dream Job Here',
+  title = 'Find Your Dream Job',
   subtitle,
   backgroundImage,
   onSearch,
@@ -12,21 +13,11 @@ export default function Hero({
       <div className="container mx-auto px-6 py-16">
         <div className="max-w-4xl">
           {/* Title */}
-          <div className="flex items-center gap-4 mb-8">
-            <h1 className="text-4xl text-foreground">{title}</h1>
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-              fill="none"
-              className="text-foreground"
-            >
-              <path
-                d="M16 4L12 12H4L10 18L8 26L16 22L24 26L22 18L28 12H20L16 4Z"
-                fill="currentColor"
-                opacity="0.8"
-              />
-            </svg>
+          <div className="flex items-center gap-3 mb-4">
+            <ZoomInIcon className="w-10 h-10 text-primary" />
+            <h1 className="text-4xl text-foreground">
+              {title}
+            </h1>
           </div>
 
           {subtitle && (
