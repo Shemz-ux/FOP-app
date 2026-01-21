@@ -114,41 +114,70 @@ export default function EventDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-8">
-        <div className="space-y-6 text-left">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-7xl">
+        <div className="space-y-4 sm:space-y-6 text-left">
       <button
         onClick={() => navigate('/admin/events')}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+        className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors mb-2 sm:mb-4"
       >
-        <ArrowLeft className="w-5 h-5" />
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         <span>Back to Events</span>
       </button>
       
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl mb-2 text-foreground">{event.title}</h1>
-          <p className="text-muted-foreground">{event.organiser || event.organiser}</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl mb-2 text-foreground">{event.title}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{event.organiser || event.organiser}</p>
         </div>
-        <div className="flex gap-2">
+        
+        {/* Desktop Button Layout */}
+        <div className="hidden sm:flex gap-2 flex-wrap">
           <a
             href={`/events/${event.event_id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm"
           >
             <ExternalLink className="w-4 h-4" />
             View on Website
           </a>
           <Link
             to={`/admin/events/${event.event_id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary"
+            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary text-sm"
           >
             <Pencil className="w-4 h-4" />
             Edit
           </Link>
           <button
             onClick={handleDeleteClick}
-            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors text-sm"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </button>
+        </div>
+        
+        {/* Mobile Button Layout */}
+        <div className="sm:hidden grid grid-cols-2 gap-2">
+          <a
+            href={`/events/${event.event_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-3 py-2.5 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm col-span-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            View on Website
+          </a>
+          <Link
+            to={`/admin/events/${event.event_id}/edit`}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary text-sm"
+          >
+            <Pencil className="w-4 h-4" />
+            Edit
+          </Link>
+          <button
+            onClick={handleDeleteClick}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors text-sm"
           >
             <Trash2 className="w-4 h-4" />
             Delete
@@ -157,8 +186,8 @@ export default function EventDetail() {
       </div>
 
       {/* Event Info Header */}
-      <div className="bg-card border border-border rounded-xl p-6">
-        <div className="grid md:grid-cols-3 gap-6">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Event Date</p>
             <p className="text-foreground font-medium">
@@ -197,7 +226,7 @@ export default function EventDetail() {
       </div>
 
       {/* Event Stats */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-1">Total Attendees</p>
           <p className="text-2xl text-foreground">{attendees.length}</p>
@@ -212,11 +241,11 @@ export default function EventDetail() {
 
       {/* Attendees Table */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-xl text-foreground">Attendees</h2>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
+          <h2 className="text-lg sm:text-xl text-foreground">Attendees</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[640px]">
             <thead className="bg-secondary">
               <tr>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Name</th>

@@ -240,23 +240,23 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
-        <div className="space-y-6 text-left">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-6xl">
+        <div className="space-y-4 sm:space-y-6 text-left">
           <button
             onClick={onCancel}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+            className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors mb-2 sm:mb-4"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Back</span>
           </button>
           
-          <h1 className="text-2xl sm:text-3xl text-foreground mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl text-foreground mb-3 sm:mb-4 md:mb-6">
             {isEdit ? 'Edit Event' : 'Create Event'}
           </h1>
 
           <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="md:col-span-2">
                   <label htmlFor="event-title" className="block text-sm mb-2 text-foreground">
                     Event Title <span className="text-red-500">*</span>

@@ -71,24 +71,24 @@ export const RESOURCE_FILE_TYPES = [
 export const EVENT_INDUSTRIES = [
   // Tech & Digital
   { value: 'Technology', label: 'Technology', variant: 'blue' },
-  { value: 'Software Development', label: 'Software', variant: 'sky' },
-  { value: 'Data Science', label: 'Data Science', variant: 'cyan' },
-  { value: 'Cybersecurity', label: 'Cybersecurity', variant: 'indigo' },
-  { value: 'AI & Machine Learning', label: 'AI/ML', variant: 'violet' },
+  // { value: 'Software Development', label: 'Software', variant: 'sky' },
+  // { value: 'Data Science', label: 'Data Science', variant: 'cyan' },
+  // { value: 'Cybersecurity', label: 'Cybersecurity', variant: 'indigo' },
+  // { value: 'AI & Machine Learning', label: 'AI/ML', variant: 'violet' },
   
   // Finance & Business
   { value: 'Finance', label: 'Finance', variant: 'green' },
-  { value: 'Accounting', label: 'Accounting', variant: 'emerald' },
-  { value: 'Investment Banking', label: 'Investment Banking', variant: 'teal' },
+  // { value: 'Accounting', label: 'Accounting', variant: 'emerald' },
+  // { value: 'Investment Banking', label: 'Investment Banking', variant: 'teal' },
   { value: 'Consulting', label: 'Consulting', variant: 'purple' },
   { value: 'Management', label: 'Management', variant: 'pink' },
   
   // Engineering & Science
   { value: 'Engineering', label: 'Engineering', variant: 'orange' },
-  { value: 'Civil Engineering', label: 'Civil Eng.', variant: 'amber' },
-  { value: 'Mechanical Engineering', label: 'Mechanical Eng.', variant: 'yellow' },
-  { value: 'Electrical Engineering', label: 'Electrical Eng.', variant: 'lime' },
-  { value: 'Chemical Engineering', label: 'Chemical Eng.', variant: 'rose' },
+  // { value: 'Civil Engineering', label: 'Civil Eng.', variant: 'amber' },
+  // { value: 'Mechanical Engineering', label: 'Mechanical Eng.', variant: 'yellow' },
+  // { value: 'Electrical Engineering', label: 'Electrical Eng.', variant: 'lime' },
+  // { value: 'Chemical Engineering', label: 'Chemical Eng.', variant: 'rose' },
   { value: 'Research & Development', label: 'R&D', variant: 'fuchsia' },
   
   // Creative & Media
@@ -107,7 +107,7 @@ export const EVENT_INDUSTRIES = [
   // Healthcare & Life Sciences
   { value: 'Healthcare', label: 'Healthcare', variant: 'red' },
   { value: 'Pharmaceuticals', label: 'Pharma', variant: 'pink' },
-  { value: 'Biotechnology', label: 'Biotech', variant: 'purple' },
+  // { value: 'Biotechnology', label: 'Biotech', variant: 'purple' },
   { value: 'Medical Devices', label: 'Med Devices', variant: 'rose' },
   
   // Public Sector & Non-Profit
@@ -128,7 +128,7 @@ export const EVENT_INDUSTRIES = [
   { value: 'Sports', label: 'Sports', variant: 'sky' },
   
   { value: 'General', label: 'General', variant: 'gray' },
-  { value: 'Other', label: 'Other', variant: 'gray' }
+  // { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 export const EVENT_TYPES = [
@@ -145,9 +145,9 @@ export const EVENT_TYPES = [
 
 export const EVENT_LOCATION_TYPES = [
   { value: 'Online', label: 'Online', variant: 'emerald' },
-  { value: 'In_person', label: 'In Person', variant: 'amber' },
+  { value: 'In person', label: 'In Person', variant: 'amber' },
   { value: 'Hybrid', label: 'Hybrid', variant: 'violet' },
-  { value: 'Other', label: 'Other', variant: 'gray' }
+  // { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 // ==================== JOBS ====================
