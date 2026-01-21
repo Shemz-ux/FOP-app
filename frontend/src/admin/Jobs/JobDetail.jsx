@@ -78,7 +78,13 @@ export default function JobDetail() {
       university: applicant.jobseeker?.institution_name || 'N/A',
       course: applicant.jobseeker?.area_of_study || 'N/A',
       year: applicant.jobseeker?.uni_year || 'N/A',
-      cvUrl: applicant.jobseeker?.cvUrl
+      cvData: applicant.jobseeker?.cv_storage_key ? {
+        cv_file_name: applicant.jobseeker.cv_file_name,
+        cv_file_size: applicant.jobseeker.cv_file_size,
+        cv_storage_key: applicant.jobseeker.cv_storage_key,
+        cv_storage_url: applicant.jobseeker.cv_storage_url,
+        cv_uploaded_at: applicant.jobseeker.cv_uploaded_at
+      } : null
     } : null;
     
     return <ProfileView profile={profile} onClose={() => setSelectedApplicantId(null)} type="applicant" />;
@@ -137,6 +143,11 @@ export default function JobDetail() {
             href={`/jobs/${job.job_id}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              // Open in new tab and navigate to jobs listing if no referrer
+              window.open(`/jobs/${job.job_id}`, '_blank');
+              e.preventDefault();
+            }}
             className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm"
           >
             <ExternalLink className="w-4 h-4" />
@@ -164,6 +175,11 @@ export default function JobDetail() {
             href={`/jobs/${job.job_id}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              // Open in new tab and navigate to jobs listing if no referrer
+              window.open(`/jobs/${job.job_id}`, '_blank');
+              e.preventDefault();
+            }}
             className="flex items-center justify-center gap-2 px-3 py-2.5 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm col-span-2"
           >
             <ExternalLink className="w-4 h-4" />

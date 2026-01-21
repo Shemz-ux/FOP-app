@@ -163,20 +163,19 @@ export default function Profile() {
     }
   };
 
-  const handleCVUpload = async (file) => {
+  const handleCVUpload = async (cvData) => {
     try {
-      // TODO: Implement file upload to backend
-      // For now, just update local state
-      const newCV = {
-        name: file.name,
-        size: `${(file.size / 1024).toFixed(0)} KB`,
-        uploadedDate: new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-      };
-      setUploadedCV(newCV);
+      // Update jobseeker profile with CV metadata
+      await profileService.updateUserProfile(user.userId, user.userType, {
+        cv_file_name: cvData.cv_file_name,
+        cv_file_size: cvData.cv_file_size,
+        cv_storage_key: cvData.cv_storage_key,
+        cv_storage_url: cvData.cv_storage_url,
+        cv_uploaded_at: cvData.cv_uploaded_at
+      });
+      
+      // Update local state
+      setUploadedCV(cvData);
       console.log('CV uploaded successfully');
     } catch (error) {
       console.error('Error uploading CV:', error);
@@ -186,9 +185,17 @@ export default function Profile() {
 
   const handleCVDelete = async () => {
     try {
-      // TODO: Implement CV delete on backend
+      // Update jobseeker profile to remove CV metadata
+      await profileService.updateUserProfile(user.userId, user.userType, {
+        cv_file_name: null,
+        cv_file_size: null,
+        cv_storage_key: null,
+        cv_storage_url: null,
+        cv_uploaded_at: null
+      });
+      
+      // Clear local state
       setUploadedCV(null);
-      console.log('CV deleted successfully');
     } catch (error) {
       console.error('Error deleting CV:', error);
       console.error('Failed to delete CV');
@@ -224,11 +231,13 @@ export default function Profile() {
           });
           
           // Set CV data if exists
-          if (profile.jobseeker.cv_url) {
+          if (profile.jobseeker.cv_file_name) {
             setUploadedCV({
-              name: profile.jobseeker.cv_url.split('/').pop(),
-              size: "N/A",
-              uploadedDate: "N/A"
+              cv_file_name: profile.jobseeker.cv_file_name,
+              cv_file_size: profile.jobseeker.cv_file_size,
+              cv_storage_key: profile.jobseeker.cv_storage_key,
+              cv_storage_url: profile.jobseeker.cv_storage_url,
+              cv_uploaded_at: profile.jobseeker.cv_uploaded_at
             });
           }
         }

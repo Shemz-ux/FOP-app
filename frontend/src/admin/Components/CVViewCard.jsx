@@ -1,7 +1,36 @@
-import { FileText, Download } from "lucide-react";
+import { FileText, Download, Eye } from "lucide-react";
+import { cvService } from '../../services';
+import { useState } from 'react';
 
 export function CVViewCard({ cvData }) {
-  if (!cvData || !cvData.name) {
+  const [error, setError] = useState(null);
+  
+  const handleViewCV = async () => {
+    if (!cvData?.cv_storage_key) return;
+    
+    try {
+      setError(null);
+      const downloadUrl = await cvService.getCVDownloadUrl(cvData.cv_storage_key, cvData.cv_file_name, 'inline');
+      window.open(downloadUrl, '_blank');
+    } catch (err) {
+      console.error('CV view error:', err);
+      setError('Failed to view CV');
+    }
+  };
+  
+  const handleDownloadCV = async () => {
+    if (!cvData?.cv_storage_key) return;
+    
+    try {
+      setError(null);
+      await cvService.downloadCV(cvData.cv_storage_key, cvData.cv_file_name);
+    } catch (err) {
+      console.error('CV download error:', err);
+      setError('Failed to download CV');
+    }
+  };
+  
+  if (!cvData || !cvData.cv_file_name) {
     return (
       <div className="bg-card border border-border rounded-2xl p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -31,20 +60,36 @@ export function CVViewCard({ cvData }) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-foreground text-sm mb-1 truncate text-left">
-                {cvData.name}
+                {cvData.cv_file_name}
               </div>
               <div className="text-muted-foreground text-xs text-left">
-                {cvData.size && `${cvData.size} • `}
-                {cvData.uploadedDate && `Uploaded ${cvData.uploadedDate}`}
+                {cvData.cv_file_size && `${cvData.cv_file_size} • `}
+                {cvData.cv_uploaded_at && `Uploaded ${new Date(cvData.cv_uploaded_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}`}
               </div>
             </div>
           </div>
         </div>
+        {error && (
+          <div className="mt-3 p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-xs">
+            {error}
+          </div>
+        )}
         <div className="mt-3 pt-3 border-t border-border flex gap-2">
-          <button className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors">
+          <button 
+            onClick={handleViewCV}
+            className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-1.5"
+          >
+            <Eye className="w-4 h-4" />
             View
           </button>
-          <button className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-2">
+          <button 
+            onClick={handleDownloadCV}
+            className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-1.5"
+          >
             <Download className="w-4 h-4" />
             Download
           </button>

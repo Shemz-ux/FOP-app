@@ -100,7 +100,7 @@ export const apiPatch = async (endpoint, data, options = {}) => {
 };
 
 // Generic DELETE request
-export const apiDelete = async (endpoint, options = {}) => {
+export const apiDelete = async (endpoint, data = null, options = {}) => {
   try {
     const token = localStorage.getItem('token');
     const headers = {
@@ -111,11 +111,18 @@ export const apiDelete = async (endpoint, options = {}) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const fetchOptions = {
       method: 'DELETE',
       headers,
       ...options,
-    });
+    };
+    
+    // Add body if data is provided
+    if (data) {
+      fetchOptions.body = JSON.stringify(data);
+    }
+    
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, fetchOptions);
     return handleResponse(response);
   } catch (error) {
     return handleError(error);

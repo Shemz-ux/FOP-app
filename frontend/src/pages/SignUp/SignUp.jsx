@@ -18,6 +18,7 @@ import { getUniversityOptions } from "../../data/universities";
 import { getSchoolsCollegesOptions } from "../../data/schools";
 import { createJobseeker } from "../../services/Jobseekers/jobseekersService";
 import { createSociety } from "../../services/Societies/societiesService";
+import { cvService } from "../../services";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -202,8 +203,36 @@ export default function SignUp() {
     setSubmitError('');
     
     try {
+      // Upload CV to R2 if provided
+      let cvMetadata = null;
+      if (jobSeekerData.cv_file) {
+        try {
+          const cvUploadResult = await cvService.uploadCV(jobSeekerData.cv_file);
+          cvMetadata = {
+            cv_file_name: cvUploadResult.cv_file_name,
+            cv_file_size: cvUploadResult.cv_file_size,
+            cv_storage_key: cvUploadResult.cv_storage_key,
+            cv_storage_url: cvUploadResult.cv_storage_url,
+            cv_uploaded_at: cvUploadResult.cv_uploaded_at
+          };
+        } catch (cvError) {
+          console.error('CV upload error:', cvError);
+          console.error('CV upload error details:', {
+            message: cvError.message,
+            stack: cvError.stack
+          });
+          // Continue with registration even if CV upload fails
+          setSubmitError(`Warning: CV upload failed (${cvError.message}). Account will be created, but you can upload your CV later from your profile.`);
+        }
+      }
+      
       // Prepare data for API (remove confirm_password and cv_file)
       const { confirm_password, cv_file, ...registrationData } = jobSeekerData;
+      
+      // Add CV metadata if upload was successful
+      if (cvMetadata) {
+        Object.assign(registrationData, cvMetadata);
+      }
       
       // Clean up conditional fields based on education level
       if (registrationData.education_level === 'gcse') {
@@ -232,7 +261,8 @@ export default function SignUp() {
       
       console.log('Submitting job seeker data:', registrationData);
       
-      await createJobseeker(registrationData);
+      const result = await createJobseeker(registrationData);
+      console.log('Registration successful:', result);
       
       // Show success message
       setSubmitSuccess(true);
@@ -750,7 +780,8 @@ export default function SignUp() {
                       { value: "2nd", label: "2nd Year" },
                       { value: "3rd", label: "3rd Year" },
                       { value: "4th", label: "4th Year" },
-                      { value: "final", label: "Final Year" }
+                      { value: "final", label: "Final Year" },
+                      { value: "graduated", label: "Graduated" }
                     ]}
                   />
                 </div>

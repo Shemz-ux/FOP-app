@@ -13,6 +13,7 @@ import * as adminService from './Admin/adminService';
 import * as authService from './Auth/authService';
 import * as dashboardService from './Dashboard/dashboardService.js';
 import * as profileService from './Profile/profileService.js';
+import * as cvService from './CV/cvService.js';
 
 // Export all services
 export {
@@ -26,5 +27,6 @@ export {
   profileService,
   adminService,
   authService,
-  dashboardService
+  dashboardService,
+  cvService
 };

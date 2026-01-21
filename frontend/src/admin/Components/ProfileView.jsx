@@ -165,54 +165,7 @@ export function ProfileView({ profile, onClose, type = 'applicant' }) {
                 {/* CV Section */}
                 <div className="md:col-span-2">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">CV / Resume</p>
-                  {profile.cvUrl ? (
-                    <div className="p-4 bg-secondary/30 rounded-xl border border-border">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                            <FileText className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-foreground text-sm mb-1 truncate">
-                              {profile.cvUrl.split('/').pop().replace(/-/g, ' ')}
-                            </div>
-                            <div className="text-muted-foreground text-xs">
-                              Uploaded CV
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-border flex gap-2">
-                        <a 
-                          href={profile.cvUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-center"
-                        >
-                          View
-                        </a>
-                        <a 
-                          href={profile.cvUrl} 
-                          download
-                          className="flex-1 px-3 py-2 text-sm border border-border text-foreground rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Download className="w-4 h-4" />
-                          Download
-                        </a>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-4 bg-secondary/30 rounded-xl border border-border">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-muted/20 text-muted-foreground flex items-center justify-center shrink-0">
-                          <FileText className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">No CV uploaded</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <CVViewCard cvData={profile.cvData} />
                 </div>
               </div>
             </div>

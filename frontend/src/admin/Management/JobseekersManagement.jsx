@@ -87,7 +87,13 @@ export default function JobseekersManagement() {
       role_interest_option_two: jobseeker.role_interest_option_two,
       society: jobseeker.society,
       graduationDate: jobseeker.graduationDate || null,
-      cvUrl: jobseeker.cvUrl
+      cvData: jobseeker.cv_storage_key ? {
+        cv_file_name: jobseeker.cv_file_name,
+        cv_file_size: jobseeker.cv_file_size,
+        cv_storage_key: jobseeker.cv_storage_key,
+        cv_storage_url: jobseeker.cv_storage_url,
+        cv_uploaded_at: jobseeker.cv_uploaded_at
+      } : null
     } : null;
     
     return <ProfileView profile={profile} onClose={() => setSelectedJobseekerId(null)} type="jobseeker" />;

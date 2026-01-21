@@ -11,6 +11,7 @@ import eventsAdvancedRouter from "./events-advanced.js";
 import adminRouter from "./admin.js";
 import resourcesRouter from "./resources.js";
 import mediaUploadRouter from "./mediaUpload.js";
+import cvUploadRouter from "./cvUpload.js";
 
 const apiRouter = express.Router();
 // Advanced filtering routes
@@ -34,6 +35,9 @@ apiRouter.use("/resources", resourcesRouter);
 
 // Media upload routes
 apiRouter.use("/media", mediaUploadRouter);
+
+// CV upload routes
+apiRouter.use("/cv", cvUploadRouter);
 
 // Dashboard routes 
 apiRouter.use("/", jobseekerDashboardRouter);  // Handles /jobseekers/:id/dashboard, etc.

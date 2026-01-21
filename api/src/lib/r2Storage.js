@@ -10,6 +10,14 @@ const isTestEnvironment = process.env.NODE_ENV === 'test' ||
     process.env.R2_ACCESS_KEY_ID === 'YOUR_R2_ACCESS_KEY_ID' ||
     !process.env.R2_ACCESS_KEY_ID;
 
+// Log storage mode on startup
+if (isTestEnvironment) {
+    console.log('⚠️  Using MOCK R2 Storage (test environment or missing credentials)');
+} else {
+    console.log('✅ Using REAL Cloudflare R2 Storage');
+    console.log('📦 R2 Bucket:', process.env.R2_BUCKET_NAME || 'fop-resources');
+}
+
 // Cloudflare R2 Configuration
 const R2_CONFIG = {
     region: 'auto', // Cloudflare R2 uses 'auto' region
@@ -74,7 +82,7 @@ const uploadFile = async (fileBuffer, fileName, contentType, category = 'general
 };
 
 // Generate presigned download URL
-const generateDownloadUrl = async (storageKey, expiresIn = 3600, fileName = null) => {
+const generateDownloadUrl = async (storageKey, expiresIn = 3600, fileName = null, disposition = 'attachment') => {
     // Use mock storage in test environment
     if (isTestEnvironment) {
         return await mockR2.generateDownloadUrl(storageKey, expiresIn);
@@ -84,10 +92,10 @@ const generateDownloadUrl = async (storageKey, expiresIn = 3600, fileName = null
         const command = new GetObjectCommand({
             Bucket: BUCKET_NAME,
             Key: storageKey,
-            // Force download with proper filename
+            // Set disposition: 'inline' for viewing, 'attachment' for downloading
             ResponseContentDisposition: fileName ? 
-                `attachment; filename="${fileName}"` : 
-                'attachment'
+                `${disposition}; filename="${fileName}"` : 
+                disposition
         });
 
         const signedUrl = await getSignedUrl(r2Client, command, { expiresIn });
