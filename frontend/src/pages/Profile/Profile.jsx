@@ -353,9 +353,9 @@ export default function Profile() {
               </div>
               <div>
                 <div className="text-2xl mb-1 text-foreground">
-                  {isSociety() ? savedEventsData.length : registeredEventsData.length}
+                  {savedEventsData.length}
                 </div>
-                <div className="text-muted-foreground text-sm">{isSociety() ? 'Saved Events' : 'Events'}</div>
+                <div className="text-muted-foreground text-sm">{isSociety() ? 'Saved Events' : 'Saved Events'}</div>
               </div>
             </div>
           </div>
