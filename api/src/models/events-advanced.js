@@ -17,6 +17,7 @@ import db from "../db/db.js";
  */
 export const fetchEventsAdvanced = (filters = {}) => {
     const {
+        search,
         organiser,
         industry,
         location,
@@ -43,6 +44,17 @@ export const fetchEventsAdvanced = (filters = {}) => {
     // Filter for upcoming events only
     if (upcoming) {
         conditions.push(`event_date >= CURRENT_DATE`);
+    }
+
+    // Add search filter (searches across title, organiser, and location)
+    if (search) {
+        conditions.push(`(
+            LOWER(title) LIKE LOWER($${paramIndex}) OR 
+            LOWER(organiser) LIKE LOWER($${paramIndex}) OR 
+            LOWER(location) LIKE LOWER($${paramIndex})
+        )`);
+        params.push(`%${search}%`);
+        paramIndex++;
     }
 
     // Add filters if provided
@@ -152,6 +164,7 @@ export const fetchEventsAdvanced = (filters = {}) => {
  */
 export const getEventsCount = (filters = {}) => {
     const {
+        search,
         organiser,
         industry,
         location,
@@ -172,6 +185,17 @@ export const getEventsCount = (filters = {}) => {
 
     if (upcoming) {
         conditions.push(`event_date >= CURRENT_DATE`);
+    }
+
+    // Add search filter (searches across title, organiser, and location)
+    if (search) {
+        conditions.push(`(
+            LOWER(title) LIKE LOWER($${paramIndex}) OR 
+            LOWER(organiser) LIKE LOWER($${paramIndex}) OR 
+            LOWER(location) LIKE LOWER($${paramIndex})
+        )`);
+        params.push(`%${search}%`);
+        paramIndex++;
     }
 
     if (organiser) {

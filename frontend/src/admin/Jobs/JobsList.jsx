@@ -57,8 +57,11 @@ export default function JobsList() {
   };
 
   const filteredJobs = jobs.filter(job => {
-    const matchesSearch = (job.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (job.company || '').toLowerCase().includes(searchTerm.toLowerCase());
+    // Search filter - only apply if searchTerm is not empty
+    const matchesSearch = !searchTerm.trim() || 
+                         (job.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (job.company || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (job.location || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     // Determine job status based on is_active and deadline
     let jobStatus = 'draft';
@@ -162,7 +165,7 @@ export default function JobsList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search jobs by title or company..."
+              placeholder="Search jobs by title, company, or location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -185,20 +188,31 @@ export default function JobsList() {
 
       {/* Jobs Table - Desktop */}
       <div className="hidden md:block bg-card border border-border rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-secondary">
-              <tr>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Job Title</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Company</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Location</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Applicants</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Status</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredJobs.map(job => (
+        {filteredJobs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <Briefcase className="w-12 h-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">No jobs found</h3>
+            <p className="text-sm text-muted-foreground text-center">
+              {searchTerm || filterStatus !== 'all'
+                ? 'Try adjusting your search or filters'
+                : 'No jobs have been created yet'}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-secondary">
+                <tr>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Job Title</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Company</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Location</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Applicants</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Status</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {filteredJobs.map(job => (
                 <tr key={job.job_id} className="hover:bg-secondary/50 transition-colors">
                   <td className="px-6 py-4 text-foreground">{job.title}</td>
                   <td className="px-6 py-4 text-muted-foreground">{job.company}</td>
@@ -249,15 +263,29 @@ export default function JobsList() {
                     </div>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Jobs Cards - Mobile */}
       <div className="md:hidden space-y-4">
-        {currentJobs.map(job => (
+        {filteredJobs.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-8">
+            <div className="flex flex-col items-center justify-center text-center">
+              <Briefcase className="w-12 h-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No jobs found</h3>
+              <p className="text-sm text-muted-foreground">
+                {searchTerm || filterStatus !== 'all'
+                  ? 'Try adjusting your search or filters'
+                  : 'No jobs have been created yet'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          currentJobs.map(job => (
           <div key={job.job_id} className="bg-card border border-border rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -316,11 +344,12 @@ export default function JobsList() {
                 <Trash2 className="w-4 h-4 text-red-500" />
               </button>
             </div>
-          </div>
-        ))}
+            </div>
+          ))
+        )}
         
         {/* Mobile Pagination */}
-        {totalPages > 1 && (
+        {filteredJobs.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between pt-4 border-t border-border">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}

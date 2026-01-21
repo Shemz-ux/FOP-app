@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import Pagination from "../../components/Pagination/Pagination";
 import EducationCard from "../../components/ui/EducationCard";
 import CVUploadCard from "../../components/ui/CVUploadCard";
+import CustomSelect from "../../components/Ui/CustomSelect";
 import { useAuth } from '../../contexts/AuthContext';
 import { dashboardService } from '../../services';
 import { profileService } from '../../services';
@@ -395,18 +396,18 @@ export default function Profile() {
           {/* RIGHT COLUMN */}
           <div className={isJobseeker() ? "lg:col-span-3" : "lg:col-span-4"}>
             {/* Mobile Dropdown */}
-            <div className="relative md:hidden mb-6">
-              <select
+            <div className="md:hidden mb-6">
+              <CustomSelect
                 value={activeTab}
                 onChange={(e) => setActiveTab(e.target.value)}
-                className="w-full px-4 py-3 bg-card border border-border rounded-xl text-foreground appearance-none cursor-pointer"
-              >
-                <option value="saved-jobs">Saved Jobs</option>
-                {isJobseeker() && <option value="applied-jobs">Applied Jobs</option>}
-                <option value="saved-events">Saved Events</option>
-                {isJobseeker() && <option value="registered-events">Registered Events</option>}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                options={[
+                  { value: "saved-jobs", label: "Saved Jobs" },
+                  ...(isJobseeker() ? [{ value: "applied-jobs", label: "Applied Jobs" }] : []),
+                  { value: "saved-events", label: "Saved Events" },
+                  ...(isJobseeker() ? [{ value: "registered-events", label: "Registered Events" }] : [])
+                ]}
+                placeholder="Select tab"
+              />
             </div>
 
             {/* Desktop Tabs */}

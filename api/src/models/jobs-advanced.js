@@ -16,6 +16,7 @@ import db from "../db/db.js";
  */
 export const fetchJobsAdvanced = (filters = {}) => {
     const {
+        search,
         company,
         industry,
         location,
@@ -37,6 +38,17 @@ export const fetchJobsAdvanced = (filters = {}) => {
     conditions.push(`is_active = $${paramIndex}`);
     params.push(active);
     paramIndex++;
+
+    // Add search filter (searches across title, company, and location)
+    if (search) {
+        conditions.push(`(
+            LOWER(title) LIKE LOWER($${paramIndex}) OR 
+            LOWER(company) LIKE LOWER($${paramIndex}) OR 
+            LOWER(location) LIKE LOWER($${paramIndex})
+        )`);
+        params.push(`%${search}%`);
+        paramIndex++;
+    }
 
     // Add filters if provided
     if (company) {
@@ -143,6 +155,7 @@ export const fetchJobsAdvanced = (filters = {}) => {
  */
 export const getJobsCount = (filters = {}) => {
     const {
+        search,
         company,
         industry,
         location,
@@ -159,6 +172,17 @@ export const getJobsCount = (filters = {}) => {
     conditions.push(`is_active = $${paramIndex}`);
     params.push(active);
     paramIndex++;
+
+    // Add search filter (searches across title, company, and location)
+    if (search) {
+        conditions.push(`(
+            LOWER(title) LIKE LOWER($${paramIndex}) OR 
+            LOWER(company) LIKE LOWER($${paramIndex}) OR 
+            LOWER(location) LIKE LOWER($${paramIndex})
+        )`);
+        params.push(`%${search}%`);
+        paramIndex++;
+    }
 
     if (company) {
         conditions.push(`LOWER(company) LIKE LOWER($${paramIndex})`);

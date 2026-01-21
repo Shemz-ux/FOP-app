@@ -67,7 +67,10 @@ export default function ResourcesList() {
   };
 
   const filteredResources = resources.filter(resource => {
-    const matchesSearch = (resource.title || '').toLowerCase().includes(searchTerm.toLowerCase());
+    // Search filter - only apply if searchTerm is not empty
+    const matchesSearch = !searchTerm.trim() || 
+                         (resource.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (resource.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || resource.category?.toLowerCase() === filterType.toLowerCase();
     return matchesSearch && matchesFilter;
   });

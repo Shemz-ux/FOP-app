@@ -77,8 +77,11 @@ export default function EventsList() {
   };
 
   const filteredEvents = events.filter(event => {
-    const matchesSearch = (event.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (event.organiser || '').toLowerCase().includes(searchTerm.toLowerCase());
+    // Search filter - only apply if searchTerm is not empty
+    const matchesSearch = !searchTerm.trim() || 
+                         (event.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (event.organiser || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (event.location || '').toLowerCase().includes(searchTerm.toLowerCase());
     const status = getEventStatus(event);
     const matchesFilter = filterStatus === 'all' || status === filterStatus;
     return matchesSearch && matchesFilter;
@@ -167,7 +170,7 @@ export default function EventsList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search events by title or organiser..."
+              placeholder="Search events by title, organiser, or location..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
@@ -190,20 +193,31 @@ export default function EventsList() {
 
       {/* Events Table - Desktop */}
       <div className="hidden md:block bg-card border border-border rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-secondary">
-              <tr>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Event Title</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Organiser</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Date</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Attendees</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Status</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredEvents.map(event => {
+        {filteredEvents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">No events found</h3>
+            <p className="text-sm text-muted-foreground text-center">
+              {searchTerm || filterStatus !== 'all'
+                ? 'Try adjusting your search or filters'
+                : 'No events have been created yet'}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-secondary">
+                <tr>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Event Title</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Organiser</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Date</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Attendees</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Status</th>
+                  <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {currentEvents.map(event => {
                 const status = getEventStatus(event);
                 return (
                 <tr key={event.event_id} className="hover:bg-secondary/50 transition-colors">
@@ -257,15 +271,29 @@ export default function EventsList() {
                   </td>
                 </tr>
               );
-              })}
-            </tbody>
-          </table>
-        </div>
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Events Cards - Mobile */}
       <div className="md:hidden space-y-4">
-        {currentEvents.map(event => (
+        {filteredEvents.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-8">
+            <div className="flex flex-col items-center justify-center text-center">
+              <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No events found</h3>
+              <p className="text-sm text-muted-foreground">
+                {searchTerm || filterStatus !== 'all'
+                  ? 'Try adjusting your search or filters'
+                  : 'No events have been created yet'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          currentEvents.map(event => (
           <div key={event.event_id} className="bg-card border border-border rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -325,10 +353,11 @@ export default function EventsList() {
               </button>
             </div>
           </div>
-        ))}
+          ))
+        )}
         
         {/* Mobile Pagination */}
-        {totalPages > 1 && (
+        {filteredEvents.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-between pt-4 border-t border-border">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
