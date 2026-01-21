@@ -115,41 +115,70 @@ export default function JobDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-8">
-        <div className="space-y-6 text-left">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-7xl">
+        <div className="space-y-4 sm:space-y-6 text-left">
       <button
         onClick={() => navigate('/admin/jobs')}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
+        className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors mb-2 sm:mb-4"
       >
-        <ArrowLeft className="w-5 h-5" />
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         <span>Back to Jobs</span>
       </button>
       
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl mb-2 text-foreground">{job.title}</h1>
-          <p className="text-muted-foreground">{job.company}</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl mb-2 text-foreground">{job.title}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{job.company}</p>
         </div>
-        <div className="flex gap-2">
+        
+        {/* Desktop Button Layout */}
+        <div className="hidden sm:flex gap-2 flex-wrap">
           <a
             href={`/jobs/${job.job_id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm"
           >
             <ExternalLink className="w-4 h-4" />
             View on Website
           </a>
           <Link
             to={`/admin/jobs/${job.job_id}/edit`}
-            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary"
+            className="flex items-center gap-2 px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary text-sm"
           >
             <Pencil className="w-4 h-4" />
             Edit
           </Link>
           <button
             onClick={handleDeleteClick}
-            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors text-sm"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </button>
+        </div>
+        
+        {/* Mobile Button Layout */}
+        <div className="sm:hidden grid grid-cols-2 gap-2">
+          <a
+            href={`/jobs/${job.job_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-3 py-2.5 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm col-span-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            View on Website
+          </a>
+          <Link
+            to={`/admin/jobs/${job.job_id}/edit`}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary text-sm"
+          >
+            <Pencil className="w-4 h-4" />
+            Edit
+          </Link>
+          <button
+            onClick={handleDeleteClick}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors text-sm"
           >
             <Trash2 className="w-4 h-4" />
             Delete

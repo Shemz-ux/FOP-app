@@ -14,6 +14,8 @@ export default function ResourcesList() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState(null);
   const [toast, setToast] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const resourcesPerPage = 9;
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -70,6 +72,17 @@ export default function ResourcesList() {
     return matchesSearch && matchesFilter;
   });
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredResources.length / resourcesPerPage);
+  const indexOfLastResource = currentPage * resourcesPerPage;
+  const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
+  const currentResources = filteredResources.slice(indexOfFirstResource, indexOfLastResource);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterType]);
+
   const getCategoryColor = (category) => {
     const colors = {
       'CV': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -116,41 +129,41 @@ export default function ResourcesList() {
         <span className="text-foreground">Resources</span>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl mb-2 text-foreground">Resource Management</h1>
-          <p className="text-muted-foreground">Manage all resources and downloads</p>
+          <h1 className="text-2xl sm:text-3xl mb-2 text-foreground">Resource Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage all resources and downloads</p>
         </div>
         <Link
           to="/admin/resources/new"
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 whitespace-nowrap w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
-          Upload Resource
+          <span className="sm:inline">Upload Resource</span>
         </Link>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-card border border-border rounded-xl p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Total Resources</p>
-              <p className="text-3xl mb-1 text-foreground text-foreground">{resources.length}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Resources</p>
+              <p className="text-2xl sm:text-3xl mb-1 text-foreground">{resources.length}</p>
             </div>
-            <div className="p-3 rounded-xl bg-primary/10">
-              <FileText className="w-8 h-8 text-primary" />
+            <div className="p-2 sm:p-3 rounded-xl bg-primary/10">
+              <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             </div>
           </div>
         </div>
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Active Resources</p>
-              <p className="text-3xl mb-1 text-foreground text-green-500">{resources.filter(r => r.is_active).length}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Active Resources</p>
+              <p className="text-2xl sm:text-3xl mb-1 text-green-500">{resources.filter(r => r.is_active).length}</p>
             </div>
-            <div className="p-3 rounded-xl bg-green-500/10">
-              <CheckCircle className="w-8 h-8 text-green-500" />
+            <div className="p-2 sm:p-3 rounded-xl bg-green-500/10">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
             </div>
           </div>
         </div>
@@ -189,8 +202,8 @@ export default function ResourcesList() {
         </div>
       </div>
 
-      {/* Resources Table */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      {/* Resources Table - Desktop */}
+      <div className="hidden md:block bg-card border border-border rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-secondary">
@@ -263,6 +276,96 @@ export default function ResourcesList() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Resources Cards - Mobile */}
+      <div className="md:hidden space-y-4">
+        {currentResources.map(resource => (
+          <div key={resource.resource_id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-medium text-foreground mb-1 truncate">{resource.title}</h3>
+                <span className={`inline-block px-2.5 py-1 rounded-lg text-xs border ${getCategoryColor(resource.category)}`}>
+                  {resource.category}
+                </span>
+              </div>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${
+                resource.is_active 
+                  ? 'bg-green-500/10 text-green-500 border border-green-500/20' 
+                  : 'bg-red-500/10 text-red-500 border border-red-500/20'
+              }`}>
+                {resource.is_active ? (
+                  <>
+                    <CheckCircle className="w-3 h-3" />
+                    Active
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-3 h-3" />
+                    Inactive
+                  </>
+                )}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Download className="w-3.5 h-3.5" />
+                <span>{resource.download_count?.toLocaleString() || 0} downloads</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5" />
+                <span>{new Date(resource.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2 border-t border-border">
+              <Link
+                to={`/admin/resources/${resource.resource_id}`}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
+              >
+                <BarChart className="w-4 h-4" />
+                View
+              </Link>
+              <Link
+                to={`/admin/resources/${resource.resource_id}/edit`}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </Link>
+              <button
+                onClick={() => handleDeleteClick(resource)}
+                className="px-3 py-2 border border-red-500/20 bg-red-500/10 rounded-lg hover:bg-red-500/20 transition-colors"
+              >
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </button>
+            </div>
+          </div>
+        ))}
+        
+        {/* Mobile Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-4 border-t border-border">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
         </div>
       </div>
