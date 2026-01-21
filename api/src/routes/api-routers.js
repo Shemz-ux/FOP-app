@@ -10,6 +10,7 @@ import jobsAdvancedRouter from "./jobs-advanced.js";
 import eventsAdvancedRouter from "./events-advanced.js";
 import adminRouter from "./admin.js";
 import resourcesRouter from "./resources.js";
+import mediaUploadRouter from "./mediaUpload.js";
 
 const apiRouter = express.Router();
 // Advanced filtering routes
@@ -30,6 +31,9 @@ apiRouter.use("/admin", adminRouter);
 
 // Resources routes
 apiRouter.use("/resources", resourcesRouter);
+
+// Media upload routes
+apiRouter.use("/media", mediaUploadRouter);
 
 // Dashboard routes 
 apiRouter.use("/", jobseekerDashboardRouter);  // Handles /jobseekers/:id/dashboard, etc.

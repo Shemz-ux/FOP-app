@@ -17,8 +17,10 @@ function tokenChecker(req, res, next) {
     if (!user_id) {
       throw new Error("No sub claim in JWT token");
     }
-    // Add the user_id from the payload to the Express req object.
+    // Add the user_id and user_type from the payload to the Express req object.
     req.user_id = user_id;
+    req.user_type = payload.user_type || null;
+    req.user_role = payload.role || null;
     next();
   } catch (err) {
     console.log(err);

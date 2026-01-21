@@ -377,5 +377,4 @@ const createResourcesTable = () => {
     })
 }
 
-
 export default seed;
