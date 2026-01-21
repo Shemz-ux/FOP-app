@@ -196,7 +196,13 @@ export default function JobDetails() {
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-6">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                if (window.history.length > 1 && document.referrer) {
+                  navigate(-1);
+                } else {
+                  navigate('/jobs');
+                }
+              }}
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />

@@ -122,7 +122,13 @@ export default function ResourceDetail() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <button
-          onClick={() => navigate('/resources')}
+          onClick={() => {
+            if (window.history.length > 1 && document.referrer) {
+              navigate(-1);
+            } else {
+              navigate('/resources');
+            }
+          }}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
