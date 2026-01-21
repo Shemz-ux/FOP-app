@@ -1,6 +1,6 @@
 import { Image, Upload, X, RefreshCw } from "lucide-react";
 
-export function ImageUploadCard({ 
+export default function ImageUploadCard({ 
   imagePreview, 
   imageFile, 
   onImageChange, 
@@ -17,17 +17,17 @@ export function ImageUploadCard({
 
   if (!imagePreview) {
     return (
-      <div className="bg-card border border-border rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 w-full">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
           {/* <Image className="w-5 h-5 text-primary" /> */}
           <label className="text-sm text-foreground">
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
           </label>
         </div>
-        <label className="block p-8 border-2 border-dashed border-border rounded-xl text-center hover:border-primary transition-colors cursor-pointer group">
-          <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-3 group-hover:text-primary transition-colors" />
-          <div className="text-muted-foreground text-sm group-hover:text-foreground transition-colors">
+        <label className="block p-6 sm:p-8 border-2 border-dashed border-border rounded-xl text-center hover:border-primary transition-colors cursor-pointer group">
+          <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground mx-auto mb-2 sm:mb-3 group-hover:text-primary transition-colors" />
+          <div className="text-muted-foreground text-xs sm:text-sm group-hover:text-foreground transition-colors">
             Click to upload or drag and drop
           </div>
           <div className="text-muted-foreground text-xs mt-1">
@@ -45,8 +45,8 @@ export function ImageUploadCard({
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-6">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 w-full">
+      <div className="flex items-center gap-2 mb-3 sm:mb-4">
         {/* <Image className="w-5 h-5 text-primary" /> */}
         <label className="text-sm text-foreground">
           {label}
@@ -54,12 +54,12 @@ export function ImageUploadCard({
         </label>
       </div>
 
-      <div className="p-4 bg-secondary/30 rounded-xl border border-border">
-        <div className="relative mb-3">
+      <div className="p-3 sm:p-4 bg-secondary/30 rounded-xl border border-border">
+        <div className="relative mb-3 w-full overflow-hidden">
           <img
             src={imagePreview}
             alt="Preview"
-            className="w-full h-48 object-cover rounded-lg border border-border"
+            className="w-full h-40 sm:h-48 object-cover rounded-lg border border-border"
           />
           <button
             type="button"

@@ -54,7 +54,7 @@ export default function Jobs() {
   const [workTypes, setWorkTypes] = useState([
     { label: "Remote", value: "Remote", checked: false },
     { label: "Hybrid", value: "Hybrid", checked: false },
-    { label: "On-site", value: "On-site", checked: false },
+    { label: "On site", value: "On-site", checked: false },
   ]);
 
   const [industries, setIndustries] = useState([

@@ -1,12 +1,14 @@
-import React from 'react';
+  import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CustomDropdown from '../../components/Admin/CustomDropdown';
 import DateInput from '../../components/Ui/DateInput';
 import Toast from '../../components/Ui/Toast';
+import ImageUploadCard from '../../components/Admin/ImageUploadCard';
 import { JOB_INDUSTRIES, JOB_ROLE_TYPES, JOB_WORK_TYPES, JOB_EXPERIENCE_LEVELS } from '../../utils/dropdownOptions';
 import { parseDescriptionToSections, sectionsToDescription } from '../../utils/jobDescriptionParser';
+import { uploadMedia } from '../../services/Media/mediaUploadService';
 
-export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
+export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
 
   const [formData, setFormData] = React.useState({
     title: job?.title || '',
@@ -32,8 +34,17 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
     ],
   });
 
+  const [logoFile, setLogoFile] = React.useState(null);
+  const [logoPreview, setLogoPreview] = React.useState(job?.company_logo || null);
   const [isRollingDeadline, setIsRollingDeadline] = React.useState(!job?.deadline);
   const [toast, setToast] = React.useState(null);
+  const [uploading, setUploading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (job) {
+      setLogoPreview(job.company_logo || null);
+    }
+  }, [job]);
 
   const addSection = () => {
     setFormData({
@@ -71,10 +82,46 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
     setFormData({ ...formData, descriptionSections: newSections });
   };
 
+  const handleLogoChange = (file) => {
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
+      setUploading(true);
+
+      // Upload logo to Cloudinary if a new file is selected
+      let logoUrl = formData.companyLogo || logoPreview;
+      if (logoFile) {
+        console.log('Uploading company logo to Cloudinary...');
+        const logoUploadResult = await uploadMedia(
+          logoFile,
+          'company_logo',
+          isEdit ? job?.company_logo : null
+        );
+
+        if (!logoUploadResult.success) {
+          throw new Error(logoUploadResult.error || 'Failed to upload logo to Cloudinary');
+        }
+
+        logoUrl = logoUploadResult.data.url;
+        console.log('Logo uploaded successfully:', logoUrl);
+      }
+
       // Convert descriptionSections to description string with proper formatting
       const descriptionText = sectionsToDescription(formData.descriptionSections);
 
@@ -82,7 +129,7 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
         title: formData.title,
         company: formData.company,
         company_color: formData.companyColor,
-        company_logo: formData.companyLogo || null,
+        company_logo: logoUrl,
         company_website: formData.companyWebsite,
         company_description: formData.companyDescription,
         short_description: formData.shortDescription,
@@ -120,13 +167,15 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
         message: errorMessage,
         type: 'error'
       });
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-8">
-        <div className="space-y-6 text-left">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-7xl">
+        <div className="space-y-4 sm:space-y-6 text-left">
       <button
         onClick={onCancel}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
@@ -135,10 +184,10 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
         <span>Back</span>
       </button>
       
-      <h1 className="text-3xl text-foreground mb-2">
+      <h1 className="text-2xl sm:text-3xl text-foreground mb-2">
         {isEdit ? 'Edit Job Posting' : 'Create Job Posting'}
       </h1>
-      <p className="text-sm text-muted-foreground mb-6">
+      <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
         All fields marked with <span className="text-red-500">*</span> must be filled, otherwise the job will not be posted.
       </p>
 
@@ -151,9 +200,9 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
         />
       )}
 
-      <div className="bg-card border border-border rounded-xl p-6 text-left">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 text-left overflow-hidden">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label htmlFor="job-title" className="block text-sm mb-2 text-foreground">
                 Job Title <span className="text-red-500">*</span>
@@ -289,17 +338,14 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="company-logo" className="block text-sm mb-2 text-foreground">
-                Company Logo URL
-              </label>
-              <input
-                id="company-logo"
-                type="url"
-                value={formData.companyLogo}
-                onChange={(e) => setFormData({ ...formData, companyLogo: e.target.value })}
-                placeholder="https://logo.clearbit.com/company.com"
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            <div className="md:col-span-2">
+              <ImageUploadCard
+                imagePreview={logoPreview}
+                imageFile={logoFile}
+                onImageChange={handleLogoChange}
+                onRemoveImage={handleRemoveLogo}
+                label="Company Logo (optional)"
+                required={false}
               />
             </div>
 
@@ -454,14 +500,16 @@ export function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
           <div className="flex gap-4">
             <button
               type="submit"
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90"
+              disabled={uploading}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEdit ? 'Update Job Posting' : 'Create Job Posting'}
+              {uploading ? 'Uploading...' : (isEdit ? 'Update Job Posting' : 'Create Job Posting')}
             </button>
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-3 border border-border rounded-xl hover:bg-secondary"
+              disabled={uploading}
+              className="px-6 py-3 border border-border rounded-xl hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>

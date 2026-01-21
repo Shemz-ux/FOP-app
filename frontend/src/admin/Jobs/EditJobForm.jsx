@@ -1,5 +1,5 @@
 import React from 'react';
-import { JobForm } from './JobForm';
+import JobForm from './JobForm';
 import { apiPatch } from '../../services/api';
 
 export function EditJobForm({ job, onCancel }) {

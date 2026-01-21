@@ -360,7 +360,7 @@ export default function JobDetails() {
                       Work Type
                     </div>
                     <div className="text-foreground">
-                      {job.work_type}
+                      {job.work_type === 'On-site' ? 'On site' : job.work_type}
                     </div>
                   </div>
                 </div>
@@ -397,7 +397,7 @@ export default function JobDetails() {
                 <h3 className="text-foreground font-medium mb-4">
                   About {job.company}
                 </h3>
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-left mb-4">
                   <CompanyLogo 
                     logo={job.company_logo} 
                     color={job.company_color} 

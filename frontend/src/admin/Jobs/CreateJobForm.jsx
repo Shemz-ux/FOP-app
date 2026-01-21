@@ -1,5 +1,5 @@
 import React from 'react';
-import { JobForm } from './JobForm';
+import JobForm from './JobForm';
 import { apiPost } from '../../services/api';
 
 export function CreateJobForm({ onCancel }) {

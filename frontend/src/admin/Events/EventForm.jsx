@@ -4,7 +4,7 @@ import CustomDropdown from '../../components/Admin/CustomDropdown';
 import DateInput from '../../components/Ui/DateInput';
 import TimeInput from '../../components/Ui/TimeInput';
 import Toast from '../../components/Ui/Toast';
-import { ImageUploadCard } from '../../components/Admin/ImageUploadCard';
+import ImageUploadCard from '../../components/Admin/ImageUploadCard';
 import { EVENT_INDUSTRIES, EVENT_TYPES, EVENT_LOCATION_TYPES } from '../../utils/dropdownOptions';
 import { parseDescriptionToSections, sectionsToDescription } from '../../utils/eventDescriptionParser';
 import { uploadMedia } from '../../services/Media/mediaUploadService';
