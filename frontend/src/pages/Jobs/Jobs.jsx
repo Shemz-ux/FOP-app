@@ -26,33 +26,51 @@ export default function Jobs() {
   const jobsPerPage = 9;
 
   const [jobTypes, setJobTypes] = useState([
-    { label: "Summer Intern", value: "Summer Intern", checked: false },
+    { label: "Insight Day", value: "Insight Day", checked: false },
+    { label: 'Internship',  value: 'Internship', checked: false },
     { label: "Spring Week", value: "Spring Week", checked: false },
-    { label: "Grad Scheme", value: "Grad Scheme", checked: false },
-    { label: "Year Placement", value: "Year Placement", checked: false },
+    // { value: 'Work Experience', label: 'Work Experience', variant: 'amber' },
+    { label: "Graduate Scheme", value: "Graduate Scheme", checked: false },
+    { label: "Placement", value: "Placement", checked: false },
+    { value: 'Apprenticeship', label: 'Apprenticeship', checked: false},
+    { label: "Degree Apprentice", value: "Degree Apprentice", checked: false },
     { label: "Full-time", value: "Full-time", checked: false },
     { label: "Part-time", value: "Part-time", checked: false },
     { label: "Contract", value: "Contract", checked: false },
-    { label: "Vac Scheme", value: "Vac Scheme", checked: false },
-    { label: "Degree Apprentice", value: "Degree Apprentice", checked: false },
+    // { label: "Other", value: "Other", checked: false },
+    // { label: "Vac Scheme", value: "Vac Scheme", checked: false },
   ]);
 
   const [experienceLevels, setExperienceLevels] = useState([
-    { label: "No Experience", value: "No Experience", checked: false },
+    { label: "School Leaver", value: "School Leaver", checked: false },
     { label: "Student", value: "Student", checked: false },
-    { label: "Penultimate Year", value: "Penultimate Year", checked: false },
-    { label: "Final Year", value: "Final Year", checked: false },
     { label: "Graduate", value: "Graduate", checked: false },
     { label: "Entry Level", value: "Entry Level", checked: false },
     { label: "Mid Level", value: "Mid Level", checked: false },
-    { label: "Associate", value: "Associate", checked: false },
     { label: "Senior", value: "Senior", checked: false },
+    // { label: "Other", value: "Other", checked: false },
   ]);
 
   const [workTypes, setWorkTypes] = useState([
     { label: "Remote", value: "Remote", checked: false },
     { label: "Hybrid", value: "Hybrid", checked: false },
     { label: "On-site", value: "On-site", checked: false },
+  ]);
+
+  const [industries, setIndustries] = useState([
+    { label: "Technology & IT", value: "Technology", checked: false },
+    { label: "Finance", value: "Finance", checked: false },
+    { label: "Consulting", value: "Consulting", checked: false },
+    { label: "Engineering, Energy & Infrastructure", value: "Engineering", checked: false },
+    { label: "Marketing", value: "Marketing", checked: false },
+    { label: "Media", value: "Media", checked: false },
+    { label: "Healthcare", value: "Healthcare", checked: false },
+    { label: "Management & Operations", value: "Management ", checked: false },
+    { label: "Pharmaceuticals", value: "Pharmaceuticals", checked: false },
+    { label: "Insurance", value: "Insurance", checked: false },
+    { label: "Education", value: "Education", checked: false },
+    { label: "Law", value: "Law", checked: false },
+    // { label: "Other", value: "Other", checked: false },
   ]);
 
   const toggleFavorite = async (jobId) => {
@@ -105,10 +123,18 @@ export default function Jobs() {
     );
   };
 
+  const handleIndustryChange = (index, checked) => {
+    setIndustries((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, checked } : item
+      )
+    );
+  };
+
   // Fetch jobs from API
   useEffect(() => {
     fetchJobs();
-  }, [currentPage, sortBy, searchFilters, jobTypes, experienceLevels, workTypes]);
+  }, [currentPage, sortBy, searchFilters, jobTypes, industries, experienceLevels, workTypes]);
 
   // Load saved jobs on mount
   useEffect(() => {
@@ -145,6 +171,9 @@ export default function Jobs() {
       
       const checkedWorkTypes = workTypes.filter(w => w.checked).map(w => w.value);
       if (checkedWorkTypes.length > 0) filters.work_type = checkedWorkTypes.join(',');
+      
+      const checkedIndustries = industries.filter(i => i.checked).map(i => i.value);
+      if (checkedIndustries.length > 0) filters.industry = checkedIndustries.join(',');
 
       // Map sort options
       const sortMap = {
@@ -175,7 +204,10 @@ export default function Jobs() {
 
   const handleClearAll = () => {
     setJobTypes((prev) => prev.map((item) => ({ ...item, checked: false })));
-    setExperienceLevels((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setIndustries((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setExperienceLevels((prev) =>
+      prev.map((item) => ({ ...item, checked: false }))
+    );
     setWorkTypes((prev) => prev.map((item) => ({ ...item, checked: false })));
     setCurrentPage(1);
   };
@@ -219,9 +251,11 @@ export default function Jobs() {
             <div className="sticky top-24">
               <FilterSidebar
                 jobTypes={jobTypes}
+                industries={industries}
                 experienceLevels={experienceLevels}
                 workTypes={workTypes}
                 onJobTypeChange={handleJobTypeChange}
+                onIndustryChange={handleIndustryChange}
                 onExperienceLevelChange={handleExperienceLevelChange}
                 onWorkTypeChange={handleWorkTypeChange}
                 onClearAll={handleClearAll}
@@ -236,8 +270,8 @@ export default function Jobs() {
             }`}
           >
             <div className="h-full overflow-y-auto p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-foreground">Filters</h2>
+              <div className="flex items-center justify-end mb-2">
+                {/* <h2 className="text-lg font-semibold text-foreground">Filters</h2> */}
                 <button
                   onClick={toggleMobileFilter}
                   className="p-2 hover:bg-secondary rounded-lg transition-colors"
@@ -250,9 +284,11 @@ export default function Jobs() {
               </div>
               <FilterSidebar
                 jobTypes={jobTypes}
+                industries={industries}
                 experienceLevels={experienceLevels}
                 workTypes={workTypes}
                 onJobTypeChange={handleJobTypeChange}
+                onIndustryChange={handleIndustryChange}
                 onExperienceLevelChange={handleExperienceLevelChange}
                 onWorkTypeChange={handleWorkTypeChange}
                 onClearAll={handleClearAll}

@@ -13,69 +13,20 @@ import {
   GraduationCap,
   Building2,
 } from "lucide-react";
-
-const featuredJobs = [
-  {
-    company: "Meta",
-    companyLogo:
-      "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg",
-    companyColor: "#0084FF",
-    jobTitle: "Product designer",
-    applicants: 29,
-    description:
-      "Doing the right thing for investors is what we're all about at Vanguard, and that includes...",
-    tags: [
-      { label: "Entry level", variant: "purple" },
-      { label: "Full-Time", variant: "green" },
-      { label: "Remote", variant: "orange" },
-    ],
-    salary: "$250/hr",
-    postedTime: "12 days ago",
-    jobId: "meta-product-designer",
-  },
-  {
-    company: "Netflix",
-    companyLogo:
-      "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-    companyColor: "#E50914",
-    jobTitle: "Sr. UX Designer",
-    applicants: 52,
-    description:
-      "Netflix is one of the world's leading streaming entertainment service with over 200 million...",
-    tags: [
-      { label: "Expert", variant: "pink" },
-      { label: "Part-Time", variant: "teal" },
-      { label: "Remote", variant: "orange" },
-    ],
-    salary: "$195/hr",
-    postedTime: "5 days ago",
-    jobId: "netflix-sr-ux-designer",
-  },
-  {
-    company: "Google",
-    companyLogo:
-      "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-    companyColor: "#4285F4",
-    jobTitle: "Backend Dev.",
-    applicants: 41,
-    description:
-      "Join the team at Google to build innovative solutions that impact billions of users...",
-    tags: [
-      { label: "Intermediate", variant: "purple" },
-      { label: "Full-Time", variant: "green" },
-    ],
-    salary: "$260/hr",
-    postedTime: "5 days ago",
-    jobId: "google-backend-dev",
-  },
-];
+import landingVideo from "../../assets/landing_video.MP4";
 
 const companyLogos = [
-  { src: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg", alt: "Meta" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", alt: "Netflix" },
-  { src: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", alt: "Google" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", alt: "Amazon" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/1280px-Microsoft_logo_%282012%29.svg.png", alt: "Microsoft" },
+  { src: "https://cdn.worldvectorlogo.com/logos/jp-morgan-chase.svg", alt: "JP Morgan" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Lazard_wordmark.svg/1280px-Lazard_wordmark.svg.png", alt: "Lazard" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png", alt: "BlackRock" },
+  { src: "https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg", alt: "Barclays" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png", alt: "Aon" },
+  { src: "https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png", alt: "Mastercard" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png", alt: "State Street" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png", alt: "accenture" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png", alt: "EY" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg", alt: "PWC"}
 ];
 
 export default function HomePage() {
@@ -93,18 +44,21 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)",
-              backgroundSize: "40px 40px",
-            }}
-          />
+        {/* Video Background */}
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-60"
+          >
+            <source src={landingVideo} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80" />
         </div>
 
-        <div className="container mx-auto px-6 py-20 lg:py-32 relative">
+        <div className="container mx-auto px-6 py-20 lg:py-32 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
               <TrendingUp className="w-4 h-4" />
@@ -117,11 +71,10 @@ export default function HomePage() {
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Connect with leading companies, discover opportunities tailored to
-              your skills, and take the next step in your professional growth.
+              Connect with leading employers, discover opportunities, upskill and take the next step in your career.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/student"
                 className="px-8 py-3 border border-border rounded-xl flex items-center justify-center gap-2 hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
@@ -137,37 +90,20 @@ export default function HomePage() {
                 For Employers
               </Link>
             </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
-              {[
-                ["10K+", "Active Jobs"],
-                ["5K+", "Companies"],
-                ["1M+", "Job Seekers"],
-                ["50K+", "Success Stories"],
-              ].map(([value, label]) => (
-                <div key={label} className="text-center">
-                  <div className="text-3xl lg:text-4xl mb-1 text-foreground">
-                    {value}
-                  </div>
-                  <div className="text-muted-foreground text-sm">{label}</div>
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
-      </section>
 
-       {/* Featured Company Marquee */}
-      <section className="border-b border-border bg-secondary/20">
-        <div className="py-12">
-          <h2 className="text-center text-muted-foreground text-base mb-8">Trusted by leading companies worldwide</h2>
+        </div>
+
+        {/* Featured Company Marquee - Full Width at Bottom */}
+        <div className="mt-16 mb-10">
+          {/* <h2 className="text-center text-foreground text-sm mb-10 font-semibold">We've helped students and grads land roles at</h2> */}
           <Marquee
             items={companyLogos.map((logo) => (
               <img
                 key={logo.alt}
                 src={logo.src}
                 alt={logo.alt}
-                className="h-12 w-auto opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                className="h-12 w-auto opacity-100 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300"
               />
             ))}
             speed={40}
@@ -175,43 +111,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Jobs */}
-      <section className="container mx-auto px-6 py-20">
-        <div className="flex items-center justify-between mb-8 text-left">
-          <div>
-            <h2 className="text-3xl mb-2 text-foreground">
-              Featured Opportunities
-            </h2>
-            <p className="text-muted-foreground">
-              Handpicked positions from top-tier companies
-            </p>
-          </div>
-
-          <Link
-            to="/jobs"
-            className="hidden md:flex items-center gap-2 text-primary hover:opacity-80"
-          >
-            View all jobs <ArrowRight className="w-5 h-5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredJobs.map((job, index) => (
-            <JobCard
-              key={job.jobId}
-              {...job}
-              isFavorite={favorites.has(index)}
-              onFavoriteClick={() => toggleFavorite(index)}
-            />
-          ))}
-        </div>
-      </section>
-
       {/* Why Choose Us */}
       <section className="bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Why Professionals Choose Us</h2>
+            <h2 className="text-3xl mb-4 text-foreground">Kickstart your career journey</h2>
             <p className="text-muted-foreground">
               Our platform provides comprehensive tools and resources to accelerate your career journey
             </p>
@@ -222,7 +126,7 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Briefcase className="w-6 h-6" />
               </div>
-              <h3 className="text-foreground mb-2">Premium Job Listings</h3>
+              <h3 className="text-foreground mb-2">Job Opportunities</h3>
               <p className="text-muted-foreground text-sm">
                 Access thousands of verified opportunities from industry-leading companies across all sectors
               </p>
@@ -232,7 +136,7 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Target className="w-6 h-6" />
               </div>
-              <h3 className="text-foreground mb-2">Smart Matching</h3>
+              <h3 className="text-foreground mb-2">Employability Programs</h3>
               <p className="text-muted-foreground text-sm">
                 Our AI-powered system matches you with roles that align with your skills and career goals
               </p>

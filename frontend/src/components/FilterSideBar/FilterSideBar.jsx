@@ -4,15 +4,18 @@ import { ChevronDown } from 'lucide-react';
 
 export default function FilterSidebar({
   jobTypes,
+  industries,
   experienceLevels,
   workTypes,
   onJobTypeChange,
+  onIndustryChange,
   onExperienceLevelChange,
   onWorkTypeChange,
   onClearAll,
 }) {
   const [openSections, setOpenSections] = useState({
     jobType: true,
+    industry: true,
     workType: true,
     experienceLevel: true
   });
@@ -26,6 +29,7 @@ export default function FilterSidebar({
 
   const hasActiveFilters = 
     jobTypes.some(t => t.checked) || 
+    industries.some(i => i.checked) || 
     experienceLevels.some(l => l.checked) || 
     workTypes.some(w => w.checked);
 
@@ -80,6 +84,49 @@ export default function FilterSidebar({
                   }`}
                 >
                   {type.label}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Industry Filter */}
+      <div>
+        <button
+          onClick={() => toggleSection('industry')}
+          className="w-full flex items-center justify-between mb-3 hover:text-foreground transition-colors"
+        >
+          <h3 className="text-card-foreground font-medium text-left">Industry</h3>
+          <ChevronDown 
+            className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+              openSections.industry ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+
+        {openSections.industry && (
+          <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+            {industries.map((industry, index) => (
+              <div key={index} className="flex items-center gap-3 group">
+                <Checkbox
+                  id={`industry-${index}`}
+                  checked={industry.checked}
+                  onCheckedChange={(checked) => {
+                    if (onIndustryChange) {
+                      onIndustryChange(index, Boolean(checked));
+                    }
+                  }}
+                />
+                <label
+                  htmlFor={`industry-${index}`}
+                  className={`flex-1 cursor-pointer text-left text-sm transition-colors ${
+                    industry.checked 
+                      ? 'text-foreground font-medium' 
+                      : 'text-muted-foreground group-hover:text-foreground'
+                  }`}
+                >
+                  {industry.label}
                 </label>
               </div>
             ))}

@@ -155,24 +155,24 @@ export const EVENT_LOCATION_TYPES = [
 export const JOB_INDUSTRIES = [
   // Tech & Digital
   { value: 'Technology', label: 'Technology', variant: 'blue' },
-  { value: 'Software Development', label: 'Software', variant: 'sky' },
-  { value: 'Data Science', label: 'Data Science', variant: 'cyan' },
-  { value: 'Cybersecurity', label: 'Cybersecurity', variant: 'indigo' },
-  { value: 'AI & Machine Learning', label: 'AI/ML', variant: 'violet' },
+  // { value: 'Software Development', label: 'Software', variant: 'sky' },
+  // { value: 'Data Science', label: 'Data Science', variant: 'cyan' },
+  // { value: 'Cybersecurity', label: 'Cybersecurity', variant: 'indigo' },
+  // { value: 'AI & Machine Learning', label: 'AI/ML', variant: 'violet' },
   
   // Finance & Business
   { value: 'Finance', label: 'Finance', variant: 'green' },
-  { value: 'Accounting', label: 'Accounting', variant: 'emerald' },
-  { value: 'Investment Banking', label: 'Investment Banking', variant: 'teal' },
+  // { value: 'Accounting', label: 'Accounting', variant: 'emerald' },
+  // { value: 'Investment Banking', label: 'Investment Banking', variant: 'teal' },
   { value: 'Consulting', label: 'Consulting', variant: 'purple' },
   { value: 'Management', label: 'Management', variant: 'pink' },
   
   // Engineering & Science
   { value: 'Engineering', label: 'Engineering', variant: 'orange' },
-  { value: 'Civil Engineering', label: 'Civil Eng.', variant: 'amber' },
-  { value: 'Mechanical Engineering', label: 'Mechanical Eng.', variant: 'yellow' },
-  { value: 'Electrical Engineering', label: 'Electrical Eng.', variant: 'lime' },
-  { value: 'Chemical Engineering', label: 'Chemical Eng.', variant: 'rose' },
+  // { value: 'Civil Engineering', label: 'Civil Eng.', variant: 'amber' },
+  // { value: 'Mechanical Engineering', label: 'Mechanical Eng.', variant: 'yellow' },
+  // { value: 'Electrical Engineering', label: 'Electrical Eng.', variant: 'lime' },
+  // { value: 'Chemical Engineering', label: 'Chemical Eng.', variant: 'rose' },
   { value: 'Research & Development', label: 'R&D', variant: 'fuchsia' },
   
   // Creative & Media
@@ -191,7 +191,7 @@ export const JOB_INDUSTRIES = [
   // Healthcare & Life Sciences
   { value: 'Healthcare', label: 'Healthcare', variant: 'red' },
   { value: 'Pharmaceuticals', label: 'Pharma', variant: 'pink' },
-  { value: 'Biotechnology', label: 'Biotech', variant: 'purple' },
+  // { value: 'Biotechnology', label: 'Biotech', variant: 'purple' },
   { value: 'Medical Devices', label: 'Med Devices', variant: 'rose' },
   
   // Public Sector & Non-Profit
@@ -212,7 +212,7 @@ export const JOB_INDUSTRIES = [
   { value: 'Sports', label: 'Sports', variant: 'sky' },
   
   { value: 'General', label: 'General', variant: 'gray' },
-  { value: 'Other', label: 'Other', variant: 'gray' }
+  // { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 export const JOB_ROLE_TYPES = [
@@ -224,16 +224,16 @@ export const JOB_ROLE_TYPES = [
   { value: 'Apprenticeship', label: 'Apprenticeship', variant: 'teal' },
   { value: 'Degree Apprentice', label: 'Degree Apprentice', variant: 'emerald' },
   { value: 'Insight Day', label: 'Insight Day', variant: 'lime' },
-  { value: 'Work Experience', label: 'Work Experience', variant: 'amber' },
-  { value: 'Vac Scheme', label: 'Vac Scheme', variant: 'orange' },
+  // { value: 'Work Experience', label: 'Work Experience', variant: 'amber' },
+  // { value: 'Vac Scheme', label: 'Vac Scheme', variant: 'orange' },
   
   // Standard Employment
   { value: 'Full-time', label: 'Full-time', variant: 'green' },
   { value: 'Part-time', label: 'Part-time', variant: 'yellow' },
   { value: 'Contract', label: 'Contract', variant: 'gray' },
-  { value: 'Freelance', label: 'Freelance', variant: 'slate' },
-  { value: 'Temporary', label: 'Temporary', variant: 'stone' },
-  { value: 'Seasonal', label: 'Seasonal', variant: 'zinc' },
+  // { value: 'Freelance', label: 'Freelance', variant: 'slate' },
+  // { value: 'Temporary', label: 'Temporary', variant: 'stone' },
+  // { value: 'Seasonal', label: 'Seasonal', variant: 'zinc' },
   
   { value: 'Other', label: 'Other', variant: 'gray' }
 ];
@@ -242,7 +242,6 @@ export const JOB_WORK_TYPES = [
   { value: 'Remote', label: 'Remote', variant: 'emerald' },
   { value: 'Hybrid', label: 'Hybrid', variant: 'violet' },
   { value: 'On-site', label: 'On-site', variant: 'amber' },
-  { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 export const JOB_EXPERIENCE_LEVELS = [
@@ -255,11 +254,11 @@ export const JOB_EXPERIENCE_LEVELS = [
   // Experienced
   { value: 'Mid Level', label: 'Mid Level', variant: 'rose' },
   { value: 'Senior', label: 'Senior', variant: 'orange' },
-  { value: 'Lead', label: 'Lead', variant: 'amber' },
-  { value: 'Principal', label: 'Principal', variant: 'red' },
-  { value: 'Director', label: 'Director', variant: 'emerald' },
+  // { value: 'Lead', label: 'Lead', variant: 'amber' },
+  // { value: 'Principal', label: 'Principal', variant: 'red' },
+  // { value: 'Director', label: 'Director', variant: 'emerald' },
   
-  { value: 'Other', label: 'Other', variant: 'gray' }
+  // { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
 // ==================== HELPER FUNCTIONS ====================

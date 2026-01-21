@@ -1,6 +1,6 @@
 // Utility functions to generate tags for jobs and events
 import { 
-  JOB_EXPERIENCE_LEVELS, 
+  JOB_INDUSTRIES,
   JOB_ROLE_TYPES, 
   JOB_WORK_TYPES,
   EVENT_TYPES,
@@ -12,25 +12,17 @@ import {
 // ==================== JOB TAGS ====================
 
 // Helper function to get variant from dropdown options
-const getJobExperienceVariant = (value) => getVariantFromOptions(JOB_EXPERIENCE_LEVELS, value);
+const getJobIndustryVariant = (value) => getVariantFromOptions(JOB_INDUSTRIES, value);
 const getJobRoleVariant = (value) => getVariantFromOptions(JOB_ROLE_TYPES, value);
 const getJobWorkTypeVariant = (value) => getVariantFromOptions(JOB_WORK_TYPES, value);
 
 /**
  * Generate tags for a job based on its properties
- * @param {Object} job - Job object with experience_level, role_type, work_type
+ * @param {Object} job - Job object with industry, role_type, work_type
  * @returns {Array} Array of tag objects with label and variant
  */
 export const generateJobTags = (job) => {
   const tags = [];
-
-  // Add experience level tag
-  if (job.experience_level) {
-    tags.push({
-      label: job.experience_level,
-      variant: getJobExperienceVariant(job.experience_level)
-    });
-  }
 
   // Add role type tag
   if (job.role_type) {
@@ -47,6 +39,15 @@ export const generateJobTags = (job) => {
       variant: getJobWorkTypeVariant(job.work_type)
     });
   }
+
+  // Add industry tag
+  if (job.industry) {
+    tags.push({
+      label: job.industry,
+      variant: getJobIndustryVariant(job.industry)
+    });
+  }
+
 
   return tags;
 };
