@@ -34,8 +34,10 @@ export const generateJobTags = (job) => {
 
   // Add work type tag
   if (job.work_type) {
+    // Find the matching option to get the display label
+    const workTypeOption = JOB_WORK_TYPES.find(opt => opt.value === job.work_type);
     tags.push({
-      label: job.work_type,
+      label: workTypeOption?.label || job.work_type,
       variant: getJobWorkTypeVariant(job.work_type)
     });
   }

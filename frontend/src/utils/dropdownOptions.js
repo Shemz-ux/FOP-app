@@ -241,7 +241,7 @@ export const JOB_ROLE_TYPES = [
 export const JOB_WORK_TYPES = [
   { value: 'Remote', label: 'Remote', variant: 'emerald' },
   { value: 'Hybrid', label: 'Hybrid', variant: 'violet' },
-  { value: 'On-site', label: 'On-site', variant: 'amber' },
+  { value: 'On-site', label: 'On site', variant: 'amber' },
 ];
 
 export const JOB_EXPERIENCE_LEVELS = [
