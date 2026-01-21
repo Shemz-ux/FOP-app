@@ -80,11 +80,37 @@ export default function EventCard({
 
         {/* Description */}
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2 text-left overflow-hidden">
-          {description?.split('\n').filter(line => {
-            const trimmed = line.trim();
-            const lower = trimmed.toLowerCase();
-            return trimmed && !lower.startsWith('about the event') && !trimmed.endsWith(':');
-          }).slice(0, 2).join(' ') || description}
+          {(() => {
+            if (!description) return '';
+            
+            // Extract only "About the Event" section content
+            const lines = description.split('\n');
+            const aboutIndex = lines.findIndex(line => 
+              line.trim().toLowerCase().startsWith('about the event')
+            );
+            
+            if (aboutIndex === -1) {
+              // If no "About the Event" section, show first few lines
+              return description.split('\n').filter(line => line.trim()).slice(0, 2).join(' ');
+            }
+            
+            // Get content after "About the Event:" header until next section
+            const contentLines = [];
+            for (let i = aboutIndex + 1; i < lines.length; i++) {
+              const line = lines[i].trim();
+              // Stop if we hit another section header (ends with : or is all caps)
+              if (line.endsWith(':') || (line === line.toUpperCase() && line.length > 3)) {
+                break;
+              }
+              if (line) {
+                // Remove bullet points (•, -, *, etc.) from the beginning
+                const cleanLine = line.replace(/^[•\-*]\s*/, '');
+                contentLines.push(cleanLine);
+              }
+            }
+            
+            return contentLines.join(' ');
+          })()}
         </p>
 
         {/* Event Details */}

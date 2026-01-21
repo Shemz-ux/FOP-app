@@ -92,10 +92,13 @@ export const sectionsToDescription = (sections) => {
   return sections
     .map(section => {
       const header = section.header;
+      const isAboutSection = header === 'About the Event';
+      
+      // For "About the Event", use plain text without bullet points
       const content = section.content
         .filter(item => item.trim())
-        .map(item => `• ${item}`)
-        .join('\n');
+        .map(item => isAboutSection ? item : `• ${item}`)
+        .join(isAboutSection ? '\n' : '\n');
       
       return `${header}:\n${content}`;
     })

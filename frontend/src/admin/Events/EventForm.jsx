@@ -1,11 +1,13 @@
 import React from 'react';
-import { ArrowLeft, Upload } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import CustomDropdown from '../../components/Admin/CustomDropdown';
 import DateInput from '../../components/Ui/DateInput';
 import TimeInput from '../../components/Ui/TimeInput';
 import Toast from '../../components/Ui/Toast';
+import { ImageUploadCard } from '../../components/Admin/ImageUploadCard';
 import { EVENT_INDUSTRIES, EVENT_TYPES, EVENT_LOCATION_TYPES } from '../../utils/dropdownOptions';
 import { parseDescriptionToSections, sectionsToDescription } from '../../utils/eventDescriptionParser';
+import { uploadMedia } from '../../services/Media/mediaUploadService';
 
 export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
   const [formData, setFormData] = React.useState({
@@ -23,16 +25,19 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
     event_type: event?.event_type || '',
     location_type: event?.location_type || '',
     is_active: event?.is_active !== undefined ? event.is_active : true,
-    descriptionSections: event?.description_sections || [
-      { header: 'About the Event', content: [''] },
-      { header: 'What to Expect', content: [''] },
-      { header: 'Who Should Attend', content: [''] },
-    ],
+    descriptionSections: event?.description_sections 
+      ? event.description_sections.filter(section => 
+          section.content && section.content.length > 0 && section.content.some(item => item.trim() !== '')
+        )
+      : [{ header: 'About the Event', content: [''] }],
   });
 
   const [imageFile, setImageFile] = React.useState(null);
   const [imagePreview, setImagePreview] = React.useState(event?.event_image || null);
+  const [logoFile, setLogoFile] = React.useState(null);
+  const [logoPreview, setLogoPreview] = React.useState(event?.organiser_logo || null);
   const [toast, setToast] = React.useState(null);
+  const [uploading, setUploading] = React.useState(false);
 
   // Update form data when event prop changes (for edit mode)
   React.useEffect(() => {
@@ -40,41 +45,26 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
       console.log('Event data received:', event);
       console.log('Description sections:', event.description_sections);
       
-      // Ensure we only have the 3 expected sections
-      const defaultSections = [
-        { header: 'About the Event', content: [''] },
-        { header: 'What to Expect', content: [''] },
-        { header: 'Who should Attend', content: [''] },
-      ];
-      
-      let sections = defaultSections;
+      // Filter out sections that have no content or only empty strings
+      let sections = [];
       if (event.description_sections && Array.isArray(event.description_sections)) {
-        // Map existing sections to our expected format, only keeping the 3 we want
-        const aboutSection = event.description_sections.find(s => 
-          s.header && s.header.toLowerCase().includes('about the event')
-        ) || defaultSections[0];
-        
-        const expectSection = event.description_sections.find(s => 
-          s.header && s.header.toLowerCase().includes('what to expect')
-        ) || defaultSections[1];
-        
-        const attendSection = event.description_sections.find(s => 
-          s.header && (s.header.toLowerCase().includes('who should attend') || s.header.toLowerCase() === 'who should attend')
-        ) || defaultSections[2];
-        
-        // Normalize the header to match our form's expected casing
-        if (attendSection.header && attendSection.header.toLowerCase().includes('who should attend')) {
-          attendSection.header = 'Who should Attend';
-        }
-        
-        sections = [aboutSection, expectSection, attendSection];
+        sections = event.description_sections.filter(section => 
+          section.content && 
+          section.content.length > 0 && 
+          section.content.some(item => item && item.trim() !== '')
+        );
+      }
+      
+      // If no sections with content, add a default one
+      if (sections.length === 0) {
+        sections = [{ header: 'About the Event', content: [''] }];
       }
       
       setFormData({
         title: event.title || '',
-        organiser: event.organiser || event.organiser || '',
-        organiser_description: event.organiser_description || event.organiser_description || '',
-        organiser_website: event.organiser_website || event.organiser_website || '',
+        organiser: event.organiser || '',
+        organiser_description: event.organiser_description || '',
+        organiser_website: event.organiser_website || '',
         industry: event.industry || '',
         location: event.location || '',
         address: event.address || '',
@@ -88,6 +78,7 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
         descriptionSections: sections,
       });
       setImagePreview(event.event_image || null);
+      setLogoPreview(event.organiser_logo || null);
     }
   }, [event]);
 
@@ -138,8 +129,7 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
     setFormData({ ...formData, descriptionSections: newSections });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (file) => {
     if (file) {
       setImageFile(file);
       const reader = new FileReader();
@@ -150,30 +140,76 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
     }
   };
 
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  const handleLogoChange = (file) => {
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
+      setUploading(true);
+
+      let imageUrl = formData.event_image || imagePreview;
+      if (imageFile) {
+        console.log('Uploading event image to Cloudinary...');
+        const uploadResult = await uploadMedia(
+          imageFile,
+          'event_image',
+          isEdit ? event?.event_image : null
+        );
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Failed to upload to Cloudinary');
+        }
+
+        imageUrl = uploadResult.data.url;
+        console.log('Image uploaded successfully:', imageUrl);
+      }
+
+      let logoUrl = formData.organiser_logo || logoPreview;
+      if (logoFile) {
+        console.log('Uploading company logo to Cloudinary...');
+        const logoUploadResult = await uploadMedia(
+          logoFile,
+          'company_logo',
+          isEdit ? event?.organiser_logo : null
+        );
+
+        if (!logoUploadResult.success) {
+          throw new Error(logoUploadResult.error || 'Failed to upload logo to Cloudinary');
+        }
+
+        logoUrl = logoUploadResult.data.url;
+        console.log('Logo uploaded successfully:', logoUrl);
+      }
+
       const eventData = {
-        title: formData.title,
-        organiser: formData.organiser,
-        organiser_description: formData.organiser_description,
-        organiser_website: formData.organiser_website,
-        industry: formData.industry,
-        location: formData.location,
-        address: formData.address,
-        event_link: formData.event_link,
-        event_date: formData.event_date,
-        event_start_time: formData.event_start_time,
-        event_end_time: formData.event_end_time,
-        event_type: formData.event_type,
-        location_type: formData.location_type,
-        is_active: formData.is_active,
-        description_sections: formData.descriptionSections
+        ...formData,
+        event_image: imageUrl,
+        organiser_logo: logoUrl,
+        description_sections: formData.descriptionSections,
       };
-      
+
       await onSubmit(eventData);
-      
+
       setToast({
         message: `Event has been ${isEdit ? 'updated' : 'created'} successfully!`,
         type: 'success'
@@ -197,6 +233,8 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
         message: errorMessage,
         type: 'error'
       });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -273,6 +311,17 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                     placeholder="Brief description about the organiser"
                     rows={3}
                     className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <ImageUploadCard
+                    imagePreview={logoPreview}
+                    imageFile={logoFile}
+                    onImageChange={handleLogoChange}
+                    onRemoveImage={handleRemoveLogo}
+                    label="Organiser Logo (optional)"
+                    required={false}
                   />
                 </div>
 
@@ -387,31 +436,15 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm mb-2 text-foreground">
-                    Event Image
-                  </label>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    {imagePreview && (
-                      <img
-                        src={imagePreview}
-                        alt="Event preview"
-                        className="w-16 h-16 object-cover rounded-lg border border-border"
-                      />
-                    )}
-                    <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-input rounded-xl hover:border-primary transition-colors cursor-pointer">
-                      <Upload className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {imageFile ? imageFile.name : 'Upload event image (Recommended for styling)'}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
+                <div className="md:col-span-2">
+                  <ImageUploadCard
+                    imagePreview={imagePreview}
+                    imageFile={imageFile}
+                    onImageChange={handleImageChange}
+                    onRemoveImage={handleRemoveImage}
+                    label="Event Image (Optional)"
+                    required={false}
+                  />
                 </div>
 
                 
@@ -536,9 +569,10 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                 </button>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 order-1 sm:order-2"
+                  disabled={uploading}
+                  className="w-full sm:w-auto px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 order-1 sm:order-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isEdit ? 'Update Event' : 'Create Event'}
+                  {uploading ? 'Uploading...' : isEdit ? 'Update Event' : 'Create Event'}
                 </button>
               </div>
             </form>
