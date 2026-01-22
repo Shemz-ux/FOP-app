@@ -9,6 +9,7 @@
     "reset": "node src/db/reset-database.js",
     "dev": "nodemon src/connection.js",
     "seed": "node src/db/run-seed.js",
+    "create-admin": "node src/db/create-admin.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
