@@ -5,8 +5,8 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env
-dotenv.config({ path: join(__dirname, '.env') });
+// Load .env (3 levels up: services -> tests -> src -> api root)
+dotenv.config({ path: join(__dirname, '../../../.env') });
 
 console.log('🔍 Checking Cloudinary Configuration...\n');
 

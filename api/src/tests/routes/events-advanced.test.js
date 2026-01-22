@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
-import '../setup.js';
+import '../utils/setup.js';
 
 describe('Events Advanced Filtering API Endpoints', () => {
     let testEventIds = [];

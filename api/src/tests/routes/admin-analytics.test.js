@@ -6,7 +6,7 @@ import { createEvent, removeEvent } from "../../models/events.js";
 import JWT from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import db from '../../db/db.js';
-import '../setup.js';
+import '../utils/setup.js';
 
 describe('Admin Analytics API Endpoints', () => {
     let testJobseekerIds = [];

@@ -4,7 +4,7 @@ import { createAdminUser, removeAdminUser } from "../../models/admin-users.js";
 import JWT from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 import db from '../../db/db.js';
-import '../setup.js';
+import '../utils/setup.js';
 
 describe('Admin Users API Endpoints', () => {
     let testAdminUserIds = [];

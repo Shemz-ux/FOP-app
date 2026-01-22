@@ -1,6 +1,6 @@
 import adminChecker from "../../middleware/adminChecker.js";
 import JWT from "jsonwebtoken";
-import "../setup.js";
+import "../utils/setup.js";
 
 describe("Admin Checker Middleware", () => {
   let req, res, next, statusCalled, jsonCalled, nextCalled;

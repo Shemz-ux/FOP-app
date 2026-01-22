@@ -10,7 +10,7 @@ import {
 } from "../../models/admin-users.js";
 import bcrypt from "bcrypt";
 import db from "../../db/db.js";
-import "../setup.js";
+import "../utils/setup.js";
 
 describe("Admin Users Models", () => {
     let testAdminUserIds = [];

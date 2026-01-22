@@ -3,7 +3,7 @@ import supertest from "supertest";
 import bcrypt from "bcrypt";
 import { createJobseeker, removeJobseeker } from "../../models/jobseekers.js";
 import { createSociety, removeSociety } from "../../models/societies.js";
-import "../setup.js";
+import "../utils/setup.js";
 import db from '../../db/db.js';
 
 describe("/tokens", () => {

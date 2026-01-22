@@ -3,7 +3,7 @@ import app from '../../app.js';
 import db from '../../db/db.js';
 import path from 'path';
 import fs from 'fs';
-import '../setup.js';
+import '../utils/setup.js';
 
 describe('Resources API Endpoints', () => {
     let testResourceId;
@@ -119,7 +119,7 @@ describe('Resources API Endpoints', () => {
                 .field('title', 'Test Resource')
                 .expect(400);
 
-            expect(response.body).toHaveProperty('msg', 'Title, category, and file are required');
+            expect(response.body).toHaveProperty('msg', 'Title and category are required');
         });
 
         test('should validate file type', async () => {
@@ -237,10 +237,10 @@ describe('Resources API Endpoints', () => {
                 .get(`/api/resources/${testResourceId}/download`)
                 .expect(200);
 
-            expect(response.body).toHaveProperty('downloadUrl');
-            expect(response.body).toHaveProperty('fileName');
-            expect(response.body).toHaveProperty('fileSize');
-            expect(response.body).toHaveProperty('expiresIn');
+            expect(response.body).toHaveProperty('download_url');
+            expect(response.body).toHaveProperty('file_name');
+            expect(response.body).toHaveProperty('file_size');
+            expect(response.body).toHaveProperty('expires_in');
         });
 
         test('should return 404 for non-existent resource', async () => {
@@ -367,7 +367,7 @@ describe('Resources API Endpoints', () => {
                 .field('category', 'test')
                 .expect(400);
 
-            expect(response.body).toHaveProperty('msg', 'Title, category, and file are required');
+            expect(response.body).toHaveProperty('msg', 'Either a file or video link is required');
         });
     });
 });

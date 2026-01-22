@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../app.js';
 import bcrypt from 'bcrypt';
 import db from '../../db/db.js';
-import '../setup.js';
+import '../utils/setup.js';
 
 describe('Dashboard Events API Endpoints', () => {
     let testJobseekerId;

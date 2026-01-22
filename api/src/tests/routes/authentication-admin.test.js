@@ -2,7 +2,7 @@ import app from "../../app.js";
 import supertest from "supertest";
 import bcrypt from "bcrypt";
 import { createAdminUser, removeAdminUser } from "../../models/admin-users.js";
-import "../setup.js";
+import "../utils/setup.js";
 import db from '../../db/db.js';
 
 describe("Admin User Authentication", () => {
