@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { useEffect } from 'react'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import NavigateProvider from './components/NavigateProvider.jsx'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/Home/Home.jsx'
 import Jobs from './pages/Jobs/Jobs.jsx'
 import JobDetails from './pages/Jobs/JobDetails.jsx'
@@ -44,6 +45,7 @@ function App() {
  
   const Layout = ({ children }) => (
     <NavigateProvider>
+      <ScrollToTop />
       <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
       {children}
       <Footer />
@@ -53,6 +55,7 @@ function App() {
   const AuthLayout = ({ children }) => (
     // TODO: Needs to not pass down username if not logged in
     <NavigateProvider>
+      <ScrollToTop />
       <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
       {children}
     </NavigateProvider>
