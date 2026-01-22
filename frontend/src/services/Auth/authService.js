@@ -86,3 +86,15 @@ export const isSociety = () => {
 export const getAuthToken = () => {
   return localStorage.getItem('token');
 };
+
+// Request password reset
+export const forgotPassword = async (email) => {
+  const data = await apiPost('/forgot-password', { email });
+  return data;
+};
+
+// Reset password with token
+export const resetPassword = async (token, newPassword, confirmPassword) => {
+  const data = await apiPost('/reset-password', { token, newPassword, confirmPassword });
+  return data;
+};

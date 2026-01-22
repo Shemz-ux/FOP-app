@@ -22,6 +22,7 @@ import Students from './pages/Students/Students.jsx'
 import Employers from './pages/Employers/Employers.jsx'
 import Login from './pages/Login/Login.jsx';
 import SignUp from './pages/SignUp/SignUp.jsx'
+import ResetPassword from './pages/ResetPassword/ResetPassword.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
 import JobsList from './admin/Jobs/JobsList.jsx'
 import JobDetail from './admin/Jobs/JobDetail.jsx'
@@ -117,6 +118,10 @@ function App() {
     {
       path: "/signUp",
       element: <AuthLayout><SignUp /></AuthLayout>
+    },
+    {
+      path: "/reset-password",
+      element: <AuthLayout><ResetPassword /></AuthLayout>
     },
     {
       path: "/design-system",

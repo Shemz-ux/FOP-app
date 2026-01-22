@@ -9,19 +9,32 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./alert-dialog";
+import { forgotPassword } from "../../services/Auth/authService";
 
 export default function ForgotPassword({ trigger, triggerClassName }) {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = async (e) => {
     e.preventDefault();
-    // TODO: Call API to send password reset email
-    setResetEmailSent(true);
-    setTimeout(() => {
-      setResetEmailSent(false);
-      setResetEmail("");
-    }, 5000);
+    setError("");
+    setLoading(true);
+
+    try {
+      await forgotPassword(resetEmail);
+      setResetEmailSent(true);
+      setTimeout(() => {
+        setResetEmailSent(false);
+        setResetEmail("");
+      }, 5000);
+    } catch (err) {
+      setError("Failed to send reset email. Please try again.");
+      console.error("Forgot password error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,10 +64,15 @@ export default function ForgotPassword({ trigger, triggerClassName }) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span className="text-green-500 text-sm">Password reset email sent! Check your inbox.</span>
+            <span className="text-green-500 text-sm">Password reset email sent! Check your inbox or spam folder.</span>
           </div>
         ) : (
           <form onSubmit={handleForgotPassword}>
+            {error && (
+              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                {error}
+              </div>
+            )}
             <div className="mb-4">
               <label htmlFor="resetEmail" className="block text-sm mb-2 text-foreground">
                 Email Address
@@ -75,9 +93,10 @@ export default function ForgotPassword({ trigger, triggerClassName }) {
               </AlertDialogCancel>
               <button
                 type="submit"
-                className="h-auto px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
+                disabled={loading}
+                className="h-auto px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                Send Link
+                {loading ? 'Sending...' : 'Send Link'}
               </button>
             </AlertDialogFooter>
           </form>

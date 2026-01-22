@@ -3,6 +3,9 @@ import { fetchSocietyByEmail } from "../models/societies.js";
 import { fetchAdminUserByEmail, updateLastLogin } from "../models/admin-users.js";
 import { generateToken } from "../lib/token.js";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import { storeResetToken, findUserByResetToken, updatePasswordAndClearToken } from "../models/password-reset.js";
+import { sendPasswordResetEmail } from "../services/emailService.js";
 
 async function createToken(req, res) {
   const { email, password } = req.body;
@@ -117,8 +120,80 @@ async function createToken(req, res) {
 }
 
 
+async function forgotPassword(req, res) {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    const result = await storeResetToken(email, tokenHash, expiresAt);
+
+    if (result) {
+      await sendPasswordResetEmail(email, resetToken);
+    }
+
+    return res.status(200).json({ 
+      message: "If that email exists in our system, we've sent a password reset link." 
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(200).json({ 
+      message: "If that email exists in our system, we've sent a password reset link." 
+    });
+  }
+}
+
+async function resetPassword(req, res) {
+  const { token, newPassword, confirmPassword } = req.body;
+
+  if (!token || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "Token, new password, and confirm password are required" });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
+
+  if (newPassword.length < 8) {
+    return res.status(400).json({ message: "Password must be at least 8 characters long" });
+  }
+
+  try {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await findUserByResetToken(tokenHash);
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    if (new Date() > new Date(user.password_reset_expires_at)) {
+      return res.status(400).json({ message: "Reset token has expired" });
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+    const success = await updatePasswordAndClearToken(user.user_id, user.userType, newPasswordHash);
+
+    if (!success) {
+      return res.status(500).json({ message: "Failed to update password" });
+    }
+
+    return res.status(200).json({ message: "Password has been reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 const AuthenticationController = {
   createToken: createToken,
+  forgotPassword: forgotPassword,
+  resetPassword: resetPassword,
 };
 
 export default AuthenticationController;
