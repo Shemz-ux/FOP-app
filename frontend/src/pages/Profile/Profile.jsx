@@ -44,30 +44,30 @@ export default function Profile() {
     
     try {
       const isSaved = favorites.has(jobId);
-      console.log('Toggle favorite:', { jobId, isSaved, userId: user.userId, userType: user.userType });
+      // console.log('Toggle favorite:', { jobId, isSaved, userId: user.userId, userType: user.userType });
       
       if (isSaved) {
-        console.log('Unsaving job...');
+        // console.log('Unsaving job...');
         const result = await jobActionsService.unsaveJob(jobId, user.userId, user.userType);
-        console.log('Unsave result:', result);
+        // console.log('Unsave result:', result);
         
         setFavorites((prev) => {
           const newSet = new Set(prev);
           newSet.delete(jobId);
-          console.log('Updated favorites:', newSet);
+          // console.log('Updated favorites:', newSet);
           return newSet;
         });
         
         // Remove from savedJobsData
         setSavedJobsData(prev => {
           const filtered = prev.filter(job => job.job_id !== jobId);
-          console.log('Updated savedJobsData:', filtered.length);
+          // console.log('Updated savedJobsData:', filtered.length);
           return filtered;
         });
       } else {
-        console.log('Saving job...');
+        // console.log('Saving job...');
         const result = await jobActionsService.saveJob(jobId, user.userId, user.userType);
-        console.log('Save result:', result);
+        // console.log('Save result:', result);
         setFavorites((prev) => new Set(prev).add(jobId));
       }
     } catch (err) {
@@ -157,7 +157,7 @@ export default function Profile() {
         });
       }
       
-      console.log('Education details saved successfully');
+      // console.log('Education details saved successfully');
     } catch (error) {
       console.error('Error saving education:', error);
       console.error('Failed to save education details');
@@ -177,7 +177,7 @@ export default function Profile() {
       
       // Update local state
       setUploadedCV(cvData);
-      console.log('CV uploaded successfully');
+      // console.log('CV uploaded successfully');
     } catch (error) {
       console.error('Error uploading CV:', error);
       console.error('Failed to upload CV');

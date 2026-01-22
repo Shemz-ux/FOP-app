@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is already logged in
     const currentUser = getCurrentUser();
-    console.log('AuthContext - Loading user from localStorage:', currentUser);
+    // console.log('AuthContext - Loading user from localStorage:', currentUser);
     if (currentUser) {
       setUser(currentUser);
     }
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const data = await loginService(email, password);
-      console.log('AuthContext - Login response data:', data);
+      // console.log('AuthContext - Login response data:', data);
       const userData = {
         token: data.token,
         userType: data.user_type,
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
         name: data.name || null,
         first_name: data.first_name || null
       };
-      console.log('AuthContext - User data being set:', userData);
+      // console.log('AuthContext - User data being set:', userData);
       setUser(userData);
       return { success: true, data };
     } catch (error) {

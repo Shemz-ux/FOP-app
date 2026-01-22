@@ -164,7 +164,7 @@ export default function SignUp() {
       // Prepare data for API (remove confirm_password)
       const { confirm_password, ...registrationData } = societyData;
       
-      console.log('Submitting society data:', registrationData);
+      // console.log('Submitting society data:', registrationData);
       
       await createSociety(registrationData);
       
@@ -259,10 +259,10 @@ export default function SignUp() {
         registrationData.society = null;
       }
       
-      console.log('Submitting job seeker data:', registrationData);
+      // console.log('Submitting job seeker data:', registrationData);
       
       const result = await createJobseeker(registrationData);
-      console.log('Registration successful:', result);
+      // console.log('Registration successful:', result);
       
       // Show success message
       setSubmitSuccess(true);
