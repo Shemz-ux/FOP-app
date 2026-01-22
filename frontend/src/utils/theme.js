@@ -13,14 +13,18 @@ export const toggleTheme = () => {
 };
 
 export const initializeTheme = () => {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // Force dark mode permanently - ignore system preferences
+  // const savedTheme = localStorage.getItem('theme');
+  // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
+  // if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+  //   document.documentElement.classList.add('dark');
+  // } else {
+  //   document.documentElement.classList.remove('dark');
+  // }
+  
+  // Always apply dark mode
+  document.documentElement.classList.add('dark');
 };
 
 export const getCurrentTheme = () => {
