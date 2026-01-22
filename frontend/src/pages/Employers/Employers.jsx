@@ -13,7 +13,7 @@ import {
   Globe,
   HeadphonesIcon
 } from 'lucide-react';
-// import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import Marquee from '../../components/Marquee/Marquee';
 
 export default function Employers() {
   return (
@@ -27,44 +27,29 @@ export default function Employers() {
           }}></div>
         </div>
 
-        <div className="container mx-auto px-6 py-20 lg:py-32 relative text-left">
+        <div className="container mx-auto px-6 py-32 lg:py-50 relative text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <TrendingUp className="w-4 h-4" />
-                <span>Trusted by 5,000+ companies worldwide</span>
+                <span>Trusted by 250+ companies worldwide</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
-                Find Top Talent <br/>
-                <span className="text-primary">Faster Than Ever</span>
+                Attract & Recruit <br/>
+                <span className="text-primary">High Quality Talent</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Connect with qualified candidates, streamline your hiring process, and build exceptional teams with our intelligent recruitment platform.
+                Develop talent pipelines to Attract, engage and hire high quality diverse talent anywhere.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 text-center">
                 <Link className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
                   Browse opportunities
                 </Link>
                 <Link className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
                   Contact Us
                 </Link>
-              </div>
-
-              <div className="flex items-center gap-6 mt-8 flex-wrap">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>14-day free trial</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>Cancel anytime</span>
-                </div>
               </div>
             </div>
 
@@ -78,7 +63,7 @@ export default function Employers() {
               </div>
               {/* Floating stat card */}
               <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl border border-border shadow-lg">
-                <div className="text-3xl text-primary mb-1">50K+</div>
+                <div className="text-3xl text-primary mb-1">300+</div>
                 <div className="text-sm text-muted-foreground">Successful Hires</div>
               </div>
             </div>
@@ -86,33 +71,101 @@ export default function Employers() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="container mx-auto px-6 py-20">
+      {/* Company Logos Marquee */}
+      <section className="bg-secondary/30 border-y border-border pb-15">
+        <div className="container mx-auto px-6 pt-12">
+          <p className="text-center text-medium text-muted-foreground mb-12">
+            Trusted by employers such as
+          </p>
+        </div>
+        <Marquee 
+          speed={30}
+          fullWidth={true}
+          items={[
+            <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan-chase.svg" alt="JP Morgan" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png" alt="BlackRock" className="h-12 transition-opacity" />,
+            <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 transition-opacity" />,
+            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png" alt="accenture" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 transition-opacity" />,
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg" alt="PWC" className="h-12 transition-opacity" />
+          ]}
+        />
+      </section>
+
+      {/* How We Help You Section */}
+      <section className="border-b border-border">
+        <div className="container mx-auto px-6 py-20">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">How We Help You</h2>
+          <p className="text-muted-foreground">
+            Our comprehensive approach to building your talent pipeline
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto text-left">
+          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <Target className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl text-foreground mb-3">Talent Attraction</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Reach and engage top talent through strategic university partnerships, targeted campaigns, and compelling employer branding initiatives.
+            </p>
+          </div>
+
+          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <Award className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl text-foreground mb-3">Employer Branding</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Build a powerful employer brand that resonates with candidates through authentic storytelling, social media presence, and insight events.
+            </p>
+          </div>
+
+          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <Users className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl text-foreground mb-3">Application Readiness</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Prepare candidates for success with pre-application workshops, employability programs, and skills development initiatives.
+            </p>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="bg-secondary/30 border-b border-border">
+        <div className="container mx-auto px-6 py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">1M+</div>
-            <div className="text-muted-foreground">Active Candidates</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">5K+</div>
-            <div className="text-muted-foreground">Companies Hiring</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">72hrs</div>
-            <div className="text-muted-foreground">Avg. Time to Hire</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">95%</div>
-            <div className="text-muted-foreground">Success Rate</div>
-          </div>
+          {[
+            ["20,000+", "Students"],
+            ["30", "University Partners"],
+            ["100", "Top Employers"],
+            ["20,000+", "Social Media"],
+          ].map(([value, label]) => (
+            <div key={label} className="text-center">
+              <div className="text-4xl lg:text-5xl mb-2 text-primary">
+                {value}
+              </div>
+              <div className="text-muted-foreground">{label}</div>
+            </div>
+          ))}
+        </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="border-b border-border">
         <div className="container mx-auto px-6 py-20 text-left">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Everything You Need to Hire Smarter</h2>
+            <h2 className="text-3xl mb-4 text-foreground">Everything You Need To Attract Talent</h2>
             <p className="text-muted-foreground">
               Powerful tools and features designed to streamline your entire recruitment process
             </p>
@@ -123,9 +176,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Search className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Smart Candidate Search</h3>
+              <h3 className="text-foreground mb-3">Insight Days</h3>
               <p className="text-muted-foreground text-sm">
-                Advanced AI-powered search to find candidates matching your exact requirements from millions of profiles.
+                Build engaging and impactful insight events & programs to attract and convert high quality.
               </p>
             </div>
 
@@ -133,9 +186,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Zap className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">One-Click Job Posting</h3>
+              <h3 className="text-foreground mb-3">University Engagement</h3>
               <p className="text-muted-foreground text-sm">
-                Post jobs across multiple platforms instantly and manage all applications from a single dashboard.
+                Leverage our deep nationwide network of university partnerships to access talent at scale.
               </p>
             </div>
 
@@ -143,9 +196,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <BarChart3 className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Analytics & Insights</h3>
+              <h3 className="text-foreground mb-3">Social Media Marketing</h3>
               <p className="text-muted-foreground text-sm">
-                Track hiring metrics, application trends, and recruitment ROI with comprehensive analytics tools.
+                Leverage emerging platforms to reach talent where they are at.
               </p>
             </div>
 
@@ -163,9 +216,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Clock className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Faster Hiring Process</h3>
+              <h3 className="text-foreground mb-3">Pre-appplciation workshops</h3>
               <p className="text-muted-foreground text-sm">
-                Reduce time-to-hire by 50% with automated screening, scheduling, and communication workflows.
+                Design insightful pre-applicaiton preparation workshops to ensure high quality pipeline of applications.
               </p>
             </div>
 
@@ -173,61 +226,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Globe className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Global Talent Pool</h3>
+              <h3 className="text-foreground mb-3">Employability programs</h3>
               <p className="text-muted-foreground text-sm">
-                Access diverse candidates from 50+ countries with tools for remote hiring and visa support.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="container mx-auto px-6 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl mb-4 text-foreground">How It Works</h2>
-          <p className="text-muted-foreground">
-            Get started in minutes and find your ideal candidates in three simple steps
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto text-left">
-          <div className="relative">
-            <div className="bg-card p-8 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                1
-              </div>
-              <h3 className="text-foreground mb-3">Create Job Listing</h3>
-              <p className="text-muted-foreground text-sm">
-                Post your job with detailed requirements, budget, and company culture. Our AI helps optimize your listing for better reach.
-              </p>
-            </div>
-            {/* Connector line - hidden on mobile */}
-            <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-0.5 bg-border"></div>
-          </div>
-
-          <div className="relative">
-            <div className="bg-card p-8 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                2
-              </div>
-              <h3 className="text-foreground mb-3">Review Applications</h3>
-              <p className="text-muted-foreground text-sm">
-                AI ranks candidates by fit score. Review profiles, portfolios, and assessment results in one organised dashboard.
-              </p>
-            </div>
-            {/* Connector line - hidden on mobile */}
-            <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-0.5 bg-border"></div>
-          </div>
-
-          <div>
-            <div className="bg-card p-8 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                3
-              </div>
-              <h3 className="text-foreground mb-3">Hire the Best</h3>
-              <p className="text-muted-foreground text-sm">
-                Schedule interviews, communicate directly, and extend offers. Track everything from first contact to onboarding.
+                Leverage our flagship employability program to access career-ready talent.
               </p>
             </div>
           </div>
@@ -235,7 +236,7 @@ export default function Employers() {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="bg-secondary/30 border-b border-border">
         <div className="container mx-auto px-6 py-20 text-left">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl mb-4 text-foreground">Trusted by Industry Leaders</h2>
@@ -314,117 +315,9 @@ export default function Employers() {
         </div>
       </section>
 
-      {/* Pricing Preview */}
-      <section className="container mx-auto px-6 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl mb-4 text-foreground">Flexible Pricing Plans</h2>
-          <p className="text-muted-foreground">
-            Choose the plan that fits your hiring needs, from startups to enterprises
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-            <h3 className="text-foreground mb-2">Starter</h3>
-            <div className="mb-6">
-              <span className="text-4xl text-foreground">$299</span>
-              <span className="text-muted-foreground">/month</span>
-            </div>
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Up to 5 active job postings</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Access to candidate database</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Basic analytics</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Email support</span>
-              </li>
-            </ul>
-            <button className="w-full px-6 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-              Get Started
-            </button>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl border-2 border-primary relative hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground rounded-full text-xs">
-              Most Popular
-            </div>
-            <h3 className="text-foreground mb-2">Professional</h3>
-            <div className="mb-6">
-              <span className="text-4xl text-foreground">$599</span>
-              <span className="text-muted-foreground">/month</span>
-            </div>
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Up to 20 active job postings</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>AI-powered candidate matching</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Advanced analytics & reporting</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Priority support</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Team collaboration tools</span>
-              </li>
-            </ul>
-            <button className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-              Get Started
-            </button>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-            <h3 className="text-foreground mb-2">Enterprise</h3>
-            <div className="mb-6">
-              <span className="text-4xl text-foreground">Custom</span>
-            </div>
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Unlimited job postings</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Dedicated account manager</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>Custom integrations</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>24/7 phone support</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span>SLA guarantee</span>
-              </li>
-            </ul>
-            <button className="w-full px-6 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-              Contact Sales
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
-      <section className="container mx-auto px-6 py-20">
+      <section className="border-b border-border">
+        <div className="container mx-auto px-6 py-20">
         <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-5">
             <div className="absolute inset-0" style={{
@@ -451,7 +344,7 @@ export default function Employers() {
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-6 mt-8 flex-wrap">
+            {/* <div className="flex items-center justify-center gap-6 mt-8 flex-wrap">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <HeadphonesIcon className="w-5 h-5 text-primary" />
                 <span>24/7 Support</span>
@@ -464,8 +357,9 @@ export default function Employers() {
                 <CheckCircle2 className="w-5 h-5 text-primary" />
                 <span>Cancel Anytime</span>
               </div>
-            </div>
+            </div> */}
           </div>
+        </div>
         </div>
       </section>
     </div>

@@ -140,6 +140,7 @@ export default function HomePage() {
               />
             ))}
             speed={40}
+            fullWidth={true}
           />
         </div>
       </section>
