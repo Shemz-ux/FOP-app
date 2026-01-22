@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Hero from "../../components/Hero/Hero";
-import FilterSidebar from "../../components/FilterSidebar/FilterSidebar";
+import FilterSidebar from "../../components/FilterSideBar/FilterSideBar";
 import FilterButton from "../../components/Ui/FilterButton";
 import JobCard from "../../components/JobCard/JobCard";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
