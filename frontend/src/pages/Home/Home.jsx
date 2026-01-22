@@ -288,7 +288,7 @@ export default function HomePage() {
 
       {/* CTA */}
       <section className="container mx-auto px-6 py-20">
-        <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20">
+        <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center">
           <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
             Ready to Transform Your Career?
           </h2>
@@ -298,22 +298,22 @@ export default function HomePage() {
             through our platform.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/signup"
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-center"
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-center hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
             >
               Get Started Free
             </Link>
             <Link
               to="/jobs"
-              className="px-8 py-3 border border-border rounded-xl text-center"
+              className="px-8 py-3 border border-border rounded-xl text-center hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
               Browse Jobs
             </Link>
           </div>
 
-          <div className="flex gap-6 mt-8 flex-wrap text-sm text-muted-foreground">
+          <div className="flex gap-6 mt-8 flex-wrap text-sm text-muted-foreground justify-center">
             {[
               "No credit card required",
               "Free forever plan",

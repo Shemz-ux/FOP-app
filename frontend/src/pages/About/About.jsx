@@ -7,7 +7,9 @@ import {
   Heart,
   Zap,
   Shield,
+  CircleCheck,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function About() {
   return (
@@ -25,12 +27,12 @@ export default function About() {
           />
         </div>
 
-        <div className="container mx-auto px-6 py-20 lg:py-32 relative">
+        <div className="container mx-auto px-6 py-32 lg:py-38 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <TrendingUp className="w-4 h-4" />
-                <span>Trusted by 1M+ professionals worldwide</span>
+                <span>Trusted by 10k+ professionals worldwide</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
@@ -44,21 +46,21 @@ export default function About() {
                 technology and human-centric design.
               </p>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-3xl text-primary mb-1">2020</div>
                   <div className="text-muted-foreground text-sm">Founded</div>
                 </div>
                 <div>
-                  <div className="text-3xl text-primary mb-1">50+</div>
+                  <div className="text-3xl text-primary mb-1">10+</div>
                   <div className="text-muted-foreground text-sm">Countries</div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="rounded-2xl overflow-hidden border border-border shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=800&q=80"
+                src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769033694/WhatsApp_Image_2026-01-19_at_00.55.56_gjoy4v.jpg"
                 alt="Team collaboration"
                 className="w-full h-full object-cover aspect-[6/5]"
               />
@@ -69,12 +71,11 @@ export default function About() {
 
       {/* Stats */}
       <section className="container mx-auto px-6 py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
           {[
-            ["10K+", "Active Jobs"],
-            ["5K+", "Partner Companies"],
-            ["1M+", "Job Seekers"],
-            ["50K+", "Success Stories"],
+            ["10,000+", "Students Impacted"],
+            ["250+", "Success Stories"],
+            ["20,000+", "Across Platforms"],
           ].map(([value, label]) => (
             <div key={label} className="text-center">
               <div className="text-4xl lg:text-5xl mb-2 text-primary">
@@ -90,11 +91,9 @@ export default function About() {
       <section className="bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Our Mission</h2>
+            <h2 className="text-3xl mb-4 text-foreground">Our Mission & Our Values</h2>
             <p className="text-lg text-muted-foreground">
-              To revolutionize the way people find careers and companies build
-              teams, making the job search process more transparent, efficient,
-              and rewarding.
+              Ensuring that talent, no matter their backgrounds, have the tools and access to kickstart their career.
             </p>
           </div>
 
@@ -102,27 +101,27 @@ export default function About() {
             {[
               {
                 icon: Target,
-                title: "Purpose-Driven",
+                title: "Accessibility",
                 text:
-                  "Connecting people with roles that align with their values and goals",
+                  "Widen access to careers for talent from all backgrounds",
               },
               {
                 icon: Users,
-                title: "Community-First",
+                title: "Empowerment",
                 text:
-                  "Building a supportive network where professionals grow together",
+                  "Support and guide talent to kickstart your career journey",
               },
               {
                 icon: Zap,
-                title: "Innovation",
+                title: "Community",
                 text:
-                  "Leveraging technology to create smarter job matching",
+                  "Create a community and space for all talent to be supported and grow together",
               },
               {
                 icon: Award,
                 title: "Excellence",
                 text:
-                  "Delivering the highest quality experience for all users",
+                  "Ensure the best outcomes for talent and employers",
               },
             ].map(({ icon: Icon, title, text }) => (
               <div
@@ -147,21 +146,21 @@ export default function About() {
             <h2 className="text-3xl mb-6 text-foreground">Our Story</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Founded in 2020, our platform was born from a simple observation: the traditional job search process was broken. Job seekers struggled to find roles that matched their skills and aspirations, while companies faced challenges in discovering truly qualified candidates.
+                Founded in 2023, our platform was founded on the back of a desire to fix what we believed was a disjointed hiring process. We've seen how fractured the early career scene has been for students and employers, where employers struggle to convert high quality underrepresented talent while young talent struggle to launch their careers
               </p>
               <p>
-                We set out to change that. By combining advanced matching algorithms with human-centric design, we created a platform that makes career discovery intuitive, transparent, and rewarding.
+                We set out to change this by working with both sides,helping employers create more diverse and engaging talent pipelines while also educating the next generation of talent into the workforce.
               </p>
               <p>
-                Today, we're proud to serve millions of professionals and thousands of companies worldwide, facilitating connections that lead to fulfilling careers and successful teams.
+                Today we are proud to say we’ve helped and guided thousands of students and young people across the globe kickstart and progress within their career.
               </p>
             </div>
           </div>
 
           <div className="rounded-3xl overflow-hidden border border-border shadow-xl">
             <img
-                src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b3Jrc3BhY2V8ZW58MXx8fHwxNzY4MzAxNTgyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                alt="Modern workspace"
+                src="https://res.cloudinary.com/dpfkhymbc/image/upload/c_auto,h_1300/c_crop,g_north_west,h_1050,w_957/WhatsApp_Image_2026-01-19_at_00.55.57_1_mcurfk.jpg"
+                alt="University Auditorium"
                 className="w-full h-auto"
               />
           </div>
@@ -180,65 +179,66 @@ export default function About() {
 
           <div className="max-w-4xl mx-auto text-left">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-card p-8 rounded-2xl border border-border">
-                <div className="text-2xl mb-2 text-primary">2020</div>
-                <p className="text-muted-foreground">Platform launched with 100 job listings and our first partner companies</p>
+              <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
+                <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2022</div>
+                <p className="text-muted-foreground">Founded our platform</p>
               </div>
-              <div className="bg-card p-8 rounded-2xl border border-border">
-                <div className="text-2xl mb-2 text-primary">2022</div>
-                <p className="text-muted-foreground">Reached 1 million registered users and expanded to 20 countries</p>
+              <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
+                <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2023</div>
+                <p className="text-muted-foreground">Secured our first employer partner +15 universities signed up</p>
               </div>
-              <div className="bg-card p-8 rounded-2xl border border-border">
-                <div className="text-2xl mb-2 text-primary">2024</div>
-                <p className="text-muted-foreground">Expanded to 50+ countries globally with AI-powered matching</p>
+              <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
+                <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
+                <p className="text-muted-foreground">3,000 students supported and 150+ student success stories</p>
               </div>
-              <div className="bg-card p-8 rounded-2xl border border-border">
-                <div className="text-2xl mb-2 text-primary">2026</div>
-                <p className="text-muted-foreground">Serving 5,000+ partner companies and 1M+ active job seekers</p>
+              <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
+                <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2025</div>
+                <p className="text-muted-foreground">5 global employers partnered with and 5,000+ students supported</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* What Sets Us Apart */}
+      {/* CTA */}
       <section className="container mx-auto px-6 py-20">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl mb-4 text-foreground">What Sets Us Apart</h2>
-          <p className="text-muted-foreground">
-            Features and values that make us different
+        <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center">
+          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
+            Ready to Transform Your Career?
+          </h2>
+
+          <p className="text-muted-foreground text-lg mb-8">
+            Join thousands of professionals who have found their dream careers
+            through our platform.
           </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto text-left">
-          {[
-            {
-              icon: Shield,
-              title: "Verified Opportunities",
-              text: "Every job listing is verified for authenticity",
-            },
-            {
-              icon: Heart,
-              title: "Culture Matching",
-              text: "Find companies aligned with your values",
-            },
-            {
-              icon: Building2,
-              title: "Company Insights",
-              text:
-                "Access reviews, salaries, and detailed company profiles",
-            },
-          ].map(({ icon: Icon, title, text }) => (
-            <div
-              key={title}
-              className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all"
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/signup"
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-center hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Icon className="w-7 h-7" />
+              Join Our Community
+            </Link>
+            <Link
+              to="/about" // TODO: What should this link to?
+              className="px-8 py-3 border border-border rounded-xl text-center hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+            >
+              Partner With Us
+            </Link>
+          </div>
+
+          <div className="flex gap-6 mt-8 flex-wrap text-sm text-muted-foreground justify-center">
+            {[
+              "No credit card required",
+              "Free forever plan",
+              "Cancel anytime",
+            ].map((text) => (
+              <div key={text} className="flex items-center gap-2">
+                <CircleCheck className="w-5 h-5 text-primary" />
+                <span>{text}</span>
               </div>
-              <h3 className="text-foreground mb-3">{title}</h3>
-              <p className="text-muted-foreground text-sm">{text}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
     </div>

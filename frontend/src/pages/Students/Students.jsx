@@ -47,13 +47,13 @@ export default function Students() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/login"
-                  className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity text-center"
+                  className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-center"
                 >
                   Create An Account
                 </Link>
                 <Link
                   to="/jobs"
-                  className="px-8 py-3 border border-border text-foreground rounded-xl hover:bg-secondary transition-colors text-center"
+                  className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center"
                 >
                   Browse Opportunities
                 </Link>
@@ -482,13 +482,13 @@ export default function Students() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 to="/login"
-                className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity text-center"
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-center"
               >
                 Create An Account
               </Link>
               <Link
                 to="/jobs"
-                className="px-8 py-3 border border-border text-foreground rounded-xl hover:bg-secondary transition-colors text-center"
+                className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center"
               >
                 Explore Opportunities
               </Link>
