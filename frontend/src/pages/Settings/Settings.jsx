@@ -15,8 +15,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../../components/ui/alert-dialog";
-import ForgotPassword from "../../components/ui/ForgotPassword";
+} from "../../components/Ui/alert-dialog";
+import ForgotPassword from "../../components/Ui/ForgotPassword";
 
 export default function Settings() {
   const { user, isJobseeker } = useAuth();

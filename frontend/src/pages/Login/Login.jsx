@@ -1,7 +1,7 @@
 import {useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import ForgotPassword from "../../components/ui/ForgotPassword";
+import ForgotPassword from "../../components/Ui/ForgotPassword";
 import { useAuth } from "../../contexts/AuthContext";
 import landingVideo from "../../assets/landing_video.MP4";
 
