@@ -211,48 +211,26 @@ export default function Navbar({
                 </Link>
               )}
               <Link
-                to="/jobs"
+                to="/"
                 onClick={closeMobileMenu}
                 className={`block px-4 py-3 gap-6 rounded-lg transition-colors ${
-                  isActive('/jobs')
+                  isActive('/')
                     ? 'bg-primary text-primary-foreground'
                     : 'text-foreground hover:bg-secondary'
                 }`}
               >
-                Jobs
+                Home
               </Link>
               <Link
-                to="/events"
+                to="/about"
                 onClick={closeMobileMenu}
                 className={`block px-4 py-3 rounded-lg transition-colors ${
-                  isActive('/events')
+                  isActive('/about')
                     ? 'bg-primary text-primary-foreground'
                     : 'text-foreground hover:bg-secondary'
                 }`}
               >
-                Events
-              </Link>
-              <Link
-                to="/resources"
-                onClick={closeMobileMenu}
-                className={`block px-4 py-3 rounded-lg transition-colors ${
-                  isActive('/resources')
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground hover:bg-secondary'
-                }`}
-              >
-                Resources
-              </Link>
-              <Link
-                to="/students"
-                onClick={closeMobileMenu}
-                className={`block px-4 py-3 rounded-lg transition-colors ${
-                  isActive('/students')
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground hover:bg-secondary'
-                }`}
-              >
-                Students
+                About Us
               </Link>
               <Link
                 to="/employers"
@@ -266,16 +244,50 @@ export default function Navbar({
                 Employers
               </Link>
               <Link
-                to="/about"
+                to="/students"
                 onClick={closeMobileMenu}
                 className={`block px-4 py-3 rounded-lg transition-colors ${
-                  isActive('/about')
+                  isActive('/students')
                     ? 'bg-primary text-primary-foreground'
                     : 'text-foreground hover:bg-secondary'
                 }`}
               >
-                About Us
+                Students
               </Link>
+              <Link
+                to="/jobs"
+                onClick={closeMobileMenu}
+                className={`block px-4 py-3 gap-6 rounded-lg transition-colors ${
+                  isActive('/jobs')
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                Jobs
+              </Link>
+              <Link
+                to="/resources"
+                onClick={closeMobileMenu}
+                className={`block px-4 py-3 rounded-lg transition-colors ${
+                  isActive('/resources')
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                Resources
+              </Link>
+              <Link
+                to="/events"
+                onClick={closeMobileMenu}
+                className={`block px-4 py-3 rounded-lg transition-colors ${
+                  isActive('/events')
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                Events
+              </Link>
+          
             </div>
           </nav>
 

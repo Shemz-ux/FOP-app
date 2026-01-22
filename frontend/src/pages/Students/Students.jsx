@@ -28,20 +28,20 @@ export default function Students() {
           }}></div>
         </div>
 
-        <div className="container mx-auto px-6 py-20 lg:py-32 relative text-left">
+        <div className="container mx-auto px-6 py-20 lg:py-50 relative text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <GraduationCap className="w-4 h-4" />
-                <span>Join 500K+ students already on board!</span>
+                <span>Join 10,000+ students already on board!</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
                 Launch Your Career <br/>
-                <span className="text-primary">While You Study</span>
+                <span className="text-primary">Unlock Opportunities</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Find internships, part-time roles, and graduate opportunities at leading companies. Build your professional network and gain real-world experience.
+                Find internships, entry level and graduate  opportunities at leading employers. Get tailored career support and build your network.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
@@ -49,7 +49,7 @@ export default function Students() {
                   to="/login"
                   className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-center"
                 >
-                  Create An Account
+                  Join Now!
                 </Link>
                 <Link
                   to="/jobs"
@@ -66,11 +66,11 @@ export default function Students() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>5,000+ student-friendly jobs</span>
+                  <span>350+ student-friendly jobs</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>Exclusive campus events</span>
+                  <span>Exclusive events</span>
                 </div>
               </div>
             </div>
@@ -97,20 +97,20 @@ export default function Students() {
       <section className="container mx-auto px-6 py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">500K+</div>
-            <div className="text-muted-foreground">Student Members</div>
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">10,000+</div>
+            <div className="text-muted-foreground">Students</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">5K+</div>
-            <div className="text-muted-foreground">Student Jobs</div>
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">250+</div>
+            <div className="text-muted-foreground">Jobs Secured</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">200+</div>
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">5000+</div>
+            <div className="text-muted-foreground">Students Supported</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">50+</div>
             <div className="text-muted-foreground">Campus Partners</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">1K+</div>
-            <div className="text-muted-foreground">Monthly Events</div>
           </div>
         </div>
       </section>
@@ -152,7 +152,7 @@ export default function Students() {
               </div>
               <h3 className="text-foreground mb-3">Networking Events</h3>
               <p className="text-muted-foreground text-sm">
-                Connect with industry professionals, alumni, and recruiters at exclusive student networking events.
+                Connect with industry professionals and leading employers across a variety of industries.
               </p>
             </div>
 
@@ -160,9 +160,9 @@ export default function Students() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Target className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Career Matching</h3>
+              <h3 className="text-foreground mb-3">Employability Programs</h3>
               <p className="text-muted-foreground text-sm">
-                AI-powered matching connects you with roles that align with your skills, interests, and career goals.
+                Structured job search and training programs to help you land your.
               </p>
             </div>
 
@@ -170,9 +170,9 @@ export default function Students() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <MessageSquare className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Mentorship Program</h3>
+              <h3 className="text-foreground mb-3">Masterclass Events</h3>
               <p className="text-muted-foreground text-sm">
-                Get paired with experienced professionals who can guide your career journey and provide valuable insights.
+                Exclusive industry insight events and career development masterclasses to bring you insights and guidance into different careers.
               </p>
             </div>
 
@@ -180,134 +180,10 @@ export default function Students() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Rocket className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Skills Development</h3>
+              <h3 className="text-foreground mb-3">1-1 Career Coaching</h3>
               <p className="text-muted-foreground text-sm">
-                Access free workshops, webinars, and courses to build in-demand skills that employers are looking for.
+                Gain 1-1 career coaching support to turbocharge your career development.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Opportunities */}
-      <section className="container mx-auto px-6 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl mb-4 text-foreground">Popular Student Opportunities</h2>
-          <p className="text-muted-foreground">
-            Explore the most sought-after roles and programs for students
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
-          <div className="bg-card p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
-            <div className="w-12 h-12 rounded-lg bg-badge-purple-bg text-badge-purple flex items-center justify-center mb-4">
-              <Briefcase className="w-6 h-6" />
-            </div>
-            <h3 className="text-foreground mb-2">Summer Internships</h3>
-            <p className="text-muted-foreground text-sm mb-3">
-              Gain valuable experience during summer break
-            </p>
-            <div className="text-primary text-sm">1,200+ positions</div>
-          </div>
-
-          <div className="bg-card p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
-            <div className="w-12 h-12 rounded-lg bg-badge-green-bg text-badge-green flex items-center justify-center mb-4">
-              <Coffee className="w-6 h-6" />
-            </div>
-            <h3 className="text-foreground mb-2">Part-Time Jobs</h3>
-            <p className="text-muted-foreground text-sm mb-3">
-              Work flexible hours around your studies
-            </p>
-            <div className="text-primary text-sm">800+ positions</div>
-          </div>
-
-          <div className="bg-card p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
-            <div className="w-12 h-12 rounded-lg bg-badge-blue-bg text-badge-blue flex items-center justify-center mb-4">
-              <GraduationCap className="w-6 h-6" />
-            </div>
-            <h3 className="text-foreground mb-2">Graduate Programs</h3>
-            <p className="text-muted-foreground text-sm mb-3">
-              Launch your career with structured programs
-            </p>
-            <div className="text-primary text-sm">500+ programs</div>
-          </div>
-
-          <div className="bg-card p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
-            <div className="w-12 h-12 rounded-lg bg-badge-orange-bg text-badge-orange flex items-center justify-center mb-4">
-              <Lightbulb className="w-6 h-6" />
-            </div>
-            <h3 className="text-foreground mb-2">Research Positions</h3>
-            <p className="text-muted-foreground text-sm mb-3">
-              Contribute to cutting-edge research projects
-            </p>
-            <div className="text-primary text-sm">300+ opportunities</div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="bg-secondary/30 border-y border-border">
-        <div className="container mx-auto px-6 py-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Your Journey Starts Here</h2>
-            <p className="text-muted-foreground">
-              Four simple steps to kickstart your professional career
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto text-left">
-            <div className="relative">
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  1
-                </div>
-                <h3 className="text-foreground mb-2">Sign Up Free</h3>
-                <p className="text-muted-foreground text-sm">
-                  Create your profile with your university email and get instant access.
-                </p>
-              </div>
-              {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  2
-                </div>
-                <h3 className="text-foreground mb-2">Build Profile</h3>
-                <p className="text-muted-foreground text-sm">
-                  Showcase your skills, education, projects, and career interests.
-                </p>
-              </div>
-              {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  3
-                </div>
-                <h3 className="text-foreground mb-2">Explore & Apply</h3>
-                <p className="text-muted-foreground text-sm">
-                  Browse curated opportunities and apply with one click.
-                </p>
-              </div>
-              {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
-            </div>
-
-            <div>
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  4
-                </div>
-                <h3 className="text-foreground mb-2">Get Hired</h3>
-                <p className="text-muted-foreground text-sm">
-                  Connect with recruiters and land your dream role or internship.
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -391,78 +267,99 @@ export default function Students() {
         </div>
       </section>
 
-      {/* Campus Partnerships */}
+      {/* How It Works */}
       <section className="bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
+            <h2 className="text-3xl mb-4 text-foreground">Your Journey Starts Here</h2>
             <p className="text-muted-foreground">
-              Partnering with leading institutions to support student success
+              Four simple steps to kickstart your professional career
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
-            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                  <Award className="w-6 h-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto text-left">
+            <div className="relative">
+              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
+                  1
                 </div>
-                <div>
-                  <h3 className="text-foreground mb-2">Career Services Integration</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Seamlessly integrated with university career services to provide students with the best opportunities.
-                  </p>
-                </div>
+                <h3 className="text-foreground mb-2">Sign Up Free</h3>
+                <p className="text-muted-foreground text-sm">
+                  Create your profile with your university email and get instant access.
+                </p>
               </div>
+              {/* Connector line - hidden on mobile/tablet */}
+              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
             </div>
 
-            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-6 h-6" />
+            <div className="relative">
+              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
+                  2
                 </div>
-                <div>
-                  <h3 className="text-foreground mb-2">On-Campus Events</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Exclusive career fairs, workshops, and recruiting events hosted at partner universities.
-                  </p>
-                </div>
+                <h3 className="text-foreground mb-2">Build Profile</h3>
+                <p className="text-muted-foreground text-sm">
+                  Showcase your skills, education, projects, and career interests.
+                </p>
               </div>
+              {/* Connector line - hidden on mobile/tablet */}
+              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
             </div>
 
-            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-6 h-6" />
+            <div className="relative">
+              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
+                  3
                 </div>
-                <div>
-                  <h3 className="text-foreground mb-2">Resume Reviews</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Free resume and cover letter reviews from industry professionals and career advisors.
-                  </p>
-                </div>
+                <h3 className="text-foreground mb-2">Explore & Apply</h3>
+                <p className="text-muted-foreground text-sm">
+                  Browse curated opportunities and apply with one click.
+                </p>
               </div>
+              {/* Connector line - hidden on mobile/tablet */}
+              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
             </div>
 
-            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-6 h-6" />
+            <div>
+              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
+                  4
                 </div>
-                <div>
-                  <h3 className="text-foreground mb-2">Skills Tracking</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Track your professional development and earn certificates recognized by employers.
-                  </p>
-                </div>
+                <h3 className="text-foreground mb-2">Launch Your Career</h3>
+                <p className="text-muted-foreground text-sm">
+                  Connect with recruiters and land your dream role or internship.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Campus Partnerships */}
+      <section className="border-y border-border">
+        <div className="container mx-auto px-6 py-20">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 md:gap-16 items-center justify-items-center max-w-6xl mx-auto">
+            <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/KPMG.svg/3840px-KPMG.svg.png" alt="KPMG" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://companieslogo.com/img/orig/GS_BIG.D-64570a1b.png?t=1740321324" alt="Goldman Sachs" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://cdn.worldvectorlogo.com/logos/citibank-5.svg" alt="Citibank" className="h-12 w-auto transition-opacity hover:opacity-70" />
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="container mx-auto px-6 py-20">
+      <section className="bg-secondary/30 border-y border-border">
+        <div className="container mx-auto px-6 py-20">
         <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-5">
             <div className="absolute inset-0" style={{
@@ -509,6 +406,7 @@ export default function Students() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
     </div>

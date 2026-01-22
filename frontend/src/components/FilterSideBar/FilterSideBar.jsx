@@ -14,10 +14,10 @@ export default function FilterSidebar({
   onClearAll,
 }) {
   const [openSections, setOpenSections] = useState({
-    jobType: true,
-    industry: true,
-    workType: true,
-    experienceLevel: true
+    jobType: false,
+    industry: false,
+    workType: false,
+    experienceLevel: false
   });
 
   const toggleSection = (section) => {
