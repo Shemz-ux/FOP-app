@@ -14,6 +14,7 @@ import {
   HeadphonesIcon
 } from 'lucide-react';
 import Marquee from '../../components/Marquee/Marquee';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function Employers() {
   return (
@@ -99,43 +100,51 @@ export default function Employers() {
       {/* How We Help You Section */}
       <section className="border-b border-border">
         <div className="container mx-auto px-6 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">How We Help You</h2>
+        <ScrollReveal>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">How We Help You</h2>
           <p className="text-muted-foreground">
             Our comprehensive approach to building your talent pipeline
           </p>
-        </div>
+          </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto text-left">
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
-              <Target className="w-7 h-7" />
+          <ScrollReveal delay={0.1}>
+            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Target className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl text-foreground mb-3">Talent Attraction</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Reach and engage top talent through strategic university partnerships, targeted campaigns, and compelling employer branding initiatives.
+              </p>
             </div>
-            <h3 className="text-xl text-foreground mb-3">Talent Attraction</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Reach and engage top talent through strategic university partnerships, targeted campaigns, and compelling employer branding initiatives.
-            </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
-              <Award className="w-7 h-7" />
+          <ScrollReveal delay={0.2}>
+            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Award className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl text-foreground mb-3">Employer Branding</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Build a powerful employer brand that resonates with candidates through authentic storytelling, social media presence, and insight events.
+              </p>
             </div>
-            <h3 className="text-xl text-foreground mb-3">Employer Branding</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Build a powerful employer brand that resonates with candidates through authentic storytelling, social media presence, and insight events.
-            </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
-              <Users className="w-7 h-7" />
+          <ScrollReveal delay={0.3}>
+            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Users className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl text-foreground mb-3">Application Readiness</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Prepare candidates for success with pre-application workshops, employability programs, and skills development initiatives.
+              </p>
             </div>
-            <h3 className="text-xl text-foreground mb-3">Application Readiness</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Prepare candidates for success with pre-application workshops, employability programs, and skills development initiatives.
-            </p>
-          </div>
+          </ScrollReveal>
         </div>
         </div>
       </section>
@@ -143,7 +152,8 @@ export default function Employers() {
       {/* Stats */}
       <section className="bg-secondary/30 border-b border-border">
         <div className="container mx-auto px-6 py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <ScrollReveal>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             ["20,000+", "Students"],
             ["30", "University Partners"],
@@ -157,19 +167,22 @@ export default function Employers() {
               <div className="text-muted-foreground">{label}</div>
             </div>
           ))}
-        </div>
+          </div>
+        </ScrollReveal>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="border-b border-border">
         <div className="container mx-auto px-6 py-20 text-left">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Everything You Need To Attract Talent</h2>
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Everything You Need To Attract Talent</h2>
             <p className="text-muted-foreground">
               Powerful tools and features designed to streamline your entire recruitment process
             </p>
-          </div>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
@@ -238,12 +251,14 @@ export default function Employers() {
       {/* Testimonials */}
       <section className="bg-secondary/30 border-b border-border">
         <div className="container mx-auto px-6 py-20 text-left">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Trusted by Industry Leaders</h2>
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Trusted by Industry Leaders</h2>
             <p className="text-muted-foreground">
               See what companies are saying about their hiring experience
             </p>
-          </div>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
@@ -318,7 +333,8 @@ export default function Employers() {
       {/* CTA Section */}
       <section className="border-b border-border">
         <div className="container mx-auto px-6 py-20">
-        <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">
+        <ScrollReveal>
+          <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-5">
             <div className="absolute inset-0" style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
@@ -359,7 +375,8 @@ export default function Employers() {
               </div>
             </div> */}
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
         </div>
       </section>
     </div>

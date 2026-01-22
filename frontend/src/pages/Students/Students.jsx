@@ -15,6 +15,7 @@ import {
   MessageSquare,
   FileText
 } from 'lucide-react';
+import ScrollReveal from '../../components/ScrollReveal';
 
 export default function Students() {
   return (
@@ -95,7 +96,8 @@ export default function Students() {
 
       {/* Stats Section */}
       <section className="container mx-auto px-6 py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <ScrollReveal>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
             <div className="text-4xl lg:text-5xl mb-2 text-primary">10,000+</div>
             <div className="text-muted-foreground">Students</div>
@@ -112,18 +114,21 @@ export default function Students() {
             <div className="text-4xl lg:text-5xl mb-2 text-primary">50+</div>
             <div className="text-muted-foreground">Campus Partners</div>
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* Benefits Section */}
       <section className="bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-6 py-20 text-left">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Everything Students Need to Succeed</h2>
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Everything Students Need to Succeed</h2>
             <p className="text-muted-foreground">
               From your first internship to your graduate role, we're with you every step of the way
             </p>
-          </div>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
@@ -191,12 +196,14 @@ export default function Students() {
 
       {/* Student Success Stories */}
       <section className="container mx-auto px-6 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl mb-4 text-foreground">Student Success Stories</h2>
+        <ScrollReveal>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl mb-4 text-foreground">Student Success Stories</h2>
           <p className="text-muted-foreground">
             Hear from students who launched their careers with CareerHub
           </p>
-        </div>
+          </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
@@ -270,12 +277,14 @@ export default function Students() {
       {/* How It Works */}
       <section className="bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-6 py-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Your Journey Starts Here</h2>
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Your Journey Starts Here</h2>
             <p className="text-muted-foreground">
               Four simple steps to kickstart your professional career
             </p>
-          </div>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto text-left">
             <div className="relative">
@@ -338,11 +347,14 @@ export default function Students() {
       {/* Campus Partnerships */}
       <section className="border-y border-border">
         <div className="container mx-auto px-6 py-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
+            </div>
+          </ScrollReveal>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 md:gap-16 items-center justify-items-center max-w-6xl mx-auto">
+          <ScrollReveal delay={0.2}>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 md:gap-16 items-center justify-items-center max-w-6xl mx-auto">
             <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 w-auto transition-opacity hover:opacity-70" />
             <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto transition-opacity hover:opacity-70" />
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto transition-opacity hover:opacity-70" />
@@ -353,14 +365,16 @@ export default function Students() {
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/KPMG.svg/3840px-KPMG.svg.png" alt="KPMG" className="h-12 w-auto transition-opacity hover:opacity-70" />
             <img src="https://companieslogo.com/img/orig/GS_BIG.D-64570a1b.png?t=1740321324" alt="Goldman Sachs" className="h-12 w-auto transition-opacity hover:opacity-70" />
             <img src="https://cdn.worldvectorlogo.com/logos/citibank-5.svg" alt="Citibank" className="h-12 w-auto transition-opacity hover:opacity-70" />
-          </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="bg-secondary/30 border-y border-border">
         <div className="container mx-auto px-6 py-20">
-        <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">
+        <ScrollReveal>
+          <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-5">
             <div className="absolute inset-0" style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
@@ -406,7 +420,8 @@ export default function Students() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
         </div>
       </section>
     </div>
