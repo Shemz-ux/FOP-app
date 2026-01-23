@@ -42,21 +42,9 @@ export default function About() {
               </h1>
 
               <p className="text-xl text-muted-foreground mb-8">
-                We're on a mission to help professionals find meaningful careers
-                and companies discover exceptional talent through innovative
-                technology and human-centric design.
+                We're on a mission to help young talent unlock their career 
+                path and help employers attract and hire exceptional and diverse talent at scale.
               </p>
-
-              {/* <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-3xl text-primary mb-1">2020</div>
-                  <div className="text-muted-foreground text-sm">Founded</div>
-                </div>
-                <div>
-                  <div className="text-3xl text-primary mb-1">10+</div>
-                  <div className="text-muted-foreground text-sm">Countries</div>
-                </div>
-              </div> */}
             </div>
 
             <div className="rounded-2xl overflow-hidden border border-border shadow-2xl">
@@ -77,7 +65,7 @@ export default function About() {
           {[
             ["10,000+", "Students Impacted"],
             ["250+", "Success Stories"],
-            ["20,000+", "Across Platforms"],
+            ["20,000+", "Members"],
           ].map(([value, label]) => (
             <div key={label} className="text-center">
               <div className="text-4xl lg:text-5xl mb-2 text-primary">
@@ -97,7 +85,7 @@ export default function About() {
             <div className="max-w-3xl mx-auto text-center mb-12">
               <h2 className="text-3xl mb-4 text-foreground">Our Mission & Our Values</h2>
             <p className="text-lg text-muted-foreground">
-              Ensuring that talent, no matter their backgrounds, have the tools and access to kickstart their career.
+              Ensuring that talent no matter their backgrounds have the tools to kickstart their career.
             </p>
             </div>
           </ScrollReveal>
@@ -112,15 +100,15 @@ export default function About() {
               },
               {
                 icon: Users,
-                title: "Empowerment",
+                title: "Community",
                 text:
-                  "Support and guide talent to kickstart your career journey",
+                "A space for all talent to be supported and grow together",
               },
               {
                 icon: Zap,
-                title: "Community",
+                title: "Empowerment",
                 text:
-                  "Create a community and space for all talent to be supported and grow together",
+                  "Support and guide talent to kickstart your career journey",
               },
               {
                 icon: Award,
@@ -197,14 +185,14 @@ export default function About() {
               </ScrollReveal>
               <ScrollReveal delay={0.2}>
                 <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2023</div>
-                  <p className="text-muted-foreground">Secured our first employer partner +15 universities signed up</p>
+                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
+                  <p className="text-muted-foreground">3,000 students supported and 150+ student success stories</p>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.3}>
                 <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
-                  <p className="text-muted-foreground">3,000 students supported and 150+ student success stories</p>
+                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2023</div>
+                  <p className="text-muted-foreground">Secured our first employer partner and started our university partnership network</p>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.4}>
@@ -246,7 +234,7 @@ export default function About() {
             </Link>
           </div>
 
-          <div className="flex gap-6 mt-8 flex-wrap text-sm text-muted-foreground justify-center">
+          {/* <div className="flex gap-6 mt-8 flex-wrap text-sm text-muted-foreground justify-center">
             {[
               "No credit card required",
               "Free forever plan",
@@ -257,7 +245,7 @@ export default function About() {
                 <span>{text}</span>
               </div>
             ))}
-          </div>
+          </div> */}
           </div>
         </ScrollReveal>
       </section>

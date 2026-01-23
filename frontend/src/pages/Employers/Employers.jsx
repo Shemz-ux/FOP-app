@@ -33,7 +33,7 @@ export default function Employers() {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <TrendingUp className="w-4 h-4" />
-                <span>Trusted by 250+ companies worldwide</span>
+                <span>250+ companies worldwide</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
@@ -45,10 +45,10 @@ export default function Employers() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 text-center">
-                <Link className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                <Link className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" to="/jobs">
                   Browse opportunities
                 </Link>
-                <Link className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                <Link className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300" to="/contact">
                   Contact Us
                 </Link>
               </div>
@@ -57,7 +57,7 @@ export default function Employers() {
             <div className="relative">
               <div className="rounded-3xl overflow-hidden border border-border shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1709715357520-5e1047a2b691?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMHRlYW0lMjBtZWV0aW5nfGVufDF8fHx8MTc2ODM3NzYwM3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769166734/WhatsApp_Image_2026-01-19_at_00.55.56_1_v9klsq.jpg"
                   alt="Business team meeting"
                   className="w-full h-auto"
                 />
@@ -74,27 +74,29 @@ export default function Employers() {
 
       {/* Company Logos Marquee */}
       <section className="bg-secondary/30 border-y border-border pb-15">
-        <div className="container mx-auto px-6 pt-12">
-          <p className="text-center text-medium text-muted-foreground mb-12">
-            Trusted by employers such as
-          </p>
-        </div>
-        <Marquee 
-          speed={30}
-          fullWidth={true}
-          items={[
-            <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan-chase.svg" alt="JP Morgan" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png" alt="BlackRock" className="h-12 transition-opacity" />,
-            <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 transition-opacity" />,
-            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png" alt="accenture" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 transition-opacity" />,
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg" alt="PWC" className="h-12 transition-opacity" />
-          ]}
-        />
+        <ScrollReveal>
+          <div className="container mx-auto px-6 pt-12">
+            <h1 className="text-center text-medium mb-12">
+              Trusted by employers such as
+            </h1>
+          </div>
+          <Marquee 
+            speed={20}
+            fullWidth={true}
+            items={[
+              <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 transition-opacity" />,
+              <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png" alt="BlackRock" className="h-12 transition-opacity" />,
+              <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png" alt="accenture" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 transition-opacity" />,
+              <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg" alt="PWC" className="h-12 transition-opacity" />
+            ]}
+          />
+        </ScrollReveal>
       </section>
 
       {/* How We Help You Section */}
@@ -351,11 +353,10 @@ export default function Employers() {
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+              <Link to="/contact" className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
                 Contact Us
               </Link>
-              <Link className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
-              to="/about">
+              <Link to="/about" className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
                 Learn More
               </Link>
             </div>

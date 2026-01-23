@@ -19,13 +19,13 @@ import {
 import landingVideo from "../../assets/landing_video.MP4";
 
 const companyLogos = [
-  { src: "https://cdn.worldvectorlogo.com/logos/jp-morgan-chase.svg", alt: "JP Morgan" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Lazard_wordmark.svg/1280px-Lazard_wordmark.svg.png", alt: "Lazard" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png", alt: "BlackRock" },
   { src: "https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg", alt: "Barclays" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png", alt: "Aon" },
   { src: "https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png", alt: "Mastercard" },
+  { src: "https://cdn.worldvectorlogo.com/logos/jp-morgan.svg", alt: "JP Morgan" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png", alt: "State Street" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Lazard_wordmark.svg/1280px-Lazard_wordmark.svg.png", alt: "Lazard" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png", alt: "BlackRock" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png", alt: "accenture" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png", alt: "EY" },
@@ -92,11 +92,11 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80" />
         </div>
 
-        <div className="container mx-auto px-6 py-34 lg:py-48 relative z-10">
+        <div className="container mx-auto px-6 py-40 lg:py-55 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
               <TrendingUp className="w-4 h-4" />
-              <span>Join 1M+ professionals finding their dream careers</span>
+              <span>Professionals finding their dream careers</span>
             </div>
 
             <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
@@ -127,24 +127,29 @@ export default function HomePage() {
           </div>
 
         </div>
+      </section>
 
-        {/* Featured Company Marquee - Full Width at Bottom */}
-        <div className="mt-16 mb-10">
-          {/* <h2 className="text-center text-foreground text-sm mb-10 font-semibold">We've helped students and grads land roles at</h2> */}
+      {/* Company logo marquee */}
+      <section className="bg-secondary/30 border-y border-border pb-15">
+        <ScrollReveal>
+          <div className="container mx-auto px-6 pt-12">
+            <h1 className="text-center text-medium mb-12">Trusted by employers</h1>
+          </div>
           <Marquee
             items={companyLogos.map((logo) => (
               <img
                 key={logo.alt}
                 src={logo.src}
                 alt={logo.alt}
-                className="h-12 w-auto opacity-100 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                className="h-12 w-auto object-contain transition-opacity"
               />
             ))}
-            speed={40}
+            speed={20}
             fullWidth={true}
           />
-        </div>
+        </ScrollReveal>
       </section>
+
 
       {/* Why Choose Us */}
       <section className="border-y border-border">
@@ -153,7 +158,7 @@ export default function HomePage() {
             <div className="text-center max-w-2xl mx-auto mb-12">
               <h2 className="text-3xl mb-4 text-foreground">Kickstart your career journey</h2>
               <p className="text-muted-foreground">
-                Our platform provides comprehensive tools and resources to accelerate your career journey
+                Our platform provides support and resources to accelerate your career
               </p>
             </div>
           </ScrollReveal>
@@ -166,7 +171,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-foreground mb-2">Job Opportunities</h3>
               <p className="text-muted-foreground text-sm">
-                Access thousands of verified opportunities from industry-leading companies across all sectors
+                Access a wide variety of opportunities from industry leading companies across all sectors
               </p>
               </div>
             </ScrollReveal>
@@ -176,9 +181,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Target className="w-6 h-6" />
               </div>
-              <h3 className="text-foreground mb-2">Employability Programs</h3>
+              <h3 className="text-foreground mb-2">Employability</h3>
               <p className="text-muted-foreground text-sm">
-                Our AI-powered system matches you with roles that align with your skills and career goals
+                Take part in our structured and interactive programmes to kickstart your career with leading employers
               </p>
               </div>
             </ScrollReveal>
@@ -338,18 +343,6 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="flex gap-6 mt-8 flex-wrap text-sm text-muted-foreground justify-center">
-            {[
-              "No credit card required",
-              "Free forever plan",
-              "Cancel anytime",
-            ].map((text) => (
-              <div key={text} className="flex items-center gap-2">
-                <CircleCheck className="w-5 h-5 text-primary" />
-                <span>{text}</span>
-              </div>
-            ))}
-          </div>
           </div>
         </ScrollReveal>
       </section>
