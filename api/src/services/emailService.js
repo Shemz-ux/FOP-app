@@ -159,6 +159,147 @@ This is an automated email from FOP App. Please do not reply to this message.
   }
 };
 
+export const sendContactEmail = async (senderEmail, topic, message) => {
+  const receiverEmail = process.env.CONTACT_RECEIVER_EMAIL;
+  
+  if (!receiverEmail) {
+    throw new Error('CONTACT_RECEIVER_EMAIL not configured');
+  }
+
+  const mailOptions = {
+    from: `"FO Perspectives Contact Form" <${process.env.SMTP_USER}>`,
+    replyTo: senderEmail,
+    to: receiverEmail,
+    subject: `[Contact Form] ${topic}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .email-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2563eb;
+          }
+          .header h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 24px;
+          }
+          .content {
+            margin-bottom: 30px;
+          }
+          .field {
+            margin-bottom: 20px;
+          }
+          .field-label {
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .field-value {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #2563eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+          }
+          .footer {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="email-content">
+            <div class="header">
+              <h1>📧 New Contact Form Submission</h1>
+            </div>
+            
+            <div class="content">
+              <div class="field">
+                <div class="field-label">From</div>
+                <div class="field-value">${senderEmail}</div>
+              </div>
+
+              <div class="field">
+                <div class="field-label">Topic</div>
+                <div class="field-value">${topic}</div>
+              </div>
+              
+              <div class="field">
+                <div class="field-label">Message</div>
+                <div class="field-value">${message}</div>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p>This message was sent via the FO Perspectives contact form.</p>
+              <p>&copy; ${new Date().getFullYear()} FO Perspectives. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `
+New Contact Form Submission
+
+From: ${senderEmail}
+
+Topic: ${topic}
+
+Message:
+${message}
+
+---
+This message was sent via the FO Perspectives contact form.
+© ${new Date().getFullYear()} FO Perspectives. All rights reserved.
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Contact form email sent successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('Error sending contact form email:', error);
+    throw new Error('Failed to send contact form email');
+  }
+};
+
 export default {
   sendPasswordResetEmail,
+  sendContactEmail,
 };

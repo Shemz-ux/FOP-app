@@ -20,6 +20,7 @@ import Settings from './pages/Settings/Settings.jsx'
 import About from './pages/About/About.jsx'
 import Students from './pages/Students/Students.jsx'
 import Employers from './pages/Employers/Employers.jsx'
+import Contact from './pages/Contact/Contact.jsx'
 import Login from './pages/Login/Login.jsx';
 import SignUp from './pages/SignUp/SignUp.jsx'
 import ResetPassword from './pages/ResetPassword/ResetPassword.jsx'
@@ -102,6 +103,10 @@ function App() {
     {
       path: "/about",
       element: <Layout><About /></Layout>
+    },
+    {
+      path: "/contact",
+      element: <Layout><Contact /></Layout>
     },
     {
       path: "/login",

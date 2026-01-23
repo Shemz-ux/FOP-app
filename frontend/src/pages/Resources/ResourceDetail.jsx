@@ -306,9 +306,12 @@ export default function ResourceDetail() {
               <p className="text-sm text-muted-foreground mb-4 text-left">
                 Have questions about this resource? Our team is here to help.
               </p>
-              <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity">
+              <Link 
+                to="/contact" 
+                className="block w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-center"
+              >
                 Contact Support
-              </button>
+              </Link>
             </div>
           </div>
         </div>
