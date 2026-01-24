@@ -33,7 +33,7 @@ export default function About() {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <TrendingUp className="w-4 h-4" />
-                <span>Trusted by 10k+ professionals worldwide</span>
+                <span>Trusted by thousands of young talent worldwide</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
@@ -141,10 +141,10 @@ export default function About() {
             <h2 className="text-3xl mb-6 text-foreground">Our Story</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Founded in 2023, our platform was founded on the back of a desire to fix what we believed was a disjointed hiring process. We've seen how fractured the early career scene has been for students and employers, where employers struggle to convert high quality underrepresented talent while young talent struggle to launch their careers
+                Founded in 2022, our platform was founded on the back of a desire to fix what we believed was a disjointed hiring process. We've seen how fractured the early career scene has been for students and employers, where employers struggle to convert high quality underrepresented talent while young talent struggle to launch their careers
               </p>
               <p>
-                We set out to change this by working with both sides,helping employers create more diverse and engaging talent pipelines while also educating the next generation of talent into the workforce.
+                We set out to change this by working with both sides, helping employers create more diverse and engaging talent pipelines while also educating the next generation of talent into the workforce.
               </p>
               <p>
                 Today we are proud to say we’ve helped and guided thousands of students and young people across the globe kickstart and progress within their career.
@@ -185,20 +185,20 @@ export default function About() {
               </ScrollReveal>
               <ScrollReveal delay={0.2}>
                 <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
-                  <p className="text-muted-foreground">3,000 students supported and 150+ student success stories</p>
+                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2023</div>
+                  <p className="text-muted-foreground">Secured our first employer partner and started our university partnership network</p>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.3}>
                 <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2023</div>
-                  <p className="text-muted-foreground">Secured our first employer partner and started our university partnership network</p>
+                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
+                  <p className="text-muted-foreground">3,000 young people supported and 150+ success stories</p>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.4}>
                 <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
                   <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2025</div>
-                  <p className="text-muted-foreground">5 global employers partnered with and 5,000+ students supported</p>
+                  <p className="text-muted-foreground">Partnered with global employers and supported 5,000+ students</p>
                 </div>
               </ScrollReveal>
             </div>
@@ -211,7 +211,7 @@ export default function About() {
         <ScrollReveal>
           <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center">
           <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
-            Ready to Transform Your Career?
+            Unlock talent. Create opportunity.
           </h2>
 
           <p className="text-muted-foreground text-lg mb-8">
@@ -227,7 +227,7 @@ export default function About() {
               Join Our Community
             </Link>
             <Link
-              to="/about" // TODO: What should this link to?
+              to="/contact" // TODO: What should this link to?
               className="px-8 py-3 border border-border rounded-xl text-center hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
               Partner With Us

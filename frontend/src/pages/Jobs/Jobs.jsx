@@ -46,8 +46,8 @@ export default function Jobs() {
     { label: "Student", value: "Student", checked: false },
     { label: "Graduate", value: "Graduate", checked: false },
     { label: "Entry Level", value: "Entry Level", checked: false },
-    { label: "Mid Level", value: "Mid Level", checked: false },
-    { label: "Senior", value: "Senior", checked: false },
+    // { label: "Mid Level", value: "Mid Level", checked: false },
+    // { label: "Senior", value: "Senior", checked: false },
     // { label: "Other", value: "Other", checked: false },
   ]);
 

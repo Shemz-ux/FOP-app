@@ -34,7 +34,7 @@ export default function Students() {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <GraduationCap className="w-4 h-4" />
-                <span>Join 10,000+ students already on board!</span>
+                <span>Join thousands of students already on board!</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
@@ -63,11 +63,11 @@ export default function Students() {
               <div className="flex items-center gap-6 mt-8 flex-wrap">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>100% Free for students</span>
+                  <span>Career resources</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>350+ student-friendly jobs</span>
+                  <span>Job opportunities</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle2 className="w-5 h-5 text-primary" />
@@ -94,28 +94,30 @@ export default function Students() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="container mx-auto px-6 py-20">
-        <ScrollReveal>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">10,000+</div>
-            <div className="text-muted-foreground">Students</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">250+</div>
-            <div className="text-muted-foreground">Jobs Secured</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">5000+</div>
-            <div className="text-muted-foreground">Students Supported</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">50+</div>
-            <div className="text-muted-foreground">Campus Partners</div>
-          </div>
-          </div>
-        </ScrollReveal>
+      {/* Campus Partnerships */}
+      <section className="border-y border-border">
+        <div className="container mx-auto px-6 py-20">
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 md:gap-16 items-center justify-items-center max-w-6xl mx-auto">
+            <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/KPMG.svg/3840px-KPMG.svg.png" alt="KPMG" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://companieslogo.com/img/orig/GS_BIG.D-64570a1b.png?t=1740321324" alt="Goldman Sachs" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            <img src="https://cdn.worldvectorlogo.com/logos/citibank-5.svg" alt="Citibank" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            </div>
+          </ScrollReveal>
+        </div>
       </section>
 
       {/* Benefits Section */}
@@ -192,6 +194,30 @@ export default function Students() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="container mx-auto px-6 py-20">
+        <ScrollReveal>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="text-center">
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">10,000+</div>
+            <div className="text-muted-foreground">Students</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">250+</div>
+            <div className="text-muted-foreground">Jobs Secured</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">5000+</div>
+            <div className="text-muted-foreground">Students Supported</div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">50+</div>
+            <div className="text-muted-foreground">Campus Partners</div>
+          </div>
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* Student Success Stories */}
@@ -294,7 +320,7 @@ export default function Students() {
                 </div>
                 <h3 className="text-foreground mb-2">Sign Up Free</h3>
                 <p className="text-muted-foreground text-sm">
-                  Create your profile with your university email and get instant access.
+                  Create your profile and get set up!
                 </p>
               </div>
               {/* Connector line - hidden on mobile/tablet */}
@@ -308,7 +334,7 @@ export default function Students() {
                 </div>
                 <h3 className="text-foreground mb-2">Build Profile</h3>
                 <p className="text-muted-foreground text-sm">
-                  Showcase your skills, education, projects, and career interests.
+                  Upload your CV, highlight your skills and career interests.
                 </p>
               </div>
               {/* Connector line - hidden on mobile/tablet */}
@@ -322,7 +348,7 @@ export default function Students() {
                 </div>
                 <h3 className="text-foreground mb-2">Explore & Apply</h3>
                 <p className="text-muted-foreground text-sm">
-                  Browse curated opportunities and apply with one click.
+                  Browse events, career resources and job opportunities..
                 </p>
               </div>
               {/* Connector line - hidden on mobile/tablet */}
@@ -336,37 +362,11 @@ export default function Students() {
                 </div>
                 <h3 className="text-foreground mb-2">Launch Your Career</h3>
                 <p className="text-muted-foreground text-sm">
-                  Connect with recruiters and land your dream role or internship.
+                  Apply for roles and kickstart your career.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Campus Partnerships */}
-      <section className="border-y border-border">
-        <div className="container mx-auto px-6 py-20">
-          <ScrollReveal>
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.2}>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 md:gap-16 items-center justify-items-center max-w-6xl mx-auto">
-            <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/KPMG.svg/3840px-KPMG.svg.png" alt="KPMG" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://companieslogo.com/img/orig/GS_BIG.D-64570a1b.png?t=1740321324" alt="Goldman Sachs" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://cdn.worldvectorlogo.com/logos/citibank-5.svg" alt="Citibank" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
@@ -387,7 +387,7 @@ export default function Students() {
               Ready to Launch Your Career?
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              Join thousands of students finding internships, part-time roles, and graduate opportunities. Start building your future today.
+              Join thousands of students finding internships and graduate opportunities. Start building your future today!
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -405,7 +405,7 @@ export default function Students() {
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-6 mt-8 flex-wrap">
+            {/* <div className="flex items-center justify-center gap-6 mt-8 flex-wrap">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
                 <span>Hassle Free</span>
@@ -418,7 +418,7 @@ export default function Students() {
                 <CheckCircle2 className="w-5 h-5 text-primary" />
                 <span>Student Verified</span>
               </div>
-            </div>
+            </div> */}
           </div>
           </div>
         </ScrollReveal>

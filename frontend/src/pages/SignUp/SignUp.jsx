@@ -164,6 +164,9 @@ export default function SignUp() {
       // Prepare data for API (remove confirm_password)
       const { confirm_password, ...registrationData } = societyData;
       
+      // Set university to name since institution field is hidden but required in DB
+      registrationData.university = registrationData.name;
+      
       // console.log('Submitting society data:', registrationData);
       
       await createSociety(registrationData);
@@ -319,14 +322,14 @@ export default function SignUp() {
           <div className="w-16 h-16 rounded-xl bg-primary/20 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
             <Briefcase className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl mb-3 text-foreground">Job Seeker</h2>
+          <h2 className="text-2xl mb-3 text-foreground">Member</h2>
           <p className="text-muted-foreground mb-4">
-            Looking for opportunities? Create a profile to discover jobs, events, and resources tailored to your interests.
+            Create a profile to discover jobs, events, and resources to help you kickstart your career.
           </p>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">
               <Check className="w-4 h-4 text-primary" />
-              Browse job listings
+              Explore job opportunities
             </li>
             <li className="flex items-center gap-2">
               <Check className="w-4 h-4 text-primary" />
@@ -347,7 +350,7 @@ export default function SignUp() {
           <div className="w-16 h-16 rounded-xl bg-primary/20 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
             <Users className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl mb-3 text-foreground">Society</h2>
+          <h2 className="text-2xl mb-3 text-foreground">Institution</h2>
           <p className="text-muted-foreground mb-4">
             Represent your secondary school or university society. Share opportunities, forward events, and connect with students.
           </p>
@@ -981,7 +984,7 @@ export default function SignUp() {
           <ArrowLeft className="w-4 h-4" />
           Back to account type
         </button>
-        <h1 className="text-3xl mb-2 text-foreground">Society Details</h1>
+        <h1 className="text-3xl mb-2 text-foreground">Institution details</h1>
         <p className="text-muted-foreground">Tell us about your society</p>
       </div>
 
@@ -1010,7 +1013,7 @@ export default function SignUp() {
           {/* Society Name */}
           <div>
             <label htmlFor="society_name" className="block text-sm mb-2 text-foreground">
-              Society Name *
+              Institution Name *
             </label>
             <input
               id="society_name"
@@ -1024,7 +1027,7 @@ export default function SignUp() {
           </div>
 
           {/* Institution */}
-          <div>
+          {/* <div>
             <label htmlFor="institution" className="block text-sm mb-2 text-foreground">
               Institution *
             </label>
@@ -1046,7 +1049,7 @@ export default function SignUp() {
               required
               options={getUniversityOptions()}
             />
-          </div>
+          </div> */}
 
           {/* Custom Institution Input */}
           {showCustomSocietyInstitution && (
@@ -1072,13 +1075,13 @@ export default function SignUp() {
           {/* Description */}
           <div>
             <label htmlFor="description" className="block text-sm mb-2 text-foreground">
-              Society Description *
+              Description *
             </label>
             <textarea
               id="description"
               value={societyData.description}
               onChange={(e) => setSocietyData({ ...societyData, description: e.target.value })}
-              placeholder="Tell us about your society, its mission, and activities..."
+              placeholder="Tell us about your society or school"
               rows={5}
               className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               required
@@ -1088,7 +1091,7 @@ export default function SignUp() {
           {/* Email */}
           <div>
             <label htmlFor="society_email" className="block text-sm mb-2 text-foreground">
-              Society Email *
+              Email *
             </label>
             <input
               id="society_email"

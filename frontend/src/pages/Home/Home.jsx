@@ -18,16 +18,22 @@ import {
 } from "lucide-react";
 import landingVideo from "../../assets/landing_video.MP4";
 
+// TODO: Add bbc and jll, fgf global, publicist group (media), Morgan stanley
+
 const companyLogos = [
+  { src: "https://upload.wikimedia.org/wikipedia/commons/6/65/BBC_logo_%281997-2021%29.svg", alt: "BBC" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/JLL_logo.svg/1280px-JLL_logo.svg.png", alt: "JLL" },
   { src: "https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg", alt: "Barclays" },
+  { src: "https://companieslogo.com/img/orig/MS_BIG.D-4755c76c.png?t=1720244493", alt: "Morgan Stanley" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png", alt: "Aon" },
-  { src: "https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png", alt: "Mastercard" },
+  { src: "https://upload.wikimedia.org/wikipedia/fr/thumb/2/23/PublicisGroupe_logo.svg/1280px-PublicisGroupe_logo.svg.png", alt: "Publicis group" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/1280px-MasterCard_Logo.svg.png", alt: "Mastercard" },
   { src: "https://cdn.worldvectorlogo.com/logos/jp-morgan.svg", alt: "JP Morgan" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png", alt: "State Street" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Lazard_wordmark.svg/1280px-Lazard_wordmark.svg.png", alt: "Lazard" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png", alt: "BlackRock" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png", alt: "accenture" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png", alt: "EY" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg", alt: "PWC"}
 ];
@@ -85,7 +91,7 @@ export default function HomePage() {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover opacity-60"
+            className="w-full h-full object-cover opacity-100"
           >
             <source src={landingVideo} type="video/mp4" />
           </video>
@@ -133,7 +139,7 @@ export default function HomePage() {
       <section className="bg-secondary/30 border-y border-border pb-15">
         <ScrollReveal>
           <div className="container mx-auto px-6 pt-12">
-            <h1 className="text-center text-medium mb-12">Trusted by employers</h1>
+            <h1 className="text-center text-medium mb-12">We've helped hundreds of students secure roles at</h1>
           </div>
           <Marquee
             items={companyLogos.map((logo) => (
@@ -141,10 +147,10 @@ export default function HomePage() {
                 key={logo.alt}
                 src={logo.src}
                 alt={logo.alt}
-                className="h-12 w-auto object-contain transition-opacity"
+                className="h-12 w-auto object-contain"
               />
             ))}
-            speed={20}
+            speed={30}
             fullWidth={true}
           />
         </ScrollReveal>
@@ -333,13 +339,13 @@ export default function HomePage() {
               to="/signup"
               className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-center hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
             >
-              Get Started Free
+              Get Started
             </Link>
             <Link
               to="/jobs"
               className="px-8 py-3 border border-border rounded-xl text-center hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
-              Browse Jobs
+              Job Opportunities
             </Link>
           </div>
 

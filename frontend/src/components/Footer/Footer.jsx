@@ -108,6 +108,11 @@ export default function Footer() {
                   Resources
                 </Link>
               </li>
+              <li>
+                <Link to="/events" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+                  Events
+                </Link>
+              </li>
             </ul>
           </div>
 

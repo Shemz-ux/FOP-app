@@ -41,12 +41,12 @@ export default function Employers() {
                 <span className="text-primary">High Quality Talent</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Develop talent pipelines to Attract, engage and hire high quality diverse talent anywhere.
+                Develop talent pipelines to attract, engage and hire high quality diverse talent anywhere.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 text-center">
-                <Link className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" to="/jobs">
-                  Browse opportunities
+                <Link className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" to="/about">
+                  Learn More
                 </Link>
                 <Link className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300" to="/contact">
                   Contact Us
@@ -63,14 +63,16 @@ export default function Employers() {
                 />
               </div>
               {/* Floating stat card */}
-              <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl border border-border shadow-lg">
+              {/* <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl border border-border shadow-lg">
                 <div className="text-3xl text-primary mb-1">300+</div>
                 <div className="text-sm text-muted-foreground">Successful Hires</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </section>
+
+          {/* TODO: Add company logos */}
 
       {/* Company Logos Marquee */}
       <section className="bg-secondary/30 border-y border-border pb-15">
@@ -81,19 +83,16 @@ export default function Employers() {
             </h1>
           </div>
           <Marquee 
-            speed={20}
+            speed={30}
             fullWidth={true}
             items={[
-              <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 transition-opacity" />,
-              <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png" alt="BlackRock" className="h-12 transition-opacity" />,
-              <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png" alt="accenture" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 transition-opacity" />,
-              <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg" alt="PWC" className="h-12 transition-opacity" />
+              <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
+              <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-12 w-auto object-contain" />,
+              <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
+              <img key="mastercard" src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 w-auto object-contain" />,
+              <img key="state-street" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 w-auto object-contain" />,
+              <img key="blackrock" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png" alt="BlackRock" className="h-12 w-auto object-contain" />,
+              <img key="aon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto object-contain" />
             ]}
           />
         </ScrollReveal>
@@ -131,7 +130,7 @@ export default function Employers() {
               </div>
               <h3 className="text-xl text-foreground mb-3">Employer Branding</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Build a powerful employer brand that resonates with candidates through authentic storytelling, social media presence, and insight events.
+                Build a powerful employer brand that resonates with candidates through authentic storytelling and social media presence.
               </p>
             </div>
           </ScrollReveal>
@@ -143,7 +142,7 @@ export default function Employers() {
               </div>
               <h3 className="text-xl text-foreground mb-3">Application Readiness</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Prepare candidates for success with pre-application workshops, employability programs, and skills development initiatives.
+                Prepare candidates for success with pre-application workshops, employability programs, and skill development initiatives.
               </p>
             </div>
           </ScrollReveal>
@@ -155,12 +154,11 @@ export default function Employers() {
       <section className="bg-secondary/30 border-b border-border">
         <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
           {[
-            ["20,000+", "Students"],
-            ["30", "University Partners"],
-            ["100", "Top Employers"],
-            ["20,000+", "Social Media"],
+            ["8,000+", "Students"],
+            ["35+", "University Partners"],
+            ["20,000+", "Social Media Reach"],
           ].map(([value, label]) => (
             <div key={label} className="text-center">
               <div className="text-4xl lg:text-5xl mb-2 text-primary">
@@ -213,7 +211,7 @@ export default function Employers() {
               </div>
               <h3 className="text-foreground mb-3">Social Media Marketing</h3>
               <p className="text-muted-foreground text-sm">
-                Leverage emerging platforms to reach talent where they are at.
+                Leverage emerging platforms and creators to reach talent where they are at.
               </p>
             </div>
 
@@ -221,9 +219,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Shield className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Verified Candidates</h3>
+              <h3 className="text-foreground mb-3">Attraction Strategy</h3>
               <p className="text-muted-foreground text-sm">
-                Access pre-screened, verified candidates with background checks and skills assessments completed.
+                Supporting your talent pipeline management to enable long term attraction and recruitment success.
               </p>
             </div>
 
@@ -346,18 +344,18 @@ export default function Employers() {
 
           <div className="max-w-2xl mx-auto relative z-10">
             <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
-              Ready to Build Your Dream Team?
+              Ready to Build Your Talent Pipeline?
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              Join thousands of companies finding exceptional talent today.
+              Join inclusive companies attracting exceptional talent today.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link to="/contact" className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
                 Contact Us
               </Link>
-              <Link to="/about" className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                Learn More
+              <Link to="https://FOPERSPECTIVES.as.me/?appointmentType=76790602" className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                Schedule Meeting
               </Link>
             </div>
 

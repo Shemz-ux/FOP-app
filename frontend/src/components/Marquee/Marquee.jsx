@@ -28,7 +28,7 @@ export default function Marquee({
           <div className="marquee-items">
             {items.map((item, index) => (
               <div key={`first-${index}`} className="marquee-item">
-                {item}
+                {React.cloneElement(item, { key: `item-first-${index}` })}
               </div>
             ))}
           </div>
@@ -36,7 +36,7 @@ export default function Marquee({
           <div className="marquee-items">
             {items.map((item, index) => (
               <div key={`second-${index}`} className="marquee-item">
-                {item}
+                {React.cloneElement(item, { key: `item-second-${index}` })}
               </div>
             ))}
           </div>
