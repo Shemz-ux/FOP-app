@@ -9,6 +9,7 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://fop-app.vercel.app',
+  'https://www.foperspectives.co.uk',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
