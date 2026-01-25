@@ -18,6 +18,14 @@ import {
 } from "lucide-react";
 import landingVideo from "../../assets/landing_video.MP4";
 
+const FopLogo2 = () => (
+  <img 
+    src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769274499/FOP_logo_hazkv0.svg" 
+    alt="FOP Logo" 
+    className="h-36 w-58 object-contain"
+  />
+)
+
 // TODO: Add bbc and jll, fgf global, publicist group (media), Morgan stanley
 
 const companyLogos = [
@@ -40,32 +48,32 @@ const companyLogos = [
 
 const testimonials = [
   {
-    name: "Sarah Johnson",
-    role: "Investment Banking Analyst",
-    company: "JP Morgan",
-    testimonial: "This platform transformed my job search. Within weeks, I landed my dream role at JP Morgan. The resources and networking events were invaluable.",
-    avatar: "SJ"
-  },
-  {
-    name: "Michael Chen",
-    role: "Software Engineer",
+    name: "Deniz Ayrancioglu",
+    role: "Management Consultant Analyst",
     company: "Accenture",
-    testimonial: "The career guidance and CV templates helped me stand out. I went from dozens of rejections to multiple offers. Couldn't be happier!",
-    avatar: "MC"
+    testimonial: "Thank you for your support and guidance throughout the process. Your CV support was crucial to helping me secure multiple interviews and your interview prep and resources helped me land offers!",
+    avatar: "DA"
   },
   {
-    name: "Emily Rodriguez",
-    role: "Management Consultant",
-    company: "EY",
-    testimonial: "The networking events connected me directly with hiring managers. The personalized job recommendations saved me hours of searching.",
+    name: "Fola Omotoso",
+    role: "Investment Banking Analyst",
+    company: "Lazard & BlackRock",
+    testimonial: "Thank you for your support during the application process. Your CV support for investment banking and advice on interview prep was really insightful. I would recommend you to any student looking to break into Investment Banking!",
+    avatar: "FO"
+  },
+  {
+    name: "Sumaiya Yasmin",
+    role: "PR & Comms Graduate",
+    company: "FGS Global",
+    testimonial: "I wanted to thank you again for the support across interview prep and CV Preparation. I was pretty much rejected from every single job, and I’ve been applying since August, so your support in landing this offer was really life-changing!",
     avatar: "ER"
   },
   {
-    name: "James Williams",
-    role: "Data Analyst",
-    company: "Barclays",
-    testimonial: "From student to professional in 3 months. The platform's resources and mentorship program gave me the confidence to succeed.",
-    avatar: "JW"
+    name: "Lisa Ntamoah",
+    role: "Customer success",
+    company: "Bloomberg",
+    testimonial: "FO Perspectives supported me through their free resources. These helped resources helped me build a high quality CV and perfrom company research. Having resources consolidated on one platform helped me feel less overwhelmed as well.",
+    avatar: "LN"
   }
 ];
 
@@ -96,6 +104,10 @@ export default function HomePage() {
             <source src={landingVideo} type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80" />
+          {/* Logo Overlay */}
+          <div className="absolute top-0 left-0">
+            <FopLogo2 />
+          </div>
         </div>
 
         <div className="container mx-auto px-6 py-40 lg:py-55 relative z-10">
@@ -139,7 +151,7 @@ export default function HomePage() {
       <section className="bg-secondary/30 border-y border-border pb-15">
         <ScrollReveal>
           <div className="container mx-auto px-6 pt-12">
-            <h1 className="text-center text-medium mb-12">We've helped hundreds of students secure roles at</h1>
+            <p className="text-medium text-muted-foreground mb-8 max-w-xl mx-auto">We've helped hundreds of students secure roles at</p>
           </div>
           <Marquee
             items={companyLogos.map((logo) => (
@@ -150,7 +162,7 @@ export default function HomePage() {
                 className="h-12 w-auto object-contain"
               />
             ))}
-            speed={30}
+            speed={50}
             fullWidth={true}
           />
         </ScrollReveal>
@@ -228,7 +240,7 @@ export default function HomePage() {
             <div className="text-center max-w-2xl mx-auto mb-16">
               <h2 className="text-3xl mb-4 text-foreground">Success Stories</h2>
               <p className="text-muted-foreground">
-                Hear from professionals who transformed their careers through our platform
+                Hear from members who have kickstarted their careers through our platform
               </p>
             </div>
           </ScrollReveal>

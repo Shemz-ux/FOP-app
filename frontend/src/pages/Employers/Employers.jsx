@@ -31,10 +31,10 @@ export default function Employers() {
         <div className="container mx-auto px-6 py-32 lg:py-50 relative text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
+              {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <TrendingUp className="w-4 h-4" />
                 <span>250+ companies worldwide</span>
-              </div>
+              </div> */}
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
                 Attract & Recruit <br/>
@@ -78,21 +78,22 @@ export default function Employers() {
       <section className="bg-secondary/30 border-y border-border pb-15">
         <ScrollReveal>
           <div className="container mx-auto px-6 pt-12">
-            <h1 className="text-center text-medium mb-12">
+            <p className="text-medium text-muted-foreground mb-8 max-w-xl mx-auto">
               Trusted by employers such as
-            </h1>
+            </p>
           </div>
           <Marquee 
-            speed={30}
+            speed={40}
             fullWidth={true}
             items={[
               <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
               <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-12 w-auto object-contain" />,
               <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
-              <img key="mastercard" src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 w-auto object-contain" />,
-              <img key="state-street" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png" alt="State Street" className="h-12 w-auto object-contain" />,
-              <img key="blackrock" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png" alt="BlackRock" className="h-12 w-auto object-contain" />,
-              <img key="aon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto object-contain" />
+              <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
+              <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
+              <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-12 w-auto object-contain" />,
+              <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
+              <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />
             ]}
           />
         </ScrollReveal>

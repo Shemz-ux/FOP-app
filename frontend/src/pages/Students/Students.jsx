@@ -79,16 +79,16 @@ export default function Students() {
             <div className="relative">
               <div className="rounded-3xl overflow-hidden border border-border shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1514369118554-e20d93546b30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwc3R1ZHlpbmd8ZW58MXx8fHwxNzY4MzA1NDU4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                  src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769335321/WhatsApp_Image_2026-01-24_at_18.11.58_ioy1c3.jpg"
                   alt="Student studying"
                   className="w-full h-auto"
                 />
               </div>
               {/* Floating stat card */}
-              <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl border border-border shadow-lg">
+              {/* <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-2xl border border-border shadow-lg">
                 <div className="text-3xl text-primary mb-1">89%</div>
                 <div className="text-sm text-muted-foreground">Success Rate</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default function Students() {
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">Trusted by Top Institutions</h2>
+              <h2 className="text-3xl mb-4 text-foreground">We’ve helped young talent land jobs at</h2>
             </div>
           </ScrollReveal>
 
@@ -202,7 +202,7 @@ export default function Students() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
             <div className="text-4xl lg:text-5xl mb-2 text-primary">10,000+</div>
-            <div className="text-muted-foreground">Students</div>
+            <div className="text-muted-foreground">Students Supported</div>
           </div>
           <div className="text-center">
             <div className="text-4xl lg:text-5xl mb-2 text-primary">250+</div>
@@ -210,7 +210,7 @@ export default function Students() {
           </div>
           <div className="text-center">
             <div className="text-4xl lg:text-5xl mb-2 text-primary">5000+</div>
-            <div className="text-muted-foreground">Students Supported</div>
+            <div className="text-muted-foreground">Members</div>
           </div>
           <div className="text-center">
             <div className="text-4xl lg:text-5xl mb-2 text-primary">50+</div>
@@ -221,7 +221,8 @@ export default function Students() {
       </section>
 
       {/* Student Success Stories */}
-      <section className="container mx-auto px-6 py-20">
+      <section className="bg-secondary/30 border-y border-border">
+        <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl mb-4 text-foreground">Student Success Stories</h2>
@@ -241,15 +242,15 @@ export default function Students() {
               ))}
             </div>
             <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-              "Found my dream internship at Google through CareerHub! The platform made it so easy to connect with recruiters and showcase my projects."
+              "FO Perspectives were incredibly helpful during my job search. Not only did they provide personalised career guidance. As a result of you resoruces and help, I received interviews from companies such as Goldman Sachs."
             </p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
-                EW
+                NY
               </div>
               <div>
-                <div className="text-foreground text-sm">Emily Watson</div>
-                <div className="text-muted-foreground text-xs">Computer Science, Oxford</div>
+                <div className="text-foreground text-sm">Nazifa Yasmin</div>
+                <div className="text-muted-foreground text-xs">Financial Crimes Associate - State Street</div>
               </div>
             </div>
           </div>
@@ -263,15 +264,15 @@ export default function Students() {
               ))}
             </div>
             <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-              "The career resources and mentorship program were invaluable. Landed a graduate role before even finishing my degree!"
+              "I got an insight day through you guys and it really helped boost my confidence and motivate me to apply. I didn't think my application would be competitive, but your support and resources was so valuable!"
             </p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
-                RP
+                FR
               </div>
               <div>
-                <div className="text-foreground text-sm">Ravi Patel</div>
-                <div className="text-muted-foreground text-xs">Engineering, Imperial</div>
+                <div className="text-foreground text-sm">Faye-peace Richardson</div>
+                <div className="text-muted-foreground text-xs">Cyber Security Intern - Barclays</div>
               </div>
             </div>
           </div>
@@ -285,23 +286,24 @@ export default function Students() {
               ))}
             </div>
             <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-              "Attended amazing networking events and got connected with industry leaders. Now working at my dream startup!"
+              "FO Perspectives support was amazing, I had no clue about CVs, interviews, the advice and help were immaculate and even got me into the JP Morgan degree apprenticeship which changed my life! Thank you so much again!"
             </p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
-                SK
+                CS
               </div>
               <div>
-                <div className="text-foreground text-sm">Sophie Kim</div>
-                <div className="text-muted-foreground text-xs">Business, LSE</div>
+                <div className="text-foreground text-sm">Chantelle Sesay</div>
+                <div className="text-muted-foreground text-xs">Degree Apprentice - JP Morgan </div>
               </div>
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* How It Works */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -392,10 +394,10 @@ export default function Students() {
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
-                to="/login"
+                to="https://foperspectives.as.me/schedule/06ca66a0"
                 className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-center"
               >
-                Create An Account
+                Get Career Coaching
               </Link>
               <Link
                 to="/jobs"

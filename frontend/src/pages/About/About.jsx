@@ -65,7 +65,7 @@ export default function About() {
           {[
             ["10,000+", "Students Impacted"],
             ["250+", "Success Stories"],
-            ["20,000+", "Members"],
+            ["20,000+", "Student Reach"],
           ].map(([value, label]) => (
             <div key={label} className="text-center">
               <div className="text-4xl lg:text-5xl mb-2 text-primary">

@@ -5,6 +5,22 @@ import ThemeToggle from '../Ui/ThemeToggle.jsx';
 import UserMenu from '../UserMenu/UserMenu.jsx';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 
+const FopLogo2 = () => (
+  <img 
+    src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769274499/FOP_logo_hazkv0.svg" 
+    alt="FOP Logo 2" 
+    className="h-full w-full object-contain p-1"
+  />
+)
+
+const FopLogo1 = () => (
+  <img
+    src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769275224/FOP_logo_2_lhfh3p.svg"
+    alt="FOP Logo 1"
+    className="h-10 w-10 object-contain p-1"
+  />
+)
+
 export default function Navbar({
   logo,
   onNotificationClick
@@ -43,34 +59,10 @@ export default function Navbar({
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
               {logo || (
-                <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 2L2 7L12 12L22 7L12 2Z"
-                      fill="white"
-                      fillOpacity="0.9"
-                    />
-                    <path
-                      d="M2 17L12 22L22 17"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M2 12L12 17L22 12"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                <div className="w-10 h-10 rounded-lg bg-[#] flex items-center justify-center overflow-visible">
+                  <div className="scale-265">
+                    <FopLogo1 />
+                  </div>
                 </div>
               )}
             </Link>
