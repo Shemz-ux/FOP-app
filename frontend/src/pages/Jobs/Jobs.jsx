@@ -34,9 +34,9 @@ export default function Jobs() {
     { label: "Placement", value: "Placement", checked: false },
     { value: 'Apprenticeship', label: 'Apprenticeship', checked: false},
     { label: "Degree Apprentice", value: "Degree Apprentice", checked: false },
-    { label: "Full-time", value: "Full-time", checked: false },
-    { label: "Part-time", value: "Part-time", checked: false },
-    { label: "Contract", value: "Contract", checked: false },
+    // { label: "Full-time", value: "Full-time", checked: false },
+    // { label: "Part-time", value: "Part-time", checked: false },
+    // { label: "Contract", value: "Contract", checked: false },
     // { label: "Other", value: "Other", checked: false },
     // { label: "Vac Scheme", value: "Vac Scheme", checked: false },
   ]);
