@@ -94,9 +94,18 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
   }, [formData.location_type]);
 
   const addSection = () => {
+    // Get all currently used headers
+    const usedHeaders = formData.descriptionSections.map(s => s.header);
+    
+    // Available header options
+    const availableHeaders = ['What to Expect', 'Who should Attend'];
+    
+    // Find the first header that hasn't been used yet
+    const newHeader = availableHeaders.find(header => !usedHeaders.includes(header)) || 'What to Expect';
+    
     setFormData({
       ...formData,
-      descriptionSections: [...formData.descriptionSections, { header: 'What to Expect', content: [''] }],
+      descriptionSections: [...formData.descriptionSections, { header: newHeader, content: [''] }],
     });
   };
 
@@ -467,6 +476,17 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                   {formData.descriptionSections.map((section, sectionIndex) => {
                     const isAboutSection = section.header === 'About the Event';
                     
+                    // Get all section headers except the current one
+                    const usedHeaders = formData.descriptionSections
+                      .map((s, i) => i !== sectionIndex ? s.header : null)
+                      .filter(Boolean);
+                    
+                    // Filter out already-used headers from dropdown options
+                    const availableOptions = [
+                      { value: 'What to Expect', label: 'What to Expect' },
+                      { value: 'Who should Attend', label: 'Who should Attend' }
+                    ].filter(option => !usedHeaders.includes(option.value));
+                    
                     return (
                       <div key={sectionIndex} className="border border-border rounded-xl p-4 space-y-3">
                         <div className="flex gap-2">
@@ -479,10 +499,7 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                               <CustomDropdown
                                 value={section.header}
                                 onChange={(e) => updateSectionHeader(sectionIndex, e.target.value)}
-                                options={[
-                                  { value: 'What to Expect', label: 'What to Expect' },
-                                  { value: 'Who should Attend', label: 'Who should Attend' }
-                                ]}
+                                options={availableOptions}
                                 placeholder="Select section type"
                                 className="flex-1 font-bold"
                               />
