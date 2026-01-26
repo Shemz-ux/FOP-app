@@ -28,9 +28,9 @@ export default function AdminDashboard() {
   const [recentEvents, setRecentEvents] = useState([]);
 
   useEffect(() => {
-    console.log('AdminDashboard - User object:', user);
-    console.log('AdminDashboard - User name:', user?.name);
-    console.log('AdminDashboard - User type:', user?.userType);
+    // console.log('AdminDashboard - User object:', user);
+    // console.log('AdminDashboard - User name:', user?.name);
+    // console.log('AdminDashboard - User type:', user?.userType);
   }, [user]);
 
   useEffect(() => {

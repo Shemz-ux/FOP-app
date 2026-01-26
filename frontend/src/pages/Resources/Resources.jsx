@@ -75,8 +75,8 @@ export default function Resources() {
       filters.sort_order = sortConfig.sort_order;
 
       const response = await resourcesService.getResources(filters);
-      console.log('Resources API response:', response);
-      console.log('Pagination data:', response.pagination);
+      // console.log('Resources API response:', response);
+      // console.log('Pagination data:', response.pagination);
       setResources(response.resources || []);
       setTotalResources(response.pagination?.totalCount || response.total || 0);
     } catch (err) {
