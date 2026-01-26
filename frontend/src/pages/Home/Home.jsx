@@ -110,12 +110,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="container mx-auto px-6 py-40 lg:py-55 relative z-10">
+        <div className="container mx-auto px-6 py-50 lg:py-70 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
+            {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
               <TrendingUp className="w-4 h-4" />
               <span>Professionals finding their dream careers</span>
-            </div>
+            </div> */}
 
             <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
               Empowering Young Talent<br />
@@ -136,7 +136,7 @@ export default function HomePage() {
               </Link>
               <Link
                 to="/employers"
-                className="px-8 py-3 border bg-primary/10 border-border rounded-xl flex items-center justify-center gap-2 text-primary hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+                className="px-8 py-3 border border-border rounded-xl flex items-center justify-center gap-2 hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
               >
                 <Building2 className="w-5 h-5" />
                 For Employers
@@ -183,6 +183,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
             <ScrollReveal delay={0.1}>
+              <Link to="/jobs">
               <div className="bg-card p-6 rounded-2xl border border-border group hover:border-primary/50 transition-all">
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Briefcase className="w-6 h-6" />
@@ -192,9 +193,11 @@ export default function HomePage() {
                 Access a wide variety of opportunities from industry leading companies across all sectors
               </p>
               </div>
+              </Link>
             </ScrollReveal>
 
             <ScrollReveal delay={0.2}>
+              <Link to="/employers">
               <div className="bg-card p-6 rounded-2xl border border-border group hover:border-primary/50 transition-all">
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Target className="w-6 h-6" />
@@ -204,9 +207,11 @@ export default function HomePage() {
                 Take part in our structured and interactive programmes to kickstart your career with leading employers
               </p>
               </div>
+              </Link>
             </ScrollReveal>
 
             <ScrollReveal delay={0.3}>
+              <Link to="/events">
               <div className="bg-card p-6 rounded-2xl border border-border group hover:border-primary/50 transition-all">
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Calendar className="w-6 h-6" />
@@ -216,9 +221,11 @@ export default function HomePage() {
                 Attend exclusive networking events, workshops, and career fairs to expand your opportunities
               </p>
               </div>
+              </Link>
             </ScrollReveal>
 
             <ScrollReveal delay={0.4}>
+              <Link to="/resources">
               <div className="bg-card p-6 rounded-2xl border border-border group hover:border-primary/50 transition-all">
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Award className="w-6 h-6" />
@@ -228,6 +235,7 @@ export default function HomePage() {
                 Download templates, guides, and tools created by industry experts to boost your success
               </p>
               </div>
+              </Link>
             </ScrollReveal>
           </div>
         </div>
