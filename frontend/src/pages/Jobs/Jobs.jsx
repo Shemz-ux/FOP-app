@@ -13,7 +13,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import * as jobActionsService from "../../services/Jobs/jobActions";
 
 export default function Jobs() {
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, isAdmin } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -106,6 +106,15 @@ export default function Jobs() {
       } else {
         await jobActionsService.saveJob(jobId, user.userId, user.userType);
         setFavorites((prev) => new Set(prev).add(jobId));
+      }
+      
+      // Refetch saved jobs to ensure profile is up to date
+      try {
+        const { getSavedJobIds } = await import('../../services/Dashboard/dashboardService');
+        const savedJobIds = await getSavedJobIds(user.userId, user.userType);
+        setFavorites(new Set(savedJobIds));
+      } catch (refetchErr) {
+        console.error('Error refetching saved jobs:', refetchErr);
       }
     } catch (err) {
       console.error('Error toggling job save:', err);
@@ -394,6 +403,7 @@ export default function Jobs() {
                     tags={job.tags || []}
                     isFavorite={favorites.has(job.job_id)}
                     onFavoriteClick={() => toggleFavorite(job.job_id)}
+                    showSaveButton={!isAdmin()}
                   />
                 ))}
               </div>

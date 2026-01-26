@@ -48,6 +48,15 @@ export default function Events() {
         await eventActionsService.saveEvent(eventId, user.userId, user.userType);
         setFavorites((prev) => new Set(prev).add(eventId));
       }
+      
+      // Refetch saved events to ensure profile is up to date
+      try {
+        const { getSavedEventIds } = await import('../../services/Dashboard/dashboardService');
+        const savedEventIds = await getSavedEventIds(user.userId, user.userType);
+        setFavorites(new Set(savedEventIds));
+      } catch (refetchErr) {
+        console.error('Error refetching saved events:', refetchErr);
+      }
     } catch (err) {
       console.error('Error toggling event save:', err);
       alert('Failed to save event. Please try again.');

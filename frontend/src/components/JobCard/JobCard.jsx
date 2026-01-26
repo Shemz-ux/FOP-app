@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookmark, Clock } from 'lucide-react';
+import { Bookmark, Clock, MapPin } from 'lucide-react';
 import JobBadge from '../Ui/JobBadge';
 import CompanyLogo from '../Ui/CompanyLogo';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,7 @@ export default function JobCard({
   companyLogo,
   companyColor = '#0D7DFF',
   jobTitle,
+  location,
   applicants,
   description,
   tags,
@@ -18,6 +19,7 @@ export default function JobCard({
   isFavorite = false,
   onFavoriteClick,
   jobId,
+  showSaveButton = true,
 }) {
   // Generate job ID from company and title if not provided
   const generatedJobId =
@@ -35,30 +37,39 @@ export default function JobCard({
           <CompanyLogo logo={companyLogo} color={companyColor} companyName={company} />
           <div className="pt-0.5 flex-1 min-w-0">
             <h3 className="text-lg font-medium text-foreground mb-0.5 text-left line-clamp-2">{jobTitle}</h3>
-            <p className="text-muted-foreground text-sm text-left truncate">
-              <span className="font-medium">{company}</span> 
-            {/* • {applicants} Applicants */}
-            </p>
+            <div className="flex items-center gap-2 text-muted-foreground text-sm text-left">
+              <span className="font-medium truncate">{company}</span>
+              {location && (
+                <>
+                  <div className="flex items-center gap-1 truncate">
+                    <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="truncate">{location}</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (onFavoriteClick) onFavoriteClick();
-          }}
-          className="p-1.5 hover:bg-secondary/50 rounded-lg transition-colors duration-200"
-          aria-label={isFavorite ? 'Remove from saved' : 'Save job'}
-        >
-          <Bookmark
-            className={`w-5 h-5 transition-all duration-200 ${
-              isFavorite
-                ? 'fill-primary stroke-primary scale-110'
-                : 'stroke-muted-foreground hover:stroke-foreground/70'
-            }`}
-          />
-        </button>
+        {showSaveButton && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (onFavoriteClick) onFavoriteClick();
+            }}
+            className="p-1.5 hover:bg-secondary/50 rounded-lg transition-colors duration-200"
+            aria-label={isFavorite ? 'Remove from saved' : 'Save job'}
+          >
+            <Bookmark
+              className={`w-5 h-5 transition-all duration-200 ${
+                isFavorite
+                  ? 'fill-primary stroke-primary scale-110'
+                  : 'stroke-muted-foreground hover:stroke-foreground/70'
+              }`}
+            />
+          </button>
+        )}
       </div>
 
       {/* Tags */}

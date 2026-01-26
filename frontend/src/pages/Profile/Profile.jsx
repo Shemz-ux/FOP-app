@@ -275,6 +275,19 @@ export default function Profile() {
     };
     
     fetchData();
+    
+    // Refetch data when page becomes visible (user returns to tab or navigates back)
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user) {
+        fetchData();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [user, isJobseeker]);
 
   // Pagination helpers
@@ -429,11 +442,13 @@ export default function Profile() {
                       company={job.company}
                       companyLogo={job.company_logo}
                       companyColor={job.company_color}
+                      location={job.location}
                       description={job.description}
                       postedTime={job.job_created_at || job.created_at}
                       tags={job.tags || []}
                       isFavorite={true}
                       onFavoriteClick={() => toggleFavorite(job.job_id)}
+                      showSaveButton={true}
                     />
                   ))}
                 </div>
@@ -456,11 +471,13 @@ export default function Profile() {
                       company={job.company}
                       companyLogo={job.company_logo}
                       companyColor={job.company_color}
+                      location={job.location}
                       description={job.description}
                       postedTime={job.job_created_at || job.created_at}
                       tags={job.tags || []}
                       isFavorite={favorites.has(job.job_id)}
                       onFavoriteClick={() => toggleFavorite(job.job_id)}
+                      showSaveButton={true}
                     />
                   ))}
                 </div>

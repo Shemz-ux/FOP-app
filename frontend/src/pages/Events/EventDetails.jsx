@@ -125,6 +125,14 @@ export default function EventDetails() {
         await eventActionsService.saveEvent(eventId, user.userId, user.userType);
         setIsSaved(true);
       }
+      
+      // Refetch saved status to ensure it's in sync with backend
+      try {
+        const saved = await eventActionsService.checkEventSaved(eventId, user.userId, user.userType);
+        setIsSaved(saved);
+      } catch (refetchErr) {
+        console.error('Error refetching saved status:', refetchErr);
+      }
     } catch (err) {
       console.error('Error saving event:', err);
     } finally {

@@ -30,13 +30,13 @@ export default function JobDetails() {
         setJob(data);
         
         // Check if job is saved and applied
-        if (isLoggedIn() && user) {
-          const saved = await jobActionsService.checkJobSaved(jobId, user.userId, user.userType);
+        if (isLoggedIn() && user && data.job_id) {
+          const saved = await jobActionsService.checkJobSaved(data.job_id, user.userId, user.userType);
           setIsSaved(saved);
           
           // Check if already applied (jobseekers only)
           if (isJobseeker()) {
-            const applied = await jobActionsService.checkJobApplied(jobId, user.userId);
+            const applied = await jobActionsService.checkJobApplied(data.job_id, user.userId);
             setHasApplied(applied);
           }
         }
@@ -113,14 +113,23 @@ export default function JobDetails() {
     setSavingJob(true);
     try {
       if (isSaved) {
-        await jobActionsService.unsaveJob(jobId, user.userId, user.userType);
+        await jobActionsService.unsaveJob(job.job_id, user.userId, user.userType);
         setIsSaved(false);
       } else {
-        await jobActionsService.saveJob(jobId, user.userId, user.userType);
+        await jobActionsService.saveJob(job.job_id, user.userId, user.userType);
         setIsSaved(true);
+      }
+      
+      // Refetch saved status to ensure it's in sync with backend
+      try {
+        const saved = await jobActionsService.checkJobSaved(job.job_id, user.userId, user.userType);
+        setIsSaved(saved);
+      } catch (refetchErr) {
+        console.error('Error refetching saved status:', refetchErr);
       }
     } catch (err) {
       console.error('Error saving job:', err);
+      alert(`Failed to save job: ${err.message}`);
     } finally {
       setSavingJob(false);
     }
@@ -153,7 +162,7 @@ export default function JobDetails() {
       }
 
       // Record application in backend
-      await jobActionsService.applyToJob(jobId, user.userId);
+      await jobActionsService.applyToJob(job.job_id, user.userId);
       setHasApplied(true);
       
       // Show applying state before redirect
@@ -262,17 +271,20 @@ export default function JobDetails() {
                   <span className="hidden sm:inline">Edit</span>
                 </Link>
               )}
-              <button
-                onClick={handleSave}
-                disabled={savingJob}
-                className={`px-4 py-2 rounded-xl border transition-colors disabled:opacity-50 ${
-                  isSaved
-                    ? "bg-primary/10 border-primary text-primary"
-                    : "bg-card border-border hover:border-primary/50"
-                }`}
-              >
-                {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
-              </button>
+              {/* Only show save button for jobseekers and societies, not admins */}
+              {!isAdmin() && (
+                <button
+                  onClick={handleSave}
+                  disabled={savingJob}
+                  className={`px-4 py-2 rounded-xl border transition-colors disabled:opacity-50 ${
+                    isSaved
+                      ? "bg-primary/10 border-primary text-primary"
+                      : "bg-card border-border hover:border-primary/50"
+                  }`}
+                >
+                  {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+                </button>
+              )}
               <button 
                 onClick={handleShare}
                 className="px-4 py-2 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors"
