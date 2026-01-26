@@ -4,6 +4,7 @@ import CustomSelect from "../Ui/CustomSelect";
 import Toast from "../Ui/Toast";
 import { getUniversityOptions } from "../../data/universities";
 import { getSchoolsCollegesOptions } from "../../data/schools";
+import { JOB_INDUSTRIES } from "../../utils/dropdownOptions";
 
 export default function EducationCard({ educationData, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -177,7 +178,8 @@ export default function EducationCard({ educationData, onSave }) {
                     }
                   }}
                   placeholder={localEducationData.education_level === 'gcse' ? 'Select your school' : 'Select your school/college'}
-                  options={[...getSchoolsCollegesOptions(), { value: 'Other', label: 'Other (Not Listed)' }]}
+                  searchable
+                  options={getSchoolsCollegesOptions()}
                   className="text-sm"
                 />
               </div>
@@ -224,6 +226,7 @@ export default function EducationCard({ educationData, onSave }) {
                     }
                   }}
                   placeholder="Select your university"
+                  searchable
                   options={getUniversityOptions()}
                   className="text-sm"
                 />
@@ -364,22 +367,42 @@ export default function EducationCard({ educationData, onSave }) {
           )}
 
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block text-left">Role Interest 1</label>
-            <input
-              type="text"
+            <label className="text-sm text-muted-foreground mb-1 block text-left">Primary Career Interest</label>
+            <CustomSelect
               value={localEducationData.role_interest_option_one || ''}
-              onChange={(e) => setLocalEducationData({ ...localEducationData, role_interest_option_one: e.target.value })}
-              className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+              onChange={(e) => {
+                const newValue = e.target.value;
+                setLocalEducationData({ 
+                  ...localEducationData, 
+                  role_interest_option_one: newValue,
+                  role_interest_option_two: newValue === localEducationData.role_interest_option_two ? '' : localEducationData.role_interest_option_two
+                });
+              }}
+              placeholder="Select interest"
+              options={JOB_INDUSTRIES.map(industry => ({
+                value: industry.value,
+                label: industry.label
+              }))}
+              className="text-sm"
             />
           </div>
 
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block text-left">Role Interest 2</label>
-            <input
-              type="text"
+            <label className="text-sm text-muted-foreground mb-1 block text-left">Secondary Career Interest</label>
+            <CustomSelect
               value={localEducationData.role_interest_option_two || ''}
               onChange={(e) => setLocalEducationData({ ...localEducationData, role_interest_option_two: e.target.value })}
-              className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+              placeholder="Select secondary career interest"
+              options={[
+                { value: '', label: 'None' },
+                ...JOB_INDUSTRIES
+                  .filter(industry => industry.value !== localEducationData.role_interest_option_one)
+                  .map(industry => ({
+                    value: industry.value,
+                    label: industry.label
+                  }))
+              ]}
+              className="text-sm"
             />
           </div>
 

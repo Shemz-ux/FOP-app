@@ -19,6 +19,7 @@ import { getSchoolsCollegesOptions } from "../../data/schools";
 import { createJobseeker } from "../../services/Jobseekers/jobseekersService";
 import { createSociety } from "../../services/Societies/societiesService";
 import { cvService } from "../../services";
+import { JOB_INDUSTRIES } from "../../utils/dropdownOptions";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -576,7 +577,7 @@ export default function SignUp() {
 
           {/* Background Questions */}
           <div className="space-y-4 pt-4 border-t border-border">
-            <p className="text-sm text-muted-foreground">Background Information (Optional)</p>
+            <p className="text-sm text-muted-foreground">Background Information</p>
             
             <div className="flex items-center gap-3">
               <input
@@ -684,7 +685,8 @@ export default function SignUp() {
                       }}
                       placeholder={jobSeekerData.education_level === 'gcse' ? 'Select your school' : 'Select your school/college'}
                       required
-                      options={[...getSchoolsCollegesOptions(), { value: 'Other', label: 'Other (Not Listed)' }]}
+                      searchable
+                      options={getSchoolsCollegesOptions()}
                     />
                   </div>
 
@@ -734,6 +736,7 @@ export default function SignUp() {
                       }}
                       placeholder="Select your university"
                       required
+                      searchable
                       options={getUniversityOptions()}
                     />
                   </div>
@@ -855,30 +858,46 @@ export default function SignUp() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="role_interest_option_one" className="block text-sm mb-2 text-foreground">
-                  Primary Role Interest *
+                  Primary Career Interest *
                 </label>
-                <input
+                <CustomSelect
                   id="role_interest_option_one"
-                  type="text"
                   value={jobSeekerData.role_interest_option_one}
-                  onChange={(e) => setJobSeekerData({ ...jobSeekerData, role_interest_option_one: e.target.value })}
-                  placeholder="e.g. Software Developer"
-                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setJobSeekerData({ 
+                      ...jobSeekerData, 
+                      role_interest_option_one: newValue,
+                      role_interest_option_two: newValue === jobSeekerData.role_interest_option_two ? '' : jobSeekerData.role_interest_option_two
+                    });
+                  }}
+                  placeholder="Select primary career interest"
                   required
+                  options={JOB_INDUSTRIES.map(industry => ({
+                    value: industry.value,
+                    label: industry.label
+                  }))}
                 />
               </div>
 
               <div>
                 <label htmlFor="role_interest_option_two" className="block text-sm mb-2 text-foreground">
-                  Secondary Role Interest
+                  Secondary Career Interest
                 </label>
-                <input
+                <CustomSelect
                   id="role_interest_option_two"
-                  type="text"
                   value={jobSeekerData.role_interest_option_two}
                   onChange={(e) => setJobSeekerData({ ...jobSeekerData, role_interest_option_two: e.target.value })}
-                  placeholder="e.g. Data Scientist"
-                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Select secondary career interest"
+                  options={[
+                    { value: '', label: 'None' },
+                    ...JOB_INDUSTRIES
+                      .filter(industry => industry.value !== jobSeekerData.role_interest_option_one)
+                      .map(industry => ({
+                        value: industry.value,
+                        label: industry.label
+                      }))
+                  ]}
                 />
               </div>
             </div>
