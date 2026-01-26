@@ -386,6 +386,7 @@ export default function Jobs() {
                     jobId={job.job_id}
                     jobTitle={job.title}
                     company={job.company}
+                    companyLogo={job.company_logo}
                     location={job.location}
                     companyColor={job.company_color}
                     description={job.description}
