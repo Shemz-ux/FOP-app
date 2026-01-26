@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+import { API_BASE_URL } from '../api';
 
 /**
  * Upload media file to Cloudinary
@@ -21,7 +20,7 @@ export const uploadMedia = async (file, purpose, replaceUrl = null) => {
 
     const token = localStorage.getItem('token');
     
-    const response = await axios.post(`${API_URL}/media/upload`, formData, {
+    const response = await axios.post(`${API_BASE_URL}/media/upload`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${token}`
@@ -51,7 +50,7 @@ export const deleteMedia = async (publicId = null, url = null) => {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await axios.delete(`${API_URL}/media/delete`, {
+    const response = await axios.delete(`${API_BASE_URL}/media/delete`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },

@@ -1,4 +1,4 @@
-import { apiPost, apiDelete, apiGet } from '../api';
+import { apiPost, apiGet, apiDelete, API_BASE_URL } from '../api';
 
 const CV_API_BASE = '/cv';
 
@@ -17,7 +17,7 @@ export const uploadCV = async (file, replaceStorageKey = null) => {
             formData.append('replace_storage_key', replaceStorageKey);
         }
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api${CV_API_BASE}/upload`, {
+        const response = await fetch(`${API_BASE_URL}${CV_API_BASE}/upload`, {
             method: 'POST',
             body: formData,
         });
