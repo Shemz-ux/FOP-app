@@ -129,8 +129,19 @@ export const UK_SCHOOLS_COLLEGES = [
 ];
 
 export const getSchoolsCollegesOptions = () => {
-  return UK_SCHOOLS_COLLEGES.map(school => ({
-    value: school,
-    label: school
-  }));
+  // Sort schools and colleges alphabetically
+  const sortedSchools = [...UK_SCHOOLS_COLLEGES].sort((a, b) => 
+    a.localeCompare(b, 'en', { sensitivity: 'base' })
+  );
+  
+  // Build final list: "Not Listed" at top, then sorted schools/colleges
+  const finalList = [
+    { value: 'Other', label: 'Not Listed - Enter Manually' },
+    ...sortedSchools.map(school => ({
+      value: school,
+      label: school
+    }))
+  ];
+  
+  return finalList;
 };

@@ -119,8 +119,22 @@ export const UK_UNIVERSITIES = [
 ];
 
 export const getUniversityOptions = () => {
-  return UK_UNIVERSITIES.map(uni => ({
-    value: uni,
-    label: uni
-  }));
+  // Separate "Other" from the rest
+  const universities = UK_UNIVERSITIES.filter(uni => uni !== "Other");
+  
+  // Sort universities alphabetically
+  const sortedUniversities = [...universities].sort((a, b) => 
+    a.localeCompare(b, 'en', { sensitivity: 'base' })
+  );
+  
+  // Build final list: "Not Listed" at top, then sorted universities, then "Other" at end
+  const finalList = [
+    { value: 'Other', label: 'Not Listed - Enter Manually' },
+    ...sortedUniversities.map(uni => ({
+      value: uni,
+      label: uni
+    }))
+  ];
+  
+  return finalList;
 };

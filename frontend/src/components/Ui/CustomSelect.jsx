@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 /**
@@ -13,15 +13,19 @@ export default function CustomSelect({
   placeholder = "Select an option",
   className = "",
   required = false,
-  disabled = false
+  disabled = false,
+  searchable = false
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
+        setSearchQuery('');
       }
     };
 
@@ -29,7 +33,19 @@ export default function CustomSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (isOpen && searchable && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isOpen, searchable]);
+
   const selectedOption = options.find(opt => opt.value === value);
+
+  const filteredOptions = searchable && searchQuery
+    ? options.filter(option => 
+        option.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : options;
 
   const handleSelect = (selectedValue) => {
     // Create a synthetic event to match native select onChange
@@ -41,6 +57,7 @@ export default function CustomSelect({
     };
     onChange(syntheticEvent);
     setIsOpen(false);
+    setSearchQuery('');
   };
 
   return (
@@ -80,19 +97,43 @@ export default function CustomSelect({
 
       {/* Custom dropdown menu */}
       {isOpen && !disabled && (
-        <div className="absolute z-50 w-full mt-2 bg-card border border-border rounded-xl shadow-lg max-h-60 overflow-y-auto">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => handleSelect(option.value)}
-              className={`w-full px-4 py-3 text-left hover:bg-secondary transition-colors ${
-                value === option.value ? 'bg-primary/10 text-primary' : 'text-foreground'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="absolute z-50 w-full mt-2 bg-card border border-border rounded-xl shadow-lg max-h-96 overflow-hidden">
+          {searchable && (
+            <div className="sticky top-0 bg-card border-b border-border p-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full pl-9 pr-3 py-2 bg-input-background border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </div>
+          )}
+          <div className="max-h-80 overflow-y-auto">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleSelect(option.value)}
+                  className={`w-full px-4 py-3 text-left hover:bg-secondary transition-colors ${
+                    value === option.value ? 'bg-primary/10 text-primary' : 'text-foreground'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-muted-foreground text-sm text-center">
+                No results found
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
