@@ -86,14 +86,16 @@ export default function Employers() {
             speed={40}
             fullWidth={true}
             items={[
-              <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
+              <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-8 w-auto object-contain" />,
               <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-12 w-auto object-contain" />,
               <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
               <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
+              <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />,
               <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
-              <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-12 w-auto object-contain" />,
+              <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-8 w-auto object-contain" />,
               <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
-              <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />
+              <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
+              <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />
             ]}
           />
         </ScrollReveal>
@@ -180,7 +182,7 @@ export default function Employers() {
             <div className="text-center max-w-2xl mx-auto mb-12">
               <h2 className="text-3xl mb-4 text-foreground">Everything You Need To Attract Talent</h2>
             <p className="text-muted-foreground">
-              Powerful tools and features designed to streamline your entire recruitment process
+              Our 360 approach to help you attract and recruit early career talent
             </p>
             </div>
           </ScrollReveal>
@@ -230,9 +232,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Clock className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Pre-appplciation workshops</h3>
+              <h3 className="text-foreground mb-3">Pre-application workshops</h3>
               <p className="text-muted-foreground text-sm">
-                Design insightful pre-applicaiton preparation workshops to ensure high quality pipeline of applications.
+                Design insightful pre-application preparation workshops to ensure high quality pipeline of applications.
               </p>
             </div>
 
