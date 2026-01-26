@@ -58,20 +58,34 @@ export default function Jobs() {
   ]);
 
   const [industries, setIndustries] = useState([
-    { label: "Technology & IT", value: "Technology", checked: false },
-    { label: "Finance", value: "Finance", checked: false },
+    { label: "Accounting, Audit & Tax", value: "Accounting Audit & Tax", checked: false },
     { label: "Consulting", value: "Consulting", checked: false },
-    { label: "Engineering, Energy & Infrastructure", value: "Engineering", checked: false },
-    { label: "Marketing", value: "Marketing", checked: false },
-    { label: "Media", value: "Media", checked: false },
-    { label: "Healthcare", value: "Healthcare", checked: false },
-    { label: "Management & Operations", value: "Management ", checked: false },
-    { label: "Pharmaceuticals", value: "Pharmaceuticals", checked: false },
+    { label: "Consumer & FMCG", value: "Consumer & FMCG", checked: false },
+    { label: "Engineering, Energy & Infrastructure", value: "Engineering & Energy & Infrastructure", checked: false },
     { label: "Insurance", value: "Insurance", checked: false },
-    { label: "Education", value: "Education", checked: false },
+    { label: "Investment Banking & Asset Management", value: "Investment Banking & Asset Management", checked: false },
     { label: "Law", value: "Law", checked: false },
-    // { label: "Other", value: "Other", checked: false },
+    { label: "Management & Operations", value: "Management", checked: false },
+    { label: "Marketing, Media & PR", value: "Marketing Media & PR", checked: false },
+    { label: "Pharmaceuticals & Science", value: "Pharmaceuticals & Science", checked: false },
+    { label: "Technology & IT", value: "Technology & IT", checked: false },
   ]);
+
+  // const [industries, setIndustries] = useState([
+  //   { label: "Technology & IT", value: "Technology", checked: false },
+  //   { label: "Finance", value: "Finance", checked: false },
+  //   { label: "Consulting", value: "Consulting", checked: false },
+  //   { label: "Engineering, Energy & Infrastructure", value: "Engineering", checked: false },
+  //   { label: "Marketing", value: "Marketing", checked: false },
+  //   { label: "Media", value: "Media", checked: false },
+  //   { label: "Healthcare", value: "Healthcare", checked: false },
+  //   { label: "Management & Operations", value: "Management ", checked: false },
+  //   { label: "Pharmaceuticals", value: "Pharmaceuticals", checked: false },
+  //   { label: "Insurance", value: "Insurance", checked: false },
+  //   { label: "Education", value: "Education", checked: false },
+  //   { label: "Law", value: "Law", checked: false },
+  //   // { label: "Other", value: "Other", checked: false },
+  // ]);
 
   const toggleFavorite = async (jobId) => {
     if (!isLoggedIn()) {

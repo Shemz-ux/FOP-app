@@ -472,13 +472,15 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                         )}
                       </div>
                     ))}
-                    <button
-                      type="button"
-                      onClick={() => addContentItem(sectionIndex)}
-                      className="px-3 py-1.5 border border-border rounded-lg hover:bg-secondary text-foreground text-xs"
-                    >
-                      + Add Item
-                    </button>
+                    {section.header !== 'About the Role' && (
+                      <button
+                        type="button"
+                        onClick={() => addContentItem(sectionIndex)}
+                        className="px-3 py-1.5 border border-border rounded-lg hover:bg-secondary text-foreground text-xs"
+                      >
+                        + Add Item
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

@@ -153,67 +153,82 @@ export const EVENT_LOCATION_TYPES = [
 // ==================== JOBS ====================
 
 export const JOB_INDUSTRIES = [
-  // Tech & Digital
-  { value: 'Technology', label: 'Technology', variant: 'blue' },
-  // { value: 'Software Development', label: 'Software', variant: 'sky' },
-  // { value: 'Data Science', label: 'Data Science', variant: 'cyan' },
-  // { value: 'Cybersecurity', label: 'Cybersecurity', variant: 'indigo' },
-  // { value: 'AI & Machine Learning', label: 'AI/ML', variant: 'violet' },
-  
-  // Finance & Business
-  { value: 'Finance', label: 'Finance', variant: 'green' },
-  // { value: 'Accounting', label: 'Accounting', variant: 'emerald' },
-  // { value: 'Investment Banking', label: 'Investment Banking', variant: 'teal' },
-  { value: 'Consulting', label: 'Consulting', variant: 'purple' },
-  { value: 'Management', label: 'Management', variant: 'pink' },
-  
-  // Engineering & Science
-  { value: 'Engineering', label: 'Engineering', variant: 'orange' },
-  // { value: 'Civil Engineering', label: 'Civil Eng.', variant: 'amber' },
-  // { value: 'Mechanical Engineering', label: 'Mechanical Eng.', variant: 'yellow' },
-  // { value: 'Electrical Engineering', label: 'Electrical Eng.', variant: 'lime' },
-  // { value: 'Chemical Engineering', label: 'Chemical Eng.', variant: 'rose' },
-  { value: 'Research & Development', label: 'R&D', variant: 'fuchsia' },
-  
-  // Creative & Media
-  { value: 'Marketing', label: 'Marketing', variant: 'pink' },
-  { value: 'Media', label: 'Media', variant: 'yellow' },
-  { value: 'Design', label: 'Design', variant: 'purple' },
-  { value: 'Content Creation', label: 'Content', variant: 'rose' },
-  { value: 'Public Relations', label: 'PR', variant: 'fuchsia' },
-  
-  // Professional Services
-  { value: 'Law', label: 'Law', variant: 'indigo' },
-  { value: 'Human Resources', label: 'HR', variant: 'cyan' },
-  { value: 'Real Estate', label: 'Real Estate', variant: 'teal' },
-  { value: 'Insurance', label: 'Insurance', variant: 'slate' },
-  
-  // Healthcare & Life Sciences
-  { value: 'Healthcare', label: 'Healthcare', variant: 'red' },
-  { value: 'Pharmaceuticals', label: 'Pharma', variant: 'pink' },
-  // { value: 'Biotechnology', label: 'Biotech', variant: 'purple' },
-  { value: 'Medical Devices', label: 'Med Devices', variant: 'rose' },
-  
-  // Public Sector & Non-Profit
-  { value: 'Education', label: 'Education', variant: 'cyan' },
-  { value: 'Government', label: 'Government', variant: 'blue' },
-  { value: 'Non-Profit', label: 'Non-Profit', variant: 'green' },
-  { value: 'Social Work', label: 'Social Work', variant: 'emerald' },
-  
-  // Other Industries
-  { value: 'Retail', label: 'Retail', variant: 'teal' },
-  { value: 'Hospitality', label: 'Hospitality', variant: 'amber' },
-  { value: 'Manufacturing', label: 'Manufacturing', variant: 'slate' },
-  { value: 'Construction', label: 'Construction', variant: 'orange' },
-  { value: 'Energy', label: 'Energy', variant: 'yellow' },
-  { value: 'Transport', label: 'Transport', variant: 'stone' },
-  { value: 'Agriculture', label: 'Agriculture', variant: 'lime' },
-  { value: 'Entertainment', label: 'Entertainment', variant: 'fuchsia' },
-  { value: 'Sports', label: 'Sports', variant: 'sky' },
-  
-  { value: 'General', label: 'General', variant: 'gray' },
-  // { value: 'Other', label: 'Other', variant: 'gray' }
+  { value: "Accounting Audit & Tax", label: "Accounting, Audit & Tax", variant: "emerald" },
+  { value: "Consulting", label: "Consulting", variant: "purple" },
+  { value: "Consumer & FMCG", label: "Consumer & FMCG", variant: "teal" },
+  { value: "Engineering & Energy & Infrastructure", label: "Engineering, Energy & Infrastructure", variant: "orange" },
+  { value: "Insurance", label: "Insurance", variant: "slate" },
+  { value: "Investment Banking & Asset Management", label: "Investment Banking & Asset Management", variant: "green" },
+  { value: "Law", label: "Law", variant: "indigo" },
+  { value: "Management", label: "Management & Operations", variant: "pink" },
+  { value: "Marketing Media & PR", label: "Marketing, Media & PR", variant: "fuchsia" },
+  { value: "Pharmaceuticals & Science", label: "Pharmaceuticals & Science", variant: "red" },
+  { value: "Technology & IT", label: "Technology & IT", variant: "blue" },
 ];
+
+
+// export const JOB_INDUSTRIES = [
+//   // Tech & Digital
+//   { value: 'Technology', label: 'Technology', variant: 'blue' },
+//   // { value: 'Software Development', label: 'Software', variant: 'sky' },
+//   // { value: 'Data Science', label: 'Data Science', variant: 'cyan' },
+//   // { value: 'Cybersecurity', label: 'Cybersecurity', variant: 'indigo' },
+//   // { value: 'AI & Machine Learning', label: 'AI/ML', variant: 'violet' },
+  
+//   // Finance & Business
+//   { value: 'Finance', label: 'Finance', variant: 'green' },
+//   // { value: 'Accounting', label: 'Accounting', variant: 'emerald' },
+//   // { value: 'Investment Banking', label: 'Investment Banking', variant: 'teal' },
+//   { value: 'Consulting', label: 'Consulting', variant: 'purple' },
+//   { value: 'Management', label: 'Management', variant: 'pink' },
+  
+//   // Engineering & Science
+//   { value: 'Engineering', label: 'Engineering', variant: 'orange' },
+//   // { value: 'Civil Engineering', label: 'Civil Eng.', variant: 'amber' },
+//   // { value: 'Mechanical Engineering', label: 'Mechanical Eng.', variant: 'yellow' },
+//   // { value: 'Electrical Engineering', label: 'Electrical Eng.', variant: 'lime' },
+//   // { value: 'Chemical Engineering', label: 'Chemical Eng.', variant: 'rose' },
+//   { value: 'Research & Development', label: 'R&D', variant: 'fuchsia' },
+  
+//   // Creative & Media
+//   { value: 'Marketing', label: 'Marketing', variant: 'pink' },
+//   { value: 'Media', label: 'Media', variant: 'yellow' },
+//   { value: 'Design', label: 'Design', variant: 'purple' },
+//   { value: 'Content Creation', label: 'Content', variant: 'rose' },
+//   { value: 'Public Relations', label: 'PR', variant: 'fuchsia' },
+  
+//   // Professional Services
+//   { value: 'Law', label: 'Law', variant: 'indigo' },
+//   { value: 'Human Resources', label: 'HR', variant: 'cyan' },
+//   { value: 'Real Estate', label: 'Real Estate', variant: 'teal' },
+//   { value: 'Insurance', label: 'Insurance', variant: 'slate' },
+  
+//   // Healthcare & Life Sciences
+//   { value: 'Healthcare', label: 'Healthcare', variant: 'red' },
+//   { value: 'Pharmaceuticals', label: 'Pharma', variant: 'pink' },
+//   // { value: 'Biotechnology', label: 'Biotech', variant: 'purple' },
+//   { value: 'Medical Devices', label: 'Med Devices', variant: 'rose' },
+  
+//   // Public Sector & Non-Profit
+//   { value: 'Education', label: 'Education', variant: 'cyan' },
+//   { value: 'Government', label: 'Government', variant: 'blue' },
+//   { value: 'Non-Profit', label: 'Non-Profit', variant: 'green' },
+//   { value: 'Social Work', label: 'Social Work', variant: 'emerald' },
+  
+//   // Other Industries
+//   { value: 'Retail', label: 'Retail', variant: 'teal' },
+//   { value: 'Hospitality', label: 'Hospitality', variant: 'amber' },
+//   { value: 'Manufacturing', label: 'Manufacturing', variant: 'slate' },
+//   { value: 'Construction', label: 'Construction', variant: 'orange' },
+//   { value: 'Energy', label: 'Energy', variant: 'yellow' },
+//   { value: 'Transport', label: 'Transport', variant: 'stone' },
+//   { value: 'Agriculture', label: 'Agriculture', variant: 'lime' },
+//   { value: 'Entertainment', label: 'Entertainment', variant: 'fuchsia' },
+//   { value: 'Sports', label: 'Sports', variant: 'sky' },
+  
+//   { value: 'General', label: 'General', variant: 'gray' },
+//   // { value: 'Other', label: 'Other', variant: 'gray' }
+// ];
 
 export const JOB_ROLE_TYPES = [
   // Student & Graduate Opportunities
