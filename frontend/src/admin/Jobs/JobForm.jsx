@@ -96,6 +96,7 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
   const handleRemoveLogo = () => {
     setLogoFile(null);
     setLogoPreview(null);
+    setFormData({ ...formData, companyLogo: '' });
   };
 
   const handleSubmit = async (e) => {
