@@ -63,11 +63,13 @@ export default function JobCard({
 
       {/* Tags */}
       {tags && tags.length > 0 && (
-        <div className="flex gap-2 mb-3 overflow-hidden">
+        <div className="flex flex-wrap gap-2 mb-3">
           {tags.slice(0, 3).map((tag, index) => (
-            <JobBadge key={index} variant={tag?.variant || 'gray'}>
-              {tag?.label || 'Tag'}
-            </JobBadge>
+            <div key={index} className="max-w-[180px]">
+              <JobBadge variant={tag?.variant || 'gray'}>
+                <span className="truncate block">{tag?.label || 'Tag'}</span>
+              </JobBadge>
+            </div>
           ))}
           {tags.length > 3 && (
             <span className="inline-flex items-center justify-center text-xs font-medium px-3 py-2 rounded-full text-muted-foreground">
