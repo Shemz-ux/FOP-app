@@ -4,7 +4,14 @@ export const psqlError = (err, req, res, next) => {
     }
 
     if (err.code === '23503'){
-        return res.status(400).send({msg: 'Invalid insertion!'})
+        // Foreign key violation - provide more context
+        const detail = err.detail || '';
+        const constraint = err.constraint || '';
+        return res.status(400).send({
+            msg: 'Invalid insertion! Referenced record does not exist.',
+            detail: detail,
+            constraint: constraint
+        })
     }
 
     if (err.code === '23502'){
