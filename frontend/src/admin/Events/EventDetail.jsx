@@ -250,7 +250,7 @@ export default function EventDetail() {
               <tr>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Name</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Email</th>
-                <th className="text-left px-6 py-4 text-sm text-foreground">University</th>
+                <th className="text-left px-6 py-4 text-sm text-foreground">Institution</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Registration Date</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Status</th>
                 <th className="text-left px-6 py-4 text-sm text-foreground">Actions</th>

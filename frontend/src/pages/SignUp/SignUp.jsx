@@ -906,7 +906,7 @@ export default function SignUp() {
           {/* Society Membership */}
           <div>
             <label htmlFor="society" className="block text-sm mb-2 text-foreground">
-              Society Membership (Optional)
+              Partner Society Membership (Optional)
             </label>
             <CustomSelect
               id="society"
