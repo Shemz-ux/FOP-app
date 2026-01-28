@@ -234,6 +234,7 @@ export default function EventDetails() {
                 logo={event.organiser_logo} 
                 color={event.organiser_color || '#0D7DFF'} 
                 companyName={event.organiser}
+                 size="large"
               />
               <div>
                 <h1 className="text-3xl mb-2 text-foreground font-semibold">
@@ -381,6 +382,7 @@ export default function EventDetails() {
                     logo={event.organiser_logo} 
                     color={event.organiser_color || '#0D7DFF'} 
                     companyName={event.organiser}
+                    size="large"
                   />
                   <div>
                     <div className="text-foreground">{event.organiser || 'Unknown Organiser'}</div>

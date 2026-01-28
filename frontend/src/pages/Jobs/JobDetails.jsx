@@ -225,6 +225,7 @@ export default function JobDetails() {
                 logo={job.company_logo} 
                 color={job.company_color} 
                 companyName={job.company}
+                size="large"
               />
               <div>
                 <h1 className="text-3xl mb-2 text-foreground font-semibold">
@@ -420,6 +421,7 @@ export default function JobDetails() {
                     logo={job.company_logo} 
                     color={job.company_color} 
                     companyName={job.company}
+                    size="large"
                   />
                 </div>
                 <p className="text-muted-foreground text-sm mb-4">
