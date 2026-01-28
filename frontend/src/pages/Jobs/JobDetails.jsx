@@ -348,7 +348,7 @@ export default function JobDetails() {
               <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
                 <h3 className="text-foreground mb-4">Job Details</h3>
 
-                <div className="flex items-start gap-3">
+                {/* <div className="flex items-start gap-3">
                   <Users className="w-5 h-5 text-primary mt-0.5" />
                   <div>
                     <div className="text-sm text-muted-foreground mb-0.5">
@@ -358,7 +358,7 @@ export default function JobDetails() {
                       {job.applicant_count || 0} candidate{job.applicant_count !== 1 ? 's' : ''}
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex items-start gap-3">
                   <Building className="w-5 h-5 text-primary mt-0.5" />
