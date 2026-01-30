@@ -58,22 +58,32 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
     );
     ctx.restore();
 
-    // Draw crop overlay
-    const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
-    const cropX = (canvas.width - cropSize) / 2;
-    const cropY = (canvas.height - cropSize) / 2;
+    // Draw crop overlay based on aspect ratio
+    let cropWidth, cropHeight;
+    if (aspectRatio === 1) {
+      // Square crop for logos
+      const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
+      cropWidth = cropSize;
+      cropHeight = cropSize;
+    } else {
+      // 16:9 aspect ratio for event images
+      cropWidth = canvas.width * 0.85;
+      cropHeight = cropWidth * (9 / 16);
+    }
+    const cropX = (canvas.width - cropWidth) / 2;
+    const cropY = (canvas.height - cropHeight) / 2;
 
     // Darken outside crop area
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, canvas.width, cropY);
-    ctx.fillRect(0, cropY, cropX, cropSize);
-    ctx.fillRect(cropX + cropSize, cropY, canvas.width - cropX - cropSize, cropSize);
-    ctx.fillRect(0, cropY + cropSize, canvas.width, canvas.height - cropY - cropSize);
+    ctx.fillRect(0, cropY, cropX, cropHeight);
+    ctx.fillRect(cropX + cropWidth, cropY, canvas.width - cropX - cropWidth, cropHeight);
+    ctx.fillRect(0, cropY + cropHeight, canvas.width, canvas.height - cropY - cropHeight);
 
     // Draw crop border
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
-    ctx.strokeRect(cropX, cropY, cropSize, cropSize);
+    ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
 
     // Draw corner guides
     const guideLength = 20;
@@ -89,23 +99,23 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
 
     // Top-right
     ctx.beginPath();
-    ctx.moveTo(cropX + cropSize - guideLength, cropY);
-    ctx.lineTo(cropX + cropSize, cropY);
-    ctx.lineTo(cropX + cropSize, cropY + guideLength);
+    ctx.moveTo(cropX + cropWidth - guideLength, cropY);
+    ctx.lineTo(cropX + cropWidth, cropY);
+    ctx.lineTo(cropX + cropWidth, cropY + guideLength);
     ctx.stroke();
 
     // Bottom-left
     ctx.beginPath();
-    ctx.moveTo(cropX, cropY + cropSize - guideLength);
-    ctx.lineTo(cropX, cropY + cropSize);
-    ctx.lineTo(cropX + guideLength, cropY + cropSize);
+    ctx.moveTo(cropX, cropY + cropHeight - guideLength);
+    ctx.lineTo(cropX, cropY + cropHeight);
+    ctx.lineTo(cropX + guideLength, cropY + cropHeight);
     ctx.stroke();
 
     // Bottom-right
     ctx.beginPath();
-    ctx.moveTo(cropX + cropSize - guideLength, cropY + cropSize);
-    ctx.lineTo(cropX + cropSize, cropY + cropSize);
-    ctx.lineTo(cropX + cropSize, cropY + cropSize - guideLength);
+    ctx.moveTo(cropX + cropWidth - guideLength, cropY + cropHeight);
+    ctx.lineTo(cropX + cropWidth, cropY + cropHeight);
+    ctx.lineTo(cropX + cropWidth, cropY + cropHeight - guideLength);
     ctx.stroke();
   };
 
@@ -155,21 +165,31 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
 
   const handleCrop = () => {
     const canvas = canvasRef.current;
-    const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
-    const cropX = (canvas.width - cropSize) / 2;
-    const cropY = (canvas.height - cropSize) / 2;
+    let cropWidth, cropHeight;
+    if (aspectRatio === 1) {
+      // Square crop for logos
+      const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
+      cropWidth = cropSize;
+      cropHeight = cropSize;
+    } else {
+      // 16:9 aspect ratio for event images
+      cropWidth = canvas.width * 0.85;
+      cropHeight = cropWidth * (9 / 16);
+    }
+    const cropX = (canvas.width - cropWidth) / 2;
+    const cropY = (canvas.height - cropHeight) / 2;
 
     // Create a new canvas for the cropped image
     const croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = cropSize;
-    croppedCanvas.height = cropSize;
+    croppedCanvas.width = cropWidth;
+    croppedCanvas.height = cropHeight;
     const ctx = croppedCanvas.getContext('2d');
 
     // Calculate the source coordinates on the original image
     const sourceX = (cropX - position.x) / scale;
     const sourceY = (cropY - position.y) / scale;
-    const sourceWidth = cropSize / scale;
-    const sourceHeight = cropSize / scale;
+    const sourceWidth = cropWidth / scale;
+    const sourceHeight = cropHeight / scale;
 
     // Draw the cropped portion directly from the original image
     ctx.drawImage(
@@ -180,8 +200,8 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
       sourceHeight,
       0,
       0,
-      cropSize,
-      cropSize
+      cropWidth,
+      cropHeight
     );
 
     // Convert to blob
@@ -221,7 +241,8 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
   return (
     <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-2 sm:p-4">
       <div className="bg-card rounded-2xl p-3 sm:p-6 max-w-2xl w-full max-h-[95vh] overflow-y-auto">
-        <h3 className="text-base sm:text-lg font-medium text-foreground mb-3 sm:mb-4">Adjust Image Position</h3>
+        <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">{aspectRatio === 1 ? 'Adjust Logo Position' : 'Adjust Event Image'}</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{aspectRatio === 1 ? 'Position your logo (square 1:1 ratio)' : 'Position your image to match the event card preview (16:9 ratio)'}</p>
         
         {/* Canvas */}
         <div className="mb-3 sm:mb-4 flex justify-center">

@@ -453,6 +453,7 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                     onRemoveImage={handleRemoveImage}
                     label="Event Image (Optional)"
                     required={false}
+                    aspectRatio={16/9}
                   />
                 </div>
 

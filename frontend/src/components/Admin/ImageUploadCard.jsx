@@ -9,7 +9,8 @@ export default function ImageUploadCard({
   onRemoveImage,
   label = "Event Image",
   required = false,
-  enableCropping = true
+  enableCropping = true,
+  aspectRatio = 1
 }) {
   const [isZoomed, setIsZoomed] = useState(false);
   const [isCropping, setIsCropping] = useState(false);
@@ -17,33 +18,22 @@ export default function ImageUploadCard({
   const [originalFileName, setOriginalFileName] = useState('cropped-image.png');
 
   const handleFileChange = (e) => {
-    console.log('handleFileChange called, event:', e);
-    console.log('e.target:', e.target);
-    console.log('e.target.files:', e.target.files);
-    console.log('e.target.files[0]:', e.target.files?.[0]);
-    
     const file = e.target.files?.[0];
-    console.log('File selected:', file?.name, 'enableCropping:', enableCropping);
     
     if (file) {
       setOriginalFileName(file.name);
       if (enableCropping) {
         // Show cropper for adjustment
-        console.log('Starting FileReader...');
         const reader = new FileReader();
         reader.onloadend = () => {
-          console.log('FileReader complete, setting tempImage and opening cropper');
           setTempImage(reader.result);
           setIsCropping(true);
         };
         reader.readAsDataURL(file);
       } else {
-        // Direct upload without cropping
-        console.log('Cropping disabled, uploading directly');
+        // Direct upload without cropping - parent handles preview
         onImageChange(file);
       }
-    } else {
-      console.log('No file found in event');
     }
   };
 
@@ -86,6 +76,7 @@ export default function ImageUploadCard({
           image={tempImage}
           onCropComplete={handleCropComplete}
           onCancel={handleCropCancel}
+          aspectRatio={aspectRatio}
         />
       )}
 
