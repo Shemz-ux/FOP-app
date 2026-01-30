@@ -7,6 +7,7 @@ const app = express();
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:5001',
   'http://localhost:3000',
   'https://fop-app.vercel.app',
   'https://www.foperspectives.co.uk',
@@ -26,7 +27,8 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Disposition']
 }));
 
 app.use(express.json());

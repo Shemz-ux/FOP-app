@@ -1,6 +1,6 @@
 import express from "express";
 import { deleteJob, getJob, getJobs, patchJob, postJob } from "../controllers/jobs.js";
-import { getJobApplications } from "../controllers/job-applications.js";
+import { getJobApplications, exportJobApplicationsCSV } from "../controllers/job-applications.js";
 import adminChecker from "../middleware/adminChecker.js";
 
 const jobRouter = express.Router();
@@ -19,5 +19,9 @@ jobRouter
 jobRouter
 .route("/:job_id/applications")
 .get(adminChecker, getJobApplications);
+
+jobRouter
+.route("/:job_id/applications/export")
+.get(adminChecker, exportJobApplicationsCSV);
 
 export default jobRouter;

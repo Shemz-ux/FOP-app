@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil, Download } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
@@ -15,6 +15,7 @@ export default function EventDetail() {
   const [loading, setLoading] = useState(true);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false });
   const [toast, setToast] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -65,6 +66,67 @@ export default function EventDetail() {
         message: 'Failed to delete event. Please try again.',
         type: 'error'
       });
+    }
+  };
+
+  const handleExportCSV = async () => {
+    if (attendees.length === 0) {
+      setToast({
+        message: 'No attendees to export',
+        type: 'error'
+      });
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/events/${id}/registrations/export`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Extract filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'attendees.csv';
+      if (contentDisposition) {
+        // Match filename="something.csv" or filename=something.csv
+        const filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].trim();
+        }
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setToast({
+        message: 'Attendee data exported successfully',
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      setToast({
+        message: 'Failed to export attendee data. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -241,8 +303,17 @@ export default function EventDetail() {
 
       {/* Attendees Table */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
+        <div className="px-4 sm:px-6 py-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <h2 className="text-lg sm:text-xl text-foreground">Attendees</h2>
+          <button
+            onClick={handleExportCSV}
+            disabled={isExporting || attendees.length === 0}
+            className="group relative flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:active:scale-100 shadow-sm hover:shadow-md text-sm font-medium min-w-[44px]"
+            title={isExporting ? 'Exporting...' : 'Export to CSV'}
+          >
+            <Download className={`w-4 h-4 flex-shrink-0 transition-transform ${isExporting ? 'animate-bounce' : 'group-hover:scale-110'}`} />
+            <span className="hidden sm:inline whitespace-nowrap">{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+          </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px]">

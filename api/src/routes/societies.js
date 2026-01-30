@@ -1,5 +1,6 @@
 import express from "express";
-import { deleteSociety, getSociety, getSocieties, getSocietyNames, patchSociety, postSociety } from "../controllers/societies.js";
+import { deleteSociety, getSociety, getSocieties, getSocietyNames, patchSociety, postSociety, exportSocietiesCSV } from "../controllers/societies.js";
+import adminChecker from "../middleware/adminChecker.js";
 
 const societyRouter = express.Router();
 
@@ -17,5 +18,9 @@ societyRouter
 .get(getSociety)
 .patch(patchSociety)
 .delete(deleteSociety);
+
+societyRouter
+.route("/export/csv")
+.get(adminChecker, exportSocietiesCSV);
 
 export default societyRouter;

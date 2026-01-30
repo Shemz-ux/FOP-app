@@ -11,6 +11,7 @@ export default function SocietiesManagement() {
   const [selectedSocietyId, setSelectedSocietyId] = useState(null);
   const [societies, setSocieties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const fetchSocieties = async () => {
@@ -47,6 +48,52 @@ export default function SocietiesManagement() {
 
   const universities = [...new Set(societies.map(s => s.university).filter(Boolean))];
   const totalMembers = societies.reduce((sum, s) => sum + (s.member_count || 0), 0);
+
+  const handleExportCSV = async () => {
+    if (societies.length === 0) {
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/societies/export/csv`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'societies.csv';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].trim();
+        }
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -154,12 +201,15 @@ export default function SocietiesManagement() {
           <h1 className="text-3xl mb-2 text-foreground">Society Management</h1>
           <p className="text-muted-foreground">View and manage all registered societies</p>
         </div>
-        {/* <button
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+        <button
+          onClick={handleExportCSV}
+          disabled={isExporting || societies.length === 0}
+          className="group relative flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:active:scale-100 shadow-sm hover:shadow-md min-w-[44px]"
+          title={isExporting ? 'Exporting...' : 'Export to CSV'}
         >
-          <Download className="w-4 h-4" />
-          Export Data
-        </button> */}
+          <Download className={`w-4 h-4 flex-shrink-0 transition-transform ${isExporting ? 'animate-bounce' : 'group-hover:scale-110'}`} />
+          <span className="hidden sm:inline font-medium">{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+        </button>
       </div>
 
       {/* Search and Filters */}

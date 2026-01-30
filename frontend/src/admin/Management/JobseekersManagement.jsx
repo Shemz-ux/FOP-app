@@ -15,6 +15,7 @@ export default function JobseekersManagement() {
   const [selectedJobseekerId, setSelectedJobseekerId] = useState(null);
   const [jobseekers, setJobseekers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const fetchJobseekers = async () => {
@@ -50,6 +51,52 @@ export default function JobseekersManagement() {
 
   const universities = [...new Set(jobseekers.map(j => j.institution_name).filter(Boolean))];
   const years = [...new Set(jobseekers.map(j => j.uni_year).filter(Boolean))];
+
+  const handleExportCSV = async () => {
+    if (jobseekers.length === 0) {
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/jobseekers/export/csv`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'jobseekers.csv';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].trim();
+        }
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -118,12 +165,15 @@ export default function JobseekersManagement() {
               <h1 className="text-3xl mb-2 text-foreground">Jobseeker Management</h1>
               <p className="text-muted-foreground">View and manage all registered jobseekers</p>
             </div>
-            {/* <button
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+            <button
+              onClick={handleExportCSV}
+              disabled={isExporting || jobseekers.length === 0}
+              className="group relative flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:active:scale-100 shadow-sm hover:shadow-md min-w-[44px]"
+              title={isExporting ? 'Exporting...' : 'Export to CSV'}
             >
-              <Download className="w-4 h-4" />
-              Export Data
-            </button> */}
+              <Download className={`w-4 h-4 flex-shrink-0 transition-transform ${isExporting ? 'animate-bounce' : 'group-hover:scale-110'}`} />
+              <span className="hidden sm:inline font-medium">{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+            </button>
           </div>
 
           {/* Search and Filters */}
@@ -240,7 +290,7 @@ export default function JobseekersManagement() {
             </div>
 
             <div>
-              <label className="block text-sm mb-2 text-foreground">Education Level</label>
+              <label className="block text-sm mb-2 text-foreground">Highest Level of Education</label>
               <AdminSelect
                 value={filterEducation}
                 onValueChange={setFilterEducation}

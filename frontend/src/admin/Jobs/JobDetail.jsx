@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil, Download } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
@@ -15,6 +15,7 @@ export default function JobDetail() {
   const [loading, setLoading] = useState(true);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false });
   const [toast, setToast] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -65,6 +66,78 @@ export default function JobDetail() {
         message: 'Failed to delete job. Please try again.',
         type: 'error'
       });
+    }
+  };
+
+  const handleExportCSV = async () => {
+    if (applicants.length === 0) {
+      setToast({
+        message: 'No applicants to export',
+        type: 'error'
+      });
+      return;
+    }
+
+    try {
+      setIsExporting(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'}/jobs/${id}/applications/export`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to export CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Extract filename from Content-Disposition header or use default
+      const contentDisposition = response.headers.get('Content-Disposition');
+      console.log('Content-Disposition header:', contentDisposition);
+      
+      let filename = 'applicants.csv';
+      if (contentDisposition) {
+        // Try multiple patterns to extract filename
+        let filenameMatch = contentDisposition.match(/filename\s*=\s*"([^"]+)"/);
+        if (!filenameMatch) {
+          filenameMatch = contentDisposition.match(/filename\s*=\s*([^;]+)/);
+        }
+        
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].trim().replace(/^["']|["']$/g, '');
+          console.log('Extracted filename:', filename);
+        } else {
+          console.log('Failed to extract filename, using default');
+        }
+      } else {
+        console.log('No Content-Disposition header found');
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setToast({
+        message: 'Applicant data exported successfully',
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      setToast({
+        message: 'Failed to export applicant data. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -274,8 +347,17 @@ export default function JobDetail() {
 
       {/* Applicants Table */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-xl text-foreground">Applicants</h2>
+        <div className="px-4 sm:px-6 py-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <h2 className="text-lg sm:text-xl text-foreground">Applicants</h2>
+          <button
+            onClick={handleExportCSV}
+            disabled={isExporting || applicants.length === 0}
+            className="group relative flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary disabled:active:scale-100 shadow-sm hover:shadow-md text-sm font-medium min-w-[44px]"
+            title={isExporting ? 'Exporting...' : 'Export to CSV'}
+          >
+            <Download className={`w-4 h-4 flex-shrink-0 transition-transform ${isExporting ? 'animate-bounce' : 'group-hover:scale-110'}`} />
+            <span className="hidden sm:inline whitespace-nowrap">{isExporting ? 'Exporting...' : 'Export CSV'}</span>
+          </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

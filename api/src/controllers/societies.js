@@ -1,5 +1,6 @@
 import { createSociety, fetchSocieties, fetchSocietyById, updateSociety, removeSociety, fetchSocietyNames } from "../models/societies.js";
 import bcrypt from "bcrypt";
+import { Parser } from 'json2csv';
 
 export const getSocietyNames = (req, res, next) => {
     fetchSocietyNames().then((societies) => {
@@ -87,4 +88,53 @@ export const deleteSociety = (req, res, next) => {
     }).catch((err) => {
         next(err);
     });
+};
+
+export const exportSocietiesCSV = async (req, res, next) => {
+    try {
+        const societies = await fetchSocieties();
+        
+        if (societies.length === 0) {
+            return res.status(404).send({ 
+                message: 'No societies found' 
+            });
+        }
+        
+        // Transform data for CSV
+        const csvData = societies.map(soc => ({
+            'Society ID': soc.society_id,
+            'Institution Name': soc.name || 'N/A',
+            'Email': soc.email || 'N/A',
+            'Description': soc.description || 'N/A',
+            'Member Count': soc.member_count || 0,
+            'Created At': new Date(soc.created_at).toLocaleDateString('en-GB')
+        }));
+        
+        // Define CSV fields
+        const fields = [
+            'Society ID',
+            'Institution Name',
+            'Email',
+            'Description',
+            'Member Count',
+            'Created At'
+        ];
+        
+        // Create CSV parser
+        const json2csvParser = new Parser({ fields });
+        const csv = json2csvParser.parse(csvData);
+        
+        // Generate filename: Societies_List_DD_MM_YYYY.csv
+        const today = new Date();
+        const dateStr = `${String(today.getDate()).padStart(2, '0')}_${String(today.getMonth() + 1).padStart(2, '0')}_${today.getFullYear()}`;
+        const filename = `Societies_List_${dateStr}.csv`;
+        
+        // Set headers for file download
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        
+        res.status(200).send(csv);
+    } catch (err) {
+        next(err);
+    }
 };

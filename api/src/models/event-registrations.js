@@ -16,7 +16,10 @@ export const fetchEventRegistrations = (event_id) => {
             j.area_of_study,
             j.uni_year,
             j.education_level,
-            j.degree_type
+            j.degree_type,
+            j.first_gen_to_go_uni,
+            j.school_meal_eligible,
+            j.subject_one
         FROM jobseekers_events_applied jea
         JOIN jobseekers j ON jea.jobseeker_id = j.jobseeker_id
         WHERE jea.event_id = $1
@@ -39,7 +42,10 @@ export const fetchEventRegistrations = (event_id) => {
                 area_of_study: row.area_of_study,
                 uni_year: row.uni_year,
                 education_level: row.education_level,
-                degree_type: row.degree_type
+                degree_type: row.degree_type,
+                first_gen_to_go_uni: row.first_gen_to_go_uni,
+                school_meal_eligible: row.school_meal_eligible,
+                subject_one: row.subject_one
             }
         }));
     });
