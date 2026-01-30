@@ -18,6 +18,7 @@ export default function EventCard({
   onFavoriteClick,
   eventId,
   createdAt,
+  showSaveButton = true,
 }) {
   // Generate event ID from title if not provided
   const generatedEventId =
@@ -37,23 +38,25 @@ export default function EventCard({
           <div className="w-full h-full bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] group-hover:from-[#1e293b] group-hover:to-[#475569] transition-all duration-300" />
         )}
 
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onFavoriteClick?.();
-          }}
-          className="absolute top-4 right-4 p-2 bg-card/90 backdrop-blur-sm hover:bg-card rounded-lg transition-colors"
-          aria-label={isFavorite ? "Remove from saved" : "Save event"}
-        >
-          <Bookmark
-            className={`w-5 h-5 transition-colors ${
-              isFavorite
-                ? "fill-primary stroke-primary"
-                : "stroke-muted-foreground"
-            }`}
-          />
-        </button>
+        {showSaveButton && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onFavoriteClick?.();
+            }}
+            className="absolute top-4 right-4 p-2 bg-card/90 backdrop-blur-sm hover:bg-card rounded-lg transition-colors"
+            aria-label={isFavorite ? "Remove from saved" : "Save event"}
+          >
+            <Bookmark
+              className={`w-5 h-5 transition-colors ${
+                isFavorite
+                  ? "fill-primary stroke-primary"
+                  : "stroke-muted-foreground"
+              }`}
+            />
+          </button>
+        )}
       </div>
 
       <div className="p-6 flex-1 flex flex-col">

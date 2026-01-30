@@ -283,17 +283,19 @@ export default function EventDetails() {
                   <span className="text-sm font-medium">Edit Event</span>
                 </Link>
               )}
-              <button
-                onClick={handleSave}
-                disabled={savingEvent}
-                className={`px-4 py-2 rounded-xl border transition-colors disabled:opacity-50 ${
-                  isSaved
-                    ? 'bg-primary/10 border-primary text-primary'
-                    : 'bg-card border-border hover:border-primary/50'
-                }`}
-              >
-                {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
-              </button>
+              {!isAdmin() && (
+                <button
+                  onClick={handleSave}
+                  disabled={savingEvent}
+                  className={`px-4 py-2 rounded-xl border transition-colors disabled:opacity-50 ${
+                    isSaved
+                      ? 'bg-primary/10 border-primary text-primary'
+                      : 'bg-card border-border hover:border-primary/50'
+                  }`}
+                >
+                  {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+                </button>
+              )}
               <button 
                 onClick={handleShare}
                 className="px-4 py-2 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors"

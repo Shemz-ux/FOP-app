@@ -15,7 +15,7 @@ import * as eventActionsService from "../../services/Events/eventActions";
 
 
 export default function Events() {
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, isAdmin } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -247,6 +247,7 @@ export default function Events() {
                   isFavorite={favorites.has(event.event_id)}
                   onFavoriteClick={() => toggleFavorite(event.event_id)}
                   createdAt={event.created_at}
+                  showSaveButton={!isAdmin()}
                 />
               ))}
             </div>
