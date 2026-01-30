@@ -1,5 +1,11 @@
 import db from "./db.js";
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -69,6 +75,14 @@ const setupDatabase = async () => {
         const { default: seed } = await import('./tables.js');
         await seed();
         
+        console.log('📝 Running migrations...');
+        
+        // Run password reset tokens migration
+        const migrationPath = path.join(__dirname, 'migrations', 'add_password_reset_tokens.sql');
+        const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+        await db.query(migrationSQL);
+        
+        console.log('✅ Migrations applied');
         console.log('✅ Database setup complete!');
         
     } catch (error) {
