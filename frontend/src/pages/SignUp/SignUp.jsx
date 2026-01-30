@@ -121,8 +121,7 @@ export default function SignUp() {
     
     // Validate all required fields
     const requiredFields = [
-      { field: 'name', label: 'Society Name' },
-      { field: 'university', label: 'Institution' },
+      { field: 'name', label: 'Institution Name' },
       { field: 'description', label: 'Society Description' },
       { field: 'email', label: 'Society Email' },
       { field: 'password', label: 'Password' },
@@ -189,7 +188,7 @@ export default function SignUp() {
         if (error.message.includes('email')) {
           errorMessage = 'This email is already registered. Please use a different email or try logging in.';
         } else if (error.message.includes('name')) {
-          errorMessage = 'This society name is already taken. Please choose a different name.';
+          errorMessage = 'This institution name is already taken. Please choose a different name.';
         } else if (error.message.includes('required')) {
           errorMessage = 'Some required fields are missing. Please check all fields and try again.';
         } else {
@@ -640,7 +639,7 @@ export default function SignUp() {
           {/* Education Level */}
           <div>
             <label htmlFor="education_level" className="block text-sm mb-2 text-foreground">
-              Education Level *
+              Highest Level of Education *
             </label>
             <CustomSelect
               id="education_level"
@@ -1004,7 +1003,7 @@ export default function SignUp() {
           Back to account type
         </button>
         <h1 className="text-3xl mb-2 text-foreground">Institution details</h1>
-        <p className="text-muted-foreground">Tell us about your society</p>
+        <p className="text-muted-foreground">Tell us about your institution</p>
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-8 text-left">
@@ -1029,67 +1028,21 @@ export default function SignUp() {
         )}
 
         <form onSubmit={handleSocietySubmit} className="space-y-6">
-          {/* Society Name */}
+          {/* Institution Name */}
           <div>
-            <label htmlFor="society_name" className="block text-sm mb-2 text-foreground">
+            <label htmlFor="institution_name" className="block text-sm mb-2 text-foreground">
               Institution Name *
             </label>
             <input
-              id="society_name"
+              id="institution_name"
               type="text"
               value={societyData.name}
               onChange={(e) => setSocietyData({ ...societyData, name: e.target.value })}
-              placeholder="e.g. Tech Society"
+              placeholder="e.g. UoN ACS, Harris Academy, etc."
               className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
-
-          {/* Institution */}
-          {/* <div>
-            <label htmlFor="institution" className="block text-sm mb-2 text-foreground">
-              Institution *
-            </label>
-            <CustomSelect
-              id="institution"
-              value={showCustomSocietyInstitution ? 'Other' : societyData.university}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === 'Other') {
-                  setShowCustomSocietyInstitution(true);
-                  setSocietyData({ ...societyData, university: '' });
-                } else {
-                  setShowCustomSocietyInstitution(false);
-                  setCustomSocietyInstitution('');
-                  setSocietyData({ ...societyData, university: value });
-                }
-              }}
-              placeholder="Select your institution"
-              required
-              options={getUniversityOptions()}
-            />
-          </div> */}
-
-          {/* Custom Institution Input */}
-          {showCustomSocietyInstitution && (
-            <div>
-              <label htmlFor="custom_society_institution" className="block text-sm mb-2 text-foreground">
-                Enter Institution Name *
-              </label>
-              <input
-                id="custom_society_institution"
-                type="text"
-                value={customSocietyInstitution}
-                onChange={(e) => {
-                  setCustomSocietyInstitution(e.target.value);
-                  setSocietyData({ ...societyData, university: e.target.value });
-                }}
-                placeholder="Enter your institution name"
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
-            </div>
-          )}
 
           {/* Description */}
           <div>
@@ -1312,7 +1265,7 @@ export default function SignUp() {
                 {jobSeekerData.uni_year && (
                   <div>
                     <p className="text-muted-foreground mb-1">Year of Study</p>
-                    <p className="text-foreground">{jobSeekerData.uni_year} Year</p>
+                    <p className="text-foreground">{jobSeekerData.uni_year}</p>
                   </div>
                 )}
                 {jobSeekerData.degree_type && (
