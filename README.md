@@ -48,6 +48,10 @@ CREATE DATABASE fop_test;
 # Exit psql
 \q
 ```
+OR
+```bash
+createdb fop_test
+```
 
 **Run Database Migrations:**
 
@@ -290,4 +294,4 @@ FOP-app/
 └── README.md             # This file
 ```
 
-Proprietary - First Opportunity Perspectives
+Proprietary - SD studios
