@@ -498,7 +498,7 @@ export default function EducationCard({ educationData, onSave }) {
 
           <div>
             <div className="text-sm text-muted-foreground mb-1 text-left">Career Interests</div>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2 mt-2 text-left">
               {localEducationData.role_interest_option_one && (
                 <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm">
                   {localEducationData.role_interest_option_one}

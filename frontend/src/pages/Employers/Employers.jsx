@@ -242,7 +242,7 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Globe className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Employability programs</h3>
+              <h3 className="text-foreground mb-3">Employability Programs</h3>
               <p className="text-muted-foreground text-sm">
                 Leverage our flagship employability program to access career-ready talent.
               </p>

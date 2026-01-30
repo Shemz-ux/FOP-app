@@ -137,9 +137,9 @@ export default function Students() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Briefcase className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Internship Opportunities</h3>
+              <h3 className="text-foreground mb-3">Job Opportunities</h3>
               <p className="text-muted-foreground text-sm">
-                Access thousands of paid internships at top companies designed specifically for students and recent graduates.
+                Access a plethora of internships, graduate schemes and entry level opportunities from leading employers.
               </p>
             </div>
 
