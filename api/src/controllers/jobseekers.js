@@ -7,12 +7,33 @@ export const postJobseeker = async (req, res, next) => {
     try {
         const newJobseeker = req.body;
         
+        // Log registration attempt (exclude sensitive data)
+        console.log('📝 Jobseeker registration attempt:', {
+            email: newJobseeker.email,
+            education_level: newJobseeker.education_level,
+            has_institution: !!newJobseeker.institution_name,
+            has_uni_year: !!newJobseeker.uni_year,
+            has_degree_type: !!newJobseeker.degree_type,
+            has_area_of_study: !!newJobseeker.area_of_study,
+            has_subject_one: !!newJobseeker.subject_one,
+            has_society: !!newJobseeker.society,
+            has_phone: !!newJobseeker.phone_number,
+            has_dob: !!newJobseeker.date_of_birth,
+            cv_uploaded: !!newJobseeker.cv_storage_key,
+            cv_file_name: newJobseeker.cv_file_name || 'none',
+            cv_file_size: newJobseeker.cv_file_size || 'none',
+            userAgent: req.headers['user-agent'],
+            ip: req.ip || req.connection.remoteAddress
+        });
+        
         // Validate password requirements
         if (!newJobseeker.password) {
+            console.log('❌ Registration failed: Password missing');
             return res.status(400).json({ message: "Password is required" });
         }
         
         if (newJobseeker.password.length < 8) {
+            console.log('❌ Registration failed: Password too short');
             return res.status(400).json({ message: "Password must be at least 8 characters long" });
         }
         
@@ -23,6 +44,7 @@ export const postJobseeker = async (req, res, next) => {
             today.setHours(0, 0, 0, 0); // Reset time to start of day for fair comparison
             
             if (dob >= today) {
+                console.log('❌ Registration failed: Date of birth in future', { dob: newJobseeker.date_of_birth });
                 return res.status(400).json({ message: "Date of birth cannot be in the future" });
             }
         }
@@ -40,6 +62,12 @@ export const postJobseeker = async (req, res, next) => {
         
         const jobseeker = await createJobseeker(jobseekerData);
         
+        console.log('✅ Jobseeker registered successfully:', {
+            jobseeker_id: jobseeker.jobseeker_id,
+            email: jobseeker.email,
+            education_level: jobseeker.education_level
+        });
+        
         // Increment society member count if society is selected
         if (jobseeker.society && jobseeker.society !== 'None') {
             await incrementSocietyMemberCount(jobseeker.society);
@@ -47,6 +75,14 @@ export const postJobseeker = async (req, res, next) => {
         
         res.status(201).send({newJobseeker: jobseeker});
     } catch (err) {
+        console.error('❌ Jobseeker registration error:', {
+            message: err.message,
+            code: err.code,
+            constraint: err.constraint,
+            detail: err.detail,
+            email: req.body.email,
+            education_level: req.body.education_level
+        });
         next(err);
     }
 };

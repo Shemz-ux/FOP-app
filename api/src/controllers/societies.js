@@ -14,12 +14,24 @@ export const postSociety = async (req, res, next) => {
     try {
         const newSociety = req.body;
         
+        // Log registration attempt (exclude sensitive data)
+        console.log('🏛️ Society registration attempt:', {
+            email: newSociety.email,
+            name: newSociety.name,
+            has_university: !!newSociety.university,
+            has_description: !!newSociety.description,
+            userAgent: req.headers['user-agent'],
+            ip: req.ip || req.connection.remoteAddress
+        });
+        
         // Validate password requirements
         if (!newSociety.password) {
+            console.log('❌ Society registration failed: Password missing');
             return res.status(400).json({ message: "Password is required" });
         }
         
         if (newSociety.password.length < 8) {
+            console.log('❌ Society registration failed: Password too short');
             return res.status(400).json({ message: "Password must be at least 8 characters long" });
         }
         
@@ -35,8 +47,23 @@ export const postSociety = async (req, res, next) => {
         delete societyData.password; // Remove plaintext password
         
         const society = await createSociety(societyData);
+        
+        console.log('✅ Society registered successfully:', {
+            society_id: society.society_id,
+            email: society.email,
+            name: society.name
+        });
+        
         res.status(201).send({newSociety: society});
     } catch (err) {
+        console.error('❌ Society registration error:', {
+            message: err.message,
+            code: err.code,
+            constraint: err.constraint,
+            detail: err.detail,
+            email: req.body.email,
+            name: req.body.name
+        });
         next(err);
     }
 };
