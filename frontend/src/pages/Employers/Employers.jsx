@@ -37,11 +37,11 @@ export default function Employers() {
               </div> */}
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
-                Attract & Recruit <br/>
-                <span className="text-primary">High Quality Talent</span>
+                Attract Bespoke Talent <br/>
+                <span className="text-primary">That Converts</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Develop talent pipelines to attract, engage and hire high quality diverse talent anywhere.
+                Helping employers build tailored early career talent pipelines that converts and improves hiring outcomes
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 text-center">
@@ -108,7 +108,7 @@ export default function Employers() {
           <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">How We Help You</h2>
           <p className="text-muted-foreground">
-            Our comprehensive approach to building your talent pipeline
+            Our approach is to go beyond attraction and build talent pipelines that converts
           </p>
           </div>
         </ScrollReveal>
@@ -121,7 +121,19 @@ export default function Employers() {
               </div>
               <h3 className="text-xl text-foreground mb-3">Talent Attraction</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Reach and engage top talent through strategic university partnerships, targeted campaigns, and compelling employer branding initiatives.
+                Reach and engage top talent through strategic university partnerships, insight days, and compelling employer branding initiatives.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.3}>
+            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Users className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl text-foreground mb-3">Application Readiness</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Prepare candidates for success with pre-application workshops, employability programs, and skill development initiatives.
               </p>
             </div>
           </ScrollReveal>
@@ -138,17 +150,6 @@ export default function Employers() {
             </div>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.3}>
-            <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
-                <Users className="w-7 h-7" />
-              </div>
-              <h3 className="text-xl text-foreground mb-3">Application Readiness</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Prepare candidates for success with pre-application workshops, employability programs, and skill development initiatives.
-              </p>
-            </div>
-          </ScrollReveal>
         </div>
         </div>
       </section>
@@ -234,7 +235,7 @@ export default function Employers() {
               </div>
               <h3 className="text-foreground mb-3">Pre-application workshops</h3>
               <p className="text-muted-foreground text-sm">
-                Design insightful pre-application preparation workshops to ensure high quality pipeline of applications.
+                Design insightful pre-application workshops to ensure high quality pipeline of applications that converts to successful hires.
               </p>
             </div>
 

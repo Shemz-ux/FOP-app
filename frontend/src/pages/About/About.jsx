@@ -42,8 +42,7 @@ export default function About() {
               </h1>
 
               <p className="text-xl text-muted-foreground mb-8">
-                We're on a mission to help young talent unlock their career 
-                path and help employers attract and hire exceptional and diverse talent at scale.
+                We're on a mission to close the gap between student potential and employers expectations, improving hiring outcomes for all
               </p>
             </div>
 
@@ -85,36 +84,30 @@ export default function About() {
             <div className="max-w-3xl mx-auto text-center mb-12">
               <h2 className="text-3xl mb-4 text-foreground">Our Mission & Our Values</h2>
             <p className="text-lg text-muted-foreground">
-              Ensuring that talent no matter their backgrounds have the tools to kickstart their career.
+              Where early career potential meets real-world readiness
             </p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 text-left">
             {[
               {
                 icon: Target,
                 title: "Accessibility",
                 text:
-                  "Widen access to careers for talent from all backgrounds",
+                  "Widen access and opportunity to careers for talent from all backgrounds",
               },
               {
                 icon: Users,
-                title: "Community",
+                title: "Readiness",
                 text:
-                "A space for all talent to be supported and grow together",
-              },
-              {
-                icon: Zap,
-                title: "Empowerment",
-                text:
-                  "Support and guide talent to kickstart your career journey",
+                "Upskill talent to close the gap between student potential and employers expectations",
               },
               {
                 icon: Award,
                 title: "Excellence",
                 text:
-                  "Ensure the best outcomes for talent and employers",
+                  "Ensure our employers attract applicant ready talent that converts to successful hires",
               },
             ].map(({ icon: Icon, title, text }, index) => (
               <ScrollReveal key={title} delay={index * 0.1}>
@@ -141,13 +134,16 @@ export default function About() {
             <h2 className="text-3xl mb-6 text-foreground">Our Story</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Founded in 2022, our platform was founded on the back of a desire to fix what we believed was a disjointed hiring process. We've seen how fractured the early career scene has been for students and employers, where employers struggle to convert high quality underrepresented talent while young talent struggle to launch their careers
+                Founded in 2022, our platform was founded on the back of a desire to fix what we believed was a disjointed hiring process. We saw that students were motivated but underprepared lacking the skills and understanding to get hired.
               </p>
               <p>
-                We set out to change this by working with both sides, helping employers create more diverse and engaging talent pipelines while also educating the next generation of talent into the workforce.
+                Meanwhile employers are being flooded with applications, but too many are generic, poorly structured and misaligned to their roles. This has created fatigue and poor conversion in their talent pipelines.
               </p>
               <p>
-                Today we are proud to say we’ve helped and guided thousands of students and young people across the globe kickstart and progress within their career.
+                We set out to change this by helping employers attract students who are application ready and convert into successful hires. Unlike traditional platforms, we invest heavily in preparing our student network with the skills and insights to submit high quality applications - so employers spend less time filtering and more time hiring.
+              </p>
+              <p>
+                Because early-career talent isn’t lacking ambition - they’re lacking guidance-and when you fix that, everyone wins.
               </p>
             </div>
           </div>
@@ -192,7 +188,7 @@ export default function About() {
               <ScrollReveal delay={0.3}>
                 <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
                   <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
-                  <p className="text-muted-foreground">3,000 young people supported and 150+ success stories</p>
+                  <p className="text-muted-foreground">3,000 young people upskilled and 150+ success stories</p>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.4}>

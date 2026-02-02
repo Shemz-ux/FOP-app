@@ -118,8 +118,8 @@ export default function HomePage() {
             </div> */}
 
             <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
-              Empowering Young Talent<br />
-              <span className="text-primary">Kickstarting Careers</span>
+              Creating Talent Pipelines<br />
+              <span className="text-primary">That Converts</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -190,7 +190,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-foreground mb-2">Job Opportunities</h3>
               <p className="text-muted-foreground text-sm">
-                Access a wide variety of opportunities from industry leading companies across all sectors
+                Access a wide variety of opportunities from employers across all sectors
               </p>
               </div>
               </Link>
@@ -202,9 +202,9 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Target className="w-6 h-6" />
               </div>
-              <h3 className="text-foreground mb-2">Employability</h3>
+              <h3 className="text-foreground mb-2">Employability Programs</h3>
               <p className="text-muted-foreground text-sm">
-                Take part in our structured and interactive programmes to kickstart your career with leading employers
+                Take part in our structured and interactive programs to upskill you and kickstart your career
               </p>
               </div>
               </Link>
@@ -218,7 +218,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-foreground mb-2">Career Events</h3>
               <p className="text-muted-foreground text-sm">
-                Attend exclusive networking events, workshops, and career fairs to expand your opportunities
+                Attend exclusive employer events, workshops, and career fairs to expand your opportunities
               </p>
               </div>
               </Link>
