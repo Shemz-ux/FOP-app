@@ -133,13 +133,13 @@ export const EVENT_INDUSTRIES = [
 
 export const EVENT_TYPES = [
   { value: 'Career Fair', label: 'Career Fair', variant: 'blue' },
+  { value: 'Career Masterclass', label: 'Career Masterclass', variant: 'teal' },
+  { value: 'Conference', label: 'Conference', variant: 'red' },
+  { value: 'Insight Event', label: 'Insight Event', variant: 'pink' },
   { value: 'Networking', label: 'Networking', variant: 'purple' },
-  { value: 'Workshop', label: 'Workshop', variant: 'green' },
   { value: 'Panel Discussion', label: 'Panel Discussion', variant: 'orange' },
-  { value: 'Seminar', label: 'Seminar', variant: 'pink' },
-  { value: 'conference', label: 'Conference', variant: 'red' },
   { value: 'Webinar', label: 'Webinar', variant: 'cyan' },
-  { value: 'Meetup', label: 'Meetup', variant: 'teal' },
+  { value: 'Workshop', label: 'Workshop', variant: 'green' },
   { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
