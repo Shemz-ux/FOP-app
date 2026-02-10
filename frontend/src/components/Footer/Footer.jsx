@@ -15,7 +15,7 @@ const LinkedInIcon = () => (
 
 export default function Footer() {
   return (
-    <footer className="bg-card border-t border-border mt-auto">
+    <footer className="bg-secondary/30 bg-card border-t border-border mt-auto">
       <div className="container mx-auto px-6">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 py-16 text-left">

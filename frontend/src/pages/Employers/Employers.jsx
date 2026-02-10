@@ -11,16 +11,34 @@ import {
   Shield,
   Clock,
   Globe,
-  HeadphonesIcon
+  AlertCircle,
+  XCircle
 } from 'lucide-react';
 import Marquee from '../../components/Marquee/Marquee';
 import ScrollReveal from '../../components/ScrollReveal';
+
+
+const painPoints = [
+  "High Application volume but low quality",
+  "Lack of consistency in attracting high quality talent",
+  "Application fatigue from mass applications",
+  "Low Conversion from talent attraction initiatives",
+  "Misaligned attraction outcomes",
+];
+
+const outcomes = [
+  "Fewer low-quality applications",
+  "Stronger signals of motivation and fit",
+  "A wider and diverse pool of early career talent",
+  "Higher conversion from application to hire",
+  "A talent pipeline that improves over time",
+];
 
 export default function Employers() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-border overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
             backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
@@ -75,12 +93,12 @@ export default function Employers() {
           {/* TODO: Add company logos */}
 
       {/* Company Logos Marquee */}
-      <section className="bg-secondary/30 border-y border-border pb-15">
+      <section className="bg-secondary/20 border-y pb-15">
         <ScrollReveal>
           <div className="container mx-auto px-6 pt-12">
-            <p className="text-medium text-muted-foreground mb-8 max-w-xl mx-auto">
+            <h2 className="text-medium text-muted-foreground mb-8">
               Trusted by employers such as
-            </p>
+            </h2>
           </div>
           <Marquee 
             speed={40}
@@ -155,7 +173,7 @@ export default function Employers() {
       </section>
 
       {/* Stats */}
-      <section className="bg-secondary/30 border-b border-border">
+      <section className="bg-secondary/20 border-b border-border">
         <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
@@ -176,8 +194,93 @@ export default function Employers() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="border-b border-border">
+      {/* Pain points section */}
+      <section className="py-24 relative">
+      <div className="container mx-auto px-6 text-left">
+        <ScrollReveal>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
+            Solving Your Biggest Talent Problems 
+          </h2>
+          <p className="text-muted-foreground">
+            We help bridge the gap between student potential and employer expectations
+          </p>
+        </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <ScrollReveal>
+          {/* Pain Points Column */}
+          <div className="bg-card/50 rounded-3xl p-8 md:p-10 border border-border/50 relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-red-500/5 hover:border-red-500/20">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-3 bg-red-500/10 rounded-xl">
+                <XCircle className="w-6 h-6 text-red-500" />
+              </div>
+              <h3 className="text-2xl font-semibold text-foreground">
+                Painpoints
+              </h3>
+            </div>
+
+            <ul className="space-y-6">
+              {painPoints.map((point, idx) => (
+                <li
+                key={idx}
+                className="flex items-start gap-4 group"
+                >
+                  <div className="mt-1 min-w-5 min-h-5 rounded-full border border-red-500/20 bg-red-500/5 flex items-center justify-center group-hover:bg-red-500/10 transition-colors">
+                    <div className="bg-primary/10 rounded-xl">
+                      <XCircle className="w-4 h-4 text-red-500" />
+                    </div>
+                  </div>
+                  <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+                    {point}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          </ScrollReveal>
+
+          {/* Outcomes Column */}
+          <ScrollReveal delay={0.2}>
+          <div className="bg-card rounded-3xl p-8 md:p-10 border border-primary/20 relative overflow-hidden shadow-lg shadow-primary/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10 hover:border-primary/40">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-3 bg-primary/10 rounded-xl">
+                <CheckCircle2 className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold text-foreground">
+                Outcomes
+              </h3>
+            </div>
+
+            <ul className="space-y-6">
+              {outcomes.map((outcome, idx) => (
+                <li
+                key={idx}
+                className="flex items-start gap-4 group"
+                >
+                  <div className="mt-1 min-w-5 min-h-5 rounded-full bg-primary flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-primary-foreground" />
+                  </div>
+                  <span className="text-foreground group-hover:text-foreground transition-colors">
+                    {outcome}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+
+
+
+      {/* Everything You Need To Attract Talent */}
+      <section className="bg-secondary/20 border-y border-border">
         <div className="container mx-auto px-6 py-20 text-left">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -253,7 +356,7 @@ export default function Employers() {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-secondary/30 border-b border-border">
+      <section className="border-b border-border">
         <div className="container mx-auto px-6 py-20 text-left">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -335,7 +438,7 @@ export default function Employers() {
       </section>
 
       {/* CTA Section */}
-      <section className="border-b border-border">
+      <section className="bg-secondary/20 border-b border-border">
         <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">

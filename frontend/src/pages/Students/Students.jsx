@@ -95,11 +95,11 @@ export default function Students() {
       </section>
 
       {/* Campus Partnerships */}
-      <section className="border-y border-border">
+      <section className="border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">We’ve helped young talent land jobs at</h2>
+              <h2 className="text-medium mb-4 text-foreground">We’ve helped young talent land jobs at</h2>
             </div>
           </ScrollReveal>
 
@@ -121,7 +121,7 @@ export default function Students() {
       </section>
 
       {/* Benefits Section */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="bg-secondary/20 border-y border-border">
         <div className="container mx-auto px-6 py-20 text-left">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -221,7 +221,7 @@ export default function Students() {
       </section>
 
       {/* Student Success Stories */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="bg-secondary/20 border-y border-border">
         <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="text-center max-w-2xl mx-auto mb-12">
@@ -303,7 +303,7 @@ export default function Students() {
       </section>
 
       {/* How It Works */}
-      <section className="border-y border-border">
+      <section className="border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -326,7 +326,7 @@ export default function Students() {
                 </p>
               </div>
               {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
+              <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
             </div>
 
             <div className="relative">
@@ -340,7 +340,7 @@ export default function Students() {
                 </p>
               </div>
               {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
+              <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
             </div>
 
             <div className="relative">
@@ -354,7 +354,7 @@ export default function Students() {
                 </p>
               </div>
               {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-3 w-6 h-0.5 bg-border"></div>
+              <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
             </div>
 
             <div>
@@ -373,7 +373,7 @@ export default function Students() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="bg-secondary/20 border-y">
         <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center relative overflow-hidden">

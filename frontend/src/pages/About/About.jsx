@@ -42,7 +42,7 @@ export default function About() {
               </h1>
 
               <p className="text-xl text-muted-foreground mb-8">
-                We're on a mission to close the gap between student potential and employers expectations, improving hiring outcomes for all
+                We're on a mission to close the gap between student potential and employers expectations, improving hiring outcomes for all.
               </p>
             </div>
 
@@ -78,7 +78,7 @@ export default function About() {
       </section>
 
       {/* Mission & Values */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="bg-secondary/20 border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center mb-12">
@@ -160,7 +160,7 @@ export default function About() {
       </section>
 
       {/* Timeline */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="bg-secondary/20 border-y border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="max-w-3xl mx-auto text-center mb-12">

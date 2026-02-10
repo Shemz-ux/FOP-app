@@ -13,8 +13,10 @@ import {
   CircleCheck,
   GraduationCap,
   Building2,
-  User,
+  Users,
   Quote,
+  BookOpen,
+  Megaphone,
 } from "lucide-react";
 import landingVideo from "../../assets/landing_video.MP4";
 
@@ -22,7 +24,7 @@ const FopLogo2 = () => (
   <img 
     src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769274499/FOP_logo_hazkv0.svg" 
     alt="FOP Logo" 
-    className="h-36 w-58 object-contain"
+    className="h-36 w-58 object-contain opacity-50"
   />
 )
 
@@ -91,7 +93,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-border overflow-hidden">
         {/* Video Background */}
         <div className="absolute inset-0">
           <video
@@ -110,7 +112,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="container mx-auto px-6 py-50 lg:py-70 relative z-10">
+        <div className="container mx-auto px-6 py-60 lg:py-70 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
               <TrendingUp className="w-4 h-4" />
@@ -123,7 +125,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Connect with leading employers, discover opportunities, upskill and take the next step in your career.
+              Connect with leading employers, discover opportunities, upskill and take the next step in your career
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -148,10 +150,10 @@ export default function HomePage() {
       </section>
 
       {/* Company logo marquee */}
-      <section className="bg-secondary/30 border-y border-border pb-15">
+      <section className="bg-secondary/20 border-y pb-15">
         <ScrollReveal>
           <div className="container mx-auto px-6 pt-12">
-            <p className="text-medium text-muted-foreground mb-8 max-w-xl mx-auto">We've helped hundreds of students secure roles at</p>
+            <h2 className="text-medium text-muted-foreground mb-8 max-w-xl mx-auto">We've helped hundreds of students secure roles at</h2>
           </div>
           <Marquee
             items={companyLogos.map((logo) => (
@@ -169,12 +171,12 @@ export default function HomePage() {
       </section>
 
 
-      {/* Why Choose Us */}
-      <section className="border-y border-border">
+      {/* Kickstart your career */}
+      <section>
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">Kickstart your career journey</h2>
+              <h2 className="text-3xl mb-4 text-foreground">Kickstart Your Career Journey</h2>
               <p className="text-muted-foreground">
                 Our platform provides support and resources to accelerate your career
               </p>
@@ -241,8 +243,89 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="py-24 border-y bg-secondary/20 relative overflow-hidden">
+        {/* Abstract Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
+          <div className="absolute top-1/4 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -translate-x-1/2"></div>
+          <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl translate-x-1/2"></div>
+        </div>
+          
+        <div className="container mx-auto px-6 relative z-10">
+          <ScrollReveal>
+          <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">How We Help Employers</h2>
+              <p className="text-muted-foreground">
+                We help you attract and engage applicant ready talent that converts
+              </p>
+            </div>
+            </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            {/* Card 1: Talent Attraction */}
+            <ScrollReveal delay={0.1}>
+            <div className="group relative bg-card p-8 rounded-3xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500/20 to-blue-600/5 rounded-2xl flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform duration-300 border border-blue-500/20">
+                <Users className="w-7 h-7" />
+              </div>
+              
+              <h3 className="mb-4 text-foreground group-hover:text-blue-500 transition-colors">
+                Talent Attraction
+              </h3>
+              
+              <p className="text-muted-foreground leading-relaxed mb-8 text-sm">
+                We help you build the right early career talent pipeline for you that converts high-potential candidates into long-term employees.
+              </p>
+              
+              {/* Decorative gradient blob */}
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors"></div>
+              </div>
+              </ScrollReveal>
+
+            {/* Card 2: Application Readiness */}
+            <ScrollReveal delay={0.2}>
+            <div className="group relative bg-card p-8 rounded-3xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-purple-600/5 rounded-2xl flex items-center justify-center text-purple-500 mb-6 group-hover:scale-110 transition-transform duration-300 border border-purple-500/20">
+                <BookOpen className="w-7 h-7" />
+              </div>
+              
+              <h3 className="mb-4 text-foreground group-hover:text-purple-500 transition-colors">
+                Application Readiness
+              </h3>
+              
+              <p className="text-muted-foreground leading-relaxed mb-8 text-sm">
+                We upskill and develop early career talent, ensuring you reach talent that is ready to convert into hires from day one.
+              </p>
+
+              {/* Decorative gradient blob */}
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-colors"></div>
+            </div>
+            </ScrollReveal>
+
+            {/* Card 3: Employer Branding */}
+            <ScrollReveal delay={0.3}>
+            <div className="group relative bg-card p-8 rounded-3xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500/20 to-orange-600/5 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform duration-300 border border-orange-500/20">
+                <Megaphone className="w-7 h-7" />
+              </div>
+              
+              <h3 className="mb-4 text-foreground group-hover:text-orange-500 transition-colors">
+                Employer Branding
+              </h3>
+              
+              <p className="text-muted-foreground leading-relaxed mb-8 text-sm">
+                Help you cut through the noise and reach early career talent through emerging platforms & influencer marketing.
+              </p>
+
+              {/* Decorative gradient blob */}
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-colors"></div>
+            </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -259,7 +342,7 @@ export default function HomePage() {
               <div
                 key={index}
                 className={`p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative overflow-hidden ${
-                  index % 2 === 0 ? 'bg-card' : 'bg-secondary/30'
+                  index % 2 === 0 ? 'bg-card' : 'bg-secondary/20'
                 }`}
               >
                 <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/10" />
@@ -292,85 +375,89 @@ export default function HomePage() {
       </section>
 
       {/* Path to success*/}
-      <section className="container mx-auto px-6 py-20">
-        <ScrollReveal>
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Your Path to Success</h2>
-            <p className="text-muted-foreground">
-              Getting started is simple. Follow these steps to land your dream role
-            </p>
+      <section className="bg-secondary/20">
+        <div className="container mx-auto px-6 py-20">
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <h2 className="text-3xl mb-4 text-foreground">Your Path to Success</h2>
+              <p className="text-muted-foreground">
+                Getting started is simple. Follow these steps to land your dream role
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <ScrollReveal delay={0.1}>
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 text-2xl">
+                  1
+                </div>
+                <h3 className="text-foreground mb-2">Create Your Profile</h3>
+                <p className="text-muted-foreground text-sm">
+                  Build a comprehensive profile showcasing your skills, experience, and career aspirations
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.2}>
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 text-2xl">
+                  2
+                </div>
+                <h3 className="text-foreground mb-2">Discover Opportunities</h3>
+                <p className="text-muted-foreground text-sm">
+                  Browse curated job listings and receive personalized recommendations based on your profile
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.3}>
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 text-2xl">
+                  3
+                </div>
+                <h3 className="text-foreground mb-2">Start Your Journey</h3>
+                <p className="text-muted-foreground text-sm">
+                  Apply with one click, track your applications, and connect with hiring managers directly
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <ScrollReveal delay={0.1}>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 text-2xl">
-                1
-              </div>
-              <h3 className="text-foreground mb-2">Create Your Profile</h3>
-              <p className="text-muted-foreground text-sm">
-                Build a comprehensive profile showcasing your skills, experience, and career aspirations
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.2}>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 text-2xl">
-                2
-              </div>
-              <h3 className="text-foreground mb-2">Discover Opportunities</h3>
-              <p className="text-muted-foreground text-sm">
-                Browse curated job listings and receive personalized recommendations based on your profile
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.3}>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 text-2xl">
-                3
-              </div>
-              <h3 className="text-foreground mb-2">Start Your Journey</h3>
-              <p className="text-muted-foreground text-sm">
-                Apply with one click, track your applications, and connect with hiring managers directly
-              </p>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="container mx-auto px-6 py-20">
-        <ScrollReveal>
-          <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center">
-          <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
-            Ready to Transform Your Career?
-          </h2>
+      <section className="bg-secondary/20">
+        <div className="container mx-auto px-6 py-20">
+          <ScrollReveal>
+            <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center">
+            <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
+              Ready to Transform Your Career?
+            </h2>
 
-          <p className="text-muted-foreground text-lg mb-8">
-            Join thousands of professionals who have found their dream careers
-            through our platform.
-          </p>
+            <p className="text-muted-foreground text-lg mb-8">
+              Join thousands of professionals who have found their dream careers
+              through our platform.
+            </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/signup"
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-center hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
-            >
-              Get Started
-            </Link>
-            <Link
-              to="/jobs"
-              className="px-8 py-3 border border-border rounded-xl text-center hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
-            >
-              Job Opportunities
-            </Link>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/signup"
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-center hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Get Started
+              </Link>
+              <Link
+                to="/jobs"
+                className="px-8 py-3 border border-border rounded-xl text-center hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Job Opportunities
+              </Link>
+            </div>
 
-          </div>
-        </ScrollReveal>
+            </div>
+          </ScrollReveal>
+        </div>
       </section>
     </div>
   );
