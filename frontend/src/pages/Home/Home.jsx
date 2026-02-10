@@ -325,7 +325,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="border-border">
+      <section className="border-border border-b">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-16">
