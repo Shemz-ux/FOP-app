@@ -55,6 +55,17 @@ const formatBoolean = (value) => {
     return value ? 'Yes' : 'No';
 };
 
+const formatGender = (gender) => {
+    const genderMap = {
+        'male': 'Male',
+        'female': 'Female',
+        'non_binary': 'Non-Binary',
+        'prefer_not_to_say': 'Prefer Not to Say',
+        'other': 'Other'
+    };
+    return genderMap[gender] || gender || 'N/A';
+};
+
 export const exportEventRegistrationsCSV = async (req, res, next) => {
     const { event_id } = req.params;
     
@@ -89,6 +100,9 @@ export const exportEventRegistrationsCSV = async (req, res, next) => {
             'Last Name': reg.jobseeker.last_name || 'N/A',
             'Email': reg.jobseeker.email || 'N/A',
             'Phone Number': reg.jobseeker.phone_number || 'N/A',
+            'Date of Birth': reg.jobseeker.date_of_birth ? new Date(reg.jobseeker.date_of_birth).toLocaleDateString('en-GB') : 'N/A',
+            'Gender': formatGender(reg.jobseeker.gender),
+            'Ethnicity': reg.jobseeker.ethnicity || 'N/A',
             'Education Level': formatEducationLevel(reg.jobseeker.education_level),
             'Institution': reg.jobseeker.institution_name || 'N/A',
             'University Year': formatUniYear(reg.jobseeker.uni_year),
@@ -115,6 +129,9 @@ export const exportEventRegistrationsCSV = async (req, res, next) => {
             'Last Name',
             'Email',
             'Phone Number',
+            'Date of Birth',
+            'Gender',
+            'Ethnicity',
             'Education Level',
             'Institution',
             'University Year',

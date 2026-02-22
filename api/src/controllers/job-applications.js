@@ -55,6 +55,17 @@ const formatBoolean = (value) => {
     return value ? 'Yes' : 'No';
 };
 
+const formatGender = (gender) => {
+    const genderMap = {
+        'male': 'Male',
+        'female': 'Female',
+        'non_binary': 'Non-Binary',
+        'prefer_not_to_say': 'Prefer Not to Say',
+        'other': 'Other'
+    };
+    return genderMap[gender] || gender || 'N/A';
+};
+
 export const exportJobApplicationsCSV = async (req, res, next) => {
     const { job_id } = req.params;
     
@@ -90,12 +101,16 @@ export const exportJobApplicationsCSV = async (req, res, next) => {
             'Last Name': app.jobseeker.last_name || 'N/A',
             'Email': app.jobseeker.email || 'N/A',
             'Phone Number': app.jobseeker.phone_number || 'N/A',
+            'Date of Birth': app.jobseeker.date_of_birth ? new Date(app.jobseeker.date_of_birth).toLocaleDateString('en-GB') : 'N/A',
+            'Gender': formatGender(app.jobseeker.gender),
+            'Ethnicity': app.jobseeker.ethnicity || 'N/A',
             'Education Level': formatEducationLevel(app.jobseeker.education_level),
             'Institution': app.jobseeker.institution_name || 'N/A',
             'University Year': formatUniYear(app.jobseeker.uni_year),
             'Degree Type': formatDegreeType(app.jobseeker.degree_type),
             'Area of Study': app.jobseeker.area_of_study || 'N/A',
-            'Subject': app.jobseeker.subject_one || 'N/A',
+            'Subjects': app.jobseeker.subject_one || 'N/A',
+            'Society': app.jobseeker.society || 'None',
             'First Generation to University': formatBoolean(app.jobseeker.first_gen_to_go_uni),
             'Free School Meals Eligible': formatBoolean(app.jobseeker.school_meal_eligible),
             'Application Status': app.status || 'pending',
@@ -116,12 +131,16 @@ export const exportJobApplicationsCSV = async (req, res, next) => {
             'Last Name',
             'Email',
             'Phone Number',
+            'Date of Birth',
+            'Gender',
+            'Ethnicity',
             'Education Level',
             'Institution',
             'University Year',
             'Degree Type',
             'Area of Study',
-            'Subject',
+            'Subjects',
+            'Society',
             'First Generation to University',
             'Free School Meals Eligible',
             'Application Status',
