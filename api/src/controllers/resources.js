@@ -35,7 +35,16 @@ const upload = multer({
         files: 1 // Only one file at a time
     },
     fileFilter: (req, file, cb) => {
-        if (validateFileType(file.originalname)) {
+        console.log('🔍 Multer fileFilter check:', {
+            filename: file.originalname,
+            mimetype: file.mimetype,
+            encoding: file.encoding
+        });
+        
+        const isValid = validateFileType(file.originalname);
+        console.log(`Validation result: ${isValid ? '✅ VALID' : '❌ INVALID'}`);
+        
+        if (isValid) {
             cb(null, true);
         } else {
             cb(new Error('Invalid file type. Only PDF, DOC, DOCX, PPT, PPTX, TXT, and RTF files are allowed.'));
@@ -191,7 +200,13 @@ const postResource = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Create resource error:', error);
+        console.error('❌ Create resource error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            code: error.code,
+            constraint: error.constraint
+        });
         
         // Check for duplicate storage_key (unique constraint violation)
         if (error.code === '23505' && error.constraint === 'resources_storage_key_key') {

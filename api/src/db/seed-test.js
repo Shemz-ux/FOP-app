@@ -319,7 +319,7 @@ const createResourcesTable = () => {
         category VARCHAR(100) NOT NULL,
         file_name VARCHAR(255) NOT NULL,
         file_size VARCHAR(50),
-        file_type VARCHAR(50) NOT NULL,
+        file_type VARCHAR(255) NOT NULL,
         storage_key VARCHAR(500) NOT NULL UNIQUE,
         storage_url VARCHAR(1000),
         download_count INT DEFAULT 0,
