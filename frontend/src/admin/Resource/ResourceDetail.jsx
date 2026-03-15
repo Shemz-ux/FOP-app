@@ -4,6 +4,7 @@ import { ArrowLeft, Download, Trash2, ExternalLink, Pencil, FileText, User, Cale
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
 import { apiGet, apiDelete } from '../../services/api';
+import { formatFileType } from '../../utils/fileTypeFormatter';
 
 export default function ResourceDetail() {
   const { id } = useParams();
@@ -197,7 +198,7 @@ export default function ResourceDetail() {
           {resource.file_type && (
             <div>
               <p className="text-sm text-muted-foreground mb-1">File Type</p>
-              <p className="text-foreground font-medium">{resource.file_type}</p>
+              <p className="text-foreground font-medium">{formatFileType(resource.file_type)}</p>
             </div>
           )}
           <div>

@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, BookOpen, File } from "lucide-react";
+import { FileText, BookOpen, File, Video } from "lucide-react";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import ResourceCard from "../../components/ResourceCard/ResourceCard";
@@ -10,13 +10,16 @@ import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
 import { resourcesService } from "../../services";
-import { RESOURCE_CATEGORIES } from "../../utils/dropdownOptions";
+import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
+import { formatTimeAgo } from '../../utils/timeFormatter';
+import { formatFileType } from '../../utils/fileTypeFormatter';
 import { useAuth } from "../../contexts/AuthContext";
 
 const iconMap = {
   FileText: FileText,
   BookOpen: BookOpen,
   File: File,
+  Video: Video,
 };
 
 export default function Resources() {
@@ -277,7 +280,12 @@ export default function Resources() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
             {popularResources.map((resource) => {
-              const IconComponent = iconMap[resource.icon_type] || FileText;
+              const isVideoLink = resource.file_type === 'video/link' || 
+                                  resource.file_type?.toLowerCase().includes('video') ||
+                                  resource.storage_url?.includes('youtube.com') || 
+                                  resource.storage_url?.includes('vimeo.com') ||
+                                  resource.storage_url?.includes('youtu.be');
+              const IconComponent = isVideoLink ? Video : (iconMap[resource.icon_type] || FileText);
               return (
                 <div
                   key={resource.resource_id}
@@ -289,7 +297,7 @@ export default function Resources() {
                   </div>
                   <div className="flex-1">
                     <h4 className="text-foreground text-sm mb-1">{resource.title}</h4>
-                    <p className="text-muted-foreground text-xs">{resource.file_type} • {resource.file_size}</p>
+                    <p className="text-muted-foreground text-xs">{formatFileType(resource.file_type)} • {resource.file_size}</p>
                   </div>
                 </div>
               );

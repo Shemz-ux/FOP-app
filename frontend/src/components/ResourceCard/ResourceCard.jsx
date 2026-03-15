@@ -1,13 +1,15 @@
 import React from "react";
-import { Download, FileText, Eye, BookOpen, File, Clock } from "lucide-react";
+import { Download, FileText, Eye, BookOpen, File, Clock, Video } from "lucide-react";
 import JobBadge from "../Ui/JobBadge";
 import { Link } from "react-router-dom";
 import { formatTimeAgo } from "../../utils/timeFormatter";
+import { formatFileType } from "../../utils/fileTypeFormatter";
 
 const iconMap = {
   FileText: FileText,
   BookOpen: BookOpen,
   File: File,
+  Video: Video,
 };
 
 export default function ResourceCard({
@@ -25,7 +27,13 @@ export default function ResourceCard({
   createdAt,
   storageUrl,
 }) {
-  const IconComponent = iconMap[iconType] || FileText;
+  // Use Video icon for video links, otherwise use provided iconType
+  const isVideoLink = fileType === 'video/link' || 
+                      fileType?.toLowerCase().includes('video') ||
+                      storageUrl?.includes('youtube.com') || 
+                      storageUrl?.includes('vimeo.com') ||
+                      storageUrl?.includes('youtu.be');
+  const IconComponent = isVideoLink ? Video : (iconMap[iconType] || FileText);
 
   const cardContent = (
     <div className="bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col min-h-[240px] max-h-[320px] shadow-sm">
@@ -59,7 +67,7 @@ export default function ResourceCard({
       <div className="flex items-center gap-4 mb-4 text-muted-foreground text-sm text-left">
         <span className="flex items-center gap-1">
           <IconComponent className="w-4 h-4" />
-          {fileType}
+          {formatFileType(fileType)}
         </span>
         {!(fileType?.toLowerCase().includes('video') || fileType === 'video/link') && (
           <span>{fileSize}</span>

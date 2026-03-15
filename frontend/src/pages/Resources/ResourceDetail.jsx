@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, BookOpen, File, Share2, Clock, User, Calendar, Eye } from 'lucide-react';
+import { ArrowLeft, Download, FileText, BookOpen, File, Share2, Clock, User, Calendar, Eye, Video } from 'lucide-react';
 import JobBadge from '../../components/Ui/JobBadge';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
@@ -10,11 +10,13 @@ import { resourcesService } from '../../services';
 import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
 import { formatTimeAgo } from '../../utils/timeFormatter';
 import { useAuth } from '../../contexts/AuthContext';
+import { formatFileType } from '../../utils/fileTypeFormatter';
 
 const iconMap = {
   FileText: FileText,
   BookOpen: BookOpen,
   File: File,
+  Video: Video,
 };
 
 export default function ResourceDetail() {
@@ -116,7 +118,13 @@ export default function ResourceDetail() {
   }
 
   const categoryInfo = RESOURCE_CATEGORIES.find(c => c.value === resource.category);
-  const IconComponent = iconMap[categoryInfo?.icon] || FileText;
+  // Use Video icon for video links, otherwise use category icon
+  const isVideoLink = resource.file_type === 'video/link' || 
+                      resource.file_type?.toLowerCase().includes('video') ||
+                      resource.storage_url?.includes('youtube.com') || 
+                      resource.storage_url?.includes('vimeo.com') ||
+                      resource.storage_url?.includes('youtu.be');
+  const IconComponent = isVideoLink ? Video : (iconMap[categoryInfo?.icon] || FileText);
 
   return (
     <div className="min-h-screen bg-background">
@@ -219,7 +227,7 @@ export default function ResourceDetail() {
                   <p className="text-sm text-muted-foreground mb-1">File Type</p>
                   <p className="text-foreground font-medium flex items-center gap-2">
                     <IconComponent className="w-4 h-4" />
-                    {resource.file_type}
+                    {formatFileType(resource.file_type)}
                   </p>
                 </div>
                 {/* <div className="text-left">
