@@ -8,7 +8,8 @@ import {
   Building2,
   BarChart3,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Users2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiGet } from '../services/api';
@@ -217,7 +218,7 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">{job.company}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{job.applicant_count || 0} applicants</p>
+                  <p className="text-md text-primary">{job.applicant_count || 0} <Users2 className="inline w-4 h-4" /></p>
                 </div>
               </div>
             ))}
@@ -242,7 +243,7 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">{event.organiser || 'N/A'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{event.applicant_count || 0} attendees</p>
+                  <p className="text-md text-primary">{event.applicant_count || 0} <Users2 className="inline w-4 h-4" /></p>
                 </div>
               </div>
             ))}
