@@ -77,13 +77,28 @@ const setupDatabase = async () => {
         
         console.log('📝 Running migrations...');
         
-        // Run password reset tokens migration
-        const migrationPath = path.join(__dirname, 'migrations', 'add_password_reset_tokens.sql');
-        const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-        await db.query(migrationSQL);
+        // Run all migration files in order
+        const migrationsDir = path.join(__dirname, 'migrations');
+        const migrationFiles = [
+            'add_password_reset_tokens.sql',
+            'increase_file_type_length.sql'
+        ];
+
+        for (const file of migrationFiles) {
+            try {
+                const migrationPath = path.join(migrationsDir, file);
+                const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
+                await db.query(migrationSQL);
+                console.log(`  ✅ Applied: ${file}`);
+            } catch (error) {
+                console.error(`  ❌ Failed to apply ${file}:`, error.message);
+                throw error;
+            }
+        }
         
-        console.log('✅ Migrations applied');
+        console.log('✅ All migrations applied');
         console.log('✅ Database setup complete!');
+        console.log('\nNow run: npm run seed');
         
     } catch (error) {
         console.error('❌ Database setup failed:', error);

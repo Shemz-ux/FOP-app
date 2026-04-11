@@ -31,7 +31,7 @@ const resetDatabase = async () => {
         
         console.log('✅ All enum types dropped');
         console.log('✅ Database reset complete!');
-        console.log('\nNow run: npm run seed');
+        console.log('\nNow run: npm run setup');
         
     } catch (error) {
         console.error('❌ Database reset failed:', error);
