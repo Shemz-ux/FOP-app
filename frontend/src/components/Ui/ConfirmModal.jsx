@@ -41,21 +41,24 @@ export default function ConfirmModal({
 
         {/* Content */}
         <div className="p-8 pt-6">
-          {/* Icon and Title */}
-          <div className="flex items-start gap-4 mb-8">
+          {/* Vertically aligned content */}
+          <div className="flex flex-col items-center text-center">
+            {/* Icon at top */}
             {confirmVariant === 'danger' && (
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-500" />
+              <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6">
+                <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>
             )}
-            <div className="flex-1 pt-1">
-              <h2 className="text-2xl font-semibold text-foreground mb-4">{title}</h2>
-              <p className="text-base text-muted-foreground leading-relaxed text-cent">{message}</p>
+            
+            {/* Title and Message */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold text-foreground mb-3">{title}</h2>
+              <p className="text-base text-muted-foreground leading-relaxed">{message}</p>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 mt-10">
+          <div className="flex items-center justify-center gap-3">
             <button
               onClick={onClose}
               className="px-6 py-2.5 rounded-xl border border-border hover:bg-secondary text-foreground font-medium transition-all"

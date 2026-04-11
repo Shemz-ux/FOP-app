@@ -4,6 +4,7 @@ import { Search, Plus, Download, Trash2, Edit, Eye, BarChart, Home, CheckCircle,
 import AdminSelect from '../Components/AdminSelect';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
+import Pagination from '../../components/Ui/Pagination';
 import { apiGet, apiDelete } from '../../services/api';
 
 export default function ResourcesList() {
@@ -15,7 +16,7 @@ export default function ResourcesList() {
   const [resourceToDelete, setResourceToDelete] = useState(null);
   const [toast, setToast] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const resourcesPerPage = 9;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -76,9 +77,9 @@ export default function ResourcesList() {
   });
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredResources.length / resourcesPerPage);
-  const indexOfLastResource = currentPage * resourcesPerPage;
-  const indexOfFirstResource = indexOfLastResource - resourcesPerPage;
+  const totalPages = Math.ceil(filteredResources.length / itemsPerPage);
+  const indexOfLastResource = currentPage * itemsPerPage;
+  const indexOfFirstResource = indexOfLastResource - itemsPerPage;
   const currentResources = filteredResources.slice(indexOfFirstResource, indexOfLastResource);
 
   // Reset to page 1 when filters change
@@ -220,7 +221,7 @@ export default function ResourcesList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {filteredResources.map(resource => (
+              {currentResources.map(resource => (
                 <tr key={resource.resource_id} className="hover:bg-secondary/50 transition-colors">
                   <td className="px-6 py-4 text-foreground">{resource.title}</td>
                   <td className="px-6 py-4">
@@ -279,6 +280,17 @@ export default function ResourcesList() {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination */}
+        {filteredResources.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredResources.length}
+          />
+        )}
       </div>
 
       {/* Resources Cards - Mobile */}
@@ -347,27 +359,15 @@ export default function ResourcesList() {
           </div>
         ))}
         
-        {/* Mobile Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-border">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Previous
-            </button>
-            <span className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Next
-            </button>
-          </div>
+        {/* Pagination */}
+        {filteredResources.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredResources.length}
+          />
         )}
       </div>
         </div>

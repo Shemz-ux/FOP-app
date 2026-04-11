@@ -4,6 +4,7 @@ import { Search, Plus, Eye, BarChart, Trash2, Edit, Home, CheckCircle, XCircle, 
 import AdminSelect from '../Components/AdminSelect';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
+import Pagination from '../../components/Ui/Pagination';
 import { apiGet, apiDelete } from '../../services/api';
 
 export default function EventsList() {
@@ -15,7 +16,7 @@ export default function EventsList() {
   const [eventToDelete, setEventToDelete] = useState(null);
   const [toast, setToast] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 9;
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -88,9 +89,9 @@ export default function EventsList() {
   });
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-  const indexOfLastEvent = currentPage * eventsPerPage;
-  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+  const indexOfLastEvent = currentPage * itemsPerPage;
+  const indexOfFirstEvent = indexOfLastEvent - itemsPerPage;
   const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
 
   // Reset to page 1 when filters change
@@ -276,6 +277,17 @@ export default function EventsList() {
             </table>
           </div>
         )}
+        
+        {/* Pagination */}
+        {filteredEvents.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredEvents.length}
+          />
+        )}
       </div>
 
       {/* Events Cards - Mobile */}
@@ -356,27 +368,15 @@ export default function EventsList() {
           ))
         )}
         
-        {/* Mobile Pagination */}
-        {filteredEvents.length > 0 && totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t border-border">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Previous
-            </button>
-            <span className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Next
-            </button>
-          </div>
+        {/* Pagination */}
+        {filteredEvents.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredEvents.length}
+          />
         )}
       </div>
         </div>

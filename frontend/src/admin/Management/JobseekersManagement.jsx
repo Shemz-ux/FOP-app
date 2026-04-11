@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Filter, BarChart, Download, X, User, GraduationCap, MapPin, Eye, Home, CheckCircle, XCircle } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
 import AdminSelect from '../Components/AdminSelect';
+import Pagination from '../../components/Ui/Pagination';
 import { apiGet } from '../../services/api';
 
 export default function JobseekersManagement() {
@@ -16,6 +17,8 @@ export default function JobseekersManagement() {
   const [jobseekers, setJobseekers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 25;
 
   useEffect(() => {
     const fetchJobseekers = async () => {
@@ -51,6 +54,17 @@ export default function JobseekersManagement() {
 
   const universities = [...new Set(jobseekers.map(j => j.institution_name).filter(Boolean))];
   const years = [...new Set(jobseekers.map(j => j.uni_year).filter(Boolean))];
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredJobseekers.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentJobseekers = filteredJobseekers.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterGender, filterEducation, filterUniversity, filterFreeMeal, filterFirstGen]);
 
   const handleExportCSV = async () => {
     if (jobseekers.length === 0) {
@@ -389,7 +403,7 @@ export default function JobseekersManagement() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {filteredJobseekers.map(jobseeker => (
+                  {currentJobseekers.map(jobseeker => (
                     <tr key={jobseeker.jobseeker_id} className="hover:bg-secondary/50 transition-colors">
                       <td className="px-6 py-4 text-foreground">{`${jobseeker.first_name || ''} ${jobseeker.last_name || ''}`.trim()}</td>
                       <td className="px-6 py-4 text-muted-foreground">{jobseeker.email}</td>
@@ -436,6 +450,15 @@ export default function JobseekersManagement() {
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredJobseekers.length}
+            />
           </div>
         </div>
       </div>

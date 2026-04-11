@@ -160,7 +160,7 @@ export default function AdminDashboard() {
         <div className="grid md:grid-cols-3 gap-4">
           <Link
             to="/admin/jobs/new"
-            className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
+            className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
               <Plus className="w-5 h-5" />
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             to="/admin/events/new"
-            className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
+            className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
               <Plus className="w-5 h-5" />
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             to="/admin/resources/new"
-            className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
+            className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
               <Plus className="w-5 h-5" />
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
 
       {/* Recent Activity */}
       <div className="grid md:grid-cols-2 gap-6 text-left">
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6 hover:border-primary hover:scale-101 duration-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl text-foreground">Recent Jobs</h2>
             <Link
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6 hover:border-primary hover:scale-101 duration-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl text-foreground">Upcoming Events</h2>
             <Link
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
                   <p className="text-sm text-muted-foreground">{event.organiser || 'N/A'}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-primary">{event.attendee_count || 0} attendees</p>
+                  <p className="text-sm text-primary">{event.applicant_count || 0} attendees</p>
                 </div>
               </div>
             ))}
@@ -253,7 +253,7 @@ export default function AdminDashboard() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link
           to="/admin/jobs"
-          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group hover:border-primary hover:scale-105 duration-200"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-blue-500 flex items-center justify-center">
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
 
         <Link
           to="/admin/events"
-          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group hover:border-primary hover:scale-105 duration-200"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center">
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
 
         <Link
           to="/admin/resources"
-          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group hover:border-primary hover:scale-105 duration-200"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-teal-500 flex items-center justify-center">
@@ -295,7 +295,7 @@ export default function AdminDashboard() {
 
         <Link
           to="/admin/jobseekers"
-          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group hover:border-primary hover:scale-105 duration-200"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center">
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
 
         <Link
           to="/admin/societies"
-          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group hover:border-primary hover:scale-105 duration-200"
         >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-orange-500 flex items-center justify-center">
@@ -321,7 +321,7 @@ export default function AdminDashboard() {
           <p className="text-sm text-muted-foreground">Manage society information</p>
         </Link>
 
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6 hover:border-primary hover:scale-105 duration-200">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
               <BarChart3 className="w-6 h-6 text-white" />

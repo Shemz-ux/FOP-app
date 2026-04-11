@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, BarChart, Users, Download, Eye, ArrowLeft, Home, X } from 'lucide-react';
+import { Search, Filter, BarChart, Users, Download, Eye, ArrowLeft, Home, X, Trash2 } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
-import { apiGet } from '../../services/api';
+import ConfirmModal from '../../components/Ui/ConfirmModal';
+import Toast from '../../components/Ui/Toast';
+import Pagination from '../../components/Ui/Pagination';
+import { apiGet, apiDelete } from '../../services/api';
 
 export default function SocietiesManagement() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,6 +15,10 @@ export default function SocietiesManagement() {
   const [societies, setSocieties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, society: null });
+  const [toast, setToast] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchSocieties = async () => {
@@ -28,6 +35,30 @@ export default function SocietiesManagement() {
     
     fetchSocieties();
   }, []);
+
+  const handleDeleteClick = (society) => {
+    setConfirmModal({ isOpen: true, society });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const society = confirmModal.society;
+    if (!society) return;
+
+    try {
+      await apiDelete(`/societies/${society.society_id}`);
+      setSocieties(societies.filter(s => s.society_id !== society.society_id));
+      setToast({
+        message: `"${society.name}" has been deleted successfully`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error deleting society:', error);
+      setToast({
+        message: 'Failed to delete society. Please try again.',
+        type: 'error'
+      });
+    }
+  };
 
   const filteredSocieties = societies.filter(society => {
     const matchesSearch = 
@@ -48,6 +79,17 @@ export default function SocietiesManagement() {
 
   const universities = [...new Set(societies.map(s => s.university).filter(Boolean))];
   const totalMembers = societies.reduce((sum, s) => sum + (s.member_count || 0), 0);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredSocieties.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSocieties = filteredSocieties.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterUniversity, filterMemberCount]);
 
   const handleExportCSV = async () => {
     if (societies.length === 0) {
@@ -322,7 +364,7 @@ export default function SocietiesManagement() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filteredSocieties.map(society => (
+            {currentSocieties.map(society => (
               <tr key={society.society_id} className="hover:bg-secondary/50 transition-colors">
                 <td className="px-6 py-4 text-foreground">{society.name}</td>
                 <td className="px-6 py-4 text-muted-foreground">{society.university || 'N/A'}</td>
@@ -342,6 +384,13 @@ export default function SocietiesManagement() {
                     >
                       <Eye className="w-4 h-4 text-foreground" />
                     </button>
+                    <button
+                      onClick={() => handleDeleteClick(society)}
+                      className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                      title="Delete society"
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -349,7 +398,38 @@ export default function SocietiesManagement() {
           </tbody>
         </table>
         </div>
+        
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredSocieties.length}
+        />
       </div>
+
+      {/* Confirm Delete Modal */}
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          onClose={() => setConfirmModal({ isOpen: false, society: null })}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Society"
+          message={confirmModal.society ? `Are you sure you want to delete "${confirmModal.society.name}"? This action cannot be undone.` : ''}
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmVariant="danger"
+        />
+  
+        {/* Toast Notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            duration={3000}
+            onClose={() => setToast(null)}
+          />
+        )}
         </div>
       </div>
     </div>
