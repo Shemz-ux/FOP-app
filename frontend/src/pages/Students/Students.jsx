@@ -209,7 +209,7 @@ export default function Students() {
             <div className="text-muted-foreground">Jobs Secured</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">5000+</div>
+            <div className="text-4xl lg:text-5xl mb-2 text-primary">10000+</div>
             <div className="text-muted-foreground">Members</div>
           </div>
           <div className="text-center">

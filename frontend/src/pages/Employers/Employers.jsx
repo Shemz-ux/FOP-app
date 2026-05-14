@@ -106,6 +106,7 @@ export default function Employers() {
             items={[
               <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-8 w-auto object-contain" />,
               <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-12 w-auto object-contain" />,
+              <img key="accenture" src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Accenture_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" alt="Accenture" className="h-12 w-auto object-contain" />,
               <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
               <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
               <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />,
@@ -178,9 +179,9 @@ export default function Employers() {
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
           {[
-            ["8,000+", "Students"],
+            ["10,000+", "Members"],
             ["35+", "University Partners"],
-            ["20,000+", "Social Media Reach"],
+            ["25,000+", "Network Reach"],
           ].map(([value, label]) => (
             <div key={label} className="text-center">
               <div className="text-4xl lg:text-5xl mb-2 text-primary">
@@ -318,7 +319,7 @@ export default function Employers() {
               </div>
               <h3 className="text-foreground mb-3">Social Media Marketing</h3>
               <p className="text-muted-foreground text-sm">
-                Leverage emerging platforms and creators to reach talent where they are at.
+                Develop engaging employer content to demystify, cut through the noise and connect with your target audience.
               </p>
             </div>
 
@@ -326,9 +327,9 @@ export default function Employers() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Shield className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Attraction Strategy</h3>
+              <h3 className="text-foreground mb-3">Influencer Recruitment Marketing</h3>
               <p className="text-muted-foreground text-sm">
-                Supporting your talent pipeline management to enable long term attraction and recruitment success.
+                Leverage trusted creators and our social media expertise to reach your desired talent at scale on emerging channels and platforms.
               </p>
             </div>
 
