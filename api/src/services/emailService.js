@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { getWelcomeEmailTemplate } from '../config/emailTemplates.js';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -299,7 +300,29 @@ This message was sent via the FO Perspectives contact form.
   }
 };
 
+export const sendWelcomeEmail = async (email, firstName) => {
+  const emailTemplate = getWelcomeEmailTemplate(firstName);
+  
+  const mailOptions = {
+    from: `"FO Perspectives" <${process.env.SMTP_USER}>`,
+    to: email,
+    subject: `Welcome to FO Perspectives, ${firstName}! 🎉`,
+    html: emailTemplate.html,
+    text: emailTemplate.text,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Welcome email sent successfully to:', email);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error sending welcome email:', error);
+    throw new Error('Failed to send welcome email');
+  }
+};
+
 export default {
   sendPasswordResetEmail,
   sendContactEmail,
+  sendWelcomeEmail,
 };

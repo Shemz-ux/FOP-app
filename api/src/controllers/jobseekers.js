@@ -2,6 +2,7 @@ import { createJobseeker, fetchJobseekerById, fetchJobseekers, removeJobseeker, 
 import { incrementSocietyMemberCount } from "../models/societies.js";
 import bcrypt from "bcrypt";
 import { Parser } from 'json2csv';
+import { sendWelcomeEmail } from "../services/emailService.js";
 
 export const postJobseeker = async (req, res, next) => {
     try {
@@ -67,6 +68,13 @@ export const postJobseeker = async (req, res, next) => {
             email: jobseeker.email,
             education_level: jobseeker.education_level
         });
+        
+        // Send welcome email (non-blocking - don't fail registration if email fails)
+        try {
+            await sendWelcomeEmail(jobseeker.email, jobseeker.first_name);
+        } catch (emailError) {
+            // Email service already logs the error, registration continues successfully
+        }
         
         // Increment society member count if society is selected
         if (jobseeker.society && jobseeker.society !== 'None') {
