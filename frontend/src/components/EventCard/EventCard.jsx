@@ -25,7 +25,7 @@ export default function EventCard({
     eventId || title.toLowerCase().replace(/\s+/g, "-");
 
   const cardContent = (
-    <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col shadow-sm overflow-hidden">
+    <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col shadow-sm overflow-hidden h-full">
       {/* Event Image or Default Background — 1:1 ratio */}
       <div className="relative w-full aspect-[4/3] overflow-hidden">
         {image ? (
@@ -62,7 +62,7 @@ export default function EventCard({
       <div className="p-6 flex-1 flex flex-col">
         {/* Header */}
         <div className="mb-4 text-left">
-          <h3 className="text-lg font-medium text-foreground mb-2 text-left line-clamp-2 overflow-hidden">
+          <h3 className="text-lg font-medium text-foreground mb-2 text-left line-clamp-1 overflow-hidden text-ellipsis">
             {title}
           </h3>
           <p className="text-muted-foreground text-sm text-left truncate overflow-hidden">
@@ -154,7 +154,7 @@ export default function EventCard({
   );
 
   return (
-    <Link to={`/events/${generatedEventId}`} className="block">
+    <Link to={`/events/${generatedEventId}`} className="block h-full">
       {cardContent}
     </Link>
   );
