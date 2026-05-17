@@ -230,12 +230,12 @@ export default function EventDetails() {
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 text-left">
             <div className="flex items-start gap-4">
-              <CompanyLogo 
+              {/* <CompanyLogo 
                 logo={event.organiser_logo} 
                 color={event.organiser_color || '#0D7DFF'} 
                 companyName={event.organiser}
                  size="large"
-              />
+              /> */}
               <div>
                 <h1 className="text-3xl mb-2 text-foreground font-semibold">
                   {event.title}
@@ -321,7 +321,20 @@ export default function EventDetails() {
           <div className="lg:col-span-1">
             <div className="space-y-6">
               {/* Register Card */}
-              <div className="bg-card border border-border rounded-2xl p-6">
+              <div className="bg-card border border-border rounded-2xl overflow-hidden">
+                {/* Event image at top of card */}
+                {event.event_image ? (
+                  <div className="w-full aspect-[4/3] overflow-hidden">
+                    <img
+                      src={event.event_image}
+                      alt={event.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full aspect-[4/3] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155]" />
+                )}
+                <div className="p-6">
                 {isRegistering ? (
                   <div className="text-center py-4">
                     <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto mb-3">
@@ -350,6 +363,7 @@ export default function EventDetails() {
                     )}
                   </>
                 )}
+                </div>
               </div>
 
               {/* Event Details */}
@@ -378,7 +392,7 @@ export default function EventDetails() {
 
               {/* Organiser Info */}
               <div className="bg-card border border-border rounded-2xl p-6">
-                <h3 className="text-foreground mb-4">Organised By</h3>
+                {/* <h3 className="text-foreground mb-4">Organised By</h3> */}
                 <div className="flex items-center gap-3 mb-4">
                   <CompanyLogo 
                     logo={event.organiser_logo} 

@@ -25,9 +25,9 @@ export default function EventCard({
     eventId || title.toLowerCase().replace(/\s+/g, "-");
 
   const cardContent = (
-    <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col min-h-[300px] max-h-[600px] shadow-sm overflow-hidden">
-      {/* Event Image or Default Background */}
-      <div className="relative h-48">
+    <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col shadow-sm overflow-hidden">
+      {/* Event Image or Default Background — 1:1 ratio */}
+      <div className="relative w-full aspect-[4/3] overflow-hidden">
         {image ? (
           <img
             src={image}

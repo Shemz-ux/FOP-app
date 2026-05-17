@@ -116,11 +116,11 @@ export default function ImageUploadCard({
       </div>
 
       <div className="p-3 sm:p-4 bg-secondary/30 rounded-xl border border-border">
-        <div className="relative mb-3 w-full overflow-hidden bg-white rounded-lg border border-border group/preview">
+        <div className="relative mb-3 w-full overflow-hidden rounded-lg border border-border group/preview aspect-[4/3]">
           <img
             src={imagePreview}
             alt="Preview"
-            className="w-full h-40 sm:h-48 object-contain p-4 cursor-zoom-in"
+            className="w-full h-full object-cover cursor-zoom-in"
             onClick={() => setIsZoomed(true)}
           />
           <button
@@ -141,7 +141,7 @@ export default function ImageUploadCard({
           </button>
         </div>
         <div className="text-xs text-muted-foreground mb-3 text-left">
-          Tip: Square logos (1:1 ratio) work best. Transparent backgrounds recommended.
+          Tip: 4:3 ratio images work best. Portrait images may be cropped on the sides.
         </div>
 
         {imageFile && (
@@ -199,11 +199,11 @@ export default function ImageUploadCard({
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="bg-white rounded-xl border border-border p-4 flex items-center justify-center">
+            <div className="rounded-xl border border-border overflow-hidden aspect-[4/3]">
               <img
                 src={imagePreview}
-                alt="Logo preview"
-                className="max-w-full max-h-[400px] object-contain"
+                alt="Image preview"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
