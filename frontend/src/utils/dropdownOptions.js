@@ -132,14 +132,14 @@ export const EVENT_INDUSTRIES = [
 ];
 
 export const EVENT_TYPES = [
-  { value: 'Career Fair', label: 'Career Fair', variant: 'blue' },
   { value: 'Career Masterclass', label: 'Career Masterclass', variant: 'teal' },
-  { value: 'Conference', label: 'Conference', variant: 'red' },
-  { value: 'Insight Event', label: 'Insight Event', variant: 'pink' },
+  { value: 'Career Fair', label: 'Career Fair', variant: 'blue' },
+  { value: 'Insight Days', label: 'Insight Days', variant: 'orange' },
+  { value: 'Industry Insight Session', label: 'Industry Insight Session', variant: 'red' },
   { value: 'Networking', label: 'Networking', variant: 'purple' },
-  { value: 'Panel Discussion', label: 'Panel Discussion', variant: 'orange' },
-  { value: 'Webinar', label: 'Webinar', variant: 'cyan' },
-  { value: 'Workshop', label: 'Workshop', variant: 'green' },
+  // { value: 'Panel Discussion', label: 'Panel Discussion', variant: 'green' },
+  // { value: 'Webinar', label: 'Webinar', variant: 'cyan' },
+  // { value: 'Workshop', label: 'Workshop', variant: 'pink' },
   { value: 'Other', label: 'Other', variant: 'gray' }
 ];
 
