@@ -107,9 +107,9 @@ export default function HomePage() {
           </video>
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80" />
           {/* Logo Overlay */}
-          <div className="absolute top-0 left-0">
+          {/* <div className="absolute top-0 left-0">
             <FopLogo2 />
-          </div>
+          </div> */}
         </div>
 
         <div className="container mx-auto px-6 py-60 lg:py-70 relative z-10">
