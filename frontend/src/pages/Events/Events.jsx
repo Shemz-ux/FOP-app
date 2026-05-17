@@ -16,11 +16,12 @@ import { eventsService } from "../../services";
 import { useAuth } from "../../contexts/AuthContext";
 import * as eventActionsService from "../../services/Events/eventActions";
 
+let _eventsCache = null;
 
 export default function Events() {
   const { user, isLoggedIn, isAdmin } = useAuth();
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!_eventsCache);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
   const [sortBy, setSortBy] = useState("recent");
@@ -28,11 +29,11 @@ export default function Events() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [totalEvents, setTotalEvents] = useState(0);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(_eventsCache?.categories || []);
   const [view, setView] = useState("grid");
   const [eventFilter, setEventFilter] = useState("all");
 
-  const [allEventsForCalendar, setAllEventsForCalendar] = useState([]);
+  const [allEventsForCalendar, setAllEventsForCalendar] = useState(_eventsCache?.events || []);
 
   const handleViewChange = (newView) => {
     if (newView === "calendar") setEventFilter("all");
@@ -80,11 +81,6 @@ export default function Events() {
     setCurrentPage(1);
   };
 
-  // Fetch events from API
-  useEffect(() => {
-    fetchEvents();
-  }, [currentPage, sortBy, searchQuery, selectedCategory]);
-
   // Load saved events on mount
   useEffect(() => {
     const loadSavedEvents = async () => {
@@ -101,49 +97,20 @@ export default function Events() {
     loadSavedEvents();
   }, [isLoggedIn, user]);
 
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const filters = {
-        page: currentPage,
-        limit: eventsPerPage,
-        is_active: true
-      };
-
-      if (searchQuery) filters.search = searchQuery;
-      if (selectedCategory) filters.event_type = selectedCategory;
-
-      const sortMap = {
-        'recent': { sort_by: 'created_at', sort_order: 'desc' },
-        'relevant': { sort_by: 'attendee_count', sort_order: 'desc' },
-        'date': { sort_by: 'event_date', sort_order: 'asc' }
-      };
-      
-      const sortConfig = sortMap[sortBy] || sortMap['date'];
-      filters.sort_by = sortConfig.sort_by;
-      filters.sort_order = sortConfig.sort_order;
-
-      const response = await eventsService.getEventsAdvanced(filters);
-      setEvents(response.events || []);
-      setTotalEvents(response.pagination?.totalCount || 0);
-    } catch (err) {
-      console.error('Error fetching events:', err);
-      setError(err.message || 'Failed to load events');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch categories/event types + all events for calendar & counts
+  // Fetch all events once for calendar, filtering and counts
   useEffect(() => {
     const loadAllEventsData = async () => {
+      if (_eventsCache) {
+        setAllEventsForCalendar(_eventsCache.events);
+        setCategories(_eventsCache.categories);
+        setLoading(false);
+        return;
+      }
       try {
-        const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true, sort_by: 'event_date', sort_order: 'asc' });
+        setLoading(true);
+        setError(null);
+        const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true, sort: 'date_asc' });
         const allEvents = response.events || [];
-
-        setAllEventsForCalendar(allEvents);
 
         const eventTypes = {};
         allEvents.forEach(event => {
@@ -152,9 +119,15 @@ export default function Events() {
           }
         });
         const cats = Object.entries(eventTypes).map(([label, count]) => ({ label, count }));
+
+        _eventsCache = { events: allEvents, categories: cats };
+        setAllEventsForCalendar(allEvents);
         setCategories(cats);
       } catch (err) {
         console.error('Error loading all events data:', err);
+        setError(err.message || 'Failed to load events');
+      } finally {
+        setLoading(false);
       }
     };
     loadAllEventsData();
@@ -164,8 +137,6 @@ export default function Events() {
     setSearchQuery(filters.query);
     setCurrentPage(1);
   };
-
-  const totalPages = Math.ceil(totalEvents / eventsPerPage);
 
   const now = new Date();
 
@@ -179,12 +150,34 @@ export default function Events() {
     [allEventsForCalendar]
   );
 
-  // Filter paginated events for the grid view
+  // All client-side: filter → sort → paginate from allEventsForCalendar
+  const sortedSource = useMemo(() => {
+    let source = allEventsForCalendar;
+    if (searchQuery) source = source.filter((e) => e.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (selectedCategory) source = source.filter((e) => e.event_type === selectedCategory);
+
+    if (eventFilter === 'upcoming') {
+      return source
+        .filter((e) => new Date(e.event_date) >= now)
+        .sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+    }
+    if (eventFilter === 'past') {
+      return source
+        .filter((e) => new Date(e.event_date) < now)
+        .sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+    }
+    // all: upcoming first, then past
+    const upcoming = source.filter((e) => new Date(e.event_date) >= now).sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+    const past = source.filter((e) => new Date(e.event_date) < now).sort((a, b) => new Date(b.event_date) - new Date(a.event_date));
+    return [...upcoming, ...past];
+  }, [allEventsForCalendar, searchQuery, selectedCategory, eventFilter]);
+
+  const totalPages = Math.ceil(sortedSource.length / eventsPerPage);
+
   const filteredEvents = useMemo(() => {
-    if (eventFilter === "upcoming") return events.filter((e) => new Date(e.event_date) >= now);
-    if (eventFilter === "past") return events.filter((e) => new Date(e.event_date) < now);
-    return events;
-  }, [events, eventFilter]);
+    const start = (currentPage - 1) * eventsPerPage;
+    return sortedSource.slice(start, start + eventsPerPage);
+  }, [sortedSource, currentPage]);
 
   // All events (not paginated) filtered by time – fed into the calendar
   const calendarEvents = useMemo(() => {
@@ -234,7 +227,7 @@ export default function Events() {
               Career Events
             </h2>
             <p className="text-muted-foreground text-sm text-left">
-              {totalEvents} events available
+              {sortedSource.length} events available
               {selectedCategory && (
                 <span className="ml-2 text-primary">
                   (filtered by {selectedCategory})
