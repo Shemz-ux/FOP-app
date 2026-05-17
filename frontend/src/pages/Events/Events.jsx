@@ -1,6 +1,6 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { Calendar } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import EventCard from "../../components/EventCard/EventCard";
@@ -9,6 +9,9 @@ import BrowseCategory from "../../components/BrowseEvents/BrowseEvents";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
+import ViewToggle from "../../components/EventsCalendar/ViewToggle";
+import EventFilterSlider from "../../components/EventsCalendar/EventFilterSlider";
+import CalendarView from "../../components/EventsCalendar/Calendar";
 import { eventsService } from "../../services";
 import { useAuth } from "../../contexts/AuthContext";
 import * as eventActionsService from "../../services/Events/eventActions";
@@ -26,6 +29,15 @@ export default function Events() {
   const [searchQuery, setSearchQuery] = useState('');
   const [totalEvents, setTotalEvents] = useState(0);
   const [categories, setCategories] = useState([]);
+  const [view, setView] = useState("grid");
+  const [eventFilter, setEventFilter] = useState("all");
+
+  const [allEventsForCalendar, setAllEventsForCalendar] = useState([]);
+
+  const handleViewChange = (newView) => {
+    if (newView === "calendar") setEventFilter("all");
+    setView(newView);
+  };
   const eventsPerPage = 6;
 
   const toggleFavorite = async (eventId) => {
@@ -124,13 +136,17 @@ export default function Events() {
     }
   };
 
-  // Fetch categories/event types
+  // Fetch categories/event types + all events for calendar & counts
   useEffect(() => {
-    const loadCategories = async () => {
+    const loadAllEventsData = async () => {
       try {
-        const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true });
+        const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true, sort_by: 'event_date', sort_order: 'asc' });
+        const allEvents = response.events || [];
+
+        setAllEventsForCalendar(allEvents);
+
         const eventTypes = {};
-        response.events?.forEach(event => {
+        allEvents.forEach(event => {
           if (event.event_type) {
             eventTypes[event.event_type] = (eventTypes[event.event_type] || 0) + 1;
           }
@@ -138,10 +154,10 @@ export default function Events() {
         const cats = Object.entries(eventTypes).map(([label, count]) => ({ label, count }));
         setCategories(cats);
       } catch (err) {
-        console.error('Error loading categories:', err);
+        console.error('Error loading all events data:', err);
       }
     };
-    loadCategories();
+    loadAllEventsData();
   }, []);
 
   const handleSearch = (filters) => {
@@ -150,6 +166,32 @@ export default function Events() {
   };
 
   const totalPages = Math.ceil(totalEvents / eventsPerPage);
+
+  const now = new Date();
+
+  // Derive upcoming / past counts from all fetched events
+  const upcomingCount = useMemo(
+    () => allEventsForCalendar.filter((e) => new Date(e.event_date) >= now).length,
+    [allEventsForCalendar]
+  );
+  const pastCount = useMemo(
+    () => allEventsForCalendar.filter((e) => new Date(e.event_date) < now).length,
+    [allEventsForCalendar]
+  );
+
+  // Filter paginated events for the grid view
+  const filteredEvents = useMemo(() => {
+    if (eventFilter === "upcoming") return events.filter((e) => new Date(e.event_date) >= now);
+    if (eventFilter === "past") return events.filter((e) => new Date(e.event_date) < now);
+    return events;
+  }, [events, eventFilter]);
+
+  // All events (not paginated) filtered by time – fed into the calendar
+  const calendarEvents = useMemo(() => {
+    if (eventFilter === "upcoming") return allEventsForCalendar.filter((e) => new Date(e.event_date) >= now);
+    if (eventFilter === "past") return allEventsForCalendar.filter((e) => new Date(e.event_date) < now);
+    return allEventsForCalendar;
+  }, [allEventsForCalendar, eventFilter]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -163,15 +205,15 @@ export default function Events() {
         <div className="container mx-auto px-6 py-16">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
-              <Calendar className="w-10 h-10 text-primary" />
+              <CalendarIcon className="w-10 h-10 text-primary" />
               <h1 className="text-4xl text-foreground">
                 Career Events
               </h1>
             </div>
 
             <p className="text-xl text-muted-foreground mb-8 text-left">
-              Discover networking events, workshops, and career fairs to
-              accelerate your professional growth
+                Discover insight days, career masterclasses
+                and network with employers to accelerate your career growth
             </p>
 
             <SearchBar 
@@ -189,7 +231,7 @@ export default function Events() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-foreground mb-1 text-left">
-              Upcoming Events
+              Career Events
             </h2>
             <p className="text-muted-foreground text-sm text-left">
               {totalEvents} events available
@@ -201,63 +243,95 @@ export default function Events() {
             </p>
           </div>
 
-          <SortDropdown
-            value={sortBy}
-            onValueChange={setSortBy}
-          />
+          {view === "grid" && (
+            <SortDropdown
+              value={sortBy}
+              onValueChange={setSortBy}
+            />
+          )}
         </div>
 
-        {/* Categories */}
-        <BrowseCategory 
-          title="Browse by Category"
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryClick={handleCategoryClick}
-        />
-
-        {/* Events Grid */}
-        {loading ? (
-          <div className="py-20">
-            <LoadingSpinner size="lg" />
-          </div>
-        ) : error ? (
-          <ErrorMessage message={error} onRetry={fetchEvents} />
-        ) : events.length === 0 ? (
-          <EmptyState 
-            icon={Calendar}
-            title="No events found"
-            message="Try adjusting your search or category filter to find more events"
-          />
-        ) : (
+        {view === "calendar" ? (
+          /* ── Calendar View ── */
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {events.map((event) => (
-                <EventCard
-                  key={event.event_id}
-                  eventId={event.event_id}
-                  title={event.title}
-                  organiser={event.organiser}
-                  date={new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  time={`${event.event_start_time?.slice(0, 5)} - ${event.event_end_time?.slice(0, 5)}`}
-                  location={event.location}
-                  attendees={event.attendee_count || 0}
-                  description={event.description}
-                  tags={event.tags || []}
-                  image={event.event_image}
-                  isFavorite={favorites.has(event.event_id)}
-                  onFavoriteClick={() => toggleFavorite(event.event_id)}
-                  createdAt={event.created_at}
-                  showSaveButton={!isAdmin()}
-                />
-              ))}
+            {/* View toggle only — no filter slider in calendar view */}
+            <div className="flex items-center gap-4 mb-8">
+              <ViewToggle view={view} onViewChange={handleViewChange} />
+            </div>
+            {loading ? (
+              <div className="py-20"><LoadingSpinner size="lg" /></div>
+            ) : error ? (
+              <ErrorMessage message={error} onRetry={fetchEvents} />
+            ) : (
+              <CalendarView events={calendarEvents} />
+            )}
+          </>
+        ) : (
+          /* ── Grid View ── */
+          <>
+            {/* Categories */}
+            <BrowseCategory
+              title="Categories"
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onCategoryClick={handleCategoryClick}
+            />
+
+            {/* View toggle + filter slider */}
+            <div className="flex flex-wrap items-center gap-4 mb-8">
+              <ViewToggle view={view} onViewChange={handleViewChange} />
+              <EventFilterSlider
+                activeFilter={eventFilter}
+                onFilterChange={(f) => { setEventFilter(f); setCurrentPage(1); }}
+                upcomingCount={upcomingCount}
+                pastCount={pastCount}
+              />
             </div>
 
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {loading ? (
+              <div className="py-20">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : error ? (
+              <ErrorMessage message={error} onRetry={fetchEvents} />
+            ) : filteredEvents.length === 0 ? (
+              <EmptyState 
+                icon={CalendarIcon}
+                title="No events found"
+                message="Try adjusting your search or filter to find more events"
+              />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                  {filteredEvents.map((event) => (
+                    <EventCard
+                      key={event.event_id}
+                      eventId={event.event_id}
+                      title={event.title}
+                      organiser={event.organiser}
+                      date={new Date(event.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      time={`${event.event_start_time?.slice(0, 5)} - ${event.event_end_time?.slice(0, 5)}`}
+                      location={event.location}
+                      attendees={event.attendee_count || 0}
+                      description={event.description}
+                      tags={event.tags || []}
+                      image={event.event_image}
+                      isFavorite={favorites.has(event.event_id)}
+                      onFavoriteClick={() => toggleFavorite(event.event_id)}
+                      createdAt={event.created_at}
+                      showSaveButton={!isAdmin()}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </>
+            )}
           </>
         )}
       </div>
