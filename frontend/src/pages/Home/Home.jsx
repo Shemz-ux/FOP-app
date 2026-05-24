@@ -39,7 +39,6 @@ const companyLogos = [
   { src: "https://upload.wikimedia.org/wikipedia/fr/thumb/2/23/PublicisGroupe_logo.svg/1280px-PublicisGroupe_logo.svg.png", alt: "Publicis group" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/1280px-MasterCard_Logo.svg.png", alt: "Mastercard" },
   { src: "https://cdn.worldvectorlogo.com/logos/jp-morgan.svg", alt: "JP Morgan" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/State-street-logo-final.svg/3840px-State-street-logo-final.svg.png", alt: "State Street" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Lazard_wordmark.svg/1280px-Lazard_wordmark.svg.png", alt: "Lazard" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png", alt: "BlackRock" },
