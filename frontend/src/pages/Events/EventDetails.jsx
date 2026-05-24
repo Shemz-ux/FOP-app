@@ -324,7 +324,7 @@ export default function EventDetails() {
               <div className="bg-card border border-border rounded-2xl overflow-hidden">
                 {/* Event image at top of card */}
                 {event.event_image ? (
-                  <div className="w-full aspect-[4/3] overflow-hidden">
+                  <div className="w-full aspect-square overflow-hidden">
                     <img
                       src={event.event_image}
                       alt={event.title}
@@ -332,7 +332,7 @@ export default function EventDetails() {
                     />
                   </div>
                 ) : (
-                  <div className="w-full aspect-[4/3] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155]" />
+                  <div className="w-full aspect-square bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155]" />
                 )}
                 <div className="p-6">
                 {isRegistering ? (

@@ -116,7 +116,7 @@ export default function ImageUploadCard({
       </div>
 
       <div className="p-3 sm:p-4 bg-secondary/30 rounded-xl border border-border">
-        <div className="relative mb-3 w-full overflow-hidden rounded-lg border border-border group/preview aspect-[4/3]">
+        <div className={`relative mb-3 w-full overflow-hidden rounded-lg border border-border group/preview ${aspectRatio === 1 ? 'aspect-square' : 'aspect-[4/3]'}`}>
           <img
             src={imagePreview}
             alt="Preview"
@@ -141,7 +141,7 @@ export default function ImageUploadCard({
           </button>
         </div>
         <div className="text-xs text-muted-foreground mb-3 text-left">
-          Tip: 4:3 ratio images work best. Portrait images may be cropped on the sides.
+          Tip: {aspectRatio === 1 ? '1:1 square' : '4:3'} ratio images work best. Portrait images may be cropped on the sides.
         </div>
 
         {imageFile && (
@@ -181,8 +181,8 @@ export default function ImageUploadCard({
 
       {/* Zoom Modal */}
       {isZoomed && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
           onClick={() => setIsZoomed(false)}
         >
           <div 
@@ -190,7 +190,7 @@ export default function ImageUploadCard({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-foreground">Logo Preview</h3>
+              <h3 className="text-sm font-medium text-foreground">Image Preview</h3>
               <button
                 onClick={() => setIsZoomed(false)}
                 className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
@@ -199,7 +199,7 @@ export default function ImageUploadCard({
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="rounded-xl border border-border overflow-hidden aspect-[4/3]">
+            <div className={`rounded-xl border border-border overflow-hidden ${aspectRatio === 1 ? 'aspect-square' : 'aspect-[4/3]'}`}>
               <img
                 src={imagePreview}
                 alt="Image preview"

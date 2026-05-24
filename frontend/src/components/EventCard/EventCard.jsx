@@ -26,8 +26,8 @@ export default function EventCard({
 
   const cardContent = (
     <div className="bg-card rounded-2xl border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col shadow-sm overflow-hidden h-full">
-      {/* Event Image or Default Background — 1:1 ratio */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden">
+      {/* Event Image or Default Background — 1:1 square ratio */}
+      <div className="relative w-full aspect-square overflow-hidden">
         {image ? (
           <img
             src={image}

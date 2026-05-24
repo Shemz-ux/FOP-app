@@ -167,7 +167,7 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
     const canvas = canvasRef.current;
     let cropWidth, cropHeight;
     if (aspectRatio === 1) {
-      // Square crop for logos
+      // Square crop for logos/images
       const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
       cropWidth = cropSize;
       cropHeight = cropSize;
@@ -179,19 +179,30 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
     const cropX = (canvas.width - cropWidth) / 2;
     const cropY = (canvas.height - cropHeight) / 2;
 
-    // Create a new canvas for the cropped image
-    const croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width = cropWidth;
-    croppedCanvas.height = cropHeight;
-    const ctx = croppedCanvas.getContext('2d');
-
     // Calculate the source coordinates on the original image
     const sourceX = (cropX - position.x) / scale;
     const sourceY = (cropY - position.y) / scale;
     const sourceWidth = cropWidth / scale;
     const sourceHeight = cropHeight / scale;
 
-    // Draw the cropped portion directly from the original image
+    // Determine output resolution based on aspect ratio
+    // For 1:1 square images (event images): output at 1200px for high quality
+    // For other ratios: output at 800px
+    const OUTPUT_SIZE = aspectRatio === 1 ? 1200 : 800;
+    const outputWidth = aspectRatio === 1 ? OUTPUT_SIZE : OUTPUT_SIZE;
+    const outputHeight = aspectRatio === 1 ? OUTPUT_SIZE : (OUTPUT_SIZE * (9 / 16));
+
+    // Create a new canvas for the cropped image at high resolution
+    const croppedCanvas = document.createElement('canvas');
+    croppedCanvas.width = outputWidth;
+    croppedCanvas.height = outputHeight;
+    const ctx = croppedCanvas.getContext('2d');
+
+    // Enable high quality image scaling
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    // Draw the cropped portion directly from the original image at high resolution
     ctx.drawImage(
       imageObj,
       sourceX,
@@ -200,14 +211,18 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
       sourceHeight,
       0,
       0,
-      cropWidth,
-      cropHeight
+      outputWidth,
+      outputHeight
     );
 
-    // Convert to blob
+    // Convert to blob with high quality
+    // Use JPEG for smaller file size on photos, PNG for logos (transparency)
+    const mimeType = aspectRatio === 1 ? 'image/jpeg' : 'image/png';
+    const quality = aspectRatio === 1 ? 0.92 : 0.95;
+
     croppedCanvas.toBlob((blob) => {
       onCropComplete(blob);
-    }, 'image/png', 0.95);
+    }, mimeType, quality);
   };
 
   // Touch event handlers for mobile
