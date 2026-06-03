@@ -781,10 +781,12 @@ export default function SignUp() {
                     placeholder="Select year"
                     required
                     options={[
+                      { value: "foundation", label: "Foundation Year" },
                       { value: "1st", label: "1st Year" },
                       { value: "2nd", label: "2nd Year" },
                       { value: "3rd", label: "3rd Year" },
                       { value: "4th", label: "4th Year" },
+                      { value: "5th", label: "5th Year" },
                       { value: "final", label: "Final Year" },
                       { value: "graduated", label: "Graduated" }
                     ]}
@@ -801,13 +803,18 @@ export default function SignUp() {
                     placeholder="Select degree type"
                     required
                     options={[
-                      { value: "bsc", label: "BSc" },
                       { value: "ba", label: "BA" },
+                      { value: "bsc", label: "BSc" },
                       { value: "beng", label: "BEng" },
-                      { value: "msc", label: "MSc" },
+                      { value: "llb", label: "LLB" },
+                      { value: "bmed", label: "BMed" },
                       { value: "ma", label: "MA" },
+                      { value: "msc", label: "MSc" },
                       { value: "meng", label: "MEng" },
-                      { value: "phd", label: "PhD" }
+                      { value: "mba", label: "MBA" },
+                      { value: "llm", label: "LLM" },
+                      { value: "phd", label: "PhD" },
+                      { value: "other", label: "Other" }
                     ]}
                   />
                 </div>

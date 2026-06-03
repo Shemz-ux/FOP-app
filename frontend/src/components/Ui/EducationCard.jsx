@@ -311,17 +311,13 @@ export default function EducationCard({ educationData, onSave }) {
                     onChange={(e) => setLocalEducationData({ ...localEducationData, uni_year: e.target.value })}
                     placeholder="Select year"
                     options={[
-                      { value: "foundation", label: "Foundation" },
+                      { value: "foundation", label: "Foundation Year" },
                       { value: "1st", label: "1st Year" },
                       { value: "2nd", label: "2nd Year" },
                       { value: "3rd", label: "3rd Year" },
                       { value: "4th", label: "4th Year" },
                       { value: "5th", label: "5th Year" },
-                      { value: "masters", label: "Masters" },
-                      { value: "phd_year_1", label: "PhD Year 1" },
-                      { value: "phd_year_2", label: "PhD Year 2" },
-                      { value: "phd_year_3", label: "PhD Year 3" },
-                      { value: "phd_year_4", label: "PhD Year 4" },
+                      { value: "final", label: "Final Year" },
                       { value: "graduated", label: "Graduated" }
                     ]}
                     className="text-sm"

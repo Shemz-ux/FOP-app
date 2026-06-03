@@ -42,7 +42,7 @@ const setupDatabase = async () => {
         await db.query(`
             DO $$ BEGIN
                 CREATE TYPE uni_year_enum AS ENUM (
-                    'foundation', '1st', '2nd', '3rd', '4th', '5th', 'masters', 'phd_year_1', 'phd_year_2', 'phd_year_3', 'phd_year_4', 'graduated'
+                    'foundation', '1st', '2nd', '3rd', '4th', '5th', 'final', 'masters', 'phd_year_1', 'phd_year_2', 'phd_year_3', 'phd_year_4', 'graduated'
                 );
             EXCEPTION
                 WHEN duplicate_object THEN null;
