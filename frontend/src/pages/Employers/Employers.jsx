@@ -19,19 +19,19 @@ import ScrollReveal from '../../components/ScrollReveal';
 
 
 const painPoints = [
-  "High Application volume but low quality",
-  "Lack of consistency in attracting high quality talent",
-  "Application fatigue from mass applications",
+  "High volume of low quality applicants",
+  "Lack of Gender Diversity in talent pipeline",
+  "Struggling to build employer brand with diverse talent pools",
   "Low Conversion from talent attraction initiatives",
-  "Misaligned attraction outcomes",
+  "Reneges on offers",
 ];
 
 const outcomes = [
-  "Fewer low-quality applications",
-  "Stronger signals of motivation and fit",
-  "A wider and diverse pool of early career talent",
-  "Higher conversion from application to hire",
-  "A talent pipeline that improves over time",
+  "Better quality signal and fit from talent",
+  "Higher engagement with female talent pools",
+  "Build your online presence with diverse talent groups",
+  "Better quality signal and fit from talent",
+  "Better retention and development for incoming graduates",
 ];
 
 export default function Employers() {
