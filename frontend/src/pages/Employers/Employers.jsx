@@ -19,19 +19,19 @@ import ScrollReveal from '../../components/ScrollReveal';
 
 
 const painPoints = [
-  "High Application volume but low quality",
-  "Lack of consistency in attracting high quality talent",
-  "Application fatigue from mass applications",
+  "High volume of low quality applicants",
+  "Lack of Gender Diversity in talent pipeline",
+  "Struggling to build employer brand with diverse talent pools",
   "Low Conversion from talent attraction initiatives",
-  "Misaligned attraction outcomes",
+  "Reneges on offers",
 ];
 
 const outcomes = [
-  "Fewer low-quality applications",
-  "Stronger signals of motivation and fit",
-  "A wider and diverse pool of early career talent",
-  "Higher conversion from application to hire",
-  "A talent pipeline that improves over time",
+  "Better quality signal and fit from talent",
+  "Higher engagement with female talent pools",
+  "Build your online presence with diverse talent groups",
+  "Better quality signal and fit from talent",
+  "Better retention and development for incoming graduates",
 ];
 
 export default function Employers() {
@@ -90,8 +90,6 @@ export default function Employers() {
         </div>
       </section>
 
-          {/* TODO: Add company logos */}
-
       {/* Company Logos Marquee */}
       <section className="bg-secondary/20 border-y pb-15">
         <ScrollReveal>
@@ -110,11 +108,7 @@ export default function Employers() {
               <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
               <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
               <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />,
-              <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
-              <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-8 w-auto object-contain" />,
-              <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
-              <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
-              <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />
+              <img key="AON" src="https://companieslogo.com/img/orig/AON-ef8e330a.png?t=1720244490" alt="AON" className="h-20 w-auto object-contain" />
             ]}
           />
         </ScrollReveal>
@@ -466,21 +460,6 @@ export default function Employers() {
                 Schedule Meeting
               </Link>
             </div>
-
-            {/* <div className="flex items-center justify-center gap-6 mt-8 flex-wrap">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <HeadphonesIcon className="w-5 h-5 text-primary" />
-                <span>24/7 Support</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span>No Setup Fees</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span>Cancel Anytime</span>
-              </div>
-            </div> */}
           </div>
           </div>
         </ScrollReveal>
