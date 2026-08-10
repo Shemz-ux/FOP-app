@@ -110,11 +110,7 @@ export default function Employers() {
               <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
               <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
               <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />,
-              <img key="barclays" src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto object-contain" />,
-              <img key="beazley" src="https://upload.wikimedia.org/wikipedia/commons/8/87/Beazley-logo-wiki.png" alt="Beazley" className="h-8 w-auto object-contain" />,
-              <img key="capita" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Capita_logo_%282019%29.svg/3840px-Capita_logo_%282019%29.svg.png" alt="Capita" className="h-12 w-auto object-contain" />,
-              <img key="Q5" src="https://www.consultancy-me.com/profile/media/q5-logo-2025-11-24-013200816.png" alt="Q5" className="h-12 w-auto object-contain" />,
-              <img key="Argentil" src="https://i0.wp.com/aiassetx.com/wp-content/uploads/2017/11/Argentil-Asset-Management3.png?fit=431%2C141&ssl=1" alt="Argentil" className="h-12 w-auto object-contain" />
+              <img key="AON" src="https://companieslogo.com/img/orig/AON-ef8e330a.png?t=1720244490" alt="AON" className="h-20 w-auto object-contain" />
             ]}
           />
         </ScrollReveal>
