@@ -90,8 +90,6 @@ export default function Employers() {
         </div>
       </section>
 
-          {/* TODO: Add company logos */}
-
       {/* Company Logos Marquee */}
       <section className="bg-secondary/20 border-y pb-15">
         <ScrollReveal>
@@ -462,21 +460,6 @@ export default function Employers() {
                 Schedule Meeting
               </Link>
             </div>
-
-            {/* <div className="flex items-center justify-center gap-6 mt-8 flex-wrap">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <HeadphonesIcon className="w-5 h-5 text-primary" />
-                <span>24/7 Support</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span>No Setup Fees</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span>Cancel Anytime</span>
-              </div>
-            </div> */}
           </div>
           </div>
         </ScrollReveal>
