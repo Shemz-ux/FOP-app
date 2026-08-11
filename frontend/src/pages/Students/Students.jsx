@@ -157,7 +157,7 @@ export default function Students() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Users className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Networking Events</h3>
+              <h3 className="text-foreground mb-3">Insight Days + Employer Events</h3>
               <p className="text-muted-foreground text-sm">
                 Connect with industry professionals and leading employers across a variety of industries.
               </p>
