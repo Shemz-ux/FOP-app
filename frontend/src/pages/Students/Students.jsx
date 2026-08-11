@@ -177,7 +177,7 @@ export default function Students() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <MessageSquare className="w-7 h-7" />
               </div>
-              <h3 className="text-foreground mb-3">Masterclass Events</h3>
+              <h3 className="text-foreground mb-3">Career Masterclass Events</h3>
               <p className="text-muted-foreground text-sm">
                 Exclusive industry insight events and career development masterclasses to bring you insights and guidance into different careers.
               </p>
