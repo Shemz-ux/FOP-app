@@ -169,7 +169,7 @@ export default function Students() {
               </div>
               <h3 className="text-foreground mb-3">Employability Programs</h3>
               <p className="text-muted-foreground text-sm">
-                Structured job search and training programs to help you land your.
+                Career accelerator programs + structured training and support to upskill you and help you succeed in your job search.
               </p>
             </div>
 
