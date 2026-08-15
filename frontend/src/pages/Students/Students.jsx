@@ -16,6 +16,25 @@ import {
   FileText
 } from 'lucide-react';
 import ScrollReveal from '../../components/ScrollReveal';
+import { 
+  hero_section, 
+  company_section, 
+  benefits_section, 
+  stats_section, 
+  student_success_section, 
+  journey_section, 
+  cta_section 
+} from './student.copy';
+
+const iconMap = {
+  GraduationCap,
+  Briefcase,
+  BookOpen,
+  Users,
+  Target,
+  MessageSquare,
+  Rocket
+};
 
 export default function Students() {
   return (
@@ -34,52 +53,46 @@ export default function Students() {
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm mb-6">
                 <GraduationCap className="w-4 h-4" />
-                <span>Join thousands of students already on board!</span>
+                <span>{hero_section.badge.text}</span>
               </div>
 
               <h1 className="text-4xl lg:text-6xl mb-6 text-foreground">
-                Launch Your Career <br/>
-                <span className="text-primary">Unlock Opportunities</span>
+                {hero_section.title} <br/>
+                <span className="text-primary">{hero_section.titleHighlight}</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                Find internships, entry level and graduate  opportunities at leading employers. Get tailored career support and build your network.
+                {hero_section.description}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/login"
+                  to={hero_section.cta.primary.link}
                   className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-center"
                 >
-                  Join Now!
+                  {hero_section.cta.primary.text}
                 </Link>
                 <Link
-                  to="/jobs"
+                  to={hero_section.cta.secondary.link}
                   className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center"
                 >
-                  Browse Opportunities
+                  {hero_section.cta.secondary.text}
                 </Link>
               </div>
 
               <div className="flex items-center gap-6 mt-8 flex-wrap">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>Career resources</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>Job opportunities</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  <span>Exclusive events</span>
-                </div>
+                {hero_section.features.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                    <span>{feature}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             <div className="relative">
               <div className="rounded-3xl overflow-hidden border border-border shadow-2xl">
                 <img
-                  src="https://res.cloudinary.com/dpfkhymbc/image/upload/v1769335321/WhatsApp_Image_2026-01-24_at_18.11.58_ioy1c3.jpg"
+                  src={hero_section.image}
                   alt="Student studying"
                   className="w-full h-auto"
                 />
@@ -94,26 +107,26 @@ export default function Students() {
         </div>
       </section>
 
-      {/* Campus Partnerships */}
+      {/* Partnerships */}
       <section className="border-border">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-medium mb-4 text-foreground">We’ve helped young talent land jobs at</h2>
+              <h2 className="text-medium mb-4 text-foreground">{company_section.title}</h2>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 md:gap-16 items-center justify-items-center max-w-6xl mx-auto">
-            <img src="https://cdn.worldvectorlogo.com/logos/jp-morgan.svg" alt="JP Morgan" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg" alt="Barclays" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png" alt="Aon" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png" alt="Mastercard" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png" alt="Capgemini" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png" alt="EY" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/KPMG.svg/3840px-KPMG.svg.png" alt="KPMG" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://companieslogo.com/img/orig/GS_BIG.D-64570a1b.png?t=1740321324" alt="Goldman Sachs" className="h-12 w-auto transition-opacity hover:opacity-70" />
-            <img src="https://cdn.worldvectorlogo.com/logos/citibank-5.svg" alt="Citibank" className="h-12 w-auto transition-opacity hover:opacity-70" />
+            {company_section.companies.map((logo, index) => (
+              <img 
+                key={index} 
+                src={logo} 
+                alt={`Company ${index + 1}`} 
+                className="h-12 w-auto transition-opacity hover:opacity-70" 
+                style={index === 3 ? {height: '68px'} : undefined}
+              />
+            ))}
             </div>
           </ScrollReveal>
         </div>
@@ -124,73 +137,28 @@ export default function Students() {
         <div className="container mx-auto px-6 py-20 text-left">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">Everything Students Need to Succeed</h2>
+              <h2 className="text-3xl mb-4 text-foreground">{benefits_section.title}</h2>
             <p className="text-muted-foreground">
-              From your first internship to your graduate role, we're with you every step of the way
+              {benefits_section.description}
             </p>
             </div>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Briefcase className="w-7 h-7" />
-              </div>
-              <h3 className="text-foreground mb-3">Job Opportunities</h3>
-              <p className="text-muted-foreground text-sm">
-                Access a plethora of internships, graduate schemes and entry level opportunities from leading employers.
-              </p>
-            </div>
-
-            <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <BookOpen className="w-7 h-7" />
-              </div>
-              <h3 className="text-foreground mb-3">Career Resources</h3>
-              <p className="text-muted-foreground text-sm">
-                Free resume templates, interview guides, and career development resources created by industry experts.
-              </p>
-            </div>
-
-            <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Users className="w-7 h-7" />
-              </div>
-              <h3 className="text-foreground mb-3">Networking Events</h3>
-              <p className="text-muted-foreground text-sm">
-                Connect with industry professionals and leading employers across a variety of industries.
-              </p>
-            </div>
-
-            <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Target className="w-7 h-7" />
-              </div>
-              <h3 className="text-foreground mb-3">Employability Programs</h3>
-              <p className="text-muted-foreground text-sm">
-                Structured job search and training programs to help you land your.
-              </p>
-            </div>
-
-            <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <MessageSquare className="w-7 h-7" />
-              </div>
-              <h3 className="text-foreground mb-3">Masterclass Events</h3>
-              <p className="text-muted-foreground text-sm">
-                Exclusive industry insight events and career development masterclasses to bring you insights and guidance into different careers.
-              </p>
-            </div>
-
-            <div className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Rocket className="w-7 h-7" />
-              </div>
-              <h3 className="text-foreground mb-3">1-1 Career Coaching</h3>
-              <p className="text-muted-foreground text-sm">
-                Gain 1-1 career coaching support to turbocharge your career development.
-              </p>
-            </div>
+            {benefits_section.benefits.map((benefit, index) => {
+              const Icon = iconMap[benefit.icon];
+              return (
+                <div key={index} className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all">
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-foreground mb-3">{benefit.title}</h3>
+                  <p className="text-muted-foreground text-sm">
+                    {benefit.description}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -199,22 +167,12 @@ export default function Students() {
       <section className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">10,000+</div>
-            <div className="text-muted-foreground">Students Supported</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">250+</div>
-            <div className="text-muted-foreground">Jobs Secured</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">10000+</div>
-            <div className="text-muted-foreground">Members</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl lg:text-5xl mb-2 text-primary">50+</div>
-            <div className="text-muted-foreground">Campus Partners</div>
-          </div>
+          {stats_section.stats.map((stat, index) => (
+            <div key={index} className="text-center">
+              <div className="text-4xl lg:text-5xl mb-2 text-primary">{stat.value}</div>
+              <div className="text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
           </div>
         </ScrollReveal>
       </section>
@@ -224,79 +182,37 @@ export default function Students() {
         <div className="container mx-auto px-6 py-20">
         <ScrollReveal>
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl mb-4 text-foreground">Student Success Stories</h2>
+            <h2 className="text-3xl mb-4 text-foreground">{student_success_section.title}</h2>
           <p className="text-muted-foreground">
-            Hear from students who launched their careers with CareerHub
+            {student_success_section.description}
           </p>
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-            <div className="flex items-center gap-1 mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg key={star} className="w-5 h-5 fill-primary" viewBox="0 0 20 20">
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-              "FO Perspectives were incredibly helpful during my job search. Not only did they provide personalised career guidance. As a result of you resoruces and help, I received interviews from companies such as Goldman Sachs."
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
-                NY
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-left">
+          {student_success_section.testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+              <div className="flex items-center gap-1 mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg key={star} className="w-5 h-5 fill-primary" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                  </svg>
+                ))}
               </div>
-              <div>
-                <div className="text-foreground text-sm">Nazifa Yasmin</div>
-                <div className="text-muted-foreground text-xs">Financial Crimes Associate - State Street</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-            <div className="flex items-center gap-1 mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg key={star} className="w-5 h-5 fill-primary" viewBox="0 0 20 20">
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-              "I got an insight day through you guys and it really helped boost my confidence and motivate me to apply. I didn't think my application would be competitive, but your support and resources was so valuable!"
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
-                FR
-              </div>
-              <div>
-                <div className="text-foreground text-sm">Faye-peace Richardson</div>
-                <div className="text-muted-foreground text-xs">Cyber Security Intern - Barclays</div>
+              <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
+                "{testimonial.quote}"
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
+                  {testimonial.initials}
+                </div>
+                <div>
+                  <div className="text-foreground text-sm">{testimonial.name}</div>
+                  <div className="text-muted-foreground text-xs">{testimonial.role}</div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-            <div className="flex items-center gap-1 mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <svg key={star} className="w-5 h-5 fill-primary" viewBox="0 0 20 20">
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-              "FO Perspectives support was amazing, I had no clue about CVs, interviews, the advice and help were immaculate and even got me into the JP Morgan degree apprenticeship which changed my life! Thank you so much again!"
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
-                CS
-              </div>
-              <div>
-                <div className="text-foreground text-sm">Chantelle Sesay</div>
-                <div className="text-muted-foreground text-xs">Degree Apprentice - JP Morgan </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
         </div>
       </section>
@@ -306,67 +222,30 @@ export default function Students() {
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">Your Journey Starts Here</h2>
+              <h2 className="text-3xl mb-4 text-foreground">{journey_section.title}</h2>
             <p className="text-muted-foreground">
-              Four simple steps to kickstart your professional career
+              {journey_section.description}
             </p>
             </div>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto text-left">
-            <div className="relative">
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  1
+            {journey_section.steps.map((step, index) => (
+              <div key={index} className={index < 3 ? "relative" : ""}>
+                <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                  <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
+                    {step.number}
+                  </div>
+                  <h3 className="text-foreground mb-2">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm">
+                    {step.description}
+                  </p>
                 </div>
-                <h3 className="text-foreground mb-2">Sign Up Free</h3>
-                <p className="text-muted-foreground text-sm">
-                  Create your profile and get set up!
-                </p>
+                {index < 3 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
+                )}
               </div>
-              {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  2
-                </div>
-                <h3 className="text-foreground mb-2">Build Profile</h3>
-                <p className="text-muted-foreground text-sm">
-                  Upload your CV, highlight your skills and career interests.
-                </p>
-              </div>
-              {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  3
-                </div>
-                <h3 className="text-foreground mb-2">Explore & Apply</h3>
-                <p className="text-muted-foreground text-sm">
-                  Browse events, career resources and job opportunities..
-                </p>
-              </div>
-              {/* Connector line - hidden on mobile/tablet */}
-              <div className="hidden lg:block absolute top-1/2 -right-6 w-6 h-0.5 bg-border"></div>
-            </div>
-
-            <div>
-              <div className="bg-card p-6 rounded-2xl border border-border h-full hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-4 text-xl">
-                  4
-                </div>
-                <h3 className="text-foreground mb-2">Launch Your Career</h3>
-                <p className="text-muted-foreground text-sm">
-                  Apply for roles and kickstart your career.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -385,24 +264,24 @@ export default function Students() {
 
           <div className="max-w-2xl mx-auto relative z-10">
             <h2 className="text-3xl lg:text-4xl mb-4 text-foreground">
-              Ready to Launch Your Career?
+              {cta_section.title}
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              Join thousands of students finding internships and graduate opportunities. Start building your future today!
+              {cta_section.description}
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
-                to="https://foperspectives.as.me/schedule/06ca66a0"
+                to={cta_section.cta.primary.link}
                 className="px-8 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-center"
               >
-                Get Career Coaching
+                {cta_section.cta.primary.text}
               </Link>
               <Link
-                to="/jobs"
+                to={cta_section.cta.secondary.link}
                 className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-center"
               >
-                Explore Opportunities
+                {cta_section.cta.secondary.text}
               </Link>
             </div>
 
