@@ -232,7 +232,7 @@ export default function Students() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-left">
           <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
             <div className="flex items-center gap-1 mb-4">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -273,6 +273,28 @@ export default function Students() {
               <div>
                 <div className="text-foreground text-sm">Faye-peace Richardson</div>
                 <div className="text-muted-foreground text-xs">Cyber Security Intern - Barclays</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+            <div className="flex items-center gap-1 mb-4">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <svg key={star} className="w-5 h-5 fill-primary" viewBox="0 0 20 20">
+                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                </svg>
+              ))}
+            </div>
+            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
+              "I wanted to thank you again for the support across interview prep and CV Preparation. I was pretty much rejected from every single job, and I’ve been applying since August, so your support in landing this offer was life changing!"
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">
+                SY
+              </div>
+              <div>
+                <div className="text-foreground text-sm">Sumaiya Yasmin</div>
+                <div className="text-muted-foreground text-xs">PR & Comms Graduate - FGS Global </div>
               </div>
             </div>
           </div>
