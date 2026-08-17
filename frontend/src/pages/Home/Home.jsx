@@ -19,6 +19,7 @@ import {
   Megaphone,
 } from "lucide-react";
 import landingVideo from "../../assets/landing_video.MP4";
+import { companyLogos, testimonials } from './home.copy';
 
 const FopLogo2 = () => (
   <img 
@@ -27,56 +28,6 @@ const FopLogo2 = () => (
     className="h-36 w-58 object-contain opacity-50"
   />
 )
-
-// TODO: Add bbc and jll, fgf global, publicist group (media), Morgan stanley
-
-const companyLogos = [
-  { src: "https://upload.wikimedia.org/wikipedia/commons/6/65/BBC_logo_%281997-2021%29.svg", alt: "BBC" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/JLL_logo.svg/1280px-JLL_logo.svg.png", alt: "JLL" },
-  { src: "https://cdn.worldvectorlogo.com/logos/barclays-logo-1.svg", alt: "Barclays" },
-  { src: "https://companieslogo.com/img/orig/MS_BIG.D-4755c76c.png?t=1720244493", alt: "Morgan Stanley" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Aon_Corporation_logo.svg/1280px-Aon_Corporation_logo.svg.png", alt: "Aon" },
-  { src: "https://upload.wikimedia.org/wikipedia/fr/thumb/2/23/PublicisGroupe_logo.svg/1280px-PublicisGroupe_logo.svg.png", alt: "Publicis group" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/MasterCard_Logo.svg/1280px-MasterCard_Logo.svg.png", alt: "Mastercard" },
-  { src: "https://cdn.worldvectorlogo.com/logos/jp-morgan.svg", alt: "JP Morgan" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Capgemini_201x_logo.svg/1280px-Capgemini_201x_logo.svg.png", alt: "Capgemini" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Lazard_wordmark.svg/1280px-Lazard_wordmark.svg.png", alt: "Lazard" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/BlackRock_wordmark.svg/1280px-BlackRock_wordmark.svg.png", alt: "BlackRock" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/1280px-Accenture.svg.png", alt: "accenture" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/EY_Parthenon_logo.svg/3840px-EY_Parthenon_logo.svg.png", alt: "EY" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/0/05/PricewaterhouseCoopers_Logo.svg", alt: "PWC"}
-];
-
-const testimonials = [
-  {
-    name: "Deniz Ayrancioglu",
-    role: "Management Consultant Analyst",
-    company: "Accenture",
-    testimonial: "Thank you for your support and guidance throughout the process. Your CV support was crucial to helping me secure multiple interviews and your interview prep and resources helped me land offers!",
-    avatar: "DA"
-  },
-  {
-    name: "Fola Omotoso",
-    role: "Investment Banking Analyst",
-    company: "Lazard & BlackRock",
-    testimonial: "Thank you for your support during the application process. Your CV support for investment banking and advice on interview prep was really insightful. I would recommend you to any student looking to break into Investment Banking!",
-    avatar: "FO"
-  },
-  {
-    name: "Sumaiya Yasmin",
-    role: "PR & Comms Graduate",
-    company: "FGS Global",
-    testimonial: "I wanted to thank you again for the support across interview prep and CV Preparation. I was pretty much rejected from every single job, and I’ve been applying since August, so your support in landing this offer was really life-changing!",
-    avatar: "ER"
-  },
-  {
-    name: "Lisa Ntamoah",
-    role: "Customer success",
-    company: "Bloomberg",
-    testimonial: "FO Perspectives supported me through their free resources. These helped resources helped me build a high quality CV and perfrom company research. Having resources consolidated on one platform helped me feel less overwhelmed as well.",
-    avatar: "LN"
-  }
-];
 
 export default function HomePage() {
   const [favorites, setFavorites] = useState(new Set());
@@ -242,6 +193,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* How we Help Employers section */}
       <section className="py-24 border-y bg-secondary/20 relative overflow-hidden">
         {/* Abstract Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
@@ -335,28 +287,40 @@ export default function HomePage() {
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {testimonials.map((testimonial, index) => (
               <ScrollReveal key={index} delay={index * 0.1}>
               <div
                 key={index}
-                className={`p-6 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative overflow-hidden ${
+                className={`p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative overflow-hidden min-h-[600px] ${
                   index % 2 === 0 ? 'bg-card' : 'bg-secondary/20'
                 }`}
               >
-                <Quote className="absolute top-4 right-4 w-8 h-8 text-primary/10" />
+                <Quote className="absolute top-6 right-6 w-8 h-8 text-primary/10" />
                 
                 <div className="flex flex-col items-center text-center mb-4">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-semibold text-lg mb-3 ring-2 ring-primary/20">
-                    {testimonial.avatar}
+                  {/* Profile Image */}
+                  <div className="w-48 h-48 rounded-full mb-6 overflow-hidden ring-2 ring-primary/20 bg-gradient-to-br from-primary/20 to-primary/5">
+                    {testimonial.image ? (
+                      <img 
+                        src={testimonial.image} 
+                        alt={testimonial.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-semibold text-4xl">
+                        {testimonial.avatar}
+                      </div>
+                    )}
                   </div>
-                  <h3 className="text-foreground font-semibold mb-1">
+                  
+                  <h3 className="text-foreground font-semibold text-lg mb-1">
                     {testimonial.name}
                   </h3>
-                  <p className="text-xs text-muted-foreground mb-1">
+                  <p className="text-sm text-muted-foreground mb-1">
                     {testimonial.role}
                   </p>
-                  <p className="text-xs text-primary font-semibold">
+                  <p className="text-sm text-primary font-semibold">
                     {testimonial.company}
                   </p>
                 </div>
