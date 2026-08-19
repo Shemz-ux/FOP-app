@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import JobCard from "../../components/JobCard/JobCard";
 import Marquee from "../../components/Marquee/Marquee";
 import ScrollReveal from "../../components/ScrollReveal";
-import Timeline from "./components/Timeline";
 import {
   ArrowRight,
   Briefcase,
@@ -338,25 +337,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="bg-secondary/20 py-20 border-y border-border overflow-hidden">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <div className="text-center max-w-2xl mx-auto mb-10">
-              <h2 className="text-3xl mb-4 text-foreground">Our Journey</h2>
-              <p className="text-muted-foreground">
-                Key milestones that shaped our growth and impact
-              </p>
-            </div>
-          </ScrollReveal>
-        </div>
-        
-        {/* Timeline without horizontal padding to maximize width */}
-        <Timeline />
-      </section>
-
       {/* Path to success*/}
-      <section className="bg-background">
+      <section className="bg-secondary/20">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-12">
@@ -408,7 +390,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-background">
+      <section className="bg-secondary/20">
         <div className="container mx-auto px-6 py-20">
           <ScrollReveal>
             <div className="bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl p-12 lg:p-16 border border-primary/20 text-center">

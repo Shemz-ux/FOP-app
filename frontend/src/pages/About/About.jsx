@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ScrollReveal from "../../components/ScrollReveal";
+import Timeline from "./Timeline";
 
 export default function About() {
   return (
@@ -159,47 +160,21 @@ export default function About() {
         </ScrollReveal>
       </section>
 
-      {/* Timeline */}
-      <section className="bg-secondary/20 border-y border-border">
-        <div className="container mx-auto px-6 py-20">
+      {/* Our Journey Timeline */}
+      <section className="bg-secondary/20 py-20 border-y border-border overflow-hidden">
+        <div className="container mx-auto px-6">
           <ScrollReveal>
-            <div className="max-w-3xl mx-auto text-center mb-12">
+            <div className="text-center max-w-2xl mx-auto mb-10">
               <h2 className="text-3xl mb-4 text-foreground">Our Journey</h2>
-            <p className="text-muted-foreground">
-              Key milestones that shaped our growth and impact
-            </p>
+              <p className="text-muted-foreground">
+                Key milestones that shaped our growth and impact
+              </p>
             </div>
           </ScrollReveal>
-
-          <div className="max-w-4xl mx-auto text-left">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <ScrollReveal delay={0.1}>
-                <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2022</div>
-                  <p className="text-muted-foreground">Founded our platform</p>
-                </div>
-              </ScrollReveal>
-              <ScrollReveal delay={0.2}>
-                <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2023</div>
-                  <p className="text-muted-foreground">Secured our first employer partner and started our university partnership network</p>
-                </div>
-              </ScrollReveal>
-              <ScrollReveal delay={0.3}>
-                <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2024</div>
-                  <p className="text-muted-foreground">3,000 young people upskilled and 150+ success stories</p>
-                </div>
-              </ScrollReveal>
-              <ScrollReveal delay={0.4}>
-                <div className="bg-card p-8 rounded-2xl border border-border hover:border-primary/30 hover:shadow-md transition-all duration-500 group">
-                  <div className="text-2xl mb-2 text-primary font-semibold group-hover:scale-105 transition-transform duration-500">2025</div>
-                  <p className="text-muted-foreground">Partnered with global employers and supported 5,000+ students</p>
-                </div>
-              </ScrollReveal>
-            </div>
-          </div>
         </div>
+        
+        {/* Timeline without horizontal padding to maximize width */}
+        <Timeline />
       </section>
 
       {/* CTA */}
