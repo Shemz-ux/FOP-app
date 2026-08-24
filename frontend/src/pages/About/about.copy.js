@@ -1,7 +1,7 @@
 export const meet_founder_section = {
     name: "Agbolade Oduniyi",
     role: "Founder of FO Perspectives",
-image: null,
+image: "https://res.cloudinary.com/dpfkhymbc/image/upload/v1787265969/WhatsApp_Image_2026-08-20_at_22.43.14_dh1lth.jpg",
     slides: [
         { 
             text: "I’m Agbolade Oduniyi, the Founder of FO Perspectives. Before launching the business, I built my career through experience across asset management, insurance and strategy consulting. Along the way, I saw first-hand that talent was everywhere, but access to opportunities, professional networks and high-quality career support was not."

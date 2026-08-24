@@ -206,7 +206,7 @@ export default function About() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             {/* Left side - Image placeholder */}
             <ScrollReveal>
-              <div className="bg-card/50 rounded-[40px] h-full min-h-[400px] lg:min-h-[660px] border border-border overflow-hidden">
+              <div className="bg-card/50 rounded-[40px] h-full min-h-[400px] lg:min-h-[600px] border border-border overflow-hidden">
                 <img
                   src={meet_founder_section.image}
                   alt={meet_founder_section.name}
@@ -217,7 +217,7 @@ export default function About() {
 
             {/* Right side - Testimonial card with carousel */}
             <ScrollReveal delay={0.2}>
-              <div className="bg-card border border-border rounded-[40px] p-8 lg:p-12 h-full min-h-[400px] lg:min-h-[660px] flex flex-col justify-between">
+              <div className="bg-card border border-border rounded-[40px] p-8 lg:p-12 h-full min-h-[400px] lg:min-h-[600px] flex flex-col justify-between">
                 {/* Quote icon */}
                 <div className="mb-8">
                   <Quote className="w-16 h-16 text-primary/30" strokeWidth={1.5} />
