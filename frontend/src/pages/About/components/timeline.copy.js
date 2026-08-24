@@ -2,7 +2,7 @@ export const timelineData = {
   title: "Our Journey",
   milestones: [
     {
-      year: "2023",
+      year: "2022",
       description: "FO Perspectives was founded with a mission to make career support and opportunities more accessible to young people from all backgrounds. We began building our community and supporting universities to prepare students for application season"
     },
     {
