@@ -292,7 +292,7 @@ export default function HomePage() {
               <ScrollReveal key={index} delay={index * 0.1}>
               <div
                 key={index}
-                className={`p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative overflow-hidden min-h-[600px] ${
+                className={`p-8 rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative overflow-hidden min-h-[575px] ${
                   index % 2 === 0 ? 'bg-card' : 'bg-secondary/20'
                 }`}
               >
