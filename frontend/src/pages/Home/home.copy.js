@@ -36,7 +36,7 @@ export const testimonials = [
     name: "Teni Oye",
     role: "Supply chain Graduate",
     company: "Mars",
-    testimonial: "Your insights and career support have been incredibly helpful in increasing my confidence during applications. From securing an internship at the largest advertising company in the world to pivoting into supply chain management, their network and guidance has been instrumental to me kickstarting my career!",
+    testimonial: "FO Perspectives support has been incredibly helpful during my applications. From securing an internship at the largest advertising company in the world to pivoting into supply chain management, their network and guidance has been instrumental to me kickstarting my career!",
     avatar: "TO",
     image: "https://res.cloudinary.com/dpfkhymbc/image/upload/v1786979889/Teni_Oye_nsmuzl.jpg"
   },
