@@ -1,9 +1,13 @@
 import dotenv from 'dotenv';
 import db from '../../db/db.js';
 import seed from '../../db/tables.js';
+import TestTransaction from './testTransaction.js';
 
 // Load test environment variables first
 dotenv.config({ path: '.env.test' });
+
+// Global transaction instance for rollback-based testing
+export const testTransaction = new TestTransaction();
 
 // Global test setup
 beforeAll(async () => {
@@ -15,6 +19,7 @@ beforeAll(async () => {
     // Ensure all tables exist in test database
     await seed();
     console.log("✅ Test database tables created!");
+    console.log("🔄 Transaction rollback mode enabled - tests won't alter database permanently");
   } catch (err) {
     console.error("❌ Test database setup failed:", err.message);
     throw err;
