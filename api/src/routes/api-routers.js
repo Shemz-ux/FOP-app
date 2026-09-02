@@ -13,6 +13,7 @@ import resourcesRouter from "./resources.js";
 import mediaUploadRouter from "./mediaUpload.js";
 import cvUploadRouter from "./cvUpload.js";
 import contactRouter from "./contact.js";
+import webinarsRouter from "./webinars.js";
 
 const apiRouter = express.Router();
 // Advanced filtering routes
@@ -33,6 +34,9 @@ apiRouter.use("/admin", adminRouter);
 
 // Resources routes
 apiRouter.use("/resources", resourcesRouter);
+
+// Webinars routes
+apiRouter.use("/webinars", webinarsRouter);
 
 // Media upload routes
 apiRouter.use("/media", mediaUploadRouter);
