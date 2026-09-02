@@ -8,7 +8,7 @@ import {
     trackView,
     getCategories
 } from '../controllers/webinars.js';
-import { adminChecker } from '../middleware/adminChecker.js';
+import adminChecker from '../middleware/adminChecker.js';
 
 const router = express.Router();
 
