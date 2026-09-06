@@ -6,6 +6,7 @@ import db from "../db/db.js";
  * @param {string} filters.search - Search in title and description
  * @param {string} filters.category - Filter by category
  * @param {boolean} filters.is_published - Filter by published status
+ * @param {boolean} filters.is_featured - Filter by featured status
  * @param {string} filters.sort - Sort by: 'newest', 'oldest', 'popular', 'title'
  * @param {number} filters.limit - Limit results (default: 12)
  * @param {number} filters.offset - Offset for pagination (default: 0)
@@ -15,6 +16,7 @@ export const fetchAllWebinars = (filters = {}) => {
         search,
         category,
         is_published,
+        is_featured,
         sort = 'newest',
         limit = 12,
         offset = 0
@@ -45,6 +47,13 @@ export const fetchAllWebinars = (filters = {}) => {
     if (is_published !== undefined) {
         conditions.push(`is_published = $${paramCount}`);
         params.push(is_published);
+        paramCount++;
+    }
+
+    // Featured status filter
+    if (is_featured !== undefined) {
+        conditions.push(`is_featured = $${paramCount}`);
+        params.push(is_featured);
         paramCount++;
     }
 
@@ -99,7 +108,8 @@ export const getWebinarsCount = (filters = {}) => {
     const {
         search,
         category,
-        is_published
+        is_published,
+        is_featured
     } = filters;
 
     const conditions = [];
@@ -124,6 +134,12 @@ export const getWebinarsCount = (filters = {}) => {
     if (is_published !== undefined) {
         conditions.push(`is_published = $${paramCount}`);
         params.push(is_published);
+        paramCount++;
+    }
+
+    if (is_featured !== undefined) {
+        conditions.push(`is_featured = $${paramCount}`);
+        params.push(is_featured);
         paramCount++;
     }
 
@@ -175,21 +191,22 @@ export const createWebinar = (webinar) => {
        like_count,
        metadata_synced_at,
        uploaded_by,
-       is_published
+       is_published,
+       is_featured
     } = webinar;
     
     return db.query(`
         INSERT INTO webinars (
             youtube_video_id, youtube_url, title, description, category,
             thumbnail_url, duration, published_at, view_count, like_count,
-            metadata_synced_at, uploaded_by, is_published
+            metadata_synced_at, uploaded_by, is_published, is_featured
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING *
     `, [
         youtube_video_id, youtube_url, title, description, category,
         thumbnail_url, duration, published_at, view_count, like_count,
-        metadata_synced_at, uploaded_by, is_published
+        metadata_synced_at, uploaded_by, is_published, is_featured
     ]).then(({rows}) => {
         return rows[0];
     });
@@ -201,7 +218,7 @@ export const updateWebinar = (updateWebinar, id) => {
     const validFields = [
         "youtube_video_id", "youtube_url", "title", "description", "category", 
         "thumbnail_url", "duration", "published_at", "view_count", "like_count", 
-        "metadata_synced_at", "is_published", "updated_at"
+        "metadata_synced_at", "is_published", "is_featured", "updated_at"
     ];
     let index = 1;
 

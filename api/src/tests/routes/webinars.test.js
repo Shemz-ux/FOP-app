@@ -16,6 +16,7 @@ describe('Webinars API Endpoints', () => {
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['u%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['v%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['d%']);
+            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['f%']);
         } catch (error) {
             console.log('Pre-cleanup error:', error.message);
         }
@@ -38,6 +39,7 @@ describe('Webinars API Endpoints', () => {
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['u%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['v%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['d%']);
+            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['f%']);
         } catch (error) {
             console.log('Cleanup error:', error.message);
         }
@@ -88,6 +90,37 @@ describe('Webinars API Endpoints', () => {
                 .expect(200);
 
             expect(response.body.pagination.limit).toBe(50);
+        });
+
+        test('should filter by is_featured=true', async () => {
+            const response = await request(app)
+                .get('/api/webinars?is_featured=true')
+                .expect(200);
+
+            expect(response.body).toHaveProperty('webinars');
+            expect(response.body.filters.is_featured).toBe(true);
+            expect(Array.isArray(response.body.webinars)).toBe(true);
+        });
+
+        test('should filter by is_featured=false', async () => {
+            const response = await request(app)
+                .get('/api/webinars?is_featured=false')
+                .expect(200);
+
+            expect(response.body).toHaveProperty('webinars');
+            expect(response.body.filters.is_featured).toBe(false);
+            expect(Array.isArray(response.body.webinars)).toBe(true);
+        });
+
+        test('should combine is_featured with other filters', async () => {
+            const response = await request(app)
+                .get('/api/webinars?is_featured=true&is_published=true&category=Tech')
+                .expect(200);
+
+            expect(response.body).toHaveProperty('webinars');
+            expect(response.body.filters.is_featured).toBe(true);
+            expect(response.body.filters.is_published).toBe(true);
+            expect(response.body.filters.category).toBe('Tech');
         });
     });
 
@@ -159,6 +192,34 @@ describe('Webinars API Endpoints', () => {
                 .expect(400);
 
             expect(response.body).toHaveProperty('msg');
+        });
+
+        test('should create a featured webinar with admin token', async () => {
+            const timestamp = Date.now();
+            const randomSuffix = Math.random().toString(36).substring(2, 5);
+            const featuredWebinar = {
+                youtube_video_id: `f${timestamp}${randomSuffix}`.slice(0, 11),
+                youtube_url: `https://youtube.com/watch?v=feat${timestamp}`,
+                title: 'Featured Webinar',
+                description: 'Featured test description',
+                category: 'Tech',
+                thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
+                duration: 3600,
+                is_published: true,
+                is_featured: true
+            };
+
+            const response = await request(app)
+                .post('/api/webinars')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send(featuredWebinar)
+                .expect(201);
+
+            expect(response.body).toHaveProperty('webinar');
+            expect(response.body.webinar.title).toBe('Featured Webinar');
+            expect(response.body.webinar.is_featured).toBe(true);
+            
+            testWebinarIds.push(response.body.webinar.webinar_id);
         });
     });
 
@@ -243,6 +304,38 @@ describe('Webinars API Endpoints', () => {
                 .patch('/api/webinars/1')
                 .send({ title: 'Updated' })
                 .expect(401);
+        });
+
+        test('should toggle is_featured status with admin token', async () => {
+            // Create a non-featured webinar
+            const timestamp = Date.now();
+            const randomSuffix = Math.random().toString(36).substring(2, 5);
+            const createResponse = await request(app)
+                .post('/api/webinars')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({
+                    youtube_video_id: `tf${timestamp}${randomSuffix}`.slice(0, 11),
+                    youtube_url: `https://youtube.com/watch?v=togfeat${timestamp}`,
+                    title: 'Toggle Featured Test',
+                    category: 'Tech',
+                    thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
+                    duration: 3600,
+                    is_featured: false
+                });
+
+            const webinarId = createResponse.body.webinar.webinar_id;
+            testWebinarIds.push(webinarId);
+
+            expect(createResponse.body.webinar.is_featured).toBe(false);
+
+            // Toggle to featured
+            const updateResponse = await request(app)
+                .patch(`/api/webinars/${webinarId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({ is_featured: true })
+                .expect(200);
+
+            expect(updateResponse.body.webinar.is_featured).toBe(true);
         });
 
         test('should return 404 for non-existent webinar', async () => {

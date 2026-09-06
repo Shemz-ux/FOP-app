@@ -21,10 +21,12 @@ describe('Webinars Model', () => {
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['c%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['m%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['f%']);
+            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['b%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['u%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['n%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['v%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['d%']);
+            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['t%']);
         } catch (error) {
             console.log('Pre-cleanup error:', error.message);
         }
@@ -40,10 +42,12 @@ describe('Webinars Model', () => {
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['c%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['m%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['f%']);
+            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['b%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['u%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['n%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['v%']);
             await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['d%']);
+            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['t%']);
         } catch (error) {
             console.log('Cleanup error:', error.message);
         }
@@ -64,6 +68,28 @@ describe('Webinars Model', () => {
 
         test('should filter by is_published', async () => {
             const webinars = await fetchAllWebinars({ is_published: true });
+            
+            expect(Array.isArray(webinars)).toBe(true);
+        });
+
+        test('should filter by is_featured', async () => {
+            const webinars = await fetchAllWebinars({ is_featured: true });
+            
+            expect(Array.isArray(webinars)).toBe(true);
+        });
+
+        test('should filter by is_featured=false', async () => {
+            const webinars = await fetchAllWebinars({ is_featured: false });
+            
+            expect(Array.isArray(webinars)).toBe(true);
+        });
+
+        test('should combine is_featured with other filters', async () => {
+            const webinars = await fetchAllWebinars({ 
+                is_featured: true, 
+                is_published: true,
+                category: 'Tech'
+            });
             
             expect(Array.isArray(webinars)).toBe(true);
         });
@@ -135,6 +161,28 @@ describe('Webinars Model', () => {
             expect(created).toHaveProperty('webinar_id');
             expect(created.title).toBe('Minimal Webinar');
         });
+
+        test('should create a featured webinar', async () => {
+            const timestamp = Date.now();
+            const randomSuffix = Math.random().toString(36).substring(2, 7);
+            const featuredWebinar = {
+                youtube_video_id: `f${timestamp}${randomSuffix}`.slice(0, 11),
+                youtube_url: `https://youtube.com/watch?v=feat${timestamp}`,
+                title: 'Featured Webinar',
+                category: 'Tech',
+                thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
+                duration: 3600,
+                is_published: true,
+                is_featured: true
+            };
+
+            const created = await createWebinar(featuredWebinar);
+            testWebinarIds.push(created.webinar_id);
+
+            expect(created).toHaveProperty('webinar_id');
+            expect(created.title).toBe('Featured Webinar');
+            expect(created.is_featured).toBe(true);
+        });
     });
 
     describe('fetchWebinarById', () => {
@@ -142,8 +190,8 @@ describe('Webinars Model', () => {
             const timestamp = Date.now();
             const randomSuffix = Math.random().toString(36).substring(2, 7);
             const newWebinar = {
-                youtube_video_id: `f${timestamp}${randomSuffix}`.slice(0, 11),
-                youtube_url: `https://youtube.com/watch?v=fid${timestamp}`,
+                youtube_video_id: `b${timestamp}${randomSuffix}`.slice(0, 11),
+                youtube_url: `https://youtube.com/watch?v=byid${timestamp}`,
                 title: 'Fetch By ID Test',
                 category: 'Tech',
                 thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
@@ -193,6 +241,33 @@ describe('Webinars Model', () => {
 
             expect(updated.title).toBe('Updated Title');
             expect(updated.is_published).toBe(true);
+        });
+
+        test('should toggle is_featured status', async () => {
+            const timestamp = Date.now();
+            const randomSuffix = Math.random().toString(36).substring(2, 7);
+            const newWebinar = {
+                youtube_video_id: `t${timestamp}${randomSuffix}`.slice(0, 11),
+                youtube_url: `https://youtube.com/watch?v=tog${timestamp}`,
+                title: 'Toggle Featured Test',
+                category: 'Tech',
+                thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
+                duration: 3600,
+                is_featured: false
+            };
+
+            const created = await createWebinar(newWebinar);
+            testWebinarIds.push(created.webinar_id);
+
+            expect(created.is_featured).toBe(false);
+
+            // Toggle to featured
+            const updated = await updateWebinar({ is_featured: true }, created.webinar_id);
+            expect(updated.is_featured).toBe(true);
+
+            // Toggle back to non-featured
+            const updatedAgain = await updateWebinar({ is_featured: false }, created.webinar_id);
+            expect(updatedAgain.is_featured).toBe(false);
         });
 
         test('should throw error for non-existent webinar', async () => {

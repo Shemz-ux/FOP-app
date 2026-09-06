@@ -16,6 +16,7 @@ export const getWebinars = async (req, res) => {
             search,
             category,
             is_published,
+            is_featured,
             sort = 'newest',
             page = 1,
             limit = 12
@@ -30,6 +31,7 @@ export const getWebinars = async (req, res) => {
             search,
             category,
             is_published: is_published === 'true' ? true : is_published === 'false' ? false : undefined,
+            is_featured: is_featured === 'true' ? true : is_featured === 'false' ? false : undefined,
             sort,
             limit: parsedLimit,
             offset
@@ -58,6 +60,7 @@ export const getWebinars = async (req, res) => {
                 search,
                 category,
                 is_published: filters.is_published,
+                is_featured: filters.is_featured,
                 sort
             }
         });
@@ -119,6 +122,7 @@ export const getWebinar = async (req, res) => {
 };
 
 // Create new webinar (admin only - add auth middleware to route)
+// Optional fields: description, published_at, view_count, like_count, metadata_synced_at, is_published, is_featured
 export const postWebinar = async (req, res) => {
     try {
         const webinarData = req.body;
@@ -163,6 +167,7 @@ export const postWebinar = async (req, res) => {
 };
 
 // Update webinar (admin only)
+// Updatable fields: title, description, category, thumbnail_url, duration, published_at, view_count, like_count, is_published, is_featured
 export const patchWebinar = async (req, res) => {
     try {
         const { webinar_id } = req.params;

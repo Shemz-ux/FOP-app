@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS webinars (
     metadata_synced_at TIMESTAMP,
     uploaded_by INT REFERENCES admin_users(admin_id),
     is_published BOOLEAN DEFAULT FALSE,
+    is_featured BOOLEAN DEFAULT FALSE,
     
     -- Timestamps
     created_at TIMESTAMP DEFAULT NOW(),
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS webinars (
 -- Create indexes for faster queries
 CREATE INDEX IF NOT EXISTS idx_webinars_category ON webinars(category);
 CREATE INDEX IF NOT EXISTS idx_webinars_is_published ON webinars(is_published);
+CREATE INDEX IF NOT EXISTS idx_webinars_is_featured ON webinars(is_featured);
 CREATE INDEX IF NOT EXISTS idx_webinars_created_at ON webinars(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_webinars_title ON webinars(title);
 CREATE INDEX IF NOT EXISTS idx_webinars_youtube_video_id ON webinars(youtube_video_id);
