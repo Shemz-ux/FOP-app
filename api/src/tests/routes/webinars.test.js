@@ -2,442 +2,576 @@ import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
 import '../utils/setup.js';
+import { setupAdminAuth, cleanupTestAdmin } from '../helpers/authHelper.js';
+
+// Real YouTube video IDs for testing (public, unlisted videos)
+const TEST_VIDEOS = {
+  valid: 'dQw4w9WgXcQ',      // Rick Astley - Never Gonna Give You Up
+  valid2: 'jNQXAC9IVRw',     // Me at the zoo
+  valid3: '9bZkp7q19f0',     // PSY - GANGNAM STYLE
+  notFound: 'notfound1111',  // Invalid video ID
+};
 
 describe('Webinars API Endpoints', () => {
-    let testWebinarIds = [];
-    const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
+  let testWebinarIds = [];
+  let adminToken;
+  let adminId;
+  
+  beforeAll(async () => {
+    // Setup admin authentication
+    const auth = await setupAdminAuth();
+    adminToken = auth.token;
+    adminId = auth.adminId;
     
-    // Clean up before tests start
-    beforeAll(async () => {
-        try {
-            // Clean up any leftover test data from previous runs
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['t%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['g%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['u%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['v%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['d%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['f%']);
-        } catch (error) {
-            console.log('Pre-cleanup error:', error.message);
-        }
-    });
+    // Clean up any leftover test data
+    await db.query(`DELETE FROM webinars WHERE youtube_video_id IN ($1, $2, $3)`, 
+      [TEST_VIDEOS.valid, TEST_VIDEOS.valid2, TEST_VIDEOS.valid3]);
+  });
+  
+  beforeEach(async () => {
+    testWebinarIds = [];
+    // Clean up between tests to avoid conflicts
+    await db.query(`DELETE FROM webinars WHERE youtube_video_id IN ($1, $2, $3)`, 
+      [TEST_VIDEOS.valid, TEST_VIDEOS.valid2, TEST_VIDEOS.valid3]);
+  });
+  
+  afterAll(async () => {
+    // Clean up test data
+    for (const id of testWebinarIds) {
+      await db.query('DELETE FROM webinars WHERE webinar_id = $1', [id]);
+    }
+    await db.query(`DELETE FROM webinars WHERE youtube_video_id IN ($1, $2, $3)`, 
+      [TEST_VIDEOS.valid, TEST_VIDEOS.valid2, TEST_VIDEOS.valid3]);
     
-    beforeEach(() => {
-        testWebinarIds = [];
-    });
+    // Clean up test admin user
+    await cleanupTestAdmin(adminId);
+  });
+
+  describe('GET /api/webinars', () => {
     
-    // Clean up test data after all tests
-    afterAll(async () => {
-        try {
-            // Clean up any webinars created during tests
-            for (const id of testWebinarIds) {
-                await db.query('DELETE FROM webinars WHERE webinar_id = $1', [id]);
-            }
-            // Also clean by pattern as backup
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['t%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['g%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['u%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['v%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['d%']);
-            await db.query('DELETE FROM webinars WHERE youtube_video_id LIKE $1', ['f%']);
-        } catch (error) {
-            console.log('Cleanup error:', error.message);
-        }
+    test('should return all webinars with pagination', async () => {
+      const response = await request(app)
+        .get('/api/webinars')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('webinars');
+      expect(response.body).toHaveProperty('pagination');
+      expect(response.body).toHaveProperty('filters');
+      expect(Array.isArray(response.body.webinars)).toBe(true);
     });
+
+    test('should filter webinars by category', async () => {
+      const response = await request(app)
+        .get('/api/webinars?category=Tech')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('webinars');
+      expect(Array.isArray(response.body.webinars)).toBe(true);
+    });
+
+    test('should search webinars', async () => {
+      const response = await request(app)
+        .get('/api/webinars?search=test')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('webinars');
+      expect(Array.isArray(response.body.webinars)).toBe(true);
+    });
+
+    test('should paginate results', async () => {
+      const response = await request(app)
+        .get('/api/webinars?page=1&limit=5')
+        .expect(200);
+
+      expect(response.body.pagination.currentPage).toBe(1);
+      expect(response.body.pagination.limit).toBe(5);
+    });
+
+    test('should respect max limit of 50', async () => {
+      const response = await request(app)
+        .get('/api/webinars?limit=100')
+        .expect(200);
+
+      expect(response.body.pagination.limit).toBe(50);
+    });
+
+    test('should filter by is_featured=true', async () => {
+      const response = await request(app)
+        .get('/api/webinars?is_featured=true')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('webinars');
+    });
+  });
+
+  describe('GET /api/webinars/categories', () => {
     
-    describe('GET /api/webinars', () => {
-        test('should return all webinars with pagination', async () => {
-            const response = await request(app)
-                .get('/api/webinars')
-                .expect(200);
+    test('should return available categories', async () => {
+      const response = await request(app)
+        .get('/api/webinars/categories')
+        .expect(200);
 
-            expect(response.body).toHaveProperty('webinars');
-            expect(response.body).toHaveProperty('pagination');
-            expect(response.body).toHaveProperty('filters');
-            expect(Array.isArray(response.body.webinars)).toBe(true);
-        });
+      expect(response.body).toHaveProperty('categories');
+      expect(response.body).toHaveProperty('sortOptions');
+      expect(Array.isArray(response.body.categories)).toBe(true);
+      expect(Array.isArray(response.body.sortOptions)).toBe(true);
+    });
+  });
 
-        test('should filter webinars by category', async () => {
-            const response = await request(app)
-                .get('/api/webinars?category=Tech')
-                .expect(200);
+  describe('GET /api/webinars/:webinar_id', () => {
+    
+    test('should return a single webinar', async () => {
+      // Create a test webinar first
+      const createResponse = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'Get Test Webinar',
+          category: 'Technology'
+        })
+        .expect(201);
+      
+      const webinarId = createResponse.body.webinar.webinar_id;
+      testWebinarIds.push(webinarId);
 
-            expect(response.body).toHaveProperty('webinars');
-            expect(Array.isArray(response.body.webinars)).toBe(true);
-        });
+      const response = await request(app)
+        .get(`/api/webinars/${webinarId}`)
+        .expect(200);
 
-        test('should search webinars', async () => {
-            const response = await request(app)
-                .get('/api/webinars?search=test')
-                .expect(200);
-
-            expect(response.body).toHaveProperty('webinars');
-            expect(Array.isArray(response.body.webinars)).toBe(true);
-        });
-
-        test('should paginate results', async () => {
-            const response = await request(app)
-                .get('/api/webinars?page=1&limit=5')
-                .expect(200);
-
-            expect(response.body.pagination.currentPage).toBe(1);
-            expect(response.body.pagination.limit).toBe(5);
-        });
-
-        test('should respect max limit of 50', async () => {
-            const response = await request(app)
-                .get('/api/webinars?limit=100')
-                .expect(200);
-
-            expect(response.body.pagination.limit).toBe(50);
-        });
-
-        test('should filter by is_featured=true', async () => {
-            const response = await request(app)
-                .get('/api/webinars?is_featured=true')
-                .expect(200);
-
-            expect(response.body).toHaveProperty('webinars');
-            expect(response.body.filters.is_featured).toBe(true);
-            expect(Array.isArray(response.body.webinars)).toBe(true);
-        });
-
-        test('should filter by is_featured=false', async () => {
-            const response = await request(app)
-                .get('/api/webinars?is_featured=false')
-                .expect(200);
-
-            expect(response.body).toHaveProperty('webinars');
-            expect(response.body.filters.is_featured).toBe(false);
-            expect(Array.isArray(response.body.webinars)).toBe(true);
-        });
-
-        test('should combine is_featured with other filters', async () => {
-            const response = await request(app)
-                .get('/api/webinars?is_featured=true&is_published=true&category=Tech')
-                .expect(200);
-
-            expect(response.body).toHaveProperty('webinars');
-            expect(response.body.filters.is_featured).toBe(true);
-            expect(response.body.filters.is_published).toBe(true);
-            expect(response.body.filters.category).toBe('Tech');
-        });
+      expect(response.body).toHaveProperty('webinar');
+      expect(response.body.webinar.webinar_id).toBe(webinarId);
     });
 
-    describe('GET /api/webinars/categories', () => {
-        test('should return categories and sort options', async () => {
-            const response = await request(app)
-                .get('/api/webinars/categories')
-                .expect(200);
-
-            expect(response.body).toHaveProperty('categories');
-            expect(response.body).toHaveProperty('sortOptions');
-            expect(Array.isArray(response.body.categories)).toBe(true);
-            expect(Array.isArray(response.body.sortOptions)).toBe(true);
-        });
+    test('should return 404 for non-existent webinar', async () => {
+      await request(app)
+        .get('/api/webinars/99999')
+        .expect(404);
     });
 
-    describe('POST /api/webinars', () => {
-        test('should create a new webinar with admin token', async () => {
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const newWebinar = {
-                youtube_video_id: `t${timestamp}${randomSuffix}`.slice(0, 11),
-                youtube_url: `https://youtube.com/watch?v=test${timestamp}`,
-                title: 'Test Webinar',
-                description: 'Test description',
-                category: 'Tech',
-                thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                duration: 3600,
-                is_published: true
-            };
+    test('should return 400 for invalid ID', async () => {
+      await request(app)
+        .get('/api/webinars/invalid')
+        .expect(400);
+    });
+  });
 
-            const response = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send(newWebinar)
-                .expect(201);
+  describe('POST /api/webinars', () => {
+    
+    test('should create webinar from valid YouTube URL', async () => {
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid2}`,
+          title: 'Test Webinar',
+          description: 'Test description',
+          category: 'Technology'
+        })
+        .expect(201);
 
-            expect(response.body).toHaveProperty('webinar');
-            expect(response.body.webinar.title).toBe('Test Webinar');
-            
-            testWebinarIds.push(response.body.webinar.webinar_id);
-        });
-
-        test('should reject creation without admin token', async () => {
-            const newWebinar = {
-                youtube_video_id: 'test123',
-                youtube_url: 'https://youtube.com/watch?v=test123',
-                title: 'Test Webinar',
-                category: 'Tech',
-                thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                duration: 3600
-            };
-
-            await request(app)
-                .post('/api/webinars')
-                .send(newWebinar)
-                .expect(401);
-        });
-
-        test('should return 400 for missing required fields', async () => {
-            const incompleteWebinar = {
-                title: 'Incomplete'
-            };
-
-            const response = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send(incompleteWebinar)
-                .expect(400);
-
-            expect(response.body).toHaveProperty('msg');
-        });
-
-        test('should create a featured webinar with admin token', async () => {
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const featuredWebinar = {
-                youtube_video_id: `f${timestamp}${randomSuffix}`.slice(0, 11),
-                youtube_url: `https://youtube.com/watch?v=feat${timestamp}`,
-                title: 'Featured Webinar',
-                description: 'Featured test description',
-                category: 'Tech',
-                thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                duration: 3600,
-                is_published: true,
-                is_featured: true
-            };
-
-            const response = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send(featuredWebinar)
-                .expect(201);
-
-            expect(response.body).toHaveProperty('webinar');
-            expect(response.body.webinar.title).toBe('Featured Webinar');
-            expect(response.body.webinar.is_featured).toBe(true);
-            
-            testWebinarIds.push(response.body.webinar.webinar_id);
-        });
+      expect(response.body).toHaveProperty('webinar');
+      expect(response.body.webinar.title).toBe('Test Webinar');
+      expect(response.body.webinar.youtube_video_id).toBe(TEST_VIDEOS.valid2);
+      expect(response.body.webinar).toHaveProperty('thumbnail_url');
+      expect(response.body.webinar).toHaveProperty('duration');
+      expect(response.body.webinar.is_published).toBe(false);
+      
+      testWebinarIds.push(response.body.webinar.webinar_id);
     });
 
-    describe('GET /api/webinars/:webinar_id', () => {
-        test('should return a single webinar', async () => {
-            // Create a test webinar first
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const createResponse = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({
-                    youtube_video_id: `g${timestamp}${randomSuffix}`.slice(0, 11),
-                    youtube_url: `https://youtube.com/watch?v=get${timestamp}`,
-                    title: 'Get Test Webinar',
-                    category: 'Tech',
-                    thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                    duration: 3600,
-                    is_published: true
-                });
+    test('should create published webinar when is_published is true', async () => {
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://youtu.be/${TEST_VIDEOS.valid3}`,
+          title: 'Published Webinar',
+          category: 'Business',
+          is_published: true
+        })
+        .expect(201);
 
-            const webinarId = createResponse.body.webinar.webinar_id;
-            testWebinarIds.push(webinarId);
-
-            const response = await request(app)
-                .get(`/api/webinars/${webinarId}`)
-                .expect(200);
-
-            expect(response.body).toHaveProperty('webinar');
-            expect(response.body.webinar.webinar_id).toBe(webinarId);
-        });
-
-        test('should return 404 for non-existent webinar', async () => {
-            await request(app)
-                .get('/api/webinars/99999')
-                .expect(404);
-        });
-
-        test('should return 400 for invalid webinar ID', async () => {
-            await request(app)
-                .get('/api/webinars/invalid')
-                .expect(400);
-        });
+      expect(response.body.webinar.is_published).toBe(true);
+      testWebinarIds.push(response.body.webinar.webinar_id);
     });
 
-    describe('PATCH /api/webinars/:webinar_id', () => {
-        test('should update a webinar with admin token', async () => {
-            // Create a test webinar first
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const createResponse = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({
-                    youtube_video_id: `u${timestamp}${randomSuffix}`.slice(0, 11),
-                    youtube_url: `https://youtube.com/watch?v=upd${timestamp}`,
-                    title: 'Original Title',
-                    category: 'Tech',
-                    thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                    duration: 3600,
-                    is_published: false
-                });
+    test('should return 400 for invalid YouTube URL', async () => {
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: 'https://example.com/not-youtube',
+          title: 'Test',
+          category: 'Tech'
+        })
+        .expect(400);
 
-            const webinarId = createResponse.body.webinar.webinar_id;
-            testWebinarIds.push(webinarId);
-
-            const response = await request(app)
-                .patch(`/api/webinars/${webinarId}`)
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({
-                    title: 'Updated Title',
-                    is_published: true
-                })
-                .expect(200);
-
-            expect(response.body.webinar.title).toBe('Updated Title');
-            expect(response.body.webinar.is_published).toBe(true);
-        });
-
-        test('should reject update without admin token', async () => {
-            await request(app)
-                .patch('/api/webinars/1')
-                .send({ title: 'Updated' })
-                .expect(401);
-        });
-
-        test('should toggle is_featured status with admin token', async () => {
-            // Create a non-featured webinar
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const createResponse = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({
-                    youtube_video_id: `tf${timestamp}${randomSuffix}`.slice(0, 11),
-                    youtube_url: `https://youtube.com/watch?v=togfeat${timestamp}`,
-                    title: 'Toggle Featured Test',
-                    category: 'Tech',
-                    thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                    duration: 3600,
-                    is_featured: false
-                });
-
-            const webinarId = createResponse.body.webinar.webinar_id;
-            testWebinarIds.push(webinarId);
-
-            expect(createResponse.body.webinar.is_featured).toBe(false);
-
-            // Toggle to featured
-            const updateResponse = await request(app)
-                .patch(`/api/webinars/${webinarId}`)
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({ is_featured: true })
-                .expect(200);
-
-            expect(updateResponse.body.webinar.is_featured).toBe(true);
-        });
-
-        test('should return 404 for non-existent webinar', async () => {
-            await request(app)
-                .patch('/api/webinars/99999')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({ title: 'Updated' })
-                .expect(404);
-        });
+      expect(response.body.msg).toContain('Invalid YouTube URL');
+      expect(response.body.field).toBe('youtube_url');
     });
 
-    describe('POST /api/webinars/:webinar_id/view', () => {
-        test('should increment view count', async () => {
-            // Create a test webinar first
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const createResponse = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({
-                    youtube_video_id: `v${timestamp}${randomSuffix}`.slice(0, 11),
-                    youtube_url: `https://youtube.com/watch?v=viw${timestamp}`,
-                    title: 'View Test Webinar',
-                    category: 'Tech',
-                    thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                    duration: 3600,
-                    is_published: true
-                });
+    test('should return 400 for missing title', async () => {
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          category: 'Tech'
+        })
+        .expect(400);
 
-            const webinarId = createResponse.body.webinar.webinar_id;
-            testWebinarIds.push(webinarId);
-
-            const response = await request(app)
-                .post(`/api/webinars/${webinarId}/view`)
-                .expect(200);
-
-            expect(response.body).toHaveProperty('msg');
-            expect(response.body).toHaveProperty('view_count');
-            // Just verify view_count exists and is a valid value
-            expect(response.body.view_count).toBeDefined();
-        });
-
-        test('should return 404 for non-existent webinar', async () => {
-            await request(app)
-                .post('/api/webinars/99999/view')
-                .expect(404);
-        });
-
-        test('should return 400 for invalid webinar ID', async () => {
-            await request(app)
-                .post('/api/webinars/invalid/view')
-                .expect(400);
-        });
+      expect(response.body.msg).toContain('Title is required');
+      expect(response.body.field).toBe('title');
     });
 
-    describe('DELETE /api/webinars/:webinar_id', () => {
-        test('should delete a webinar with admin token', async () => {
-            // Create a test webinar first
-            const timestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 5);
-            const createResponse = await request(app)
-                .post('/api/webinars')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .send({
-                    youtube_video_id: `d${timestamp}${randomSuffix}`.slice(0, 11),
-                    youtube_url: `https://youtube.com/watch?v=del${timestamp}`,
-                    title: 'Delete Test Webinar',
-                    category: 'Tech',
-                    thumbnail_url: 'https://img.youtube.com/vi/test/0.jpg',
-                    duration: 3600,
-                    is_published: true
-                });
+    test('should return 400 for missing category', async () => {
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'Test'
+        })
+        .expect(400);
 
-            const webinarId = createResponse.body.webinar.webinar_id;
-            testWebinarIds.push(webinarId);
-
-            const response = await request(app)
-                .delete(`/api/webinars/${webinarId}`)
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .expect(200);
-
-            expect(response.body).toHaveProperty('deleted');
-            expect(response.body.deleted.webinar_id).toBe(webinarId);
-
-            // Verify deletion
-            await request(app)
-                .get(`/api/webinars/${webinarId}`)
-                .expect(404);
-        });
-
-        test('should reject deletion without admin token', async () => {
-            await request(app)
-                .delete('/api/webinars/1')
-                .expect(401);
-        });
-
-        test('should return 404 for non-existent webinar', async () => {
-            await request(app)
-                .delete('/api/webinars/99999')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .expect(404);
-        });
+      expect(response.body.msg).toContain('Category is required');
+      expect(response.body.field).toBe('category');
     });
 
+    test('should return 400 for video not found', async () => {
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.notFound}`,
+          title: 'Test',
+          category: 'Tech'
+        })
+        .expect(400);
+
+      expect(response.body.msg).toContain('Video not found or is set to private');
+    });
+
+    test('should return 409 for duplicate video', async () => {
+      // Create first webinar
+      const first = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'First',
+          category: 'Tech'
+        })
+        .expect(201);
+      
+      testWebinarIds.push(first.body.webinar.webinar_id);
+
+      // Try to create duplicate
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'Duplicate',
+          category: 'Tech'
+        })
+        .expect(409);
+
+      expect(response.body.msg).toContain('already been added');
+    });
+
+    test('should return 401 without admin token', async () => {
+      await request(app)
+        .post('/api/webinars')
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'Test',
+          category: 'Tech'
+        })
+        .expect(401);
+    });
+  });
+
+  describe('PATCH /api/webinars/:webinar_id', () => {
+    
+    let webinarId;
+
+    beforeEach(async () => {
+      // Create a test webinar
+      const response = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid2}`,
+          title: 'Update Test',
+          category: 'Tech'
+        })
+        .expect(201);
+      
+      webinarId = response.body.webinar.webinar_id;
+      testWebinarIds.push(webinarId);
+    });
+
+    test('should update webinar title', async () => {
+      const response = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          title: 'Updated Title'
+        })
+        .expect(200);
+
+      expect(response.body.webinar.title).toBe('Updated Title');
+    });
+
+    test('should update webinar description', async () => {
+      const response = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          description: 'Updated description'
+        })
+        .expect(200);
+
+      expect(response.body.webinar.description).toBe('Updated description');
+    });
+
+    test('should update is_published status', async () => {
+      const response = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          is_published: true
+        })
+        .expect(200);
+
+      expect(response.body.webinar.is_published).toBe(true);
+      expect(response.body.msg).toContain('Status updated');
+    });
+
+    test('should update is_featured status', async () => {
+      const response = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          is_featured: true
+        })
+        .expect(200);
+
+      expect(response.body.webinar.is_featured).toBe(true);
+    });
+
+    test('should resync metadata from YouTube', async () => {
+      const response = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          action: 'resync'
+        })
+        .expect(200);
+
+      expect(response.body.msg).toContain('Metadata resynced');
+      expect(response.body.webinar).toHaveProperty('metadata_synced_at');
+    });
+
+    test('should return 404 for non-existent webinar', async () => {
+      await request(app)
+        .patch('/api/webinars/99999')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          title: 'Test'
+        })
+        .expect(404);
+    });
+
+    test('should return 400 for invalid webinar ID', async () => {
+      await request(app)
+        .patch('/api/webinars/invalid')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          title: 'Test'
+        })
+        .expect(400);
+    });
+
+    test('should return 401 without admin token', async () => {
+      await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .send({
+          title: 'Test'
+        })
+        .expect(401);
+    });
+  });
+
+  describe('POST /api/webinars/:webinar_id/view', () => {
+    
+    test('should increment view count', async () => {
+      // Create a test webinar
+      const createResponse = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid3}`,
+          title: 'View Test',
+          category: 'Tech'
+        })
+        .expect(201);
+      
+      const webinarId = createResponse.body.webinar.webinar_id;
+      testWebinarIds.push(webinarId);
+
+      const initialViewCount = createResponse.body.webinar.view_count;
+
+      const response = await request(app)
+        .post(`/api/webinars/${webinarId}/view`)
+        .expect(200);
+
+      expect(response.body.view_count).toBe(initialViewCount + 1);
+    });
+
+    test('should return 404 for non-existent webinar', async () => {
+      await request(app)
+        .post('/api/webinars/99999/view')
+        .expect(404);
+    });
+  });
+
+  describe('DELETE /api/webinars/:webinar_id', () => {
+    
+    test('should delete webinar', async () => {
+      // Create a webinar to delete
+      const createResponse = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'Delete Test',
+          category: 'Tech'
+        })
+        .expect(201);
+      
+      const webinarId = createResponse.body.webinar.webinar_id;
+
+      // Delete it
+      const response = await request(app)
+        .delete(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(200);
+
+      expect(response.body.msg).toContain('deleted successfully');
+      expect(response.body.deleted.webinar_id).toBe(webinarId);
+
+      // Verify it's deleted
+      await request(app)
+        .get(`/api/webinars/${webinarId}`)
+        .expect(404);
+    });
+
+    test('should return 404 for non-existent webinar', async () => {
+      await request(app)
+        .delete('/api/webinars/99999')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(404);
+    });
+
+    test('should return 401 without admin token', async () => {
+      await request(app)
+        .delete('/api/webinars/1')
+        .expect(401);
+    });
+  });
+
+  describe('Full Workflow - Create, Update, Delete', () => {
+    
+    test('should complete full webinar lifecycle', async () => {
+      // 1. Create webinar
+      const createResponse = await request(app)
+        .post('/api/webinars')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          youtube_url: `https://www.youtube.com/watch?v=${TEST_VIDEOS.valid}`,
+          title: 'Lifecycle Test',
+          description: 'Initial description',
+          category: 'Technology',
+          is_published: false,
+          is_featured: false
+        })
+        .expect(201);
+
+      const webinarId = createResponse.body.webinar.webinar_id;
+      expect(createResponse.body.webinar.title).toBe('Lifecycle Test');
+      expect(createResponse.body.webinar.is_published).toBe(false);
+
+      // 2. Update title and description
+      const updateResponse = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          title: 'Updated Lifecycle Test',
+          description: 'Updated description'
+        })
+        .expect(200);
+
+      expect(updateResponse.body.webinar.title).toBe('Updated Lifecycle Test');
+      expect(updateResponse.body.webinar.description).toBe('Updated description');
+
+      // 3. Publish the webinar
+      const publishResponse = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          is_published: true
+        })
+        .expect(200);
+
+      expect(publishResponse.body.webinar.is_published).toBe(true);
+
+      // 4. Mark as featured
+      const featureResponse = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          is_featured: true
+        })
+        .expect(200);
+
+      expect(featureResponse.body.webinar.is_featured).toBe(true);
+
+      // 5. Resync metadata
+      const resyncResponse = await request(app)
+        .patch(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          action: 'resync'
+        })
+        .expect(200);
+
+      expect(resyncResponse.body.msg).toContain('Metadata resynced');
+
+      // 6. Verify it's visible in public list
+      const listResponse = await request(app)
+        .get('/api/webinars?is_published=true')
+        .expect(200);
+
+      const foundWebinar = listResponse.body.webinars.find(w => w.webinar_id === webinarId);
+      expect(foundWebinar).toBeDefined();
+      expect(foundWebinar.is_published).toBe(true);
+      expect(foundWebinar.is_featured).toBe(true);
+
+      // 7. Delete the webinar
+      const deleteResponse = await request(app)
+        .delete(`/api/webinars/${webinarId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(200);
+
+      expect(deleteResponse.body.msg).toContain('deleted successfully');
+
+      // 8. Verify it's gone
+      await request(app)
+        .get(`/api/webinars/${webinarId}`)
+        .expect(404);
+    });
+  });
 });

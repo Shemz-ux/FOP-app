@@ -1,13 +1,25 @@
 import {
     fetchAllWebinars,
     fetchWebinarById,
-    createWebinar,
-    updateWebinar,
-    deleteWebinar,
+    updateWebinar as updateWebinarModel,
     incrementViewCount,
     getWebinarsCount,
     getWebinarCategories
 } from '../models/webinars.js';
+
+// Import webinar service for business logic
+import {
+    createFromURL,
+    resyncMetadata,
+    updateStatus,
+    deleteWebinar as deleteWebinarService,
+    ValidationError,
+    DuplicateError,
+    NotFoundError
+} from '../services/webinarService.js';
+
+// Import YouTube service errors
+import { YouTubeAPIError } from '../services/youtubeService.js';
 
 // Get all webinars with server-side filtering, search, sorting, and pagination
 export const getWebinars = async (req, res) => {
@@ -121,44 +133,64 @@ export const getWebinar = async (req, res) => {
     }
 };
 
-// Create new webinar (admin only - add auth middleware to route)
-// Optional fields: description, published_at, view_count, like_count, metadata_synced_at, is_published, is_featured
+// Create new webinar from YouTube URL (admin only)
+// Required: youtube_url, title, category
+// Optional: description, is_published, is_featured
 export const postWebinar = async (req, res) => {
     try {
-        const webinarData = req.body;
+        const { youtube_url, title, description, category, is_published, is_featured } = req.body;
         
-        // Validate required fields
-        const requiredFields = ['youtube_video_id', 'youtube_url', 'title', 'category', 'thumbnail_url', 'duration'];
-        const missingFields = requiredFields.filter(field => !webinarData[field]);
-        
-        if (missingFields.length > 0) {
-            return res.status(400).json({ 
-                msg: 'Missing required fields',
-                missing: missingFields 
-            });
+        // Get admin ID from authenticated user (set by adminChecker middleware)
+        const adminId = req.user_id;
+        if (!adminId) {
+            return res.status(401).json({ msg: 'Authentication required' });
         }
         
-        // Set uploaded_by from authenticated user if available
-        if (req.user && req.user.admin_id) {
-            webinarData.uploaded_by = req.user.admin_id;
-        }
-        
-        const newWebinar = await createWebinar(webinarData);
+        // Create webinar using service layer
+        const webinar = await createFromURL(
+            youtube_url,
+            adminId,
+            {
+                title,
+                description,
+                category,
+                is_published,
+                is_featured
+            }
+        );
         
         res.status(201).json({ 
             msg: 'Webinar created successfully',
-            webinar: newWebinar 
+            webinar 
         });
-    } catch (error) {
-        console.error('Create webinar error:', error);
         
-        // Handle duplicate youtube_video_id
-        if (error.code === '23505') {
-            return res.status(409).json({ 
-                msg: 'Webinar with this YouTube video ID already exists' 
+    } catch (error) {
+        // Handle validation errors (user-facing)
+        if (error instanceof ValidationError) {
+            return res.status(error.statusCode).json({
+                msg: error.message,
+                field: error.field
             });
         }
         
+        // Handle duplicate video
+        if (error instanceof DuplicateError) {
+            return res.status(error.statusCode).json({
+                msg: error.message,
+                field: error.field
+            });
+        }
+        
+        // Handle YouTube API errors
+        if (error instanceof YouTubeAPIError) {
+            console.error('YouTube API error:', error);
+            return res.status(502).json({
+                msg: 'Failed to fetch video metadata from YouTube. Please try again later.'
+            });
+        }
+        
+        // Handle unexpected errors
+        console.error('Create webinar error:', error);
         res.status(500).json({ 
             msg: 'Failed to create webinar',
             error: error.message 
@@ -167,7 +199,10 @@ export const postWebinar = async (req, res) => {
 };
 
 // Update webinar (admin only)
-// Updatable fields: title, description, category, thumbnail_url, duration, published_at, view_count, like_count, is_published, is_featured
+// Supports two modes:
+// 1. Resync metadata from YouTube: { action: 'resync' }
+// 2. Update status: { is_published: true/false }
+// 3. Update other fields: { title, description, category, is_featured, etc. }
 export const patchWebinar = async (req, res) => {
     try {
         const { webinar_id } = req.params;
@@ -181,15 +216,57 @@ export const patchWebinar = async (req, res) => {
             return res.status(400).json({ msg: 'No update fields provided' });
         }
         
-        const updatedWebinar = await updateWebinar(updates, webinar_id);
+        let updatedWebinar;
+        
+        // Handle resync action (re-fetch metadata from YouTube)
+        if (updates.action === 'resync') {
+            updatedWebinar = await resyncMetadata(webinar_id);
+            return res.status(200).json({ 
+                msg: 'Metadata resynced successfully',
+                webinar: updatedWebinar 
+            });
+        }
+        
+        // Handle status update (publish/unpublish)
+        if ('is_published' in updates && Object.keys(updates).length === 1) {
+            updatedWebinar = await updateStatus(webinar_id, updates.is_published);
+            return res.status(200).json({ 
+                msg: 'Status updated successfully',
+                webinar: updatedWebinar 
+            });
+        }
+        
+        // Handle regular field updates (title, description, category, etc.)
+        updatedWebinar = await updateWebinarModel(updates, webinar_id);
         
         res.status(200).json({ 
             msg: 'Webinar updated successfully',
             webinar: updatedWebinar 
         });
-    } catch (error) {
-        console.error('Update webinar error:', error);
         
+    } catch (error) {
+        // Handle not found errors
+        if (error instanceof NotFoundError) {
+            return res.status(error.statusCode).json({ msg: error.message });
+        }
+        
+        // Handle validation errors
+        if (error instanceof ValidationError) {
+            return res.status(error.statusCode).json({
+                msg: error.message,
+                field: error.field
+            });
+        }
+        
+        // Handle YouTube API errors (for resync)
+        if (error instanceof YouTubeAPIError) {
+            console.error('YouTube API error:', error);
+            return res.status(502).json({
+                msg: 'Failed to fetch video metadata from YouTube'
+            });
+        }
+        
+        // Handle model-level errors
         if (error.status === 404) {
             return res.status(404).json({ msg: error.msg });
         }
@@ -198,6 +275,7 @@ export const patchWebinar = async (req, res) => {
             return res.status(400).json({ msg: error.msg });
         }
         
+        console.error('Update webinar error:', error);
         res.status(500).json({ 
             msg: 'Failed to update webinar',
             error: error.message 
@@ -214,30 +292,30 @@ export const removeWebinar = async (req, res) => {
             return res.status(400).json({ msg: 'Invalid webinar ID' });
         }
         
-        // Get webinar details before deletion (for logging/audit)
-        const webinar = await fetchWebinarById(webinar_id);
-        
-        if (!webinar) {
-            return res.status(404).json({ msg: 'Webinar not found' });
-        }
-        
-        await deleteWebinar(webinar_id);
+        // Delete using service layer
+        const deletedWebinar = await deleteWebinarService(webinar_id);
         
         res.status(200).json({ 
             msg: 'Webinar deleted successfully',
             deleted: {
-                webinar_id: webinar.webinar_id,
-                title: webinar.title,
-                youtube_video_id: webinar.youtube_video_id
+                webinar_id: deletedWebinar.webinar_id,
+                title: deletedWebinar.title,
+                youtube_video_id: deletedWebinar.youtube_video_id
             }
         });
-    } catch (error) {
-        console.error('Delete webinar error:', error);
         
+    } catch (error) {
+        // Handle not found errors
+        if (error instanceof NotFoundError) {
+            return res.status(error.statusCode).json({ msg: error.message });
+        }
+        
+        // Handle model-level errors
         if (error.status === 404) {
             return res.status(404).json({ msg: error.msg });
         }
         
+        console.error('Delete webinar error:', error);
         res.status(500).json({ 
             msg: 'Failed to delete webinar',
             error: error.message 
