@@ -20,6 +20,7 @@ import { adminWebinarDetailCopy } from './webinarDetail.copy';
 import { formatDuration, formatViewCount, formatDate } from '../../utils/webinarHelpers';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
+import RelatedWebinars from './components/RelatedWebinars';
 
 export default function WebinarDetail() {
   const { webinarId } = useParams();
@@ -34,6 +35,13 @@ export default function WebinarDetail() {
     const foundWebinar = testWebinars.find(w => w.webinar_id === parseInt(webinarId));
     setWebinar(foundWebinar);
   }, [webinarId]);
+
+  // Get related webinars (same category, excluding current, limit to 3)
+  const relatedWebinars = webinar 
+    ? testWebinars
+        .filter(w => w.category === webinar.category && w.is_published)
+        .slice(0, 5)
+    : [];
 
   const handleDeleteClick = () => {
     setConfirmModal({ isOpen: true });
@@ -367,6 +375,13 @@ export default function WebinarDetail() {
                   </div>
                 </div>
               </div>
+
+              {/* Related Webinars */}
+              <RelatedWebinars
+                webinars={relatedWebinars}
+                currentWebinarId={webinar.webinar_id}
+                copy={adminWebinarDetailCopy.sections.relatedTitle}
+              />
             </div>
           </div>
         </div>

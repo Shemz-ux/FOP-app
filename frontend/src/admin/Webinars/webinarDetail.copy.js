@@ -17,7 +17,8 @@ const adminWebinarDetailCopy = {
     overview: 'Overview',
     details: 'Webinar Details',
     videoInfo: 'Video Information',
-    status: 'Status & Visibility'
+    status: 'Status & Visibility',
+    relatedTitle: 'Related Webinars'
   },
   fields: {
     title: 'Title',

@@ -4,6 +4,7 @@ import { Play, ArrowLeft, ThumbsUp, Eye, Clock, Calendar } from "lucide-react";
 import { testWebinars } from "./webinars.copy";
 import { webinarDetailCopy } from "./webinarDetail.copy";
 import { formatDuration, formatViewCount, formatDate } from "../../utils/webinarHelpers";
+import RelatedWebinars from "../../admin/Webinars/components/RelatedWebinars";
 
 export default function WebinarDetail() {
   const { webinarId } = useParams();
@@ -18,7 +19,7 @@ export default function WebinarDetail() {
   const relatedWebinars = webinar 
     ? testWebinars
         .filter(w => w.category === webinar.category && w.webinar_id !== webinar.webinar_id && w.is_published)
-        .slice(0, 3)
+        .slice(0, 5)
     : [];
 
   if (!webinar) {
@@ -151,46 +152,11 @@ export default function WebinarDetail() {
 
           {/* Sidebar - Related Webinars */}
           <div className="space-y-6">
-            {relatedWebinars.length > 0 && (
-              <div>
-                <h3 className="text-foreground mb-4 text-left">{webinarDetailCopy.sections.relatedTitle}</h3>
-                <div className="space-y-4">
-                  {relatedWebinars.map((related) => (
-                    <Link
-                      key={related.webinar_id}
-                      to={`/webinars/${related.webinar_id}`}
-                      className="group flex gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
-                    >
-                      <div className="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-                        <img
-                          src={related.thumbnail_url}
-                          alt={related.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-7 h-7 rounded-full bg-black/60 flex items-center justify-center">
-                            <Play className="w-3 h-3 text-white fill-white ml-0.5" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug mb-1 text-left">
-                          {related.title}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          {formatDuration(related.duration)}
-                          <span className="ml-1 flex items-center gap-0.5">
-                            <Eye className="w-3 h-3" />
-                            {formatViewCount(related.view_count)}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+            <RelatedWebinars
+              webinars={relatedWebinars}
+              currentWebinarId={webinar.webinar_id}
+              copy={webinarDetailCopy.sections.relatedTitle}
+            />
           </div>
         </div>
       </div>

@@ -50,12 +50,12 @@ export default function Webinars() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <Hero 
+      {/* <Hero 
         totalWebinars={totalWebinars}
         totalViews={formattedTotalViews}
         featuredWebinar={featuredWebinars[0]}
         copy={webinarsCopy.hero}
-      />
+      /> */}
 
       <div className="container mx-auto px-6 py-12">
         {/* Featured Section */}
