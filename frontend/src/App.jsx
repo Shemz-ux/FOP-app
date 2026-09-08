@@ -14,6 +14,7 @@ import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
 import EventDetails from './pages/Events/EventDetails.jsx'
 import Webinars from './pages/Webinars/Webinars.jsx'
+import WebinarDetail from './pages/Webinars/WebinarDetail.jsx'
 import Resources from './pages/Resources/Resources.jsx'
 import ResourceDetail from './pages/Resources/ResourceDetail.jsx'
 import Profile from './pages/Profile/Profile.jsx'
@@ -88,6 +89,10 @@ function App() {
     {
       path: "/webinars",
       element: <Layout><Webinars /></Layout>
+    },
+    {
+      path: "/webinars/:webinarId",
+      element: <Layout><WebinarDetail /></Layout>
     },
     {
       path: "/resources",
