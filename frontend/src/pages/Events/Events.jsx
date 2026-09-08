@@ -98,38 +98,39 @@ export default function Events() {
   }, [isLoggedIn, user]);
 
   // Fetch all events once for calendar, filtering and counts
+  const loadAllEventsData = async () => {
+    if (_eventsCache) {
+      setAllEventsForCalendar(_eventsCache.events);
+      setCategories(_eventsCache.categories);
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true, sort: 'date_asc' });
+      const allEvents = response.events || [];
+
+      const eventTypes = {};
+      allEvents.forEach(event => {
+        if (event.event_type) {
+          eventTypes[event.event_type] = (eventTypes[event.event_type] || 0) + 1;
+        }
+      });
+      const cats = Object.entries(eventTypes).map(([label, count]) => ({ label, count }));
+
+      _eventsCache = { events: allEvents, categories: cats };
+      setAllEventsForCalendar(allEvents);
+      setCategories(cats);
+    } catch (err) {
+      console.error('Error loading all events data:', err);
+      setError(err.message || 'Failed to load events');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadAllEventsData = async () => {
-      if (_eventsCache) {
-        setAllEventsForCalendar(_eventsCache.events);
-        setCategories(_eventsCache.categories);
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await eventsService.getEventsAdvanced({ limit: 1000, is_active: true, sort: 'date_asc' });
-        const allEvents = response.events || [];
-
-        const eventTypes = {};
-        allEvents.forEach(event => {
-          if (event.event_type) {
-            eventTypes[event.event_type] = (eventTypes[event.event_type] || 0) + 1;
-          }
-        });
-        const cats = Object.entries(eventTypes).map(([label, count]) => ({ label, count }));
-
-        _eventsCache = { events: allEvents, categories: cats };
-        setAllEventsForCalendar(allEvents);
-        setCategories(cats);
-      } catch (err) {
-        console.error('Error loading all events data:', err);
-        setError(err.message || 'Failed to load events');
-      } finally {
-        setLoading(false);
-      }
-    };
     loadAllEventsData();
   }, []);
 
@@ -254,7 +255,7 @@ export default function Events() {
             {loading ? (
               <div className="py-20"><LoadingSpinner size="lg" /></div>
             ) : error ? (
-              <ErrorMessage message={error} onRetry={fetchEvents} />
+              <ErrorMessage message={error} onRetry={loadAllEventsData} />
             ) : (
               <CalendarView events={calendarEvents} />
             )}
@@ -286,7 +287,7 @@ export default function Events() {
                 <LoadingSpinner size="lg" />
               </div>
             ) : error ? (
-              <ErrorMessage message={error} onRetry={fetchEvents} />
+              <ErrorMessage message={error} onRetry={loadAllEventsData} />
             ) : filteredEvents.length === 0 ? (
               <EmptyState 
                 icon={CalendarIcon}
