@@ -76,6 +76,8 @@ const createJobseekersTable = () => {
             role_interest_option_two VARCHAR(255),
             society VARCHAR(255),
             linkedin VARCHAR(500),
+            has_right_to_work_uk BOOLEAN,
+            requires_sponsorship BOOLEAN,
             cv_file_name VARCHAR(255),
             cv_file_size VARCHAR(50),
             cv_storage_key VARCHAR(500),

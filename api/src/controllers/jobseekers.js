@@ -20,6 +20,8 @@ export const postJobseeker = async (req, res, next) => {
             has_society: !!newJobseeker.society,
             has_phone: !!newJobseeker.phone_number,
             has_dob: !!newJobseeker.date_of_birth,
+            right_to_work_provided: newJobseeker.has_right_to_work_uk !== undefined && newJobseeker.has_right_to_work_uk !== null,
+            sponsorship_provided: newJobseeker.requires_sponsorship !== undefined && newJobseeker.requires_sponsorship !== null,
             cv_uploaded: !!newJobseeker.cv_storage_key,
             cv_file_name: newJobseeker.cv_file_name || 'none',
             cv_file_size: newJobseeker.cv_file_size || 'none',
@@ -227,6 +229,8 @@ export const exportJobseekersCSV = async (req, res, next) => {
             'Free School Meals Eligible': formatBoolean(js.school_meal_eligible),
             'Role Interest 1': js.role_interest_option_one || 'N/A',
             'Role Interest 2': js.role_interest_option_two || 'N/A',
+            'Right to Work in UK': formatBoolean(js.has_right_to_work_uk),
+            'Requires Sponsorship': formatBoolean(js.requires_sponsorship),
             'Created At': new Date(js.created_at).toLocaleDateString('en-GB')
         }));
         
@@ -251,6 +255,8 @@ export const exportJobseekersCSV = async (req, res, next) => {
             'Free School Meals Eligible',
             'Role Interest 1',
             'Role Interest 2',
+            'Right to Work in UK',
+            'Requires Sponsorship',
             'Created At'
         ];
         

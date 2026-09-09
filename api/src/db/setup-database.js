@@ -82,7 +82,8 @@ const setupDatabase = async () => {
         const migrationFiles = [
             'add_password_reset_tokens.sql',
             'increase_file_type_length.sql',
-            'add_webinars_table.sql'
+            'add_webinars_table.sql',
+            'add_right_to_work_fields.sql'
         ];
 
         for (const file of migrationFiles) {

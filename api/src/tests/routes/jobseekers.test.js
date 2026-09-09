@@ -531,6 +531,143 @@ describe.only('Jobseekers API Endpoints', () => {
     });
   });
 
+  describe('Right to Work / Sponsorship Fields', () => {
+    let rtwTestJobseekerIds = [];
+
+    afterAll(async () => {
+      for (const id of rtwTestJobseekerIds) {
+        try {
+          await db.query('DELETE FROM jobseekers WHERE jobseeker_id = $1', [id]);
+        } catch (err) {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    test('legacy jobseeker (sign-up without these fields) stores NULL for both', async () => {
+      const timestamp = Date.now();
+      const legacyStyleJobseeker = {
+        first_name: 'Legacy',
+        last_name: 'Student',
+        email: `legacy.student.${timestamp}@test.com`,
+        password: testPassword
+        // has_right_to_work_uk / requires_sponsorship intentionally omitted,
+        // simulating an existing pre-feature jobseeker record.
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(legacyStyleJobseeker)
+        .expect(201);
+
+      expect(response.body.newJobseeker.has_right_to_work_uk).toBeNull();
+      expect(response.body.newJobseeker.requires_sponsorship).toBeNull();
+      rtwTestJobseekerIds.push(response.body.newJobseeker.jobseeker_id);
+
+      // Also confirm it reads back as NULL, not just on the create response
+      const getResponse = await request(app)
+        .get(`/api/jobseekers/${response.body.newJobseeker.jobseeker_id}`)
+        .expect(200);
+
+      expect(getResponse.body.jobseeker.has_right_to_work_uk).toBeNull();
+      expect(getResponse.body.jobseeker.requires_sponsorship).toBeNull();
+    });
+
+    test('new jobseeker sign-up with explicit "yes" answers persists true/false correctly', async () => {
+      const timestamp = Date.now();
+      const newJobseeker = {
+        first_name: 'RightToWork',
+        last_name: 'Yes',
+        email: `rtw.yes.${timestamp}@test.com`,
+        password: testPassword,
+        has_right_to_work_uk: true,
+        requires_sponsorship: false
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(newJobseeker)
+        .expect(201);
+
+      expect(response.body.newJobseeker.has_right_to_work_uk).toBe(true);
+      expect(response.body.newJobseeker.requires_sponsorship).toBe(false);
+      rtwTestJobseekerIds.push(response.body.newJobseeker.jobseeker_id);
+    });
+
+    test('new jobseeker sign-up with explicit "no" answers persists true/false correctly', async () => {
+      const timestamp = Date.now();
+      const newJobseeker = {
+        first_name: 'RightToWork',
+        last_name: 'No',
+        email: `rtw.no.${timestamp}@test.com`,
+        password: testPassword,
+        has_right_to_work_uk: false,
+        requires_sponsorship: true
+      };
+
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send(newJobseeker)
+        .expect(201);
+
+      // Explicit false must round-trip as false, not be dropped/coerced to null
+      expect(response.body.newJobseeker.has_right_to_work_uk).toBe(false);
+      expect(response.body.newJobseeker.requires_sponsorship).toBe(true);
+      rtwTestJobseekerIds.push(response.body.newJobseeker.jobseeker_id);
+    });
+
+    test('a legacy jobseeker can fill the fields in later via PATCH (Settings flow)', async () => {
+      const timestamp = Date.now();
+      const createResponse = await request(app)
+        .post('/api/jobseekers')
+        .send({
+          first_name: 'Legacy',
+          last_name: 'FillingIn',
+          email: `legacy.fillingin.${timestamp}@test.com`,
+          password: testPassword
+        })
+        .expect(201);
+
+      const jobseekerId = createResponse.body.newJobseeker.jobseeker_id;
+      rtwTestJobseekerIds.push(jobseekerId);
+      expect(createResponse.body.newJobseeker.has_right_to_work_uk).toBeNull();
+
+      const patchResponse = await request(app)
+        .patch(`/api/jobseekers/${jobseekerId}`)
+        .send({ has_right_to_work_uk: true, requires_sponsorship: false })
+        .expect(200);
+
+      expect(patchResponse.body.jobseeker.has_right_to_work_uk).toBe(true);
+      expect(patchResponse.body.jobseeker.requires_sponsorship).toBe(false);
+    });
+
+    test('PATCH can update an already-answered value', async () => {
+      const timestamp = Date.now();
+      const createResponse = await request(app)
+        .post('/api/jobseekers')
+        .send({
+          first_name: 'Changed',
+          last_name: 'Mind',
+          email: `changed.mind.${timestamp}@test.com`,
+          password: testPassword,
+          has_right_to_work_uk: false,
+          requires_sponsorship: true
+        })
+        .expect(201);
+
+      const jobseekerId = createResponse.body.newJobseeker.jobseeker_id;
+      rtwTestJobseekerIds.push(jobseekerId);
+
+      const patchResponse = await request(app)
+        .patch(`/api/jobseekers/${jobseekerId}`)
+        .send({ has_right_to_work_uk: true, requires_sponsorship: false })
+        .expect(200);
+
+      expect(patchResponse.body.jobseeker.has_right_to_work_uk).toBe(true);
+      expect(patchResponse.body.jobseeker.requires_sponsorship).toBe(false);
+    });
+  });
+
   afterAll(async () => {
     // Close database connection to prevent Jest from hanging
     await db.end();
