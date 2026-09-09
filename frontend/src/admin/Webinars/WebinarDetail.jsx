@@ -149,6 +149,8 @@ export default function WebinarDetail() {
               {webinar.is_published && (
                 <Link
                   to={`/webinars/${webinar.webinar_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm whitespace-nowrap"
                 >
                   <ExternalLink className="w-4 h-4" />
