@@ -136,7 +136,7 @@ export default function Navbar({
                 Events
               </Link>
 
-              <Link
+              {/* <Link
                 to="/webinars"
                 className={`transition-colors ${
                   isActive('/webinars')
@@ -145,7 +145,7 @@ export default function Navbar({
                 }`}
               >
                 Webinars
-              </Link>
+              </Link> */}
               
             </nav>
           </div>
