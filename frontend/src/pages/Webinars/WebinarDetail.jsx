@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Play, ArrowLeft, ThumbsUp, Eye, Clock, Calendar } from "lucide-react";
+import { Play, ArrowLeft, ThumbsUp, Eye, Clock, Calendar, Lock } from "lucide-react";
 import { webinarDetailCopy } from "./webinarDetail.copy";
 import { formatDuration, formatViewCount, formatDate } from "../../utils/webinarHelpers";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import RelatedWebinars from "../../admin/Webinars/components/RelatedWebinars";
+import { useAuth } from "../../contexts/AuthContext";
 import { 
   getWebinar, 
   trackWebinarView,
@@ -14,6 +15,7 @@ import {
 export default function WebinarDetail() {
   const { webinarId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [webinar, setWebinar] = useState(null);
   const [relatedWebinars, setRelatedWebinars] = useState([]);
   // const [liked, setLiked] = useState(false); // Commented out until backend integration
@@ -45,6 +47,11 @@ export default function WebinarDetail() {
 
   // Track view when video starts playing
   const handlePlay = async () => {
+    // Check if user is authenticated
+    if (!user) {
+      return; // Don't play if not authenticated
+    }
+
     setPlaying(true);
     
     if (!viewTracked && webinar) {
@@ -115,7 +122,7 @@ export default function WebinarDetail() {
                 </div>
               ) : (
                 <div
-                  className="aspect-video relative cursor-pointer group"
+                  className={`aspect-video relative group ${user ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                   onClick={handlePlay}
                 >
                   <img
@@ -123,20 +130,50 @@ export default function WebinarDetail() {
                     alt={webinar.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
-                    <div className="w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-2xl transform transition-transform duration-200 group-hover:scale-110">
-                      <Play className="w-9 h-9 text-white fill-white ml-1" />
-                    </div>
+                  <div className={`absolute inset-0 ${user ? 'bg-black/40 group-hover:bg-black/50' : 'bg-black/60'} transition-colors flex items-center justify-center p-4 sm:p-6`}>
+                    {user ? (
+                      <div className="w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-2xl transform transition-transform duration-200 group-hover:scale-110">
+                        <Play className="w-9 h-9 text-white fill-white ml-1" />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 sm:gap-3 text-center max-w-sm w-full">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary/20 backdrop-blur-sm flex items-center justify-center border-2 border-primary/40 flex-shrink-0">
+                          <Lock className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
+                        </div>
+                        <div className="w-full space-y-2 sm:space-y-3">
+                          <div>
+                            <p className="text-foreground text-sm sm:text-base font-semibold mb-1">Sign in to watch</p>
+                            <p className="text-muted-foreground text-xs sm:text-sm">Create a free account or log in to access this webinar</p>
+                          </div>
+                          <div className="flex gap-2 justify-center w-full">
+                            <Link
+                              to="/login"
+                              className="flex-1 px-4 sm:px-5 py-1.5 sm:py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity font-medium text-xs sm:text-sm text-center"
+                            >
+                              Log In
+                            </Link>
+                            <Link
+                              to="/signup"
+                              className="flex-1 px-4 sm:px-5 py-1.5 sm:py-2 bg-primary/20 backdrop-blur-sm text-foreground rounded-lg hover:border-primary/40 transition-colors font-medium border border-border text-xs sm:text-sm text-center"
+                            >
+                              Sign Up
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {/* Duration overlay */}
-                  <div className="absolute bottom-4 right-4 px-3 py-1 rounded-lg bg-black/80 text-white text-sm font-mono flex items-center gap-1.5">
-                    <Clock className="w-4 h-4" />
+                  <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg bg-black/80 text-white text-xs sm:text-sm font-mono flex items-center gap-1">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                     {formatDuration(webinar.duration)}
                   </div>
-                  {/* Click to play hint */}
-                  <div className="absolute bottom-4 left-4 text-white/70 text-sm">
-                    {webinarDetailCopy.video.clickToPlay}
-                  </div>
+                  {/* Click to play hint - only show if authenticated */}
+                  {user && (
+                    <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 text-white/70 text-xs sm:text-sm">
+                      {webinarDetailCopy.video.clickToPlay}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
