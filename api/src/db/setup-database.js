@@ -81,7 +81,8 @@ const setupDatabase = async () => {
         const migrationsDir = path.join(__dirname, 'migrations');
         const migrationFiles = [
             'add_password_reset_tokens.sql',
-            'increase_file_type_length.sql'
+            'increase_file_type_length.sql',
+            'add_webinars_table.sql'
         ];
 
         for (const file of migrationFiles) {

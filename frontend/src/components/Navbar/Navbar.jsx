@@ -135,6 +135,17 @@ export default function Navbar({
               >
                 Events
               </Link>
+
+              {/* <Link
+                to="/webinars"
+                className={`transition-colors ${
+                  isActive('/webinars')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Webinars
+              </Link> */}
               
             </nav>
           </div>
@@ -278,6 +289,17 @@ export default function Navbar({
                 }`}
               >
                 Events
+              </Link>
+              <Link
+                to="/webinars"
+                onClick={closeMobileMenu}
+                className={`block px-4 py-3 rounded-lg transition-colors ${
+                  isActive('/webinars')
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground hover:bg-secondary'
+                }`}
+              >
+                Webinars
               </Link>
           
             </div>

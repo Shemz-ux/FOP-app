@@ -13,6 +13,8 @@ import Footer from './components/Footer/Footer.jsx'
 import { initializeTheme } from './utils/theme.js'
 import Events from './pages/Events/Events.jsx'
 import EventDetails from './pages/Events/EventDetails.jsx'
+import Webinars from './pages/Webinars/Webinars.jsx'
+import WebinarDetail from './pages/Webinars/WebinarDetail.jsx'
 import Resources from './pages/Resources/Resources.jsx'
 import ResourceDetail from './pages/Resources/ResourceDetail.jsx'
 import Profile from './pages/Profile/Profile.jsx'
@@ -37,6 +39,10 @@ import ResourcesList from './admin/Resource/ResourcesList.jsx'
 import AdminResourceDetail from './admin/Resource/ResourceDetail.jsx'
 import ResourceCreate from './admin/Resource/ResourceCreate.jsx'
 import ResourceEdit from './admin/Resource/ResourceEdit.jsx'
+import WebinarDashboard from './admin/Webinars/WebinarDashboard.jsx'
+import AdminWebinarDetail from './admin/Webinars/WebinarDetail.jsx'
+import WebinarCreate from './admin/Webinars/components/WebinarCreate.jsx'
+import WebinarEdit from './admin/Webinars/components/WebinarEdit.jsx'
 import JobseekersManagement from './admin/Management/JobseekersManagement.jsx'
 import SocietiesManagement from './admin/Management/SocietiesManagement.jsx'
 
@@ -83,6 +89,14 @@ function App() {
     {
       path: "/events/:eventId",
       element: <Layout><EventDetails /></Layout>
+    },
+    {
+      path: "/webinars",
+      element: <Layout><Webinars /></Layout>
+    },
+    {
+      path: "/webinars/:webinarId",
+      element: <Layout><WebinarDetail /></Layout>
     },
     {
       path: "/resources",
@@ -183,6 +197,22 @@ function App() {
     {
       path: "/admin/resources/:id/edit",
       element: <Layout><ResourceEdit /></Layout>
+    },
+    {
+      path: "/admin/webinars",
+      element: <Layout><WebinarDashboard /></Layout>
+    },
+    {
+      path: "/admin/webinars/new",
+      element: <Layout><WebinarCreate /></Layout>
+    },
+    {
+      path: "/admin/webinars/:webinarId",
+      element: <Layout><AdminWebinarDetail /></Layout>
+    },
+    {
+      path: "/admin/webinars/:webinarId/edit",
+      element: <Layout><WebinarEdit /></Layout>
     },
     {
       path: "/admin/jobseekers",

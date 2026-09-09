@@ -14,6 +14,7 @@ import * as authService from './Auth/authService';
 import * as dashboardService from './Dashboard/dashboardService.js';
 import * as profileService from './Profile/profileService.js';
 import * as cvService from './CV/cvService.js';
+import * as webinarsService from './Webinars/webinarsService.js';
 
 // Export all services
 export {
@@ -28,5 +29,6 @@ export {
   adminService,
   authService,
   dashboardService,
-  cvService
+  cvService,
+  webinarsService
 };

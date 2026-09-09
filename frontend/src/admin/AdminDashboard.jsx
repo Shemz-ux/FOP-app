@@ -9,7 +9,8 @@ import {
   BarChart3,
   Plus,
   ArrowRight,
-  Users2
+  Users2,
+  Video,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiGet } from '../services/api';
@@ -322,16 +323,19 @@ export default function AdminDashboard() {
           <p className="text-sm text-muted-foreground">Manage society information</p>
         </Link>
 
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6 hover:border-primary hover:scale-105 duration-200">
+        <Link
+          to="/admin/webinars"
+          className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all group hover:border-primary hover:scale-105 duration-200"
+        >
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-lg bg-purple-500 flex items-center justify-center">
+              <Video className="w-6 h-6 text-white" />
             </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
-          <h3 className="text-xl text-foreground mb-2">Analytics</h3>
-          <p className="text-sm text-muted-foreground mb-4">View detailed platform analytics</p>
-          <button className="text-sm text-primary hover:opacity-80">Coming Soon</button>
-        </div>
+          <h3 className="text-xl text-foreground mb-2">Webinars</h3>
+          <p className="text-sm text-muted-foreground">Manage webinar content</p>
+        </Link>
       </div>
         </div>
       </div>
