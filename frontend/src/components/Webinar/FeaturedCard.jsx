@@ -38,7 +38,7 @@ export default function FeaturedCard({ webinar }) {
           <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary-foreground transition-colors text-left">
             {webinar.title}
           </h3>
-          <div className="flex items-center gap-4 text-white/80 text-sm">
+          {/* <div className="flex items-center gap-4 text-white/80 text-sm">
             <div className="flex items-center gap-1.5">
               <Eye className="w-4 h-4" />
               <span>{formatViewCount(webinar.view_count)}</span>
@@ -47,7 +47,7 @@ export default function FeaturedCard({ webinar }) {
               <ThumbsUp className="w-4 h-4" />
               <span>{formatViewCount(webinar.like_count)}</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </Link>

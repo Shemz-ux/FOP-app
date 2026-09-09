@@ -1,16 +1,46 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Home } from "lucide-react";
-import { testWebinars } from "../../pages/Webinars/webinars.copy";
 import { webinarDashboardCopy } from "./webinarDashboard.copy";
 import WebinarStats from "./components/WebinarStats";
 import WebinarSearchFilter from "./components/WebinarSearchFilter";
 import WebinarTable from "./components/WebinarTable";
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import Toast from "../../components/Ui/Toast";
+import { 
+  getAllWebinarsAdmin, 
+  updateWebinar, 
+  deleteWebinar,
+  toggleFeatured
+} from "../../services/Webinars/webinarsService";
 
 export default function WebinarDashboard() {
-  const [webinars, setWebinars] = useState(testWebinars);
+  const [webinars, setWebinars] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+
+  // Fetch webinars on mount
+  useEffect(() => {
+    fetchWebinars();
+  }, []);
+
+  const fetchWebinars = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllWebinarsAdmin({ limit: 100 });
+      setWebinars(data.webinars || []);
+    } catch (error) {
+      console.error('Error fetching webinars:', error);
+      setToast({
+        message: 'Failed to load webinars. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter webinars based on search and status
   const filteredWebinars = useMemo(() => {
@@ -29,34 +59,80 @@ export default function WebinarDashboard() {
     });
   }, [webinars, searchQuery, statusFilter]);
 
-  const handleToggleStatus = (id) => {
-    setWebinars(prev => 
-      prev.map(w => 
-        w.webinar_id === id 
-          ? { ...w, is_published: !w.is_published } 
-          : w
-      )
-    );
+  const handleToggleStatus = async (id) => {
+    try {
+      const webinar = webinars.find(w => w.webinar_id === id);
+      const updated = await updateWebinar(id, { is_published: !webinar.is_published });
+      
+      setWebinars(prev => 
+        prev.map(w => w.webinar_id === id ? updated : w)
+      );
+      
+      setToast({
+        message: `Webinar ${updated.is_published ? 'published' : 'unpublished'} successfully`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error toggling status:', error);
+      setToast({
+        message: 'Failed to update webinar status',
+        type: 'error'
+      });
+    }
   };
 
-  const handleToggleFeatured = (id) => {
-    setWebinars(prev => 
-      prev.map(w => 
-        w.webinar_id === id 
-          ? { ...w, is_featured: !w.is_featured } 
-          : w
-      )
-    );
+  const handleToggleFeatured = async (id) => {
+    try {
+      const webinar = webinars.find(w => w.webinar_id === id);
+      const updated = await toggleFeatured(id, !webinar.is_featured);
+      
+      setWebinars(prev => 
+        prev.map(w => w.webinar_id === id ? updated : w)
+      );
+      
+      setToast({
+        message: `Webinar ${updated.is_featured ? 'featured' : 'unfeatured'} successfully`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error toggling featured:', error);
+      setToast({
+        message: 'Failed to update featured status',
+        type: 'error'
+      });
+    }
   };
 
   const handleEdit = (webinar) => {
-    // TODO: Navigate to edit page or open edit modal
+    // Navigation handled by Link in table
     console.log('Edit webinar:', webinar);
   };
 
-  const handleDelete = (id) => {
-    setWebinars(prev => prev.filter(w => w.webinar_id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await deleteWebinar(id);
+      setWebinars(prev => prev.filter(w => w.webinar_id !== id));
+      
+      setToast({
+        message: 'Webinar deleted successfully',
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error deleting webinar:', error);
+      setToast({
+        message: 'Failed to delete webinar',
+        type: 'error'
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -123,6 +199,15 @@ export default function WebinarDashboard() {
           />
         </div>
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

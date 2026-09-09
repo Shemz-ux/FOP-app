@@ -4,17 +4,48 @@ import FeaturedSection from "../../components/Webinar/FeaturedSection";
 import SearchBar from "../../components/Webinar/SearchBar";
 import CategoryFilter from "../../components/Webinar/CategoryFilter";
 import Grid from "../../components/Webinar/Grid";
-import { testWebinars, testCategories, webinarsCopy } from "./webinars.copy";
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import { webinarsCopy } from "./webinars.copy";
+import { 
+  listWebinars, 
+  getFeaturedWebinars,
+  getWebinarCategories 
+} from "../../services/Webinars/webinarsService";
 
 export default function Webinars() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [loading, setLoading] = useState(false);
+  const [webinars, setWebinars] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // TODO: Replace with actual API call to webinarsService.listWebinars()
-  const webinars = testWebinars;
-  const categories = testCategories;
+  useEffect(() => {
+    fetchWebinars();
+    fetchCategories();
+  }, []);
+
+  const fetchWebinars = async () => {
+    try {
+      setLoading(true);
+      const data = await listWebinars({ limit: 100 });
+      setWebinars(data.webinars || []);
+    } catch (err) {
+      console.error('Error fetching webinars:', err);
+      setError('Failed to load webinars');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const cats = await getWebinarCategories();
+      setCategories(cats);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
 
   // Filter featured webinars (published and featured)
   const featuredWebinars = useMemo(() => {
@@ -47,15 +78,34 @@ export default function Webinars() {
   const totalViews = webinars.reduce((sum, w) => sum + (w.view_count || 0), 0);
   const formattedTotalViews = totalViews >= 1000 ? `${Math.floor(totalViews / 1000)}k` : totalViews;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button 
+            onClick={fetchWebinars}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      {/* <Hero 
-        totalWebinars={totalWebinars}
-        totalViews={formattedTotalViews}
-        featuredWebinar={featuredWebinars[0]}
-        copy={webinarsCopy.hero}
-      /> */}
+      <Hero copy={webinarsCopy.hero} />
 
       <div className="container mx-auto px-6 py-12">
         {/* Featured Section */}

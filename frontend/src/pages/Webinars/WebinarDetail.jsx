@@ -1,26 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Play, ArrowLeft, ThumbsUp, Eye, Clock, Calendar } from "lucide-react";
-import { testWebinars } from "./webinars.copy";
 import { webinarDetailCopy } from "./webinarDetail.copy";
 import { formatDuration, formatViewCount, formatDate } from "../../utils/webinarHelpers";
+import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import RelatedWebinars from "../../admin/Webinars/components/RelatedWebinars";
+import { 
+  getWebinar, 
+  trackWebinarView,
+  getWebinarsByCategory 
+} from "../../services/Webinars/webinarsService";
 
 export default function WebinarDetail() {
   const { webinarId } = useParams();
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(false);
+  const [webinar, setWebinar] = useState(null);
+  const [relatedWebinars, setRelatedWebinars] = useState([]);
+  // const [liked, setLiked] = useState(false); // Commented out until backend integration
   const [playing, setPlaying] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [viewTracked, setViewTracked] = useState(false);
 
-  // Find the webinar by ID
-  const webinar = testWebinars.find(w => w.webinar_id === parseInt(webinarId));
+  useEffect(() => {
+    fetchWebinar();
+  }, [webinarId]);
 
-  // Get related webinars (same category, excluding current)
-  const relatedWebinars = webinar 
-    ? testWebinars
-        .filter(w => w.category === webinar.category && w.webinar_id !== webinar.webinar_id && w.is_published)
-        .slice(0, 5)
-    : [];
+  const fetchWebinar = async () => {
+    try {
+      setLoading(true);
+      const data = await getWebinar(webinarId);
+      setWebinar(data);
+      
+      // Fetch related webinars
+      if (data.category) {
+        const related = await getWebinarsByCategory(data.category, { limit: 6 });
+        setRelatedWebinars(related.webinars || []);
+      }
+    } catch (error) {
+      console.error('Error fetching webinar:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Track view when video starts playing
+  const handlePlay = async () => {
+    setPlaying(true);
+    
+    if (!viewTracked && webinar) {
+      try {
+        await trackWebinarView(webinar.webinar_id);
+        setViewTracked(true);
+      } catch (error) {
+        console.error('Error tracking view:', error);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   if (!webinar) {
     return (
@@ -73,7 +116,7 @@ export default function WebinarDetail() {
               ) : (
                 <div
                   className="aspect-video relative cursor-pointer group"
-                  onClick={() => setPlaying(true)}
+                  onClick={handlePlay}
                 >
                   <img
                     src={webinar.thumbnail_url}
@@ -110,11 +153,12 @@ export default function WebinarDetail() {
               </h1>
 
               {/* Stats row */}
-              <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground mb-5">
-                <span className="flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground mb-5 pb-6 border-b border-border">
+                {/* View Count - Commented out until backend integration */}
+                {/* <span className="flex items-center gap-1.5">
                   <Eye className="w-4 h-4" />
                   {formatViewCount(webinar.view_count)} {webinarDetailCopy.stats.views}
-                </span>
+                </span> */}
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-4 h-4" />
                   {formatDuration(webinar.duration)}
@@ -125,8 +169,8 @@ export default function WebinarDetail() {
                 </span>
               </div>
 
-              {/* Like button */}
-              <div className="flex flex-wrap gap-3 pb-6 border-b border-border">
+              {/* Like button - Commented out until backend integration */}
+              {/* <div className="flex flex-wrap gap-3 pb-6 border-b border-border">
                 <button
                   onClick={() => setLiked(!liked)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
@@ -138,7 +182,7 @@ export default function WebinarDetail() {
                   <ThumbsUp className={`w-4 h-4 ${liked ? 'fill-primary' : ''}`} />
                   {formatViewCount(webinar.like_count + (liked ? 1 : 0))} {webinarDetailCopy.stats.likes}
                 </button>
-              </div>
+              </div> */}
             </div>
 
             {/* About This Webinar */}

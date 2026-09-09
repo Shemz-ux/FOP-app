@@ -187,49 +187,47 @@ export default function WebinarTable({
           </div>
         ) : (
           webinars.map((webinar) => (
-            <div key={webinar.webinar_id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <div key={webinar.webinar_id} className="bg-card border border-border rounded-xl p-3 sm:p-4 space-y-3">
               {/* Header */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className="w-16 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-                    <img 
-                      src={webinar.thumbnail_url} 
-                      alt={webinar.title} 
-                      className="w-full h-full object-cover" 
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <h3 className="text-base text-foreground truncate">
-                        {webinar.title}
-                      </h3>
-                      {webinar.is_featured && (
-                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0" />
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{webinar.category}</p>
-                  </div>
+              <div className="flex items-start gap-2 sm:gap-3">
+                <div className="w-16 sm:w-20 h-11 sm:h-14 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                  <img 
+                    src={webinar.thumbnail_url} 
+                    alt={webinar.title} 
+                    className="w-full h-full object-cover" 
+                  />
                 </div>
-                <button
-                  onClick={() => onToggleStatus(webinar.webinar_id)}
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${
-                    webinar.is_published
-                      ? 'bg-green-500/10 text-green-500 border border-green-500/20'
-                      : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
-                  }`}
-                >
-                  {webinar.is_published ? (
-                    <>
-                      <Globe className="w-3 h-3" />
-                      {copy.statusPublished}
-                    </>
-                  ) : (
-                    <>
-                      <FileEdit className="w-3 h-3" />
-                      {copy.statusDraft}
-                    </>
-                  )}
-                </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-1.5 mb-1">
+                    <h3 className="text-sm sm:text-base text-foreground line-clamp-2 flex-1">
+                      {webinar.title}
+                    </h3>
+                    {webinar.is_featured && (
+                      <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 flex-shrink-0 mt-0.5" />
+                    )}
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2">{webinar.category}</p>
+                  <button
+                    onClick={() => onToggleStatus(webinar.webinar_id)}
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${
+                      webinar.is_published
+                        ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                        : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                    }`}
+                  >
+                    {webinar.is_published ? (
+                      <>
+                        <Globe className="w-3 h-3" />
+                        <span className="hidden xs:inline">{copy.statusPublished}</span>
+                      </>
+                    ) : (
+                      <>
+                        <FileEdit className="w-3 h-3" />
+                        <span className="hidden xs:inline">{copy.statusDraft}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
               
               {/* Stats */}
@@ -245,38 +243,39 @@ export default function WebinarTable({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 pt-2 border-t border-border">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
                 <Link
                   to={`/admin/webinars/${webinar.webinar_id}`}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary/20 transition-colors"
+                  className="flex items-center justify-center gap-1.5 px-2 py-2 bg-primary/10 text-primary rounded-lg text-xs sm:text-sm hover:bg-primary/20 transition-colors"
                 >
-                  <BarChart className="w-4 h-4" />
-                  View
+                  <BarChart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>View</span>
                 </Link>
                 <button
                   onClick={() => onToggleFeatured(webinar.webinar_id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                     webinar.is_featured
                       ? 'bg-yellow-400/10 text-yellow-400 border border-yellow-400/20'
                       : 'bg-secondary text-foreground hover:bg-secondary/80'
                   }`}
                 >
-                  <Star className={`w-4 h-4 ${webinar.is_featured ? 'fill-yellow-400' : ''}`} />
-                  {webinar.is_featured ? 'Featured' : 'Feature'}
+                  <Star className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${webinar.is_featured ? 'fill-yellow-400' : ''}`} />
+                  <span className="hidden xs:inline">{webinar.is_featured ? 'Featured' : 'Feature'}</span>
+                  <Star className={`w-3.5 h-3.5 sm:w-4 sm:h-4 xs:hidden ${webinar.is_featured ? 'fill-yellow-400' : ''}`} />
                 </button>
                 <Link
                   to={`/admin/webinars/${webinar.webinar_id}/edit`}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-secondary rounded-lg text-sm hover:bg-secondary/80 transition-colors"
+                  className="flex items-center justify-center gap-1.5 px-2 py-2 bg-secondary rounded-lg text-xs sm:text-sm hover:bg-secondary/80 transition-colors"
                 >
-                  <Edit className="w-4 h-4" />
-                  Edit
+                  <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>Edit</span>
                 </Link>
                 <button
                   onClick={() => handleDeleteClick(webinar)}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500/10 text-red-500 rounded-lg text-sm hover:bg-red-500/20 transition-colors"
+                  className="flex items-center justify-center gap-1.5 px-2 py-2 bg-red-500/10 text-red-500 rounded-lg text-xs sm:text-sm hover:bg-red-500/20 transition-colors"
                 >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
+                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>Delete</span>
                 </button>
               </div>
             </div>

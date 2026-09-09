@@ -1,4 +1,5 @@
 import { Video, Globe, FileEdit, Eye } from "lucide-react";
+import { formatTotalViews } from "../../../utils/webinarHelpers";
 
 export default function WebinarStats({ webinars, copy }) {
   const stats = [
@@ -28,7 +29,7 @@ export default function WebinarStats({ webinars, copy }) {
     },
     { 
       label: copy.totalViews, 
-      value: `${(webinars.reduce((s, w) => s + w.view_count, 0) / 1000).toFixed(0)}k`, 
+      value: formatTotalViews(webinars),
       color: 'text-violet-400',
       icon: Eye,
       iconBg: 'bg-violet-400/10',

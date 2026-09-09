@@ -1,3 +1,8 @@
+// ⚠️ DEAD CODE - NO LONGER USED
+// This test data has been replaced by live API calls
+// See: /frontend/src/services/Webinars/webinarsService.js
+// Migration doc: /WEBINAR_MIGRATION_COMPLETE.md
+// TODO: Delete this entire testWebinars array
 const testWebinars = [
   {
     webinar_id: 1,
@@ -145,6 +150,10 @@ const testWebinars = [
   },
 ];
 
+// ⚠️ DEAD CODE - NO LONGER USED
+// This test data has been replaced by getWebinarCategories() API call
+// See: /frontend/src/services/Webinars/webinarsService.js
+// TODO: Delete this entire testCategories array
 const testCategories = [
   { category: 'Technology', count: 2 },
   { category: 'Business', count: 2 },

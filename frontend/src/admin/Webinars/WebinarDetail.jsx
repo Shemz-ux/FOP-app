@@ -15,47 +15,89 @@ import {
   Calendar,
   Play
 } from 'lucide-react';
-import { testWebinars } from '../../pages/Webinars/webinars.copy';
 import { adminWebinarDetailCopy } from './webinarDetail.copy';
 import { formatDuration, formatViewCount, formatDate } from '../../utils/webinarHelpers';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
+import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import RelatedWebinars from './components/RelatedWebinars';
+import { 
+  getWebinarAdmin, 
+  deleteWebinar,
+  getAllWebinarsAdmin
+} from '../../services/Webinars/webinarsService';
 
 export default function WebinarDetail() {
   const { webinarId } = useParams();
   const navigate = useNavigate();
   const [webinar, setWebinar] = useState(null);
+  const [relatedWebinars, setRelatedWebinars] = useState([]);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false });
   const [toast, setToast] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Find webinar from test data
-    const foundWebinar = testWebinars.find(w => w.webinar_id === parseInt(webinarId));
-    setWebinar(foundWebinar);
+    fetchWebinar();
   }, [webinarId]);
 
-  // Get related webinars (same category, excluding current, limit to 3)
-  const relatedWebinars = webinar 
-    ? testWebinars
-        .filter(w => w.category === webinar.category && w.is_published)
-        .slice(0, 5)
-    : [];
+  const fetchWebinar = async () => {
+    try {
+      setLoading(true);
+      const data = await getWebinarAdmin(webinarId);
+      setWebinar(data);
+      
+      // Fetch related webinars (same category)
+      if (data.category) {
+        const allWebinars = await getAllWebinarsAdmin({ 
+          category: data.category,
+          is_published: true,
+          limit: 6
+        });
+        setRelatedWebinars(allWebinars.webinars || []);
+      }
+    } catch (error) {
+      console.error('Error fetching webinar:', error);
+      setToast({
+        message: 'Failed to load webinar details',
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDeleteClick = () => {
     setConfirmModal({ isOpen: true });
   };
 
-  const handleDeleteConfirm = () => {
-    setToast({
-      message: `"${webinar.title}" has been deleted successfully`,
-      type: 'success'
-    });
-    setTimeout(() => {
-      navigate('/admin/webinars');
-    }, 1500);
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteWebinar(webinar.webinar_id);
+      setToast({
+        message: `"${webinar.title}" has been deleted successfully`,
+        type: 'success'
+      });
+      setTimeout(() => {
+        navigate('/admin/webinars');
+      }, 1500);
+    } catch (error) {
+      console.error('Error deleting webinar:', error);
+      setToast({
+        message: 'Failed to delete webinar',
+        type: 'error'
+      });
+    }
+    setConfirmModal({ isOpen: false });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   if (!webinar) {
     return (
@@ -132,8 +174,9 @@ export default function WebinarDetail() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+            {/* View Count - Commented out until backend integration */}
+            {/* <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm text-muted-foreground mb-1">
@@ -147,9 +190,10 @@ export default function WebinarDetail() {
                   <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+            {/* Like Count - Commented out until backend integration */}
+            {/* <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs sm:text-sm text-muted-foreground mb-1">
@@ -163,7 +207,7 @@ export default function WebinarDetail() {
                   <ThumbsUp className="w-6 h-6 sm:w-8 sm:h-8 text-pink-500" />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
               <div className="flex items-center justify-between">

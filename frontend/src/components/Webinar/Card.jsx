@@ -52,14 +52,13 @@ export default function Card({ webinar }) {
 
         {/* Stats */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground text-left">
-          <div className="flex items-center gap-1">
+          {/* <div className="flex items-center gap-1">
             <Eye className="w-3.5 h-3.5" />
             <span>{formatViewCount(webinar.view_count)} views</span>
-          </div>
-          {/* <div className="flex items-center gap-1">
-            <span>•</span>
-            <span>{formatDate(webinar.created_at)}</span>
           </div> */}
+          <div className="flex items-center gap-1">
+            <span>{formatDate(webinar.created_at)}</span>
+          </div>
         </div>
       </div>
     </Link>
