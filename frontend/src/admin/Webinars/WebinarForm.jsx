@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { webinarFormCopy } from './webinarForm.copy';
-import AdminSelect from '../../Components/AdminSelect';
-import Toast from '../../../components/Ui/Toast';
+import { webinarFormCopy } from './components/webinarForm.copy';
+import AdminSelect from '../Components/AdminSelect';
+import Toast from '../../components/Ui/Toast';
 
 export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
   const [formData, setFormData] = useState({
@@ -11,6 +11,7 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
     category: webinar?.category || '',
     youtube_url: webinar?.youtube_url || '',
     thumbnail_url: webinar?.thumbnail_url || '',
+    duration: webinar?.duration || '',
     is_published: webinar?.is_published !== undefined ? webinar.is_published : false,
     is_featured: webinar?.is_featured !== undefined ? webinar.is_featured : false,
   });
@@ -19,8 +20,6 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCustomCategory, setShowCustomCategory] = useState(false);
   const [customCategory, setCustomCategory] = useState('');
-  const [videoMetadata, setVideoMetadata] = useState(null);
-  const [isFetchingMetadata, setIsFetchingMetadata] = useState(false);
 
   // Update form data when webinar prop changes (for edit mode)
   useEffect(() => {
@@ -31,6 +30,7 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
         category: webinar.category || '',
         youtube_url: webinar.youtube_url || '',
         thumbnail_url: webinar.thumbnail_url || '',
+        duration: webinar.duration || '',
         is_published: webinar.is_published !== undefined ? webinar.is_published : false,
         is_featured: webinar.is_featured !== undefined ? webinar.is_featured : false,
       });
@@ -41,15 +41,6 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
         setShowCustomCategory(true);
         setCustomCategory(webinar.category);
       }
-      
-      // Set existing metadata if available
-      if (webinar.duration) {
-        setVideoMetadata({
-          duration: webinar.duration,
-          thumbnail: webinar.thumbnail_url,
-          title: webinar.title
-        });
-      }
     }
   }, [webinar]);
 
@@ -59,61 +50,6 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    
-    // Fetch metadata when YouTube URL changes
-    if (name === 'youtube_url' && value) {
-      const videoId = extractYouTubeId(value);
-      if (videoId) {
-        fetchYouTubeMetadata(videoId);
-      }
-    }
-  };
-
-  // Fetch YouTube video metadata
-  const fetchYouTubeMetadata = async (videoId) => {
-    setIsFetchingMetadata(true);
-    try {
-      // Using YouTube oEmbed API (no API key required)
-      const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
-      
-      if (!response.ok) {
-        throw new Error('Invalid YouTube video');
-      }
-      
-      const data = await response.json();
-      
-      // Get video duration using noembed.com (alternative that provides duration)
-      const noembedResponse = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
-      const noembedData = await noembedResponse.json();
-      
-      setVideoMetadata({
-        title: data.title,
-        thumbnail: data.thumbnail_url,
-        duration: noembedData.duration || 0 // Duration in seconds if available
-      });
-      
-      // Auto-fill thumbnail if not set
-      if (!formData.thumbnail_url) {
-        setFormData(prev => ({
-          ...prev,
-          thumbnail_url: data.thumbnail_url
-        }));
-      }
-      
-      setToast({
-        message: 'Video verified successfully',
-        type: 'success'
-      });
-    } catch (error) {
-      console.error('Error fetching YouTube metadata:', error);
-      setVideoMetadata(null);
-      setToast({
-        message: 'Could not verify YouTube video. Please check the URL.',
-        type: 'error'
-      });
-    } finally {
-      setIsFetchingMetadata(false);
-    }
   };
 
   const handleCategoryChange = (value) => {
@@ -187,6 +123,10 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
       return false;
     }
     
+    if (!formData.duration || formData.duration <= 0) {
+      setToast({ message: webinarFormCopy.validation.durationInvalid, type: 'error' });
+      return false;
+    }
     return true;
   };
 
@@ -206,13 +146,11 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
       // Prepare data for submission
       const webinarData = {
         ...formData,
+        duration: parseInt(formData.duration, 10),
         youtube_video_id: videoId,
         youtube_url: formData.youtube_url,
-        // Use metadata duration or default to 0 (will be fetched by backend)
-        duration: videoMetadata?.duration || 0,
-        // Use provided thumbnail or metadata thumbnail or generate default
+        // Use provided thumbnail or generate default
         thumbnail_url: formData.thumbnail_url || 
-          videoMetadata?.thumbnail ||
           `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
       };
 
@@ -362,31 +300,29 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
                 </p>
               </div>
 
-              {/* Video Metadata Preview */}
-              {(isFetchingMetadata || videoMetadata) && (
-                <div className="p-4 bg-secondary/30 rounded-xl">
-                  {isFetchingMetadata ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                      Verifying video...
-                    </div>
-                  ) : videoMetadata && (
-                    <div className="space-y-2">
-                      <p className="text-sm text-foreground font-medium">✓ Video verified</p>
-                      {videoMetadata.title && (
-                        <p className="text-xs text-muted-foreground">
-                          <span className="font-medium">YouTube Title:</span> {videoMetadata.title}
-                        </p>
-                      )}
-                      {videoMetadata.duration > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          <span className="font-medium">Duration:</span> {Math.floor(videoMetadata.duration / 60)}:{String(videoMetadata.duration % 60).padStart(2, '0')}
-                        </p>
-                      )}
-                    </div>
+              {/* Duration */}
+              <div>
+                <label htmlFor="duration" className="block text-sm text-foreground mb-2">
+                  {webinarFormCopy.fields.duration.label}
+                  {webinarFormCopy.fields.duration.required && (
+                    <span className="text-red-500 ml-1">*</span>
                   )}
-                </div>
-              )}
+                </label>
+                <input
+                  type="number"
+                  id="duration"
+                  name="duration"
+                  value={formData.duration}
+                  onChange={handleChange}
+                  placeholder={webinarFormCopy.fields.duration.placeholder}
+                  min="1"
+                  className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {webinarFormCopy.fields.duration.help}
+                </p>
+              </div>
 
               {/* Thumbnail URL (Optional) */}
               <div>
@@ -451,18 +387,18 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
             {/* Action Buttons */}
             <div className="flex items-center gap-3">
               <button
-                type="submit"
-                disabled={isSubmitting || isFetchingMetadata}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Saving...' : copy.submitButton}
-              </button>
-              <button
                 type="button"
                 onClick={onCancel}
-                className="px-6 py-3 border border-border rounded-xl hover:bg-secondary transition-colors"
+                className="px-6 py-3 border border-border rounded-xl text-foreground hover:bg-secondary transition-colors"
               >
                 Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Saving...' : copy.submitButton}
               </button>
             </div>
           </form>
