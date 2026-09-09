@@ -65,6 +65,8 @@ export default function SignUp() {
     ethnicity: '',
     school_meal_eligible: false,
     first_gen_to_go_uni: false,
+    has_right_to_work_uk: '',
+    requires_sponsorship: '',
     education_level: '',
     institution_name: '',
     uni_year: '',
@@ -261,7 +263,18 @@ export default function SignUp() {
       if (registrationData.society === 'None' || registrationData.society === '') {
         registrationData.society = null;
       }
-      
+
+      // Right to work / sponsorship - the select fields hold 'yes' | 'no' | '' locally
+      // (CustomSelect needs a string value); convert to boolean/null for the API.
+      // '' means "skipped" and must become null, not false.
+      const toBooleanOrNull = (value) => {
+        if (value === 'yes') return true;
+        if (value === 'no') return false;
+        return null;
+      };
+      registrationData.has_right_to_work_uk = toBooleanOrNull(registrationData.has_right_to_work_uk);
+      registrationData.requires_sponsorship = toBooleanOrNull(registrationData.requires_sponsorship);
+
       // console.log('Submitting job seeker data:', registrationData);
       
       const result = await createJobseeker(registrationData);
@@ -602,6 +615,51 @@ export default function SignUp() {
               <label htmlFor="first_gen_to_go_uni" className="text-sm text-foreground">
                 I am the first generation in my family to attend university
               </label>
+            </div>
+          </div>
+
+          {/* Right to Work / Sponsorship */}
+          <div className="space-y-4 pt-4 border-t border-border">
+            <div>
+              <p className="text-sm text-muted-foreground">Right to Work</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                This helps us match you with employers who can sponsor visas.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="has_right_to_work_uk" className="block text-sm mb-2 text-foreground">
+                  Do you have the right to work in the UK? *
+                </label>
+                <CustomSelect
+                  id="has_right_to_work_uk"
+                  value={jobSeekerData.has_right_to_work_uk}
+                  onChange={(e) => setJobSeekerData({ ...jobSeekerData, has_right_to_work_uk: e.target.value })}
+                  placeholder="Select an option"
+                  required
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" }
+                  ]}
+                />
+              </div>
+              <div>
+                <label htmlFor="requires_sponsorship" className="block text-sm mb-2 text-foreground">
+                  Will you require visa sponsorship? *
+                </label>
+                <CustomSelect
+                  id="requires_sponsorship"
+                  value={jobSeekerData.requires_sponsorship}
+                  onChange={(e) => setJobSeekerData({ ...jobSeekerData, requires_sponsorship: e.target.value })}
+                  placeholder="Select an option"
+                  required
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" }
+                  ]}
+                />
+              </div>
             </div>
           </div>
 
