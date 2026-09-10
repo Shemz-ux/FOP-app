@@ -48,10 +48,13 @@ jobs:
     
     - name: Set up test environment
       working-directory: ./api
+      env:
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
       run: |
         echo "PORT=5002" > .env
         echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/fop_test_db" >> .env
         echo "JWT_SECRET=test_jwt_secret_key_for_testing_only" >> .env
+        echo "YOUTUBE_API_KEY=$YOUTUBE_API_KEY" >> .env
     
     - name: Set up database schema
       working-directory: ./api
