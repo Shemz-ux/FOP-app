@@ -13,6 +13,7 @@ export default function JobseekersManagement() {
   const [filterUniversity, setFilterUniversity] = useState('all');
   const [filterFreeMeal, setFilterFreeMeal] = useState(false);
   const [filterFirstGen, setFilterFirstGen] = useState(false);
+  const [filterRightToWork, setFilterRightToWork] = useState('all');
   const [selectedJobseekerId, setSelectedJobseekerId] = useState(null);
   const [jobseekers, setJobseekers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,8 +49,13 @@ export default function JobseekersManagement() {
     const matchesUniversity = filterUniversity === 'all' || jobseeker.institution_name === filterUniversity;
     const matchesFreeMeal = !filterFreeMeal || jobseeker.school_meal_eligible === true;
     const matchesFirstGen = !filterFirstGen || jobseeker.first_gen_to_go_uni === true;
-    
-    return matchesSearch && matchesGender && matchesEducation && matchesUniversity && matchesFreeMeal && matchesFirstGen;
+    const matchesRightToWork =
+      filterRightToWork === 'all' ||
+      (filterRightToWork === 'yes' && jobseeker.has_right_to_work_uk === true) ||
+      (filterRightToWork === 'no' && jobseeker.has_right_to_work_uk === false) ||
+      (filterRightToWork === 'not_provided' && jobseeker.has_right_to_work_uk === null);
+
+    return matchesSearch && matchesGender && matchesEducation && matchesUniversity && matchesFreeMeal && matchesFirstGen && matchesRightToWork;
   });
 
   const universities = [...new Set(jobseekers.map(j => j.institution_name).filter(Boolean))];
@@ -64,7 +70,7 @@ export default function JobseekersManagement() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterGender, filterEducation, filterUniversity, filterFreeMeal, filterFirstGen]);
+  }, [searchTerm, filterGender, filterEducation, filterUniversity, filterFreeMeal, filterFirstGen, filterRightToWork]);
 
   const handleExportCSV = async () => {
     if (jobseekers.length === 0) {
@@ -148,6 +154,10 @@ export default function JobseekersManagement() {
       role_interest_option_two: jobseeker.role_interest_option_two,
       society: jobseeker.society,
       graduationDate: jobseeker.graduationDate || null,
+      has_right_to_work_uk: jobseeker.has_right_to_work_uk,
+      requires_sponsorship: jobseeker.requires_sponsorship,
+      school_meal_eligible: jobseeker.school_meal_eligible,
+      first_gen_to_go_uni: jobseeker.first_gen_to_go_uni,
       cvData: jobseeker.cv_storage_key ? {
         cv_file_name: jobseeker.cv_file_name,
         cv_file_size: jobseeker.cv_file_size,
@@ -209,7 +219,7 @@ export default function JobseekersManagement() {
               <Filter className="w-4 h-4" />
               <span>Filter by:</span>
             </div>
-            {(filterGender !== 'all' || filterEducation !== 'all' || filterUniversity !== 'all' || filterFreeMeal || filterFirstGen || searchTerm) && (
+            {(filterGender !== 'all' || filterEducation !== 'all' || filterUniversity !== 'all' || filterFreeMeal || filterFirstGen || filterRightToWork !== 'all' || searchTerm) && (
               <button
                 onClick={() => {
                   setSearchTerm('');
@@ -218,6 +228,7 @@ export default function JobseekersManagement() {
                   setFilterUniversity('all');
                   setFilterFreeMeal(false);
                   setFilterFirstGen(false);
+                  setFilterRightToWork('all');
                 }}
                 className="text-sm text-primary hover:underline flex items-center gap-1"
               >
@@ -282,10 +293,18 @@ export default function JobseekersManagement() {
                   </button>
                 </div>
               )}
+              {filterRightToWork !== 'all' && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-sm">
+                  <span className="text-foreground">Right to Work: <span className="font-medium">{filterRightToWork === 'yes' ? 'Yes' : filterRightToWork === 'no' ? 'No' : 'Not Provided'}</span></span>
+                  <button onClick={() => setFilterRightToWork('all')} className="text-indigo-500 hover:text-indigo-500/80">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm mb-2 text-foreground">Gender</label>
               <AdminSelect
@@ -331,6 +350,21 @@ export default function JobseekersManagement() {
                 options={[
                   { value: 'all', label: 'All Institutions' },
                   ...universities.map(uni => ({ value: uni, label: uni }))
+                ]}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2 text-foreground">Right to Work in UK</label>
+              <AdminSelect
+                value={filterRightToWork}
+                onValueChange={setFilterRightToWork}
+                placeholder="All"
+                options={[
+                  { value: 'all', label: 'All' },
+                  { value: 'yes', label: 'Yes' },
+                  { value: 'no', label: 'No' },
+                  { value: 'not_provided', label: 'Not Provided' }
                 ]}
               />
             </div>

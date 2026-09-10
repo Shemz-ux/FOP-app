@@ -51,32 +51,36 @@ export const createJobseeker = (newJobseeker) => {
         role_interest_option_two,
         society,
         linkedin,
+        has_right_to_work_uk = null,
+        requires_sponsorship = null,
         cv_file_name = null,
         cv_file_size = null,
         cv_storage_key = null,
         cv_storage_url = null,
         cv_uploaded_at = null
     } = newJobseeker;
-    
+
     return db.query(`
         INSERT INTO jobseekers (
-            first_name, last_name, email, password_hash, phone_number, 
-            date_of_birth, gender, ethnicity, school_meal_eligible, 
-            first_gen_to_go_uni, education_level, institution_name, 
-            uni_year, degree_type, area_of_study, 
+            first_name, last_name, email, password_hash, phone_number,
+            date_of_birth, gender, ethnicity, school_meal_eligible,
+            first_gen_to_go_uni, education_level, institution_name,
+            uni_year, degree_type, area_of_study,
             subject_one, subject_two, subject_three, subject_four,
             role_interest_option_one, role_interest_option_two, society,
-            linkedin, cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at
+            linkedin, has_right_to_work_uk, requires_sponsorship,
+            cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28) 
-        RETURNING *`, 
-        [first_name, last_name, email, password_hash, phone_number, 
-         date_of_birth, gender, ethnicity, school_meal_eligible, 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
+        RETURNING *`,
+        [first_name, last_name, email, password_hash, phone_number,
+         date_of_birth, gender, ethnicity, school_meal_eligible,
          first_gen_to_go_uni, education_level, institution_name,
          uni_year, degree_type, area_of_study,
          subject_one, subject_two, subject_three, subject_four,
          role_interest_option_one, role_interest_option_two, society,
-         linkedin, cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at]
+         linkedin, has_right_to_work_uk, requires_sponsorship,
+         cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at]
     ).then(({rows}) => {
         return rows[0];
     });
@@ -89,9 +93,10 @@ export const updateJobseeker = (updateJobseeker, id) => {
         "first_name", "last_name", "email", "password_hash", "phone_number", "date_of_birth", 
         "gender", "ethnicity", "school_meal_eligible", "first_gen_to_go_uni", 
         "education_level", "institution_name", "uni_year", 
-        "degree_type", "area_of_study", "subject_one", "subject_two", 
+        "degree_type", "area_of_study", "subject_one", "subject_two",
         "subject_three", "subject_four", "role_interest_option_one", "role_interest_option_two", "society",
-        "linkedin", "cv_file_name", "cv_file_size", "cv_storage_key", "cv_storage_url", "cv_uploaded_at"
+        "linkedin", "has_right_to_work_uk", "requires_sponsorship",
+        "cv_file_name", "cv_file_size", "cv_storage_key", "cv_storage_url", "cv_uploaded_at"
     ];
     let index = 1;
 

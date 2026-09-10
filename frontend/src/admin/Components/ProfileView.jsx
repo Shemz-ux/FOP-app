@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Briefcase, Calendar, FileText, Download } from 'lucide-react';
 import { CVViewCard } from './CVViewCard';
 import { apiGet } from '../../services/api';
+import { formatUniYear } from '../../utils/uniYearFormatter';
+import { formatYesNo } from '../../utils/yesNoFormatter';
 
 export function ProfileView({ profile, onClose, type = 'applicant' }) {
   const [appliedJobs, setAppliedJobs] = useState([]);
@@ -54,9 +56,11 @@ export function ProfileView({ profile, onClose, type = 'applicant' }) {
 
           {/* Profile Details */}
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* Contact Information */}
+            {/* Personal Details */}
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h2 className="text-xl font-semibold mb-4 text-foreground border-b border-border pb-2">Contact Information</h2>
+              <h2 className="text-xl font-semibold mb-4 text-foreground border-b border-border pb-2">Personal Details</h2>
+
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Contact</h3>
               <div className="space-y-4">
                 <div>
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Email</p>
@@ -76,6 +80,34 @@ export function ProfileView({ profile, onClose, type = 'applicant' }) {
                     </a>
                   </div>
                 )}
+              </div>
+
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 mt-6 pt-4 border-t border-border">Eligibility &amp; Background</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Right to Work in the UK</p>
+                  <p className="text-sm text-foreground">
+                    {formatYesNo(profile.has_right_to_work_uk)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Requires Sponsorship</p>
+                  <p className="text-sm text-foreground">
+                    {formatYesNo(profile.requires_sponsorship)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Free School Meals Eligible</p>
+                  <p className="text-sm text-foreground">
+                    {formatYesNo(profile.school_meal_eligible)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">First Generation to University</p>
+                  <p className="text-sm text-foreground">
+                    {formatYesNo(profile.first_gen_to_go_uni)}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -104,7 +136,7 @@ export function ProfileView({ profile, onClose, type = 'applicant' }) {
                 {profile.year && (
                   <div>
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Year</p>
-                    <p className="text-sm text-foreground">{profile.year}</p>
+                    <p className="text-sm text-foreground">{formatUniYear(profile.year)}</p>
                   </div>
                 )}
                 {profile.degree_type && (profile.education_level === 'undergraduate' || profile.education_level === 'postgraduate' || profile.education_level === 'doctorate' || profile.education_level === 'phd') && (

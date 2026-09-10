@@ -32,13 +32,12 @@ describe('Admin Users API Endpoints', () => {
     });
 
     afterAll(async () => {
-        // Clean up test data
-        try {
-            for (const id of testAdminUserIds) {
+        for (const id of [...testAdminUserIds].reverse()) {
+            try {
                 await removeAdminUser(id);
+            } catch (error) {
+                console.log("Cleanup error for admin_id", id, ":", error.message);
             }
-        } catch (error) {
-            console.log("Cleanup error:", error.message);
         }
     });
 
@@ -310,6 +309,9 @@ describe('Admin Users API Endpoints', () => {
                 password_hash: hashedPassword,
                 role: 'admin'
             });
+            // Deactivation is a soft-delete (is_active = false), so this row would
+            // otherwise never get cleaned up - register it for the outer afterAll.
+            testAdminUserIds.push(testUser.admin_id);
 
             const response = await request(app)
                 .patch(`/api/admin/users/${testUser.admin_id}/deactivate`)
