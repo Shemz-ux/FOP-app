@@ -311,11 +311,11 @@ export default function Profile() {
       <section className="bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border">
         <div className="container mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <Avatar className="w-30 h-30">
+            {/* <Avatar className="w-30 h-30">
               <AvatarFallback className="text-3xl">
                 {user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U'}
               </AvatarFallback>
-            </Avatar>
+            </Avatar> */}
 
             <div className="flex-1 text-left">
               <h1 className="text-3xl mb-2 text-foreground">
