@@ -1,6 +1,7 @@
 import { fetchEventRegistrations } from "../models/event-registrations.js";
 import { Parser } from 'json2csv';
 import db from "../db/db.js";
+import { formatSubjects } from "../utils/formatters.js";
 
 export const getEventRegistrations = (req, res, next) => {
     const { event_id } = req.params;
@@ -108,7 +109,8 @@ export const exportEventRegistrationsCSV = async (req, res, next) => {
             'University Year': formatUniYear(reg.jobseeker.uni_year),
             'Degree Type': formatDegreeType(reg.jobseeker.degree_type),
             'Area of Study': reg.jobseeker.area_of_study || 'N/A',
-            'Subject': reg.jobseeker.subject_one || 'N/A',
+            'Subject': formatSubjects(reg.jobseeker.subject_one, reg.jobseeker.subject_two, reg.jobseeker.subject_three, reg.jobseeker.subject_four),
+            'Society': reg.jobseeker.society || 'None',
             'First Generation to University': formatBoolean(reg.jobseeker.first_gen_to_go_uni),
             'Free School Meals Eligible': formatBoolean(reg.jobseeker.school_meal_eligible),
             'Registration Status': reg.status || 'registered',
@@ -138,6 +140,7 @@ export const exportEventRegistrationsCSV = async (req, res, next) => {
             'Degree Type',
             'Area of Study',
             'Subject',
+            'Society',
             'First Generation to University',
             'Free School Meals Eligible',
             'Registration Status',

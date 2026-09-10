@@ -115,20 +115,15 @@ export const fetchStudentsByUniversity = (university) => {
 };
 
 export const fetchStudentsBySociety = (society) => {
+    // Exact (case-insensitive) match on the society name, not a substring LIKE match,
+    // so e.g. "Tech Society" doesn't also pull in "Advanced Tech Society Ltd".
+    // Selects the full jobseeker record so this can back a real ProfileView, not just a summary row.
     return db.query(`
-        SELECT 
-            jobseeker_id,
-            first_name,
-            last_name,
-            email,
-            society,
-            institution_name,
-            education_level,
-            created_at
+        SELECT *
         FROM jobseekers
-        WHERE LOWER(society) LIKE LOWER($1)
+        WHERE LOWER(TRIM(society)) = LOWER(TRIM($1))
         ORDER BY created_at DESC
-    `, [`%${society}%`]).then(({rows}) => {
+    `, [society]).then(({rows}) => {
         return rows;
     });
 };

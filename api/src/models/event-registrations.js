@@ -22,7 +22,11 @@ export const fetchEventRegistrations = (event_id) => {
             j.degree_type,
             j.first_gen_to_go_uni,
             j.school_meal_eligible,
-            j.subject_one
+            j.subject_one,
+            j.subject_two,
+            j.subject_three,
+            j.subject_four,
+            j.society
         FROM jobseekers_events_applied jea
         JOIN jobseekers j ON jea.jobseeker_id = j.jobseeker_id
         WHERE jea.event_id = $1
@@ -51,7 +55,11 @@ export const fetchEventRegistrations = (event_id) => {
                 degree_type: row.degree_type,
                 first_gen_to_go_uni: row.first_gen_to_go_uni,
                 school_meal_eligible: row.school_meal_eligible,
-                subject_one: row.subject_one
+                subject_one: row.subject_one,
+                subject_two: row.subject_two,
+                subject_three: row.subject_three,
+                subject_four: row.subject_four,
+                society: row.society
             }
         }));
     });

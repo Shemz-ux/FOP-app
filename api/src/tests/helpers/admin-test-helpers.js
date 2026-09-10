@@ -39,6 +39,9 @@ export class AdminTestHelper {
                 gender: "male",
                 institution_name: "University College London",
                 education_level: "undergraduate",
+                uni_year: "1st",
+                degree_type: "bsc",
+                area_of_study: "Computer Science",
                 society: "Tech Society",
                 school_meal_eligible: true,
                 first_gen_to_go_uni: true
@@ -51,6 +54,9 @@ export class AdminTestHelper {
                 gender: "female",
                 institution_name: "Imperial College London",
                 education_level: "postgraduate",
+                uni_year: "masters",
+                degree_type: "msc",
+                area_of_study: "Engineering",
                 society: "Engineering Society",
                 school_meal_eligible: false,
                 first_gen_to_go_uni: false
@@ -63,6 +69,9 @@ export class AdminTestHelper {
                 gender: "non_binary",
                 institution_name: "King's College London",
                 education_level: "phd",
+                uni_year: "phd_year_1",
+                degree_type: "phd",
+                area_of_study: "Research Methods",
                 society: "Research Society",
                 school_meal_eligible: true,
                 first_gen_to_go_uni: false
@@ -123,7 +132,7 @@ export class AdminTestHelper {
         const events = [
             {
                 title: `Helper Career Fair ${timestamp}`,
-                company: "Helper University Careers",
+                organiser: "Helper University Careers",
                 description: "Helper test career fair",
                 industry: "Education",
                 location: "London",
@@ -133,7 +142,7 @@ export class AdminTestHelper {
             },
             {
                 title: `Helper Tech Networking ${timestamp}`,
-                company: "Helper Tech Network",
+                organiser: "Helper Tech Network",
                 description: "Helper networking event",
                 industry: "Technology",
                 location: "Birmingham",
@@ -321,6 +330,9 @@ export const generateTestJobseeker = (overrides = {}) => {
         gender: "male",
         institution_name: "Test University",
         education_level: "undergraduate",
+        uni_year: "1st",
+        degree_type: "bsc",
+        area_of_study: "General Studies",
         society: "Test Society",
         school_meal_eligible: false,
         first_gen_to_go_uni: false,
@@ -347,7 +359,7 @@ export const generateTestEvent = (overrides = {}) => {
     const timestamp = Date.now();
     return {
         title: `Test Event ${timestamp}`,
-        company: "Test Event Company",
+        organiser: "Test Event Company",
         description: "Test event description",
         industry: "Technology",
         location: "Test Location",

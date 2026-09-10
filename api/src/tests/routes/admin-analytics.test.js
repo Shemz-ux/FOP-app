@@ -335,9 +335,9 @@ describe('Admin Analytics API Endpoints', () => {
             expect(response.body.students.length).toBeGreaterThan(0);
         });
 
-        it('should return jobseekers by society', async () => {
+        it('should return jobseekers by society (exact, case-insensitive match)', async () => {
             const response = await request(app)
-                .get('/api/admin/jobseekers/society/Tech')
+                .get('/api/admin/jobseekers/society/Tech%20Society')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
 
@@ -345,6 +345,19 @@ describe('Admin Analytics API Endpoints', () => {
             expect(response.body).toHaveProperty('count');
             expect(Array.isArray(response.body.students)).toBe(true);
             expect(response.body.students.length).toBeGreaterThan(0);
+            response.body.students.forEach(student => {
+                expect(student.society.toLowerCase()).toBe('tech society');
+            });
+        });
+
+        it('should not return jobseekers for a partial society name match', async () => {
+            // "Tech" should NOT match "Tech Society" — only an exact name should
+            const response = await request(app)
+                .get('/api/admin/jobseekers/society/Tech')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(response.body.students).toEqual([]);
         });
 
         it('should return jobseekers eligible for free meals', async () => {

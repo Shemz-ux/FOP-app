@@ -45,6 +45,7 @@ import WebinarCreate from './admin/Webinars/components/WebinarCreate.jsx'
 import WebinarEdit from './admin/Webinars/components/WebinarEdit.jsx'
 import JobseekersManagement from './admin/Management/JobseekersManagement.jsx'
 import SocietiesManagement from './admin/Management/SocietiesManagement.jsx'
+import SocietyDetail from './admin/Management/SocietyDetail.jsx'
 
 function App() {
   useEffect(() => {
@@ -221,6 +222,10 @@ function App() {
     {
       path: "/admin/societies",
       element: <Layout><SocietiesManagement /></Layout>
+    },
+    {
+      path: "/admin/societies/:id",
+      element: <Layout><SocietyDetail /></Layout>
     }
   ]);
 

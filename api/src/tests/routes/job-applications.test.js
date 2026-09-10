@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../../app.js';
 import db from '../../db/db.js';
+import { AdminTestHelper } from '../helpers/admin-test-helpers.js';
 import '../utils/setup.js';
 
 describe('Job Applications API Endpoints', () => {
@@ -86,8 +87,58 @@ describe('Job Applications API Endpoints', () => {
                 .get('/api/admin/jobs/99999/applications')
                 .set('Authorization', `Bearer ${backdoorToken}`)
                 .expect(200);
-            
+
             expect(response.body.job_applications).toEqual([]);
+        });
+    });
+
+    describe('GET /api/jobs/:job_id/applications/export', () => {
+        let helper;
+        let exportJobId;
+
+        beforeAll(async () => {
+            helper = new AdminTestHelper();
+            await helper.initialize();
+            const [jobseekerId] = await helper.createTestJobseekers(1); // seeded with society: "Tech Society"
+            const [jobId] = await helper.createTestJobs(1);
+            exportJobId = jobId;
+
+            await db.query(
+                `INSERT INTO jobseekers_jobs_applied (jobseeker_id, job_id, status, applied_at)
+                VALUES ($1, $2, $3, NOW())
+                ON CONFLICT (jobseeker_id, job_id) DO NOTHING`,
+                [jobseekerId, jobId, 'pending']
+            );
+
+            // Give the applicant all four subjects so the CSV export's combined "Subjects" column can be verified
+            await db.query(
+                `UPDATE jobseekers SET subject_one = $1, subject_two = $2, subject_three = $3, subject_four = $4 WHERE jobseeker_id = $5`,
+                ['Mathematics', 'Physics', 'Chemistry', 'Further Mathematics', jobseekerId]
+            );
+        });
+
+        afterAll(async () => {
+            await helper.cleanup();
+        });
+
+        test('CSV export includes the applicant\'s Society', async () => {
+            const response = await request(app)
+                .get(`/api/jobs/${exportJobId}/applications/export`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(response.headers['content-type']).toContain('text/csv');
+            expect(response.text).toContain('Society');
+            expect(response.text).toContain('Tech Society');
+        });
+
+        test('CSV export combines all four subject columns, not just the first', async () => {
+            const response = await request(app)
+                .get(`/api/jobs/${exportJobId}/applications/export`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(response.text).toContain('Mathematics, Physics, Chemistry, Further Mathematics');
         });
     });
 });
