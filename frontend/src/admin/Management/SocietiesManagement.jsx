@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, BarChart, Users, Download, Eye, ArrowLeft, Home, X, Trash2 } from 'lucide-react';
+import { Search, Filter, BarChart, Users, Download, Eye, Home, X, Trash2 } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
@@ -11,7 +11,6 @@ export default function SocietiesManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterUniversity, setFilterUniversity] = useState('all');
   const [filterMemberCount, setFilterMemberCount] = useState('all');
-  const [selectedSocietyId, setSelectedSocietyId] = useState(null);
   const [societies, setSocieties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -143,82 +142,6 @@ export default function SocietiesManagement() {
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading societies...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (selectedSocietyId) {
-    const society = societies.find(s => s.society_id === selectedSocietyId);
-    if (!society) return null;
-
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-6 py-8">
-          <div className="space-y-6 text-left">
-        <button
-          onClick={() => setSelectedSocietyId(null)}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
-        </button>
-        
-        <div>
-          <h1 className="text-3xl mb-2 text-foreground">{society.name}</h1>
-          <p className="text-muted-foreground">{society.university}</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-sm text-muted-foreground mb-1">Total Members</p>
-            <p className="text-2xl text-foreground">{society.member_count || 0}</p>
-          </div>
-          <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-sm text-muted-foreground mb-1">Institution</p>
-            <p className="text-xl text-foreground">{society.university || 'N/A'}</p>
-          </div>
-          <div className="bg-card border border-border rounded-xl p-4">
-            <p className="text-sm text-muted-foreground mb-1">Contact</p>
-            <p className="text-lg text-foreground">{society.email || 'N/A'}</p>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-xl mb-4 text-foreground">Society Details</h2>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Society Name</p>
-              <p className="text-foreground">{society.name}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Institution</p>
-              <p className="text-foreground">{society.university || 'N/A'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Description</p>
-              <p className="text-foreground">{society.description || 'No description provided'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Member Count</p>
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground">{society.member_count || 0} members</span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Contact Email</p>
-              <p className="text-foreground">{society.email || 'N/A'}</p>
-            </div>
-            <div className="flex gap-4">
-              {/* <button className="px-4 py-2 border border-border rounded-lg hover:bg-secondary">
-                <Download className="w-4 h-4 inline mr-2" />
-                Export Members
-              </button> */}
-            </div>
-          </div>
-        </div>
-          </div>
         </div>
       </div>
     );
@@ -377,13 +300,13 @@ export default function SocietiesManagement() {
                 <td className="px-6 py-4 text-muted-foreground">{society.email || 'N/A'}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setSelectedSocietyId(society.society_id)}
+                    <Link
+                      to={`/admin/societies/${society.society_id}`}
                       className="p-2 hover:bg-secondary rounded-lg transition-colors"
                       title="View details"
                     >
                       <Eye className="w-4 h-4 text-foreground" />
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDeleteClick(society)}
                       className="p-2 hover:bg-secondary rounded-lg transition-colors"

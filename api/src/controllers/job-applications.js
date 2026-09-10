@@ -1,6 +1,7 @@
 import { fetchJobApplications } from "../models/job-applications.js";
 import { Parser } from 'json2csv';
 import db from "../db/db.js";
+import { formatSubjects } from "../utils/formatters.js";
 
 export const getJobApplications = (req, res, next) => {
     const { job_id } = req.params;
@@ -109,7 +110,7 @@ export const exportJobApplicationsCSV = async (req, res, next) => {
             'University Year': formatUniYear(app.jobseeker.uni_year),
             'Degree Type': formatDegreeType(app.jobseeker.degree_type),
             'Area of Study': app.jobseeker.area_of_study || 'N/A',
-            'Subjects': app.jobseeker.subject_one || 'N/A',
+            'Subjects': formatSubjects(app.jobseeker.subject_one, app.jobseeker.subject_two, app.jobseeker.subject_three, app.jobseeker.subject_four),
             'Society': app.jobseeker.society || 'None',
             'First Generation to University': formatBoolean(app.jobseeker.first_gen_to_go_uni),
             'Free School Meals Eligible': formatBoolean(app.jobseeker.school_meal_eligible),

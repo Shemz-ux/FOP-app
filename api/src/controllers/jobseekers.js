@@ -3,6 +3,7 @@ import { incrementSocietyMemberCount } from "../models/societies.js";
 import bcrypt from "bcrypt";
 import { Parser } from 'json2csv';
 import { sendWelcomeEmail } from "../services/emailService.js";
+import { formatSubjects } from "../utils/formatters.js";
 
 export const postJobseeker = async (req, res, next) => {
     try {
@@ -223,7 +224,7 @@ export const exportJobseekersCSV = async (req, res, next) => {
             'University Year': formatUniYear(js.uni_year),
             'Degree Type': formatDegreeType(js.degree_type),
             'Area of Study': js.area_of_study || 'N/A',
-            'Subjects': js.subject_one || 'N/A',
+            'Subjects': formatSubjects(js.subject_one, js.subject_two, js.subject_three, js.subject_four),
             'Society': js.society || 'None',
             'First Generation to University': formatBoolean(js.first_gen_to_go_uni),
             'Free School Meals Eligible': formatBoolean(js.school_meal_eligible),
