@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import CustomSelect from "../../components/Ui/CustomSelect";
+import { yesNoToBooleanOrNull } from "../../utils/yesNoFormatter";
 import { apiGet } from "../../services/api";
 import { getUniversityOptions } from "../../data/universities";
 import { getSchoolsCollegesOptions } from "../../data/schools";
@@ -63,8 +64,8 @@ export default function SignUp() {
     date_of_birth: '',
     gender: '',
     ethnicity: '',
-    school_meal_eligible: false,
-    first_gen_to_go_uni: false,
+    school_meal_eligible: '',
+    first_gen_to_go_uni: '',
     has_right_to_work_uk: '',
     requires_sponsorship: '',
     education_level: '',
@@ -264,16 +265,14 @@ export default function SignUp() {
         registrationData.society = null;
       }
 
-      // Right to work / sponsorship - the select fields hold 'yes' | 'no' | '' locally
+      // Several fields are now Yes/No CustomSelects, which hold 'yes' | 'no' | '' locally
       // (CustomSelect needs a string value); convert to boolean/null for the API.
-      // '' means "skipped" and must become null, not false.
-      const toBooleanOrNull = (value) => {
-        if (value === 'yes') return true;
-        if (value === 'no') return false;
-        return null;
-      };
-      registrationData.has_right_to_work_uk = toBooleanOrNull(registrationData.has_right_to_work_uk);
-      registrationData.requires_sponsorship = toBooleanOrNull(registrationData.requires_sponsorship);
+      // '' means "not answered" and must become null, not false - though school_meal_eligible
+      // and first_gen_to_go_uni are required so '' shouldn't reach here in practice.
+      registrationData.school_meal_eligible = yesNoToBooleanOrNull(registrationData.school_meal_eligible);
+      registrationData.first_gen_to_go_uni = yesNoToBooleanOrNull(registrationData.first_gen_to_go_uni);
+      registrationData.has_right_to_work_uk = yesNoToBooleanOrNull(registrationData.has_right_to_work_uk);
+      registrationData.requires_sponsorship = yesNoToBooleanOrNull(registrationData.requires_sponsorship);
 
       // console.log('Submitting job seeker data:', registrationData);
       
@@ -388,7 +387,7 @@ export default function SignUp() {
 
   const renderPersonalDetails = () => (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
+      <div className="mb-8 text-left">
         <button
           onClick={() => setCurrentStep('select-type')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
@@ -590,31 +589,40 @@ export default function SignUp() {
           {/* Background Questions */}
           <div className="space-y-4 pt-4 border-t border-border">
             <p className="text-sm text-muted-foreground">Background Information</p>
-            
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="school_meal_eligible"
-                checked={jobSeekerData.school_meal_eligible}
-                onChange={(e) => setJobSeekerData({ ...jobSeekerData, school_meal_eligible: e.target.checked })}
-                className="w-4 h-4 rounded border-input bg-input-background"
-              />
-              <label htmlFor="school_meal_eligible" className="text-sm text-foreground">
-                I was eligible for free school meals
-              </label>
-            </div>
 
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="first_gen_to_go_uni"
-                checked={jobSeekerData.first_gen_to_go_uni}
-                onChange={(e) => setJobSeekerData({ ...jobSeekerData, first_gen_to_go_uni: e.target.checked })}
-                className="w-4 h-4 rounded border-input bg-input-background"
-              />
-              <label htmlFor="first_gen_to_go_uni" className="text-sm text-foreground">
-                I am the first generation in my family to attend university
-              </label>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="school_meal_eligible" className="block text-sm mb-2 text-foreground">
+                  Were you eligible for free school meals? *
+                </label>
+                <CustomSelect
+                  id="school_meal_eligible"
+                  value={jobSeekerData.school_meal_eligible}
+                  onChange={(e) => setJobSeekerData({ ...jobSeekerData, school_meal_eligible: e.target.value })}
+                  placeholder="Select an option"
+                  required
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" }
+                  ]}
+                />
+              </div>
+              <div>
+                <label htmlFor="first_gen_to_go_uni" className="block text-sm mb-2 text-foreground">
+                  Are you the first generation in your family to attend university? *
+                </label>
+                <CustomSelect
+                  id="first_gen_to_go_uni"
+                  value={jobSeekerData.first_gen_to_go_uni}
+                  onChange={(e) => setJobSeekerData({ ...jobSeekerData, first_gen_to_go_uni: e.target.value })}
+                  placeholder="Select an option"
+                  required
+                  options={[
+                    { value: "yes", label: "Yes" },
+                    { value: "no", label: "No" }
+                  ]}
+                />
+              </div>
             </div>
           </div>
 
@@ -1059,7 +1067,7 @@ export default function SignUp() {
 
   const renderSocietyDetails = () => (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
+      <div className="mb-8 text-left">
         <button
           onClick={() => setCurrentStep('select-type')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
@@ -1223,7 +1231,7 @@ export default function SignUp() {
 
   const renderReview = () => (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
+      <div className="text-left mb-8">
         <button
           onClick={() => setCurrentStep('education-details')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
@@ -1273,23 +1281,21 @@ export default function SignUp() {
               <p className="text-muted-foreground mb-1">Ethnicity</p>
               <p className="text-foreground">{jobSeekerData.ethnicity}</p>
             </div>
-            <div className="md:col-span-2">
-              <p className="text-muted-foreground mb-1">Background</p>
-              <div className="flex flex-wrap gap-2">
-                {jobSeekerData.school_meal_eligible && (
-                  <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs">
-                    Free school meals eligible
-                  </span>
-                )}
-                {jobSeekerData.first_gen_to_go_uni && (
-                  <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs">
-                    First generation university student
-                  </span>
-                )}
-                {!jobSeekerData.school_meal_eligible && !jobSeekerData.first_gen_to_go_uni && (
-                  <span className="text-foreground">Not specified</span>
-                )}
-              </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Free School Meals Eligible</p>
+              <p className="text-foreground capitalize">{jobSeekerData.school_meal_eligible}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">First Generation to University</p>
+              <p className="text-foreground capitalize">{jobSeekerData.first_gen_to_go_uni}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Right to Work in the UK</p>
+              <p className="text-foreground capitalize">{jobSeekerData.has_right_to_work_uk}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Requires Sponsorship</p>
+              <p className="text-foreground capitalize">{jobSeekerData.requires_sponsorship}</p>
             </div>
           </div>
         </div>

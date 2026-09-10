@@ -4,6 +4,7 @@ import { ArrowLeft, Eye, EyeOff, Trash2, Save } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { profileService } from "../../services";
 import CustomSelect from "../../components/Ui/CustomSelect";
+import { booleanToYesNo, yesNoToBooleanOrNull } from "../../utils/yesNoFormatter";
 import { getUniversityOptions } from "../../data/universities";
 import {
   AlertDialog,
@@ -41,6 +42,8 @@ export default function Settings() {
     university: "",
     school_meal_eligible: false,
     first_gen_to_go_uni: false,
+    has_right_to_work_uk: "",
+    requires_sponsorship: "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -68,6 +71,8 @@ export default function Settings() {
             ethnicity: profile.jobseeker.ethnicity ?? "",
             school_meal_eligible: profile.jobseeker.school_meal_eligible ?? false,
             first_gen_to_go_uni: profile.jobseeker.first_gen_to_go_uni ?? false,
+            has_right_to_work_uk: booleanToYesNo(profile.jobseeker.has_right_to_work_uk),
+            requires_sponsorship: booleanToYesNo(profile.jobseeker.requires_sponsorship),
           });
         } else if (profile.society) {
           setPersonalInfo({
@@ -80,6 +85,8 @@ export default function Settings() {
             university: profile.society.university ?? "",
             school_meal_eligible: false,
             first_gen_to_go_uni: false,
+            has_right_to_work_uk: "",
+            requires_sponsorship: "",
           });
         } else if (profile.admin_user) {
           setPersonalInfo({
@@ -91,6 +98,8 @@ export default function Settings() {
             ethnicity: profile.admin_user.ethnicity ?? "",
             school_meal_eligible: false,
             first_gen_to_go_uni: false,
+            has_right_to_work_uk: "",
+            requires_sponsorship: "",
           });
         }
       } catch (error) {
@@ -125,6 +134,8 @@ export default function Settings() {
       if (isJobseeker()) {
         updateData.school_meal_eligible = personalInfo.school_meal_eligible;
         updateData.first_gen_to_go_uni = personalInfo.first_gen_to_go_uni;
+        updateData.has_right_to_work_uk = yesNoToBooleanOrNull(personalInfo.has_right_to_work_uk);
+        updateData.requires_sponsorship = yesNoToBooleanOrNull(personalInfo.requires_sponsorship);
       }
       
       await profileService.updateUserProfile(user.userId, user.userType, updateData);
@@ -432,31 +443,82 @@ export default function Settings() {
             {isJobseeker() && (
               <div className="space-y-4 pt-4 border-t border-border">
                 <h3 className="text-sm font-medium text-foreground">Background Information</h3>
-                
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="school_meal_eligible"
-                    checked={personalInfo.school_meal_eligible}
-                    onChange={(e) => setPersonalInfo({ ...personalInfo, school_meal_eligible: e.target.checked })}
-                    className="w-4 h-4 rounded border-input bg-input-background cursor-pointer"
-                  />
-                  <label htmlFor="school_meal_eligible" className="text-sm text-foreground cursor-pointer">
-                    I was eligible for free school meals
-                  </label>
+
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="school_meal_eligible" className="block text-sm mb-2 text-foreground">
+                      Were you eligible for free school meals?
+                    </label>
+                    <CustomSelect
+                      id="school_meal_eligible"
+                      value={personalInfo.school_meal_eligible ? "yes" : "no"}
+                      onChange={(e) => setPersonalInfo({ ...personalInfo, school_meal_eligible: e.target.value === "yes" })}
+                      placeholder="Select an option"
+                      options={[
+                        { value: "yes", label: "Yes" },
+                        { value: "no", label: "No" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="first_gen_to_go_uni" className="block text-sm mb-2 text-foreground">
+                      Are you the first generation in your family to attend university?
+                    </label>
+                    <CustomSelect
+                      id="first_gen_to_go_uni"
+                      value={personalInfo.first_gen_to_go_uni ? "yes" : "no"}
+                      onChange={(e) => setPersonalInfo({ ...personalInfo, first_gen_to_go_uni: e.target.value === "yes" })}
+                      placeholder="Select an option"
+                      options={[
+                        { value: "yes", label: "Yes" },
+                        { value: "no", label: "No" }
+                      ]}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isJobseeker() && (
+              <div className="space-y-4 pt-4 border-t border-border">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground">Right to Work</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This helps us match you with employers who can sponsor visas.
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id="first_gen_to_go_uni"
-                    checked={personalInfo.first_gen_to_go_uni}
-                    onChange={(e) => setPersonalInfo({ ...personalInfo, first_gen_to_go_uni: e.target.checked })}
-                    className="w-4 h-4 rounded border-input bg-input-background cursor-pointer"
-                  />
-                  <label htmlFor="first_gen_to_go_uni" className="text-sm text-foreground cursor-pointer">
-                    I am the first generation in my family to attend university
-                  </label>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="has_right_to_work_uk" className="block text-sm mb-2 text-foreground">
+                      Do you have the right to work in the UK?
+                    </label>
+                    <CustomSelect
+                      id="has_right_to_work_uk"
+                      value={personalInfo.has_right_to_work_uk}
+                      onChange={(e) => setPersonalInfo({ ...personalInfo, has_right_to_work_uk: e.target.value })}
+                      placeholder="Select an option"
+                      options={[
+                        { value: "yes", label: "Yes" },
+                        { value: "no", label: "No" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="requires_sponsorship" className="block text-sm mb-2 text-foreground">
+                      Will you require visa sponsorship?
+                    </label>
+                    <CustomSelect
+                      id="requires_sponsorship"
+                      value={personalInfo.requires_sponsorship}
+                      onChange={(e) => setPersonalInfo({ ...personalInfo, requires_sponsorship: e.target.value })}
+                      placeholder="Select an option"
+                      options={[
+                        { value: "yes", label: "Yes" },
+                        { value: "no", label: "No" }
+                      ]}
+                    />
+                  </div>
                 </div>
               </div>
             )}
