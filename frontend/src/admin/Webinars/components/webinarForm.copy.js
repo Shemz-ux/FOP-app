@@ -52,14 +52,13 @@ const webinarFormCopy = {
     }
   },
   categories: [
-    { value: 'Technology', label: 'Technology' },
-    { value: 'Business', label: 'Business' },
-    { value: 'Career Development', label: 'Career Development' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Design', label: 'Design' },
-    { value: 'Marketing', label: 'Marketing' },
-    { value: 'Leadership', label: 'Leadership' },
-    { value: 'Personal Development', label: 'Personal Development' }
+    { value: 'Career & Commercial Skills', label: 'Career & Commercial Skills' },
+    { value: 'CV & Applications', label: 'CV & Applications' },
+    { value: 'Employer Insight Events', label: 'Employer Insight Events' },
+    { value: 'Industry Insight Events', label: 'Industry Insight Events' },
+    { value: 'Interview Prep', label: 'Interview Prep' },
+    { value: 'Job Search Strategy', label: 'Job Search Strategy' },
+    { value: 'Linkedin & Networking', label: 'Linkedin & Networking' }
   ],
   validation: {
     titleRequired: 'Title is required',
