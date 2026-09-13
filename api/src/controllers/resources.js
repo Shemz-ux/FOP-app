@@ -47,7 +47,7 @@ const upload = multer({
         if (isValid) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type. Only PDF, DOC, DOCX, PPT, PPTX, TXT, and RTF files are allowed.'));
+            cb(new Error('Invalid file type. Only PDF, DOC, DOCX, PPT, PPTX, TXT, RTF, XLS, and XLSX files are allowed.'));
         }
     }
 });

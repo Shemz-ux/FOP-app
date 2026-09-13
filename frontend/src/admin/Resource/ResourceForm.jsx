@@ -383,7 +383,7 @@ export function ResourceForm({ resource, onSubmit, onCancel, isEdit = false }) {
                   <p className="text-foreground mb-2">
                     {formData.file ? formData.file.name : 'Click to upload or drag and drop'}
                   </p>
-                  <p className="text-sm text-muted-foreground">PDF, DOC, DOCX files up to 10MB</p>
+                  <p className="text-sm text-muted-foreground">PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, RTF files up to 10MB</p>
                   <input
                     type="file"
                     className="hidden"

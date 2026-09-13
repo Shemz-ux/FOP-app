@@ -190,7 +190,7 @@ const getFileStream = async (storageKey) => {
 };
 
 // Validate file type for resources
-const validateFileType = (fileName, allowedTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'rtf']) => {
+const validateFileType = (fileName, allowedTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'rtf', 'xls', 'xlsx']) => {
     const fileExtension = fileName.split('.').pop().toLowerCase();
     return allowedTypes.includes(fileExtension);
 };
