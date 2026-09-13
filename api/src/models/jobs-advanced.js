@@ -1,14 +1,30 @@
 import db from "../db/db.js";
 
 /**
+ * Parse a possibly comma-separated filter value (e.g. "Internship,Placement")
+ * into a lowercased array suitable for an `= ANY($n)` match, so multiple
+ * checked options within the same filter category are OR'd together instead
+ * of being treated as one literal string.
+ * Returns null if there are no usable values.
+ */
+const parseMultiValueFilter = (rawValue) => {
+    if (!rawValue) return null;
+    const values = rawValue
+        .split(',')
+        .map(v => v.trim().toLowerCase())
+        .filter(Boolean);
+    return values.length > 0 ? values : null;
+};
+
+/**
  * Advanced job filtering and sorting
  * @param {Object} filters - Filter parameters
  * @param {string} filters.company - Filter by company name
- * @param {string} filters.industry - Filter by industry
+ * @param {string} filters.industry - Filter by industry; comma-separated for multiple (OR'd)
  * @param {string} filters.location - Filter by location
- * @param {string} filters.experience_level - Filter by experience level
- * @param {string} filters.role_type - Filter by role type
- * @param {string} filters.work_type - Filter by work type
+ * @param {string} filters.experience_level - Filter by experience level; comma-separated for multiple (OR'd)
+ * @param {string} filters.role_type - Filter by role type; comma-separated for multiple (OR'd)
+ * @param {string} filters.work_type - Filter by work type; comma-separated for multiple (OR'd)
  * @param {string} filters.sort - Sort by: 'newest', 'oldest', 'popular', 'company', 'title'
  * @param {number} filters.limit - Limit results (default: 50)
  * @param {number} filters.offset - Offset for pagination (default: 0)
@@ -57,9 +73,10 @@ export const fetchJobsAdvanced = (filters = {}) => {
         paramIndex++;
     }
 
-    if (industry) {
-        conditions.push(`LOWER(industry) LIKE LOWER($${paramIndex})`);
-        params.push(`%${industry}%`);
+    const industryValues = parseMultiValueFilter(industry);
+    if (industryValues) {
+        conditions.push(`LOWER(industry) = ANY($${paramIndex})`);
+        params.push(industryValues);
         paramIndex++;
     }
 
@@ -69,21 +86,24 @@ export const fetchJobsAdvanced = (filters = {}) => {
         paramIndex++;
     }
 
-    if (experience_level) {
-        conditions.push(`LOWER(experience_level) LIKE LOWER($${paramIndex})`);
-        params.push(`%${experience_level}%`);
+    const experienceLevelValues = parseMultiValueFilter(experience_level);
+    if (experienceLevelValues) {
+        conditions.push(`LOWER(experience_level) = ANY($${paramIndex})`);
+        params.push(experienceLevelValues);
         paramIndex++;
     }
 
-    if (role_type) {
-        conditions.push(`LOWER(role_type) LIKE LOWER($${paramIndex})`);
-        params.push(`%${role_type}%`);
+    const roleTypeValues = parseMultiValueFilter(role_type);
+    if (roleTypeValues) {
+        conditions.push(`LOWER(role_type) = ANY($${paramIndex})`);
+        params.push(roleTypeValues);
         paramIndex++;
     }
 
-    if (work_type) {
-        conditions.push(`LOWER(work_type) LIKE LOWER($${paramIndex})`);
-        params.push(`%${work_type}%`);
+    const workTypeValues = parseMultiValueFilter(work_type);
+    if (workTypeValues) {
+        conditions.push(`LOWER(work_type) = ANY($${paramIndex})`);
+        params.push(workTypeValues);
         paramIndex++;
     }
 
@@ -190,9 +210,10 @@ export const getJobsCount = (filters = {}) => {
         paramIndex++;
     }
 
-    if (industry) {
-        conditions.push(`LOWER(industry) LIKE LOWER($${paramIndex})`);
-        params.push(`%${industry}%`);
+    const industryValues = parseMultiValueFilter(industry);
+    if (industryValues) {
+        conditions.push(`LOWER(industry) = ANY($${paramIndex})`);
+        params.push(industryValues);
         paramIndex++;
     }
 
@@ -202,21 +223,24 @@ export const getJobsCount = (filters = {}) => {
         paramIndex++;
     }
 
-    if (experience_level) {
-        conditions.push(`LOWER(experience_level) LIKE LOWER($${paramIndex})`);
-        params.push(`%${experience_level}%`);
+    const experienceLevelValues = parseMultiValueFilter(experience_level);
+    if (experienceLevelValues) {
+        conditions.push(`LOWER(experience_level) = ANY($${paramIndex})`);
+        params.push(experienceLevelValues);
         paramIndex++;
     }
 
-    if (role_type) {
-        conditions.push(`LOWER(role_type) LIKE LOWER($${paramIndex})`);
-        params.push(`%${role_type}%`);
+    const roleTypeValues = parseMultiValueFilter(role_type);
+    if (roleTypeValues) {
+        conditions.push(`LOWER(role_type) = ANY($${paramIndex})`);
+        params.push(roleTypeValues);
         paramIndex++;
     }
 
-    if (work_type) {
-        conditions.push(`LOWER(work_type) LIKE LOWER($${paramIndex})`);
-        params.push(`%${work_type}%`);
+    const workTypeValues = parseMultiValueFilter(work_type);
+    if (workTypeValues) {
+        conditions.push(`LOWER(work_type) = ANY($${paramIndex})`);
+        params.push(workTypeValues);
         paramIndex++;
     }
 

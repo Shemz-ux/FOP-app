@@ -4,11 +4,11 @@ import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions } from '../models/
  * Get jobs with advanced filtering and sorting
  * Query parameters:
  * - company: Filter by company name (partial match)
- * - industry: Filter by industry (partial match)
+ * - industry: Filter by industry (exact match; comma-separated for multiple, OR'd)
  * - location: Filter by location (partial match)
- * - experience_level: Filter by experience level (partial match)
- * - role_type: Filter by role type (partial match)
- * - work_type: Filter by work type (partial match)
+ * - experience_level: Filter by experience level (exact match; comma-separated for multiple, OR'd)
+ * - role_type: Filter by role type (exact match; comma-separated for multiple, OR'd)
+ * - work_type: Filter by work type (exact match; comma-separated for multiple, OR'd)
  * - sort: Sort by 'newest', 'oldest', 'popular', 'company', 'title'
  * - limit: Number of results per page (default: 50, max: 100)
  * - page: Page number (default: 1)

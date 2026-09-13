@@ -174,10 +174,59 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                     .get('/api/jobs/search?company=Google&industry=Finance')
                     .expect(200);
 
-                const matchingJobs = response.body.jobs.filter(job => 
+                const matchingJobs = response.body.jobs.filter(job =>
                     job.company === 'Google' && job.industry === 'Finance'
                 );
                 expect(matchingJobs).toHaveLength(0);
+            });
+        });
+
+        describe('Multi-value (comma-separated) filtering', () => {
+            it('should OR multiple role_type values checked within the same category', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?role_type=Full-time,Contract')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                // Should include both the Full-time jobs and the Contract job, not neither
+                expect(testJobs.length).toBeGreaterThanOrEqual(5);
+                testJobs.forEach(job => {
+                    expect(['Full-time', 'Contract']).toContain(job.role_type);
+                });
+            });
+
+            it('should OR multiple experience_level values checked within the same category', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?experience_level=Senior,Junior')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.length).toBeGreaterThanOrEqual(3);
+                testJobs.forEach(job => {
+                    expect(['Senior', 'Junior']).toContain(job.experience_level);
+                });
+            });
+
+            it('should combine an OR within a category and AND across categories', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?industry=Technology,Finance&experience_level=Senior')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                // Senior Software Engineer (Technology) and Financial Advisor (Finance) both qualify
+                expect(testJobs.length).toBeGreaterThanOrEqual(2);
+                testJobs.forEach(job => {
+                    expect(['Technology', 'Finance']).toContain(job.industry);
+                    expect(job.experience_level).toBe('Senior');
+                });
+            });
+
+            it('should report a totalCount consistent with multi-value OR matches', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?role_type=Full-time,Contract&limit=100')
+                    .expect(200);
+
+                expect(response.body.pagination.totalCount).toBe(response.body.jobs.length);
             });
         });
 
