@@ -1,13 +1,5 @@
 import {
-  Target,
-  Users,
   TrendingUp,
-  Award,
-  Building2,
-  Heart,
-  Zap,
-  Shield,
-  CircleCheck,
   ChevronLeft,
   ChevronRight,
   Quote,
@@ -16,6 +8,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import ScrollReveal from "../../components/ScrollReveal";
 import Timeline from "./components/Timeline";
+import MissionValues from "./components/MissionValues";
 import { meet_founder_section } from "./about.copy";
 
 export default function About() {
@@ -97,53 +90,7 @@ export default function About() {
       </section>
 
       {/* Mission & Values */}
-      <section className="bg-secondary/20 border-y border-border">
-        <div className="container mx-auto px-6 py-20">
-          <ScrollReveal>
-            <div className="max-w-3xl mx-auto text-center mb-12">
-              <h2 className="text-3xl mb-4 text-foreground">Our Mission & Our Values</h2>
-            <p className="text-muted-foreground">
-              Where early career potential meets real-world readiness
-            </p>
-            </div>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 text-left">
-            {[
-              {
-                icon: Target,
-                title: "Accessibility",
-                text:
-                  "Widen access and opportunity to careers for talent from all backgrounds",
-              },
-              {
-                icon: Users,
-                title: "Readiness",
-                text:
-                "Upskill talent to close the gap between student potential and employers expectations",
-              },
-              {
-                icon: Award,
-                title: "Excellence",
-                text:
-                  "Ensure our employers attract applicant ready talent that converts to successful hires",
-              },
-            ].map(({ icon: Icon, title, text }, index) => (
-              <ScrollReveal key={title} delay={index * 0.1}>
-                <div
-                  className="bg-card p-8 rounded-2xl border border-border group hover:border-primary/50 transition-all"
-                >
-                <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Icon className="w-7 h-7" />
-                </div>
-                <h3 className="text-foreground mb-2">{title}</h3>
-                <p className="text-muted-foreground text-sm">{text}</p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <MissionValues />
 
       {/* Our Story */}
       <section className="container mx-auto px-6 py-20">
