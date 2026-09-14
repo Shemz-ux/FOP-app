@@ -5,7 +5,7 @@ import { Button } from '../Ui/Button';
 export default function SearchBar({ 
   onSearch,
   queryPlaceholder = "Job title or keyword",
-  locationPlaceholder = "Add country or city",
+  locationPlaceholder = "Search by location",
   buttonText = "Search",
   showLocation = true
 }) {
