@@ -152,6 +152,64 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
             });
         });
 
+        describe('Keyword search (?search=)', () => {
+            it('should match jobs by a keyword found in the title', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Financial Advisor')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.length).toBeGreaterThanOrEqual(1);
+                expect(testJobs.some(job => job.title === 'Financial Advisor')).toBe(true);
+            });
+
+            it('should match jobs by a keyword found in the company name', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Goldman')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.length).toBeGreaterThanOrEqual(1);
+                expect(testJobs.every(job => job.company === 'Goldman Sachs')).toBe(true);
+            });
+
+            it('should match jobs by a keyword found in the location', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Birmingham')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.length).toBeGreaterThanOrEqual(1);
+                expect(testJobs.every(job => job.location === 'Birmingham')).toBe(true);
+            });
+
+            it('should be case-insensitive', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=goldman sachs')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.company === 'Goldman Sachs')).toBe(true);
+            });
+
+            it('should return no results for a keyword matching nothing', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=zzz-no-such-keyword-anywhere-zzz')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs).toHaveLength(0);
+            });
+
+            it('should echo the search term back in the response filters', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Google')
+                    .expect(200);
+
+                expect(response.body.filters.search).toBe('Google');
+            });
+        });
+
         describe('Combined filtering', () => {
             it('should filter by multiple criteria', async () => {
                 const response = await request(app)
