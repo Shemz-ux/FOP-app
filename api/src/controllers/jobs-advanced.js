@@ -3,7 +3,9 @@ import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions } from '../models/
 /**
  * Get jobs with advanced filtering and sorting
  * Query parameters:
- * - search: Keyword search across title, company, and location (partial match)
+ * - search: Keyword search; each whitespace-separated word must match somewhere across
+ *   title, company, location, industry, role_type, work_type, experience_level, or
+ *   description (partial match, any word order)
  * - company: Filter by company name (partial match)
  * - industry: Filter by industry (exact match; comma-separated for multiple, OR'd)
  * - location: Filter by location (partial match)

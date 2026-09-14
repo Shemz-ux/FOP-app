@@ -210,6 +210,76 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
             });
         });
 
+        describe('Keyword search — multi-word, any order, wider columns (Tier 1)', () => {
+            it('should match regardless of word order', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Advisor Financial')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.title === 'Financial Advisor')).toBe(true);
+            });
+
+            it('should AND words together across different columns on the same job', async () => {
+                // "Senior" only lives in the title/experience_level of the Google job;
+                // "Google" only lives in its company. A whole-phrase match would fail this.
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Senior Google')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs).toHaveLength(1);
+                expect(testJobs[0].title).toBe('Senior Software Engineer');
+            });
+
+            it('should not match a job missing one of the words, even if the other word matches', async () => {
+                // "Senior" also matches the Goldman Sachs job, but "Google" does not
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Senior Google')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.company === 'Goldman Sachs')).toBe(false);
+            });
+
+            it('should match a keyword found only in the industry column', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Finance')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.industry === 'Finance')).toBe(true);
+            });
+
+            it('should match a keyword found only in the role_type/description columns', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=Contract')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.role_type === 'Contract')).toBe(true);
+            });
+
+            it('should treat a literal "%" as a literal character, not a wildcard', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=%25') // URL-encoded literal "%"
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs).toHaveLength(0);
+            });
+
+            it('should treat a literal "_" as a literal character, not a single-char wildcard', async () => {
+                // Unescaped, "_" would match any character, so "G_ogle" would wrongly match "Google"
+                const response = await request(app)
+                    .get('/api/jobs/search?search=G_ogle')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.company === 'Google')).toBe(false);
+            });
+        });
+
         describe('Combined filtering', () => {
             it('should filter by multiple criteria', async () => {
                 const response = await request(app)

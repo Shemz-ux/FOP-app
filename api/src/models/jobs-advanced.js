@@ -16,6 +16,41 @@ const parseMultiValueFilter = (rawValue) => {
     return values.length > 0 ? values : null;
 };
 
+// Columns a free-text keyword search checks. Deliberately wider than just
+// title/company/location so keywords that only appear as a category value
+// (e.g. "internship", "remote", "consulting") still find matches.
+const SEARCH_COLUMNS = ['title', 'company', 'location', 'industry', 'role_type', 'work_type', 'experience_level', 'description'];
+
+// Escape LIKE's special characters (Postgres' default LIKE escape character
+// is backslash) so a literal "%" or "_" typed by a user is matched literally
+// instead of being treated as a wildcard.
+const escapeLikeSpecialChars = (value) => value.replace(/[\\%_]/g, '\\$&');
+
+/**
+ * Build a keyword search WHERE clause: splits the query into words and
+ * requires every word to appear (in any order) across at least one of
+ * SEARCH_COLUMNS, rather than requiring the whole phrase to appear verbatim
+ * in a single column. Mutates `params` and returns the next free paramIndex.
+ */
+const addKeywordSearchCondition = (search, conditions, params, paramIndex) => {
+    if (!search) return paramIndex;
+
+    const words = search.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return paramIndex;
+
+    const wordClauses = words.map((word) => {
+        const columnMatches = SEARCH_COLUMNS
+            .map(col => `LOWER(${col}) LIKE LOWER($${paramIndex})`)
+            .join(' OR ');
+        params.push(`%${escapeLikeSpecialChars(word)}%`);
+        paramIndex++;
+        return `(${columnMatches})`;
+    });
+
+    conditions.push(`(${wordClauses.join(' AND ')})`);
+    return paramIndex;
+};
+
 /**
  * Advanced job filtering and sorting
  * @param {Object} filters - Filter parameters
@@ -55,16 +90,8 @@ export const fetchJobsAdvanced = (filters = {}) => {
     params.push(active);
     paramIndex++;
 
-    // Add search filter (searches across title, company, and location)
-    if (search) {
-        conditions.push(`(
-            LOWER(title) LIKE LOWER($${paramIndex}) OR 
-            LOWER(company) LIKE LOWER($${paramIndex}) OR 
-            LOWER(location) LIKE LOWER($${paramIndex})
-        )`);
-        params.push(`%${search}%`);
-        paramIndex++;
-    }
+    // Add keyword search filter (every word must match somewhere across SEARCH_COLUMNS)
+    paramIndex = addKeywordSearchCondition(search, conditions, params, paramIndex);
 
     // Add filters if provided
     if (company) {
@@ -193,16 +220,8 @@ export const getJobsCount = (filters = {}) => {
     params.push(active);
     paramIndex++;
 
-    // Add search filter (searches across title, company, and location)
-    if (search) {
-        conditions.push(`(
-            LOWER(title) LIKE LOWER($${paramIndex}) OR 
-            LOWER(company) LIKE LOWER($${paramIndex}) OR 
-            LOWER(location) LIKE LOWER($${paramIndex})
-        )`);
-        params.push(`%${search}%`);
-        paramIndex++;
-    }
+    // Add keyword search filter (every word must match somewhere across SEARCH_COLUMNS)
+    paramIndex = addKeywordSearchCondition(search, conditions, params, paramIndex);
 
     if (company) {
         conditions.push(`LOWER(company) LIKE LOWER($${paramIndex})`);
