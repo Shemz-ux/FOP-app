@@ -34,7 +34,7 @@ export default function JobCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
-          <CompanyLogo logo={companyLogo} color={companyColor} companyName={company} />
+          {/* <CompanyLogo logo={companyLogo} color={companyColor} companyName={company} /> */}
           <div className="pt-0.5 flex-1 min-w-0">
             <h3 className="text-lg font-medium text-foreground mb-0.5 text-left line-clamp-2">{jobTitle}</h3>
             <div className="flex items-center gap-2 text-muted-foreground text-sm text-left">
