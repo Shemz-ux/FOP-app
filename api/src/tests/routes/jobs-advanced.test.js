@@ -242,22 +242,52 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                 expect(testJobs.some(job => job.company === 'Goldman Sachs')).toBe(false);
             });
 
-            it('should match a keyword found only in the industry column', async () => {
+            it('should NOT match on a word that only appears in the industry column (too broad a category to search by keyword)', async () => {
+                // "Finance" is the industry of the Goldman Sachs job, but doesn't appear in
+                // its title ("Financial Advisor" does not contain the substring "Finance"),
+                // company, location, role_type, work_type, or experience_level.
                 const response = await request(app)
                     .get('/api/jobs/search?search=Finance')
                     .expect(200);
 
                 const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
-                expect(testJobs.some(job => job.industry === 'Finance')).toBe(true);
+                expect(testJobs.some(job => job.industry === 'Finance')).toBe(false);
             });
 
-            it('should match a keyword found only in the role_type/description columns', async () => {
+            it('should match a keyword found only in the role_type column', async () => {
                 const response = await request(app)
                     .get('/api/jobs/search?search=Contract')
                     .expect(200);
 
                 const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
                 expect(testJobs.some(job => job.role_type === 'Contract')).toBe(true);
+            });
+
+            it('should NOT match on a word that only appears in the description (avoids false positives from generic boilerplate)', async () => {
+                // "Marketing management role at Apple" is the description of the Marketing
+                // Manager job; "management" doesn't appear in its title/company/location/etc.
+                const response = await request(app)
+                    .get('/api/jobs/search?search=management')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.title === 'Marketing Manager')).toBe(false);
+            });
+
+            it('should ignore stopwords instead of requiring them to match', async () => {
+                // "and" is a stopword and would otherwise be a near-universal false-positive
+                // match; "Financial Advisor" should be found the same whether or not it's there
+                const withStopword = await request(app)
+                    .get('/api/jobs/search?search=Financial and Advisor')
+                    .expect(200);
+                const withoutStopword = await request(app)
+                    .get('/api/jobs/search?search=Financial Advisor')
+                    .expect(200);
+
+                const withIds = withStopword.body.jobs.filter(job => testJobIds.includes(job.job_id)).map(j => j.job_id).sort();
+                const withoutIds = withoutStopword.body.jobs.filter(job => testJobIds.includes(job.job_id)).map(j => j.job_id).sort();
+                expect(withIds).toEqual(withoutIds);
+                expect(withIds.length).toBeGreaterThanOrEqual(1);
             });
 
             it('should treat a literal "%" as a literal character, not a wildcard', async () => {

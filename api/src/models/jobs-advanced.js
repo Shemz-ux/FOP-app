@@ -19,7 +19,24 @@ const parseMultiValueFilter = (rawValue) => {
 // Columns a free-text keyword search checks. Deliberately wider than just
 // title/company/location so keywords that only appear as a category value
 // (e.g. "internship", "remote", "consulting") still find matches.
-const SEARCH_COLUMNS = ['title', 'company', 'location', 'industry', 'role_type', 'work_type', 'experience_level', 'description'];
+// Deliberately excludes:
+// - `description`: a long free-text paragraph, and matching against it at
+//   equal weight to title/company causes false positives — generic
+//   boilerplate language ("risk", "operations", "compliance") shows up in
+//   unrelated roles' descriptions, making a job match just because a common
+//   word appears once in its prose.
+// - `industry`: a broad umbrella category (e.g. "Technology" covers Data
+//   Analyst, Marketing Manager, Junior Developer roles alike), so matching
+//   it by keyword returns a much wider, less relevant set of jobs than a
+//   user typing that word would expect.
+const SEARCH_COLUMNS = ['title', 'company', 'location', 'role_type', 'work_type', 'experience_level'];
+
+// Common connector words carry no filtering signal (they appear in almost
+// every job's text) but would otherwise still be required to match
+// somewhere, diluting the rest of the query. Strip them before searching.
+const SEARCH_STOPWORDS = new Set([
+    'a', 'an', 'the', 'and', 'or', 'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by'
+]);
 
 // Escape LIKE's special characters (Postgres' default LIKE escape character
 // is backslash) so a literal "%" or "_" typed by a user is matched literally
@@ -27,15 +44,17 @@ const SEARCH_COLUMNS = ['title', 'company', 'location', 'industry', 'role_type',
 const escapeLikeSpecialChars = (value) => value.replace(/[\\%_]/g, '\\$&');
 
 /**
- * Build a keyword search WHERE clause: splits the query into words and
- * requires every word to appear (in any order) across at least one of
- * SEARCH_COLUMNS, rather than requiring the whole phrase to appear verbatim
- * in a single column. Mutates `params` and returns the next free paramIndex.
+ * Build a keyword search WHERE clause: splits the query into words, drops
+ * stopwords, and requires every remaining word to appear (in any order)
+ * across at least one of SEARCH_COLUMNS, rather than requiring the whole
+ * phrase to appear verbatim in a single column. Mutates `params` and
+ * returns the next free paramIndex.
  */
 const addKeywordSearchCondition = (search, conditions, params, paramIndex) => {
     if (!search) return paramIndex;
 
-    const words = search.trim().split(/\s+/).filter(Boolean);
+    const words = search.trim().split(/\s+/).filter(Boolean)
+        .filter(word => !SEARCH_STOPWORDS.has(word.toLowerCase()));
     if (words.length === 0) return paramIndex;
 
     const wordClauses = words.map((word) => {
