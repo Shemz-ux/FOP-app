@@ -71,22 +71,6 @@ export default function Jobs() {
     { label: "Technology & IT", value: "Technology & IT", checked: false },
   ]);
 
-  // const [industries, setIndustries] = useState([
-  //   { label: "Technology & IT", value: "Technology", checked: false },
-  //   { label: "Finance", value: "Finance", checked: false },
-  //   { label: "Consulting", value: "Consulting", checked: false },
-  //   { label: "Engineering, Energy & Infrastructure", value: "Engineering", checked: false },
-  //   { label: "Marketing", value: "Marketing", checked: false },
-  //   { label: "Media", value: "Media", checked: false },
-  //   { label: "Healthcare", value: "Healthcare", checked: false },
-  //   { label: "Management & Operations", value: "Management ", checked: false },
-  //   { label: "Pharmaceuticals", value: "Pharmaceuticals", checked: false },
-  //   { label: "Insurance", value: "Insurance", checked: false },
-  //   { label: "Education", value: "Education", checked: false },
-  //   { label: "Law", value: "Law", checked: false },
-  //   // { label: "Other", value: "Other", checked: false },
-  // ]);
-
   const toggleFavorite = async (jobId) => {
     if (!isLoggedIn()) {
       navigate('/login');
