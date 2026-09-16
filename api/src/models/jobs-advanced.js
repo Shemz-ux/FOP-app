@@ -75,7 +75,7 @@ const addKeywordSearchCondition = (search, conditions, params, paramIndex) => {
  * @param {Object} filters - Filter parameters
  * @param {string} filters.company - Filter by company name
  * @param {string} filters.industry - Filter by industry; comma-separated for multiple (OR'd)
- * @param {string} filters.location - Filter by location
+ * @param {string} filters.location - Filter by location; exact match, comma-separated for multiple (OR'd)
  * @param {string} filters.experience_level - Filter by experience level; comma-separated for multiple (OR'd)
  * @param {string} filters.role_type - Filter by role type; comma-separated for multiple (OR'd)
  * @param {string} filters.work_type - Filter by work type; comma-separated for multiple (OR'd)
@@ -126,9 +126,10 @@ export const fetchJobsAdvanced = (filters = {}) => {
         paramIndex++;
     }
 
-    if (location) {
-        conditions.push(`LOWER(location) LIKE LOWER($${paramIndex})`);
-        params.push(`%${location}%`);
+    const locationValues = parseMultiValueFilter(location);
+    if (locationValues) {
+        conditions.push(`LOWER(location) = ANY($${paramIndex})`);
+        params.push(locationValues);
         paramIndex++;
     }
 
@@ -255,9 +256,10 @@ export const getJobsCount = (filters = {}) => {
         paramIndex++;
     }
 
-    if (location) {
-        conditions.push(`LOWER(location) LIKE LOWER($${paramIndex})`);
-        params.push(`%${location}%`);
+    const locationValues = parseMultiValueFilter(location);
+    if (locationValues) {
+        conditions.push(`LOWER(location) = ANY($${paramIndex})`);
+        params.push(locationValues);
         paramIndex++;
     }
 
@@ -292,12 +294,23 @@ export const getJobsCount = (filters = {}) => {
 
 /**
  * Get unique values for filter dropdowns
+ * @param {Object} options
+ * @param {boolean} options.activeOnly - When true (default), only locations belonging to
+ *   at least one active job are returned. Student-facing consumers (the Jobs sidebar) should
+ *   use the default so an inactive job's location never appears as a filter option; admin
+ *   consumers (e.g. the job posting form) should pass `activeOnly: false` to also see
+ *   locations that currently only exist on inactive jobs, so an existing spelling can be
+ *   reused instead of accidentally creating a near-duplicate.
  */
-export const getJobFilterOptions = () => {
+export const getJobFilterOptions = ({ activeOnly = true } = {}) => {
+    const locationQuery = activeOnly
+        ? 'SELECT DISTINCT location FROM jobs WHERE location IS NOT NULL AND location != \'\' AND is_active = true ORDER BY location'
+        : 'SELECT DISTINCT location FROM jobs WHERE location IS NOT NULL AND location != \'\' ORDER BY location';
+
     const queries = [
         'SELECT DISTINCT company FROM jobs WHERE company IS NOT NULL AND company != \'\' ORDER BY company',
         'SELECT DISTINCT industry FROM jobs WHERE industry IS NOT NULL AND industry != \'\' ORDER BY industry',
-        'SELECT DISTINCT location FROM jobs WHERE location IS NOT NULL AND location != \'\' ORDER BY location',
+        locationQuery,
         'SELECT DISTINCT experience_level FROM jobs WHERE experience_level IS NOT NULL AND experience_level != \'\' ORDER BY experience_level',
         'SELECT DISTINCT role_type FROM jobs WHERE role_type IS NOT NULL AND role_type != \'\' ORDER BY role_type',
         'SELECT DISTINCT work_type FROM jobs WHERE work_type IS NOT NULL AND work_type != \'\' ORDER BY work_type'

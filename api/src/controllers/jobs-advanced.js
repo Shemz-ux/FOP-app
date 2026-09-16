@@ -10,7 +10,7 @@ import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions } from '../models/
  *   broad a category to keyword-match precisely).
  * - company: Filter by company name (partial match)
  * - industry: Filter by industry (exact match; comma-separated for multiple, OR'd)
- * - location: Filter by location (partial match)
+ * - location: Filter by location (exact match; comma-separated for multiple, OR'd)
  * - experience_level: Filter by experience level (exact match; comma-separated for multiple, OR'd)
  * - role_type: Filter by role type (exact match; comma-separated for multiple, OR'd)
  * - work_type: Filter by work type (exact match; comma-separated for multiple, OR'd)
@@ -104,11 +104,17 @@ export const getJobsAdvanced = async (req, res) => {
 
 /**
  * Get available filter options for dropdowns
+ * Query parameters:
+ * - includeInactive: when 'true', the returned `locations` list also includes locations that
+ *   currently only belong to inactive jobs (intended for admin-facing consumers, e.g. the job
+ *   posting form, so an existing spelling can be reused). Defaults to false, i.e. active-only,
+ *   which is what student-facing consumers (the Jobs sidebar) should rely on.
  */
 export const getJobFilters = async (req, res) => {
     try {
-        const filterOptions = await getJobFilterOptions();
-        
+        const activeOnly = req.query.includeInactive !== 'true';
+        const filterOptions = await getJobFilterOptions({ activeOnly });
+
         res.status(200).json({
             filterOptions,
             sortOptions: [

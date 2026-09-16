@@ -22,7 +22,7 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
             {
                 title: 'Junior Developer',
                 company: 'Microsoft',
-                industry: 'Technology', 
+                industry: 'Technology',
                 location: 'Manchester',
                 experience_level: 'Junior',
                 role_type: 'Full-time',
@@ -54,6 +54,25 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                 experience_level: 'Senior',
                 role_type: 'Full-time',
                 description: 'Senior financial advisor role'
+            },
+            {
+                title: 'Office Coordinator',
+                company: 'Greater London Assembly',
+                industry: 'Technology',
+                location: 'Greater London',
+                experience_level: 'Mid',
+                role_type: 'Full-time',
+                description: 'Coordination role covering the Greater London area'
+            },
+            {
+                title: 'Archived Analyst',
+                company: 'Legacy Corp',
+                industry: 'Finance',
+                location: 'Edinburgh',
+                experience_level: 'Mid',
+                role_type: 'Full-time',
+                description: 'An inactive job used to test active-only location scoping',
+                is_active: false
             }
         ];
 
@@ -122,6 +141,24 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                 londonJobs.forEach(job => {
                     expect(job.location).toBe('London');
                 });
+            });
+
+            it('should exact-match on location, not treat it as a substring (excludes "Greater London" when filtering for "London")', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?location=London')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.company === 'Greater London Assembly')).toBe(false);
+            });
+
+            it('should be case-insensitive on exact location matches', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?location=london')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                expect(testJobs.some(job => job.company === 'Google')).toBe(true);
             });
 
             it('should filter jobs by job level', async () => {
@@ -353,6 +390,19 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                 });
             });
 
+            it('should OR multiple location values checked within the same category', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?location=London,Manchester')
+                    .expect(200);
+
+                const testJobs = response.body.jobs.filter(job => testJobIds.includes(job.job_id));
+                // 3 London jobs + 1 Manchester job, but not the Greater London or Birmingham jobs
+                expect(testJobs.length).toBeGreaterThanOrEqual(4);
+                testJobs.forEach(job => {
+                    expect(['London', 'Manchester']).toContain(job.location);
+                });
+            });
+
             it('should OR multiple experience_level values checked within the same category', async () => {
                 const response = await request(app)
                     .get('/api/jobs/search?experience_level=Senior,Junior')
@@ -564,6 +614,25 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
 
             expect(response.body.filterOptions.companies).toContain('Google');
             expect(response.body.filterOptions.industries).toContain('Technology');
+            expect(response.body.filterOptions.locations).toContain('London');
+        });
+
+        it('should exclude locations that only belong to inactive jobs by default', async () => {
+            const response = await request(app)
+                .get('/api/jobs/filters')
+                .expect(200);
+
+            // "Edinburgh" only exists on the inactive "Archived Analyst" test job
+            expect(response.body.filterOptions.locations).not.toContain('Edinburgh');
+        });
+
+        it('should include locations from inactive jobs when includeInactive=true', async () => {
+            const response = await request(app)
+                .get('/api/jobs/filters?includeInactive=true')
+                .expect(200);
+
+            expect(response.body.filterOptions.locations).toContain('Edinburgh');
+            // Active locations should still be present too
             expect(response.body.filterOptions.locations).toContain('London');
         });
     });
