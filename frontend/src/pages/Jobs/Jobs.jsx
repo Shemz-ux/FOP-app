@@ -11,6 +11,10 @@ import EmptyState from "../../components/Ui/EmptyState";
 import { jobsService } from "../../services";
 import { useAuth } from "../../contexts/AuthContext";
 import * as jobActionsService from "../../services/Jobs/jobActions";
+import { JOB_INDUSTRIES, JOB_ROLE_TYPES, JOB_WORK_TYPES, JOB_EXPERIENCE_LEVELS } from "../../utils/dropdownOptions";
+
+const toFilterOptions = (options) =>
+  options.map(({ label, value }) => ({ label, value, checked: false }));
 
 export default function Jobs() {
   const { user, isLoggedIn, isAdmin } = useAuth();
@@ -25,51 +29,13 @@ export default function Jobs() {
   const [totalJobs, setTotalJobs] = useState(0);
   const jobsPerPage = 9;
 
-  const [jobTypes, setJobTypes] = useState([
-    { label: "Insight Day", value: "Insight Day", checked: false },
-    { label: 'Internship',  value: 'Internship', checked: false },
-    { label: "Spring Week", value: "Spring Week", checked: false },
-    // { value: 'Work Experience', label: 'Work Experience', variant: 'amber' },
-    { label: "Graduate Scheme", value: "Graduate Scheme", checked: false },
-    { label: "Placement", value: "Placement", checked: false },
-    { value: 'Apprenticeship', label: 'Apprenticeship', checked: false},
-    { label: "Degree Apprentice", value: "Degree Apprentice", checked: false },
-    // { label: "Full-time", value: "Full-time", checked: false },
-    // { label: "Part-time", value: "Part-time", checked: false },
-    // { label: "Contract", value: "Contract", checked: false },
-    // { label: "Other", value: "Other", checked: false },
-    // { label: "Vac Scheme", value: "Vac Scheme", checked: false },
-  ]);
+  const [jobTypes, setJobTypes] = useState(toFilterOptions(JOB_ROLE_TYPES));
 
-  const [experienceLevels, setExperienceLevels] = useState([
-    { label: "School Leaver", value: "School Leaver", checked: false },
-    { label: "Student", value: "Student", checked: false },
-    { label: "Graduate", value: "Graduate", checked: false },
-    { label: "Entry Level", value: "Entry Level", checked: false },
-    // { label: "Mid Level", value: "Mid Level", checked: false },
-    // { label: "Senior", value: "Senior", checked: false },
-    // { label: "Other", value: "Other", checked: false },
-  ]);
+  const [experienceLevels, setExperienceLevels] = useState(toFilterOptions(JOB_EXPERIENCE_LEVELS));
 
-  const [workTypes, setWorkTypes] = useState([
-    { label: "Remote", value: "Remote", checked: false },
-    { label: "Hybrid", value: "Hybrid", checked: false },
-    { label: "On site", value: "On-site", checked: false },
-  ]);
+  const [workTypes, setWorkTypes] = useState(toFilterOptions(JOB_WORK_TYPES));
 
-  const [industries, setIndustries] = useState([
-    { label: "Accounting, Audit & Tax", value: "Accounting Audit & Tax", checked: false },
-    { label: "Consulting", value: "Consulting", checked: false },
-    { label: "Consumer & FMCG", value: "Consumer & FMCG", checked: false },
-    { label: "Engineering, Energy & Infrastructure", value: "Engineering & Energy & Infrastructure", checked: false },
-    { label: "Insurance", value: "Insurance", checked: false },
-    { label: "Investment Banking & Asset Management", value: "Investment Banking & Asset Management", checked: false },
-    { label: "Law", value: "Law", checked: false },
-    { label: "Management & Operations", value: "Management", checked: false },
-    { label: "Marketing, Media & PR", value: "Marketing Media & PR", checked: false },
-    { label: "Pharmaceuticals & Science", value: "Pharmaceuticals & Science", checked: false },
-    { label: "Technology & IT", value: "Technology & IT", checked: false },
-  ]);
+  const [industries, setIndustries] = useState(toFilterOptions(JOB_INDUSTRIES));
 
   // Populated dynamically from distinct locations in the jobs table (active jobs only),
   // unlike the other filters above which are static option lists.
