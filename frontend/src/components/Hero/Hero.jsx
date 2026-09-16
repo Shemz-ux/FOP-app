@@ -7,6 +7,7 @@ export default function Hero({
   subtitle,
   backgroundImage,
   onSearch,
+  showLocation = true,
 }) {
   return (
     <div className="bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border relative overflow-hidden">
@@ -27,7 +28,7 @@ export default function Hero({
           )}
 
           {/* Search Bar */}
-          <SearchBar onSearch={onSearch} />
+          <SearchBar onSearch={onSearch} showLocation={showLocation} />
         </div>
 
         {/* Background Image */}

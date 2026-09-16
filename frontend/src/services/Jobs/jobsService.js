@@ -19,9 +19,10 @@ export const getJobsAdvanced = async (filters = {}) => {
 };
 
 // Get available job filter options
-export const getJobFilters = async () => {
-  const data = await apiGet('/jobs/filters');
-  return data.filters;
+export const getJobFilters = async ({ includeInactive = false } = {}) => {
+  const queryString = includeInactive ? '?includeInactive=true' : '';
+  const data = await apiGet(`/jobs/filters${queryString}`);
+  return data.filterOptions;
 };
 
 // Get single job by ID

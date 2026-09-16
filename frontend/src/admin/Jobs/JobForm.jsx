@@ -1,12 +1,14 @@
   import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CustomDropdown from '../../components/Admin/CustomDropdown';
+import SelectWithAddNew from '../../components/Admin/SelectWithAddNew';
 import DateInput from '../../components/Ui/DateInput';
 import Toast from '../../components/Ui/Toast';
 import ImageUploadCard from '../../components/Admin/ImageUploadCard';
 import { JOB_INDUSTRIES, JOB_ROLE_TYPES, JOB_WORK_TYPES, JOB_EXPERIENCE_LEVELS } from '../../utils/dropdownOptions';
 import { parseDescriptionToSections, sectionsToDescription } from '../../utils/jobDescriptionParser';
 import { uploadMedia } from '../../services/Media/mediaUploadService';
+import { jobsService } from '../../services';
 
 export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
 
@@ -39,6 +41,21 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
   const [isRollingDeadline, setIsRollingDeadline] = React.useState(!job?.deadline);
   const [toast, setToast] = React.useState(null);
   const [uploading, setUploading] = React.useState(false);
+  const [locationOptions, setLocationOptions] = React.useState([]);
+
+  // Suggest existing locations (including ones only used by inactive jobs, so an admin can
+  // reuse an existing spelling) while still allowing a brand-new city to be typed freely.
+  React.useEffect(() => {
+    const loadLocationOptions = async () => {
+      try {
+        const filterOptions = await jobsService.getJobFilters({ includeInactive: true });
+        setLocationOptions(filterOptions?.locations || []);
+      } catch (err) {
+        console.error('Error loading location options:', err);
+      }
+    };
+    loadLocationOptions();
+  }, []);
 
   React.useEffect(() => {
     if (job) {
@@ -245,17 +262,17 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
             </div>
 
             <div>
-              <label htmlFor="location" className="block text-sm mb-2 text-foreground">
-                Location <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="location"
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g. London, Manchester"
-                className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              <SelectWithAddNew
+                label="Location"
+                name="location"
                 required
+                options={locationOptions.map((loc) => ({ value: loc, label: loc }))}
+                value={formData.location}
+                onValueChange={(value) => setFormData({ ...formData, location: value })}
+                placeholder="Select a location"
+                addNewLabel="Add new location"
+                customPlaceholder="e.g. London"
+                backLabel="← Back to locations"
               />
             </div>
 

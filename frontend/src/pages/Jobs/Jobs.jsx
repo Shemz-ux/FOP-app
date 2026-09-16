@@ -71,6 +71,10 @@ export default function Jobs() {
     { label: "Technology & IT", value: "Technology & IT", checked: false },
   ]);
 
+  // Populated dynamically from distinct locations in the jobs table (active jobs only),
+  // unlike the other filters above which are static option lists.
+  const [locations, setLocations] = useState([]);
+
   const toggleFavorite = async (jobId) => {
     if (!isLoggedIn()) {
       navigate('/login');
@@ -138,10 +142,36 @@ export default function Jobs() {
     );
   };
 
+  const handleLocationChange = (index, checked) => {
+    setLocations((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, checked } : item
+      )
+    );
+  };
+
   // Fetch jobs from API
   useEffect(() => {
     fetchJobs();
-  }, [currentPage, sortBy, searchFilters, jobTypes, industries, experienceLevels, workTypes]);
+  }, [currentPage, sortBy, searchFilters, jobTypes, industries, experienceLevels, workTypes, locations]);
+
+  // Load the distinct location list once on mount (active jobs only)
+  useEffect(() => {
+    const loadLocationOptions = async () => {
+      try {
+        const filterOptions = await jobsService.getJobFilters();
+        const locationOptions = (filterOptions?.locations || []).map((loc) => ({
+          label: loc,
+          value: loc,
+          checked: false,
+        }));
+        setLocations(locationOptions);
+      } catch (err) {
+        console.error('Error loading location filter options:', err);
+      }
+    };
+    loadLocationOptions();
+  }, []);
 
   // Load saved jobs on mount
   useEffect(() => {
@@ -166,21 +196,23 @@ export default function Jobs() {
 
       // Build filter params
       const filters = {};
-      
+
       if (searchFilters.query) filters.search = searchFilters.query;
-      if (searchFilters.location) filters.location = searchFilters.location;
-      
+
       const checkedRoleTypes = jobTypes.filter(t => t.checked).map(t => t.value);
       if (checkedRoleTypes.length > 0) filters.role_type = checkedRoleTypes.join(',');
-      
+
       const checkedExpLevels = experienceLevels.filter(l => l.checked).map(l => l.value);
       if (checkedExpLevels.length > 0) filters.experience_level = checkedExpLevels.join(',');
-      
+
       const checkedWorkTypes = workTypes.filter(w => w.checked).map(w => w.value);
       if (checkedWorkTypes.length > 0) filters.work_type = checkedWorkTypes.join(',');
-      
+
       const checkedIndustries = industries.filter(i => i.checked).map(i => i.value);
       if (checkedIndustries.length > 0) filters.industry = checkedIndustries.join(',');
+
+      const checkedLocations = locations.filter(l => l.checked).map(l => l.value);
+      if (checkedLocations.length > 0) filters.location = checkedLocations.join(',');
 
       // Map sort options
       const sortMap = {
@@ -216,6 +248,7 @@ export default function Jobs() {
       prev.map((item) => ({ ...item, checked: false }))
     );
     setWorkTypes((prev) => prev.map((item) => ({ ...item, checked: false })));
+    setLocations((prev) => prev.map((item) => ({ ...item, checked: false })));
     setCurrentPage(1);
   };
 
@@ -232,7 +265,8 @@ export default function Jobs() {
     const checkedJobTypes = jobTypes.filter(type => type.checked).length;
     const checkedExpLevels = experienceLevels.filter(level => level.checked).length;
     const checkedWorkTypes = workTypes.filter(type => type.checked).length;
-    return checkedJobTypes + checkedExpLevels + checkedWorkTypes;
+    const checkedLocations = locations.filter(loc => loc.checked).length;
+    return checkedJobTypes + checkedExpLevels + checkedWorkTypes + checkedLocations;
   };
 
   const totalPages = Math.ceil(totalJobs / jobsPerPage);
@@ -245,9 +279,10 @@ export default function Jobs() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <Hero 
+      <Hero
         // backgroundImage="https://images.unsplash.com/photo-1718220216044-006f43e3a9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080"
         onSearch={handleSearch}
+        showLocation={false}
       />
 
       {/* Main Content */}
@@ -261,10 +296,12 @@ export default function Jobs() {
                 industries={industries}
                 experienceLevels={experienceLevels}
                 workTypes={workTypes}
+                locations={locations}
                 onJobTypeChange={handleJobTypeChange}
                 onIndustryChange={handleIndustryChange}
                 onExperienceLevelChange={handleExperienceLevelChange}
                 onWorkTypeChange={handleWorkTypeChange}
+                onLocationChange={handleLocationChange}
                 onClearAll={handleClearAll}
               />
             </div>
@@ -294,10 +331,12 @@ export default function Jobs() {
                 industries={industries}
                 experienceLevels={experienceLevels}
                 workTypes={workTypes}
+                locations={locations}
                 onJobTypeChange={handleJobTypeChange}
                 onIndustryChange={handleIndustryChange}
                 onExperienceLevelChange={handleExperienceLevelChange}
                 onWorkTypeChange={handleWorkTypeChange}
+                onLocationChange={handleLocationChange}
                 onClearAll={handleClearAll}
               />
             </div>

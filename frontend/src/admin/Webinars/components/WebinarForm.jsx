@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { webinarFormCopy } from './webinarForm.copy';
-import AdminSelect from '../../Components/AdminSelect';
+import SelectWithAddNew from '../../../components/Admin/SelectWithAddNew';
 import Toast from '../../../components/Ui/Toast';
 
 export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
@@ -17,8 +17,6 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
 
   const [toast, setToast] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showCustomCategory, setShowCustomCategory] = useState(false);
-  const [customCategory, setCustomCategory] = useState('');
   const [videoMetadata, setVideoMetadata] = useState(null);
   const [isFetchingMetadata, setIsFetchingMetadata] = useState(false);
 
@@ -34,14 +32,7 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
         is_published: webinar.is_published !== undefined ? webinar.is_published : false,
         is_featured: webinar.is_featured !== undefined ? webinar.is_featured : false,
       });
-      
-      // Check if category is custom (not in predefined list)
-      const isCustom = !webinarFormCopy.categories.some(cat => cat.value === webinar.category);
-      if (isCustom && webinar.category) {
-        setShowCustomCategory(true);
-        setCustomCategory(webinar.category);
-      }
-      
+
       // Set existing metadata if available
       if (webinar.duration) {
         setVideoMetadata({
@@ -114,32 +105,6 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
     } finally {
       setIsFetchingMetadata(false);
     }
-  };
-
-  const handleCategoryChange = (value) => {
-    if (value === '__custom__') {
-      setShowCustomCategory(true);
-      setFormData(prev => ({
-        ...prev,
-        category: customCategory
-      }));
-    } else {
-      setShowCustomCategory(false);
-      setCustomCategory('');
-      setFormData(prev => ({
-        ...prev,
-        category: value
-      }));
-    }
-  };
-
-  const handleCustomCategoryChange = (e) => {
-    const value = e.target.value;
-    setCustomCategory(value);
-    setFormData(prev => ({
-      ...prev,
-      category: value
-    }));
   };
 
   // Helper function to extract YouTube video ID from URL
@@ -298,46 +263,18 @@ export function WebinarForm({ webinar, onSubmit, onCancel, isEdit = false }) {
               </div>
 
               {/* Category */}
-              <div>
-                <label htmlFor="category" className="block text-sm text-foreground mb-2">
-                  {webinarFormCopy.fields.category.label}
-                  {webinarFormCopy.fields.category.required && (
-                    <span className="text-red-500 ml-1">*</span>
-                  )}
-                </label>
-                {!showCustomCategory ? (
-                  <AdminSelect
-                    value={formData.category}
-                    onValueChange={handleCategoryChange}
-                    placeholder={webinarFormCopy.fields.category.placeholder}
-                    options={[
-                      ...webinarFormCopy.categories,
-                      { value: '__custom__', label: `+ ${webinarFormCopy.fields.category.addNew}` }
-                    ]}
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    <input
-                      type="text"
-                      value={customCategory}
-                      onChange={handleCustomCategoryChange}
-                      placeholder={webinarFormCopy.fields.category.customPlaceholder}
-                      className="w-full px-4 py-3 bg-input-background border border-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowCustomCategory(false);
-                        setCustomCategory('');
-                        setFormData(prev => ({ ...prev, category: '' }));
-                      }}
-                      className="text-sm text-muted-foreground hover:text-foreground"
-                    >
-                      ← Back to categories
-                    </button>
-                  </div>
-                )}
-              </div>
+              <SelectWithAddNew
+                label={webinarFormCopy.fields.category.label}
+                name="category"
+                required={webinarFormCopy.fields.category.required}
+                options={webinarFormCopy.categories}
+                value={formData.category}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                placeholder={webinarFormCopy.fields.category.placeholder}
+                addNewLabel={webinarFormCopy.fields.category.addNew}
+                customPlaceholder={webinarFormCopy.fields.category.customPlaceholder}
+                backLabel="← Back to categories"
+              />
 
               {/* YouTube Video URL */}
               <div>

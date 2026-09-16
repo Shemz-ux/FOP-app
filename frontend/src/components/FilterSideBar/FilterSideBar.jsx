@@ -7,17 +7,20 @@ export default function FilterSidebar({
   industries,
   experienceLevels,
   workTypes,
+  locations,
   onJobTypeChange,
   onIndustryChange,
   onExperienceLevelChange,
   onWorkTypeChange,
+  onLocationChange,
   onClearAll,
 }) {
   const [openSections, setOpenSections] = useState({
     jobType: false,
     industry: false,
     workType: false,
-    experienceLevel: false
+    experienceLevel: false,
+    location: false
   });
 
   const toggleSection = (section) => {
@@ -27,11 +30,12 @@ export default function FilterSidebar({
     }));
   };
 
-  const hasActiveFilters = 
-    jobTypes.some(t => t.checked) || 
-    industries.some(i => i.checked) || 
-    experienceLevels.some(l => l.checked) || 
-    workTypes.some(w => w.checked);
+  const hasActiveFilters =
+    jobTypes.some(t => t.checked) ||
+    industries.some(i => i.checked) ||
+    experienceLevels.some(l => l.checked) ||
+    workTypes.some(w => w.checked) ||
+    (locations && locations.some(l => l.checked));
 
   return (
     <div className="space-y-6 px-4">
@@ -90,6 +94,51 @@ export default function FilterSidebar({
           </div>
         )}
       </div>
+
+      {/* Location Filter */}
+      {locations && locations.length > 0 && (
+        <div>
+          <button
+            onClick={() => toggleSection('location')}
+            className="w-full flex items-center justify-between mb-3 hover:text-foreground transition-colors"
+          >
+            <h3 className="text-card-foreground font-medium text-left">Location</h3>
+            <ChevronDown
+              className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                openSections.location ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {openSections.location && (
+            <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-200">
+              {locations.map((loc, index) => (
+                <div key={index} className="flex items-center gap-3 group">
+                  <Checkbox
+                    id={`location-${index}`}
+                    checked={loc.checked}
+                    onCheckedChange={(checked) => {
+                      if (onLocationChange) {
+                        onLocationChange(index, Boolean(checked));
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor={`location-${index}`}
+                    className={`flex-1 cursor-pointer text-left text-sm transition-colors ${
+                      loc.checked
+                        ? 'text-foreground font-medium'
+                        : 'text-muted-foreground group-hover:text-foreground'
+                    }`}
+                  >
+                    {loc.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Industry Filter */}
       <div>
