@@ -27,6 +27,14 @@ const formatFileSize = (bytes) => {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
 };
 
+// Audiences a resource can be saved with
+const RESOURCE_AUDIENCES = ['public', 'society'];
+
+// Society-only resources are hidden from anyone who is not a society or admin
+const canAccessResource = (req, resource) => {
+    return resource.audience !== 'society' || req.canViewSocietyResources === true;
+};
+
 // Configure multer for file uploads (memory storage)
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -55,7 +63,22 @@ const upload = multer({
 // Get all resources with filtering and pagination
 const getResources = async (req, res) => {
     try {
+        const audience = req.query.audience || 'public';
+
+        if (![...RESOURCE_AUDIENCES, 'all'].includes(audience)) {
+            return res.status(400).json({ msg: 'Invalid audience' });
+        }
+
+        // Only societies and admins can list society resources
+        if (audience !== 'public' && !req.canViewSocietyResources) {
+            return res.status(403).json({ msg: 'Society access required' });
+        }
+
         const filters = {
+            audience,
+            categories: req.query.categories
+                ? req.query.categories.split(',').map(category => category.trim()).filter(Boolean)
+                : undefined,
             category: req.query.category,
             search: req.query.search,
             file_type: req.query.file_type,
@@ -63,7 +86,8 @@ const getResources = async (req, res) => {
             sort_order: req.query.sort_order,
             page: req.query.page || 1,
             limit: req.query.limit || 20,
-            include_inactive: req.query.include_inactive === 'true'
+            // Only admins can see inactive resources
+            include_inactive: req.query.include_inactive === 'true' && req.isAdmin === true
         };
 
         const result = await fetchResources(filters);
@@ -97,7 +121,8 @@ const getResourceById = async (req, res) => {
 
         const resource = await fetchResourceById(resource_id);
 
-        if (!resource) {
+        // 404 for society resources too, so their existence is not revealed
+        if (!resource || !canAccessResource(req, resource)) {
             return res.status(404).json({ msg: 'Resource not found' });
         }
 
@@ -115,6 +140,7 @@ const getResourceById = async (req, res) => {
 const postResource = async (req, res) => {
     try {
         const { title, description, detailed_description, whats_included, category, uploaded_by, upload_type, video_link } = req.body;
+        const audience = req.body.audience || 'public';
         const file = req.file;
 
         // Validate required fields
@@ -122,6 +148,10 @@ const postResource = async (req, res) => {
             return res.status(400).json({ 
                 msg: 'Title and category are required' 
             });
+        }
+
+        if (!RESOURCE_AUDIENCES.includes(audience)) {
+            return res.status(400).json({ msg: 'Invalid audience' });
         }
 
         // Check if it's a video link or file upload (prioritize file presence)
@@ -156,7 +186,8 @@ const postResource = async (req, res) => {
                 storage_key: uploadResult.storageKey,
                 storage_url: uploadResult.publicUrl,
                 created_by: uploaded_by || 'FOP',  // Company/person name
-                uploaded_by: req.user_id || null    // Admin user ID
+                uploaded_by: req.user_id || null,   // Admin user ID
+                audience
             };
 
             const newResource = await createResource(resourceData);
@@ -185,7 +216,8 @@ const postResource = async (req, res) => {
                 storage_key: video_link,
                 storage_url: video_link,
                 created_by: uploaded_by || 'FOP',  // Company/person name
-                uploaded_by: req.user_id || null    // Admin user ID
+                uploaded_by: req.user_id || null,   // Admin user ID
+                audience
             };
 
             const newResource = await createResource(resourceData);
@@ -244,6 +276,10 @@ const patchResource = async (req, res) => {
 
         if (!resource_id || isNaN(resource_id)) {
             return res.status(400).json({ msg: 'Invalid resource ID' });
+        }
+
+        if (updateData.audience !== undefined && !RESOURCE_AUDIENCES.includes(updateData.audience)) {
+            return res.status(400).json({ msg: 'Invalid audience' });
         }
 
         // Check if resource exists
@@ -345,7 +381,8 @@ const patchResource = async (req, res) => {
             'file_size',
             'file_type',
             'storage_key',
-            'storage_url'
+            'storage_url',
+            'audience'
         ];
         const invalidFields = Object.keys(updateData).filter(
             field => !allowedFields.includes(field)
@@ -467,7 +504,7 @@ const downloadResource = async (req, res) => {
 
         // Get resource details
         const resource = await fetchResourceById(resource_id);
-        if (!resource) {
+        if (!resource || !canAccessResource(req, resource)) {
             return res.status(404).json({ msg: 'Resource not found' });
         }
 
@@ -509,7 +546,7 @@ const streamResource = async (req, res) => {
 
         // Get resource details
         const resource = await fetchResourceById(resource_id);
-        if (!resource) {
+        if (!resource || !canAccessResource(req, resource)) {
             return res.status(404).json({ msg: 'Resource not found' });
         }
 
