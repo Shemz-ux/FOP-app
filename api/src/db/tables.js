@@ -372,6 +372,7 @@ const createResourcesTable = () => {
         created_by VARCHAR(255),
         uploaded_by INT REFERENCES admin_users(admin_id),
         is_active BOOLEAN DEFAULT TRUE,
+        audience VARCHAR(20) NOT NULL DEFAULT 'public' CHECK (audience IN ('public', 'society')),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
     )`).then(()=>{

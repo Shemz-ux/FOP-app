@@ -142,14 +142,14 @@ const insertResources = async () => {
       `INSERT INTO resources (
         title, description, detailed_description, whats_included, category,
         file_name, file_size, file_type, storage_key, storage_url,
-        created_by, uploaded_by, is_active, download_count
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+        created_by, uploaded_by, is_active, download_count, audience
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
       [
         resource.title, resource.description, resource.detailed_description,
         resource.whats_included, resource.category, resource.file_name,
         resource.file_size, resource.file_type, resource.storage_key,
         resource.storage_url, resource.created_by, 1, resource.is_active,
-        resource.download_count
+        resource.download_count, resource.audience || 'public'
       ]
     );
   }
