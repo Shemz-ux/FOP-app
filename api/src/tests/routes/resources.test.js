@@ -674,6 +674,59 @@ describe('Resources API Endpoints', () => {
         });
     });
 
+    describe('POST /api/resources is_active', () => {
+        const createLinkResource = (fields) => {
+            const req = request(app)
+                .post('/api/resources')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .field('title', 'Active Flag Test')
+                .field('category', 'CV')
+                .field('upload_type', 'link');
+
+            Object.entries(fields).forEach(([key, value]) => req.field(key, value));
+            return req;
+        };
+
+        test('should default to active on create', async () => {
+            const response = await createLinkResource({
+                video_link: 'https://www.youtube.com/watch?v=active-default-test'
+            }).expect(201);
+
+            expect(response.body.resource).toHaveProperty('is_active', true);
+
+            await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+        });
+
+        test('should create an inactive resource from a multipart form', async () => {
+            const response = await createLinkResource({
+                video_link: 'https://www.youtube.com/watch?v=inactive-form-test',
+                is_active: 'false'
+            }).expect(201);
+
+            expect(response.body.resource).toHaveProperty('is_active', false);
+
+            await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+        });
+
+        test('should create an inactive resource from JSON', async () => {
+            const response = await request(app)
+                .post('/api/resources')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({
+                    title: 'Active Flag JSON Test',
+                    category: 'CV',
+                    upload_type: 'link',
+                    video_link: 'https://www.youtube.com/watch?v=inactive-json-test',
+                    is_active: false
+                })
+                .expect(201);
+
+            expect(response.body.resource).toHaveProperty('is_active', false);
+
+            await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+        });
+    });
+
     describe('Error Handling', () => {
         test('should handle database errors gracefully', async () => {
             // Test with invalid category that might cause DB issues

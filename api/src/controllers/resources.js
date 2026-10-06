@@ -141,6 +141,8 @@ const postResource = async (req, res) => {
     try {
         const { title, description, detailed_description, whats_included, category, uploaded_by, upload_type, video_link } = req.body;
         const audience = req.body.audience || 'public';
+        // Multipart forms send booleans as strings
+        const is_active = !(req.body.is_active === false || req.body.is_active === 'false');
         const file = req.file;
 
         // Validate required fields
@@ -187,7 +189,8 @@ const postResource = async (req, res) => {
                 storage_url: uploadResult.publicUrl,
                 created_by: uploaded_by || 'FOP',  // Company/person name
                 uploaded_by: req.user_id || null,   // Admin user ID
-                audience
+                audience,
+                is_active
             };
 
             const newResource = await createResource(resourceData);
@@ -217,7 +220,8 @@ const postResource = async (req, res) => {
                 storage_url: video_link,
                 created_by: uploaded_by || 'FOP',  // Company/person name
                 uploaded_by: req.user_id || null,   // Admin user ID
-                audience
+                audience,
+                is_active
             };
 
             const newResource = await createResource(resourceData);

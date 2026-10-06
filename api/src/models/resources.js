@@ -15,21 +15,23 @@ const createResource = async (resourceData) => {
         storage_url,
         uploaded_by,
         created_by,
-        audience
+        audience,
+        is_active
     } = resourceData;
 
     const query = `
         INSERT INTO resources (
             title, description, detailed_description, whats_included, category, file_name, file_size, 
-            file_type, storage_key, storage_url, created_by, uploaded_by, audience
+            file_type, storage_key, storage_url, created_by, uploaded_by, audience, is_active
         ) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
         RETURNING *
     `;
 
     const values = [
         title, description, detailed_description, whats_included, category, file_name, file_size,
-        file_type, storage_key, storage_url, created_by, uploaded_by, audience || 'public'
+        file_type, storage_key, storage_url, created_by, uploaded_by, audience || 'public',
+        is_active !== undefined ? is_active : true
     ];
 
     try {
