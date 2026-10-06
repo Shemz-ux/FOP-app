@@ -10,7 +10,7 @@ import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
 import { resourcesService } from "../../services";
-import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
+import { RESOURCE_CATEGORIES } from '../../admin/Resource/resourceOptions';
 import { formatTimeAgo } from '../../utils/timeFormatter';
 import { formatFileType } from '../../utils/fileTypeFormatter';
 import { useAuth } from "../../contexts/AuthContext";

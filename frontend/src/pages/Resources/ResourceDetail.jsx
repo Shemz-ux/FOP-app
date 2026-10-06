@@ -7,7 +7,7 @@ import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import ProtectedOverlay from '../../components/ProtectedOverlay/ProtectedOverlay';
 import { resourcesService } from '../../services';
-import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
+import { RESOURCE_CATEGORIES } from '../../admin/Resource/resourceOptions';
 import { formatTimeAgo } from '../../utils/timeFormatter';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatFileType } from '../../utils/fileTypeFormatter';
