@@ -83,10 +83,6 @@ export default function ResourceManagement() {
     audienceCounts[option.value] = (resourcesByAudience[option.value] || []).length;
   });
 
-  const createPath = audience === DEFAULT_RESOURCE_AUDIENCE
-    ? '/admin/resources/new'
-    : `/admin/resources/new?audience=${audience}`;
-
   const handleDeleteClick = (resource) => {
     setResourceToDelete(resource);
     setShowDeleteModal(true);
@@ -169,7 +165,7 @@ export default function ResourceManagement() {
           <p className="text-sm sm:text-base text-muted-foreground">{copy.header.subtitle}</p>
         </div>
         <Link
-          to={createPath}
+          to="/admin/resources/new"
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 whitespace-nowrap w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />

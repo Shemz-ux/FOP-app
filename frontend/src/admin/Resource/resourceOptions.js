@@ -50,18 +50,21 @@ export const AUDIENCE_ICONS = {
 // count  - count badge on the selected button
 // border - border around the banner, table and mobile cards
 // banner - strip above the table naming the audience
+// text   - helper text under the audience selector in the form
 export const AUDIENCE_STYLES = {
   public: {
     tab: 'bg-card text-sky-500 ring-1 ring-sky-500/40',
     count: 'bg-sky-500/10 text-sky-500',
     border: 'border-sky-500/40',
     banner: 'bg-sky-500/10 text-sky-500',
+    text: 'text-sky-500',
   },
   society: {
     tab: 'bg-card text-violet-500 ring-1 ring-violet-500/40',
     count: 'bg-violet-500/10 text-violet-500',
     border: 'border-violet-500/40',
     banner: 'bg-violet-500/10 text-violet-500',
+    text: 'text-violet-500',
   },
 };
 
@@ -84,6 +87,14 @@ export const getResourceCategory = (value) => {
 // Returns a valid audience value, falling back to public for anything else
 export const getValidAudience = (value) => {
   return RESOURCE_AUDIENCES.some(audience => audience.value === value) ? value : DEFAULT_RESOURCE_AUDIENCE;
+};
+
+// The management page URL for an audience's tab
+export const getListPath = (audience) => {
+  const value = getValidAudience(audience);
+  return value === DEFAULT_RESOURCE_AUDIENCE
+    ? '/admin/resources'
+    : `/admin/resources?audience=${value}`;
 };
 
 // A resource is a video link when it has the video file type or a known video host URL

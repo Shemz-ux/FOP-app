@@ -7,7 +7,8 @@ import { apiGet, apiDelete } from '../../services/api';
 import { formatFileType } from '../../utils/fileTypeFormatter';
 import StatusBadge from './components/StatusBadge';
 import LoadingState from './components/LoadingState';
-import { isVideoResource } from './resourceOptions';
+import AudienceBadge from './components/AudienceBadge';
+import { isVideoResource, getListPath } from './resourceOptions';
 import { resourceDetailCopy as copy } from './resource.copy';
 
 export default function ResourceDetail() {
@@ -46,7 +47,7 @@ export default function ResourceDetail() {
         type: 'success'
       });
       setTimeout(() => {
-        navigate('/admin/resources');
+        navigate(getListPath(resource.audience));
       }, 1500);
     } catch (error) {
       console.error('Error deleting resource:', error);
@@ -110,13 +111,15 @@ export default function ResourceDetail() {
   }
 
   const isVideo = isVideoResource(resource);
+  // Return to the management page tab this resource belongs to
+  const listPath = getListPath(resource.audience);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <div className="space-y-6 text-left">
       <button
-        onClick={() => navigate('/admin/resources')}
+        onClick={() => navigate(listPath)}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -194,6 +197,10 @@ export default function ResourceDetail() {
           <div>
             <p className="text-sm text-muted-foreground mb-1">{copy.info.lastUpdated}</p>
             <p className="text-foreground font-medium">{new Date(resource.updated_at).toLocaleDateString()}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.audience}</p>
+            <AudienceBadge audience={resource.audience} />
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">{copy.info.status}</p>

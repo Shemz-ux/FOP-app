@@ -17,6 +17,12 @@ const deleteModalCopy = {
   cancel: 'Cancel'
 };
 
+// Who can see each audience's resources
+const audienceDescriptions = {
+  public: 'Visible to everyone on the Resources page',
+  society: 'Visible only to society accounts'
+};
+
 // ==================== RESOURCE MANAGEMENT (list page) ====================
 
 const resourceManagementCopy = {
@@ -34,11 +40,11 @@ const resourceManagementCopy = {
   audienceBanner: {
     public: {
       title: 'Public resources',
-      description: 'Visible to everyone on the Resources page'
+      description: audienceDescriptions.public
     },
     society: {
       title: 'Society resources',
-      description: 'Visible only to society accounts'
+      description: audienceDescriptions.society
     }
   },
   status: statusCopy,
@@ -112,6 +118,7 @@ const resourceDetailCopy = {
     createdByFallback: 'FOP',
     uploadDate: 'Upload Date',
     lastUpdated: 'Last Updated',
+    audience: 'Audience',
     status: 'Status'
   },
   access: {
@@ -154,6 +161,10 @@ const resourceFormCopy = {
     }
   },
   fields: {
+    audience: {
+      label: 'Who is this resource for?',
+      helper: audienceDescriptions
+    },
     title: {
       label: 'Resource Title'
     },
@@ -207,7 +218,10 @@ const resourceFormCopy = {
     }
   },
   buttons: {
-    create: 'Upload Resource',
+    create: {
+      public: 'Upload Public Resource',
+      society: 'Upload Society Resource'
+    },
     creating: 'Uploading...',
     update: 'Update Resource',
     updating: 'Updating...',

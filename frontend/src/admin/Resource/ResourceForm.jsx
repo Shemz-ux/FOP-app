@@ -8,12 +8,17 @@ import WhatsIncludedField from './components/WhatsIncludedField';
 import FileUploadField from './components/FileUploadField';
 import VideoLinkField from './components/VideoLinkField';
 import LoadingState from './components/LoadingState';
+import AudienceSwitch from './components/AudienceSwitch';
 import { resourceFormCopy as copy } from './resource.copy';
 import {
   RESOURCE_CATEGORIES,
   RESOURCE_FILE_EXTENSIONS,
   RESOURCE_MAX_FILE_SIZE_MB,
   UPLOAD_TYPES,
+  AUDIENCE_STYLES,
+  DEFAULT_RESOURCE_AUDIENCE,
+  getValidAudience,
+  getListPath,
   isVideoResource
 } from './resourceOptions';
 
@@ -78,6 +83,7 @@ export default function ResourceForm() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
+  const [audience, setAudience] = React.useState(DEFAULT_RESOURCE_AUDIENCE);
   const [resource, setResource] = React.useState(null);
   const [loading, setLoading] = React.useState(isEdit);
   const wasVideoLink = isVideoResource(resource);
@@ -88,8 +94,9 @@ export default function ResourceForm() {
   const [submitting, setSubmitting] = React.useState(false);
   const redirectTimer = React.useRef(null);
 
-  // Create returns to the list, edit returns to the resource's detail page
-  const returnPath = isEdit ? `/admin/resources/${id}` : '/admin/resources';
+  // Edit returns to the resource's detail page
+  const detailPath = `/admin/resources/${id}`;
+  const cancelPath = isEdit ? detailPath : '/admin/resources';
 
   // Load the resource and fill the form (edit mode)
   React.useEffect(() => {
@@ -100,6 +107,7 @@ export default function ResourceForm() {
         setLoading(true);
         const data = await apiGet(`/resources/${id}`);
         setResource(data.resource);
+        setAudience(getValidAudience(data.resource.audience));
         setUploadType(isVideoResource(data.resource) ? UPLOAD_TYPES.link : UPLOAD_TYPES.file);
         setFormData(getInitialFormData(data.resource));
         setWhatsIncludedItems(getInitialIncludedItems(data.resource));
@@ -174,6 +182,7 @@ export default function ResourceForm() {
       uploaded_by: formData.uploaded_by,
       is_active: formData.is_active,
       upload_type: uploadType,
+      audience,
     };
 
     if (uploadType === UPLOAD_TYPES.link) {
@@ -200,7 +209,9 @@ export default function ResourceForm() {
       });
 
       // Keep the button disabled until the redirect so the form cannot be submitted twice
-      redirectTimer.current = setTimeout(() => navigate(returnPath), SUCCESS_REDIRECT_DELAY);
+      // A new resource returns to the tab for the audience it was saved with
+      const successPath = isEdit ? detailPath : getListPath(audience);
+      redirectTimer.current = setTimeout(() => navigate(successPath), SUCCESS_REDIRECT_DELAY);
     } catch (error) {
       console.error('Error submitting resource:', error);
 
@@ -216,7 +227,8 @@ export default function ResourceForm() {
 
   const submitLabel = isEdit
     ? (submitting ? copy.buttons.updating : copy.buttons.update)
-    : (submitting ? copy.buttons.creating : copy.buttons.create);
+    : (submitting ? copy.buttons.creating : copy.buttons.create[audience]);
+  const audienceStyles = AUDIENCE_STYLES[audience];
 
   if (loading) {
     return <LoadingState message={copy.loading} />;
@@ -245,7 +257,7 @@ export default function ResourceForm() {
       <div className="container mx-auto px-6 py-8">
         <div className="space-y-6 text-left">
       <button
-        onClick={() => navigate(returnPath)}
+        onClick={() => navigate(cancelPath)}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -268,8 +280,20 @@ export default function ResourceForm() {
         />
       )}
 
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className={`bg-card border ${audienceStyles.border} rounded-xl p-6`}>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <p className="block text-sm mb-2 text-foreground">
+              {copy.fields.audience.label} <span className="text-red-500">*</span>
+            </p>
+            <AudienceSwitch
+              value={audience}
+              onChange={setAudience}
+              label={copy.fields.audience.label}
+            />
+            <p className={`text-xs mt-2 ${audienceStyles.text}`}>{copy.fields.audience.helper[audience]}</p>
+          </div>
+
           <div>
             <label htmlFor="resource-title" className="block text-sm mb-2 text-foreground">
               {copy.fields.title.label} <span className="text-red-500">*</span>
@@ -421,7 +445,7 @@ export default function ResourceForm() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(returnPath)}
+              onClick={() => navigate(cancelPath)}
               className="px-6 py-3 border border-border rounded-xl hover:bg-secondary"
             >
               {copy.buttons.cancel}
