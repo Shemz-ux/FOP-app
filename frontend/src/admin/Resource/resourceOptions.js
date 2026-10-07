@@ -6,6 +6,7 @@
 // variant    - JobBadge colour on the public Resources pages
 // icon       - icon name on the public Resources pages
 // badgeClass - badge colour on the admin screens
+// audience   - set when a category can only be used for one audience
 
 export const RESOURCE_CATEGORIES = [
   { value: 'CV', label: 'CV', variant: 'sky', icon: 'FileText', badgeClass: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
@@ -23,10 +24,20 @@ export const RESOURCE_CATEGORIES = [
   { value: 'Skills Development', label: 'Skills Development', variant: 'orange', icon: 'BookOpen', badgeClass: 'bg-lime-500/10 text-lime-500 border-lime-500/20' },
   { value: 'First Job', label: 'First Job', variant: 'sky', icon: 'Rocket', badgeClass: 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20' },
   { value: 'Remote Work', label: 'Remote Work', variant: 'emerald', icon: 'Home', badgeClass: 'bg-sky-500/10 text-sky-500 border-sky-500/20' },
+  { value: 'Career Workshops', label: 'Career Workshops', variant: 'amber', icon: 'BookOpen', badgeClass: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', audience: 'society' },
 ];
 
 // Badge colour for categories that are not in the list above
 export const DEFAULT_CATEGORY_BADGE_CLASS = 'bg-purple-500/10 text-purple-500 border-purple-500/20';
+
+// Who can see a resource. Values match the audience column in the database
+export const RESOURCE_AUDIENCES = [
+  { value: 'public', label: 'Public' },
+  { value: 'society', label: 'Society only' },
+];
+
+// Categories shown in the resources section of the society profile
+export const SOCIETY_RESOURCES_CATEGORIES = ['Career Workshops', 'CV', 'Cover Letters', 'Interviews'];
 
 // File extensions the API accepts, and the upload size limit
 export const RESOURCE_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'rtf'];
@@ -39,6 +50,11 @@ export const UPLOAD_TYPES = {
 
 export const getResourceCategory = (value) => {
   return RESOURCE_CATEGORIES.find(category => category.value === value);
+};
+
+// Categories that can be used for the given audience
+export const getCategoriesForAudience = (audience) => {
+  return RESOURCE_CATEGORIES.filter(category => !category.audience || category.audience === audience);
 };
 
 // A resource is a video link when it has the video file type or a known video host URL
