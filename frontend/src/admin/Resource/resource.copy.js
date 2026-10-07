@@ -30,10 +30,28 @@ const resourceManagementCopy = {
     subtitle: 'Manage all resources and downloads',
     createButton: 'Upload Resource'
   },
+  audienceSwitchLabel: 'Resource audience',
+  audienceBanner: {
+    public: {
+      title: 'Public resources',
+      description: 'Visible to everyone on the Resources page'
+    },
+    society: {
+      title: 'Society resources',
+      description: 'Visible only to society accounts'
+    }
+  },
   status: statusCopy,
   stats: {
     total: 'Total Resources',
     active: 'Active Resources'
+  },
+  empty: {
+    noMatches: 'No resources match your search.',
+    noResources: {
+      public: 'No public resources yet.',
+      society: 'No society resources yet.'
+    }
   },
   search: {
     placeholder: 'Search resources by title...',

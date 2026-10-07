@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Search, Plus, Download, Trash2, Edit, BarChart, Home, CheckCircle, FileText } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
@@ -9,7 +9,15 @@ import { apiGet, apiDelete } from '../../services/api';
 import CategoryBadge from './components/CategoryBadge';
 import StatusBadge from './components/StatusBadge';
 import LoadingState from './components/LoadingState';
-import { RESOURCE_CATEGORIES } from './resourceOptions';
+import AudienceSwitch from './components/AudienceSwitch';
+import AudienceBanner from './components/AudienceBanner';
+import {
+  RESOURCE_CATEGORIES,
+  RESOURCE_AUDIENCES,
+  AUDIENCE_STYLES,
+  DEFAULT_RESOURCE_AUDIENCE,
+  getValidAudience
+} from './resourceOptions';
 import { resourceManagementCopy as copy } from './resource.copy';
 
 const categoryFilterOptions = [
@@ -18,9 +26,14 @@ const categoryFilterOptions = [
 ];
 
 export default function ResourceManagement() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  // The selected audience lives in the URL so it survives refresh and returning from other pages
+  const audience = getValidAudience(searchParams.get('audience'));
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
-  const [resources, setResources] = useState([]);
+  // Resources for every audience are loaded once, so switching is instant
+  const [resourcesByAudience, setResourcesByAudience] = useState({});
+  const resources = resourcesByAudience[audience] || [];
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState(null);
@@ -32,8 +45,17 @@ export default function ResourceManagement() {
     const fetchResources = async () => {
       try {
         setLoading(true);
-        const data = await apiGet('/resources?include_inactive=true');
-        setResources(data.resources || []);
+        const results = await Promise.all(
+          RESOURCE_AUDIENCES.map(option =>
+            apiGet(`/resources?include_inactive=true&limit=100&audience=${option.value}`)
+          )
+        );
+
+        const loaded = {};
+        RESOURCE_AUDIENCES.forEach((option, index) => {
+          loaded[option.value] = results[index].resources || [];
+        });
+        setResourcesByAudience(loaded);
       } catch (error) {
         console.error('Error fetching resources:', error);
         setToast({
@@ -48,6 +70,23 @@ export default function ResourceManagement() {
     fetchResources();
   }, []);
 
+  const handleAudienceChange = (nextAudience) => {
+    // Keep the URL clean for the default audience
+    setSearchParams(
+      nextAudience === DEFAULT_RESOURCE_AUDIENCE ? {} : { audience: nextAudience },
+      { replace: true }
+    );
+  };
+
+  const audienceCounts = {};
+  RESOURCE_AUDIENCES.forEach(option => {
+    audienceCounts[option.value] = (resourcesByAudience[option.value] || []).length;
+  });
+
+  const createPath = audience === DEFAULT_RESOURCE_AUDIENCE
+    ? '/admin/resources/new'
+    : `/admin/resources/new?audience=${audience}`;
+
   const handleDeleteClick = (resource) => {
     setResourceToDelete(resource);
     setShowDeleteModal(true);
@@ -59,7 +98,10 @@ export default function ResourceManagement() {
     try {
       await apiDelete(`/resources/${resourceToDelete.resource_id}`);
       // Remove resource from list
-      setResources(resources.filter(resource => resource.resource_id !== resourceToDelete.resource_id));
+      setResourcesByAudience({
+        ...resourcesByAudience,
+        [audience]: resources.filter(resource => resource.resource_id !== resourceToDelete.resource_id)
+      });
       setToast({
         message: copy.toasts.deleteSuccess,
         type: 'success'
@@ -97,7 +139,11 @@ export default function ResourceManagement() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterType]);
+  }, [searchTerm, filterType, audience]);
+
+  const audienceStyles = AUDIENCE_STYLES[audience];
+  const hasActiveFilters =Boolean(searchTerm.trim()) || filterType !== 'all';
+  const emptyMessage = hasActiveFilters ? copy.empty.noMatches : copy.empty.noResources[audience];
 
   if (loading) {
     return <LoadingState message={copy.loading} />;
@@ -123,13 +169,21 @@ export default function ResourceManagement() {
           <p className="text-sm sm:text-base text-muted-foreground">{copy.header.subtitle}</p>
         </div>
         <Link
-          to="/admin/resources/new"
+          to={createPath}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 whitespace-nowrap w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
           <span className="sm:inline">{copy.header.createButton}</span>
         </Link>
       </div>
+
+      {/* Audience Switch */}
+      <AudienceSwitch
+        value={audience}
+        onChange={handleAudienceChange}
+        counts={audienceCounts}
+        label={copy.audienceSwitchLabel}
+      />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -180,8 +234,15 @@ export default function ResourceManagement() {
         </div>
       </div>
 
+      {/* Audience Banner */}
+      <AudienceBanner
+        audience={audience}
+        title={copy.audienceBanner[audience].title}
+        description={copy.audienceBanner[audience].description}
+      />
+
       {/* Resources Table - Desktop */}
-      <div className="hidden md:block bg-card border border-border rounded-xl overflow-hidden">
+      <div className={`hidden md:block bg-card border ${audienceStyles.border} rounded-xl overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-secondary">
@@ -236,7 +297,11 @@ export default function ResourceManagement() {
             </tbody>
           </table>
         </div>
-        
+
+        {currentResources.length === 0 && (
+          <p className="px-6 py-12 text-center text-muted-foreground">{emptyMessage}</p>
+        )}
+
         {/* Pagination */}
         {filteredResources.length > 0 && (
           <Pagination
@@ -251,8 +316,11 @@ export default function ResourceManagement() {
 
       {/* Resources Cards - Mobile */}
       <div className="md:hidden space-y-4">
+        {currentResources.length === 0 && (
+          <p className={`bg-card border ${audienceStyles.border} rounded-xl px-4 py-12 text-center text-muted-foreground`}>{emptyMessage}</p>
+        )}
         {currentResources.map(resource => (
-          <div key={resource.resource_id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <div key={resource.resource_id} className={`bg-card border ${audienceStyles.border} rounded-xl p-4 space-y-3`}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h3 className="text-base font-medium text-foreground mb-1 truncate">{resource.title}</h3>

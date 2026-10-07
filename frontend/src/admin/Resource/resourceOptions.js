@@ -6,7 +6,8 @@
 // variant    - JobBadge colour on the public Resources pages
 // icon       - icon name on the public Resources pages
 // badgeClass - badge colour on the admin screens
-// audience   - set when a category can only be used for one audience
+
+import { Globe, Users } from 'lucide-react';
 
 export const RESOURCE_CATEGORIES = [
   { value: 'CV', label: 'CV', variant: 'sky', icon: 'FileText', badgeClass: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
@@ -24,7 +25,7 @@ export const RESOURCE_CATEGORIES = [
   { value: 'Skills Development', label: 'Skills Development', variant: 'orange', icon: 'BookOpen', badgeClass: 'bg-lime-500/10 text-lime-500 border-lime-500/20' },
   { value: 'First Job', label: 'First Job', variant: 'sky', icon: 'Rocket', badgeClass: 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20' },
   { value: 'Remote Work', label: 'Remote Work', variant: 'emerald', icon: 'Home', badgeClass: 'bg-sky-500/10 text-sky-500 border-sky-500/20' },
-  { value: 'Career Workshops', label: 'Career Workshops', variant: 'amber', icon: 'BookOpen', badgeClass: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', audience: 'society' },
+  { value: 'Career Workshops', label: 'Career Workshops', variant: 'amber', icon: 'BookOpen', badgeClass: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' },
 ];
 
 // Badge colour for categories that are not in the list above
@@ -35,6 +36,34 @@ export const RESOURCE_AUDIENCES = [
   { value: 'public', label: 'Public' },
   { value: 'society', label: 'Society only' },
 ];
+
+export const DEFAULT_RESOURCE_AUDIENCE = 'public';
+
+// Icon shown next to each audience on the admin screens
+export const AUDIENCE_ICONS = {
+  public: Globe,
+  society: Users,
+};
+
+// Colour used across the admin screens to show which audience is being viewed
+// tab    - selected button in the audience switch
+// count  - count badge on the selected button
+// border - border around the banner, table and mobile cards
+// banner - strip above the table naming the audience
+export const AUDIENCE_STYLES = {
+  public: {
+    tab: 'bg-card text-sky-500 ring-1 ring-sky-500/40',
+    count: 'bg-sky-500/10 text-sky-500',
+    border: 'border-sky-500/40',
+    banner: 'bg-sky-500/10 text-sky-500',
+  },
+  society: {
+    tab: 'bg-card text-violet-500 ring-1 ring-violet-500/40',
+    count: 'bg-violet-500/10 text-violet-500',
+    border: 'border-violet-500/40',
+    banner: 'bg-violet-500/10 text-violet-500',
+  },
+};
 
 // Categories shown in the resources section of the society profile
 export const SOCIETY_RESOURCES_CATEGORIES = ['Career Workshops', 'CV', 'Cover Letters', 'Interviews'];
@@ -52,9 +81,9 @@ export const getResourceCategory = (value) => {
   return RESOURCE_CATEGORIES.find(category => category.value === value);
 };
 
-// Categories that can be used for the given audience
-export const getCategoriesForAudience = (audience) => {
-  return RESOURCE_CATEGORIES.filter(category => !category.audience || category.audience === audience);
+// Returns a valid audience value, falling back to public for anything else
+export const getValidAudience = (value) => {
+  return RESOURCE_AUDIENCES.some(audience => audience.value === value) ? value : DEFAULT_RESOURCE_AUDIENCE;
 };
 
 // A resource is a video link when it has the video file type or a known video host URL
