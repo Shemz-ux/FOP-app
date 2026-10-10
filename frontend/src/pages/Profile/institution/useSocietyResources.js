@@ -4,7 +4,7 @@ import { useLoadOnVisible } from '../utils/useLoadOnVisible';
 import { SOCIETY_RESOURCES_LIMIT } from './institutionOptions';
 import { institutionProfileCopy as copy } from './institutionProfile.copy';
 
-// Resources uploaded for society accounts.
+// Resources the admin uploaded for societies only (audience "society").
 // total is the full count, which can be higher than the number of resources loaded.
 // It stays null until a request succeeds.
 // onError receives a message to show; pass a stable function such as showToast.

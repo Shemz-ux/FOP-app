@@ -20,6 +20,7 @@ export default function JobCard({
   onFavoriteClick,
   jobId,
   showSaveButton = true,
+  compact = false,
 }) {
   // Generate job ID from company and title if not provided
   const generatedJobId =
@@ -30,7 +31,7 @@ export default function JobCard({
       .replace(/\./g, '')}`;
 
   const cardContent = (
-    <div className="bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col min-h-[300px] shadow-sm">
+    <div className={`bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg group hover:-translate-y-1 flex flex-col shadow-sm ${compact ? 'h-full' : 'min-h-[300px]'}`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -115,7 +116,7 @@ export default function JobCard({
   );
 
   return (
-    <Link to={`/jobs/${generatedJobId}`} className="block">
+    <Link to={`/jobs/${generatedJobId}`} className={compact ? 'block h-full' : 'block'}>
       {cardContent}
     </Link>
   );

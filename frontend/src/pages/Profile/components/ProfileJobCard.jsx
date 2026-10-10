@@ -1,7 +1,8 @@
 import JobCard from '../../../components/JobCard/JobCard';
 
 // A job record from the API shown as a JobCard with a save button
-export default function ProfileJobCard({ job, isFavorite, onFavoriteClick }) {
+// compact drops the card's fixed minimum height so it is only as tall as its content
+export default function ProfileJobCard({ job, isFavorite, onFavoriteClick, compact = false }) {
   return (
     <JobCard
       jobId={job.job_id}
@@ -16,6 +17,7 @@ export default function ProfileJobCard({ job, isFavorite, onFavoriteClick }) {
       isFavorite={isFavorite}
       onFavoriteClick={() => onFavoriteClick(job.job_id)}
       showSaveButton={true}
+      compact={compact}
     />
   );
 }
