@@ -335,29 +335,114 @@ describe('Admin Analytics API Endpoints', () => {
             expect(response.body.students.length).toBeGreaterThan(0);
         });
 
-        it('should return jobseekers by society (exact, case-insensitive match)', async () => {
-            const response = await request(app)
-                .get('/api/admin/jobseekers/society/Tech%20Society')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .expect(200);
+        describe('Society members by id', () => {
+            // The test database starts empty, so this block makes its own
+            // society and members rather than relying on seeded data
+            let societyId;
+            let emptySocietyId;
+            let memberIds = [];
 
-            expect(response.body).toHaveProperty('students');
-            expect(response.body).toHaveProperty('count');
-            expect(Array.isArray(response.body.students)).toBe(true);
-            expect(response.body.students.length).toBeGreaterThan(0);
-            response.body.students.forEach(student => {
-                expect(student.society.toLowerCase()).toBe('tech society');
+            beforeAll(async () => {
+                const stamp = Date.now();
+                const { rows: [withMembers] } = await db.query(
+                    `INSERT INTO societies (name, university, email, password_hash)
+                     VALUES ($1, $2, $3, $4) RETURNING society_id`,
+                    [`Members Society ${stamp}`, 'Test University', `members.${stamp}@test.com`, 'hash']
+                );
+                societyId = withMembers.society_id;
+
+                const { rows: [withoutMembers] } = await db.query(
+                    `INSERT INTO societies (name, university, email, password_hash)
+                     VALUES ($1, $2, $3, $4) RETURNING society_id`,
+                    [`Empty Society ${stamp}`, 'Test University', `empty.${stamp}@test.com`, 'hash']
+                );
+                emptySocietyId = withoutMembers.society_id;
+
+                for (const name of ['One', 'Two']) {
+                    const member = await createJobseeker({
+                        first_name: name,
+                        last_name: 'Member',
+                        email: `member.${name.toLowerCase()}.${stamp}@test.com`,
+                        password_hash: 'hash',
+                        education_level: 'other',
+                        society_id: societyId
+                    });
+                    memberIds.push(member.jobseeker_id);
+                }
             });
-        });
 
-        it('should not return jobseekers for a partial society name match', async () => {
-            // "Tech" should NOT match "Tech Society" — only an exact name should
-            const response = await request(app)
-                .get('/api/admin/jobseekers/society/Tech')
-                .set('Authorization', `Bearer ${backdoorToken}`)
-                .expect(200);
+            afterAll(async () => {
+                for (const id of memberIds) {
+                    await db.query('DELETE FROM jobseekers WHERE jobseeker_id = $1', [id]);
+                }
+                await db.query('DELETE FROM societies WHERE society_id = ANY($1)', [[societyId, emptySocietyId]]);
+            });
 
-            expect(response.body.students).toEqual([]);
+            it('returns only the members of that society', async () => {
+                const response = await request(app)
+                    .get(`/api/admin/jobseekers/society/${societyId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                expect(response.body.count).toBe(2);
+                response.body.students.forEach(student => {
+                    expect(student.society_id).toBe(societyId);
+                });
+            });
+
+            it('never returns password_hash', async () => {
+                const response = await request(app)
+                    .get(`/api/admin/jobseekers/society/${societyId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                expect(response.body.students.length).toBeGreaterThan(0);
+                response.body.students.forEach(student => {
+                    expect(student).not.toHaveProperty('password_hash');
+                });
+            });
+
+            it('returns the fields the admin member view needs', async () => {
+                const response = await request(app)
+                    .get(`/api/admin/jobseekers/society/${societyId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                const student = response.body.students[0];
+                ['jobseeker_id', 'first_name', 'last_name', 'email', 'education_level',
+                 'society', 'society_id', 'created_at'].forEach(field => {
+                    expect(student).toHaveProperty(field);
+                });
+            });
+
+            it('returns an empty list for a society with no members', async () => {
+                const response = await request(app)
+                    .get(`/api/admin/jobseekers/society/${emptySocietyId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                expect(response.body.students).toEqual([]);
+                expect(response.body.count).toBe(0);
+            });
+
+            it('still finds the members after the society is renamed', async () => {
+                await db.query('UPDATE societies SET name = $1 WHERE society_id = $2',
+                    [`Renamed ${Date.now()}`, societyId]);
+
+                const response = await request(app)
+                    .get(`/api/admin/jobseekers/society/${societyId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                expect(response.body.count).toBe(2);
+            });
+
+            it('rejects a society id that is not a number', async () => {
+                await request(app)
+                    .get('/api/admin/jobseekers/society/Tech%20Society')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(400);
+            });
         });
 
         it('should return jobseekers eligible for free meals', async () => {
@@ -499,7 +584,7 @@ describe('Admin Analytics API Endpoints', () => {
             const endpoints = [
                 '/api/admin/jobseekers/gender/male',
                 '/api/admin/jobseekers/university/London',
-                '/api/admin/jobseekers/society/Tech',
+                '/api/admin/jobseekers/society/1',
                 '/api/admin/jobseekers/free-meals',
                 '/api/admin/jobseekers/first-gen',
                 '/api/admin/jobseekers/education/undergraduate'

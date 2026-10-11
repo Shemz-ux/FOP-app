@@ -3,6 +3,7 @@ import app from '../../app.js';
 import db from '../../db/db.js';
 import path from 'path';
 import fs from 'fs';
+import { generateToken } from '../../lib/token.js';
 import '../utils/setup.js';
 
 describe('Resources API Endpoints', () => {
@@ -341,6 +342,388 @@ describe('Resources API Endpoints', () => {
 
             // Should handle gracefully (multer configured for single file)
             expect(response.status).toBeGreaterThanOrEqual(200);
+        });
+    });
+
+    describe('Resource audience access', () => {
+        let publicResourceId;
+        let societyResourceId;
+        let inactiveResourceId;
+        let societyToken;
+        let jobseekerToken;
+
+        const insertResource = async (title, category, audience, isActive = true) => {
+            const result = await db.query(
+                `INSERT INTO resources (
+                    title, category, file_name, file_size, file_type, storage_key, audience, is_active
+                ) VALUES ($1, $2, $3, '1 MB', 'application/pdf', $4, $5, $6)
+                RETURNING resource_id`,
+                [title, category, `${title}.pdf`, `resources/audience-test/${title}.pdf`, audience, isActive]
+            );
+            return result.rows[0].resource_id;
+        };
+
+        beforeAll(async () => {
+            societyToken = generateToken(1, 'society');
+            jobseekerToken = generateToken(1, 'jobseeker');
+
+            publicResourceId = await insertResource('audience-test-public', 'CV', 'public');
+            societyResourceId = await insertResource('audience-test-society', 'Career Workshops', 'society');
+            inactiveResourceId = await insertResource('audience-test-inactive', 'CV', 'public', false);
+        });
+
+        afterAll(async () => {
+            await db.query(
+                'DELETE FROM resources WHERE resource_id = ANY($1)',
+                [[publicResourceId, societyResourceId, inactiveResourceId]]
+            );
+        });
+
+        const listIds = (response) => response.body.resources.map(resource => resource.resource_id);
+
+        describe('GET /api/resources', () => {
+            test('should exclude society resources for anonymous users', async () => {
+                const response = await request(app)
+                    .get('/api/resources?limit=100')
+                    .expect(200);
+
+                expect(listIds(response)).toContain(publicResourceId);
+                expect(listIds(response)).not.toContain(societyResourceId);
+                response.body.resources.forEach(resource => {
+                    expect(resource.audience).toBe('public');
+                });
+            });
+
+            test('should exclude society resources by default for societies', async () => {
+                const response = await request(app)
+                    .get('/api/resources?limit=100')
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(200);
+
+                expect(listIds(response)).not.toContain(societyResourceId);
+            });
+
+            test('should return 403 when anonymous user requests society audience', async () => {
+                const response = await request(app)
+                    .get('/api/resources?audience=society')
+                    .expect(403);
+
+                expect(response.body).toHaveProperty('msg', 'Society access required');
+            });
+
+            test('should return 403 when jobseeker requests society or all audience', async () => {
+                await request(app)
+                    .get('/api/resources?audience=society')
+                    .set('Authorization', `Bearer ${jobseekerToken}`)
+                    .expect(403);
+
+                await request(app)
+                    .get('/api/resources?audience=all')
+                    .set('Authorization', `Bearer ${jobseekerToken}`)
+                    .expect(403);
+            });
+
+            test('should return 403 for an invalid token requesting society audience', async () => {
+                await request(app)
+                    .get('/api/resources?audience=society')
+                    .set('Authorization', 'Bearer not-a-real-token')
+                    .expect(403);
+            });
+
+            test('should return 400 for an unknown audience', async () => {
+                const response = await request(app)
+                    .get('/api/resources?audience=everyone')
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(400);
+
+                expect(response.body).toHaveProperty('msg', 'Invalid audience');
+            });
+
+            test('should return only society resources for society audience', async () => {
+                const response = await request(app)
+                    .get('/api/resources?audience=society&limit=100')
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(200);
+
+                expect(listIds(response)).toContain(societyResourceId);
+                expect(listIds(response)).not.toContain(publicResourceId);
+            });
+
+            test('should return public and society resources for all audience', async () => {
+                const response = await request(app)
+                    .get('/api/resources?audience=all&limit=100')
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(200);
+
+                expect(listIds(response)).toContain(societyResourceId);
+                expect(listIds(response)).toContain(publicResourceId);
+            });
+
+            test('should allow admin to list society resources', async () => {
+                const response = await request(app)
+                    .get('/api/resources?audience=society&limit=100')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                expect(listIds(response)).toContain(societyResourceId);
+            });
+
+            test('should filter by multiple categories', async () => {
+                const response = await request(app)
+                    .get('/api/resources?audience=all&categories=Career Workshops,CV&limit=100')
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(200);
+
+                expect(listIds(response)).toContain(societyResourceId);
+                expect(listIds(response)).toContain(publicResourceId);
+                response.body.resources.forEach(resource => {
+                    expect(['Career Workshops', 'CV']).toContain(resource.category);
+                });
+            });
+
+            test('should only include inactive resources for admins', async () => {
+                const anonymousResponse = await request(app)
+                    .get('/api/resources?include_inactive=true&limit=100')
+                    .expect(200);
+
+                expect(listIds(anonymousResponse)).not.toContain(inactiveResourceId);
+
+                const adminResponse = await request(app)
+                    .get('/api/resources?include_inactive=true&limit=100')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+
+                expect(listIds(adminResponse)).toContain(inactiveResourceId);
+            });
+        });
+
+        describe('GET /api/resources/:resource_id', () => {
+            test('should return 404 for society resource when anonymous', async () => {
+                const response = await request(app)
+                    .get(`/api/resources/${societyResourceId}`)
+                    .expect(404);
+
+                expect(response.body).toHaveProperty('msg', 'Resource not found');
+            });
+
+            test('should return 404 for society resource when jobseeker', async () => {
+                await request(app)
+                    .get(`/api/resources/${societyResourceId}`)
+                    .set('Authorization', `Bearer ${jobseekerToken}`)
+                    .expect(404);
+            });
+
+            test('should return society resource for society and admin', async () => {
+                const societyResponse = await request(app)
+                    .get(`/api/resources/${societyResourceId}`)
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(200);
+
+                expect(societyResponse.body.resource).toHaveProperty('audience', 'society');
+
+                await request(app)
+                    .get(`/api/resources/${societyResourceId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .expect(200);
+            });
+
+            test('should return public resource when anonymous', async () => {
+                const response = await request(app)
+                    .get(`/api/resources/${publicResourceId}`)
+                    .expect(200);
+
+                expect(response.body.resource).toHaveProperty('audience', 'public');
+            });
+        });
+
+        describe('GET /api/resources/:resource_id/download and /stream', () => {
+            test('should return 404 for society resource download when anonymous or jobseeker', async () => {
+                await request(app)
+                    .get(`/api/resources/${societyResourceId}/download`)
+                    .expect(404);
+
+                await request(app)
+                    .get(`/api/resources/${societyResourceId}/download`)
+                    .set('Authorization', `Bearer ${jobseekerToken}`)
+                    .expect(404);
+            });
+
+            test('should return 404 for society resource stream when anonymous or jobseeker', async () => {
+                await request(app)
+                    .get(`/api/resources/${societyResourceId}/stream`)
+                    .expect(404);
+
+                await request(app)
+                    .get(`/api/resources/${societyResourceId}/stream`)
+                    .set('Authorization', `Bearer ${jobseekerToken}`)
+                    .expect(404);
+            });
+
+            test('should not count blocked downloads', async () => {
+                const result = await db.query(
+                    'SELECT download_count FROM resources WHERE resource_id = $1',
+                    [societyResourceId]
+                );
+
+                expect(result.rows[0].download_count).toBe(0);
+            });
+
+            test('should generate download URL for society resource when society', async () => {
+                const response = await request(app)
+                    .get(`/api/resources/${societyResourceId}/download`)
+                    .set('Authorization', `Bearer ${societyToken}`)
+                    .expect(200);
+
+                expect(response.body).toHaveProperty('download_url');
+            });
+        });
+
+        describe('POST and PATCH audience', () => {
+            test('should default audience to public on create', async () => {
+                const response = await request(app)
+                    .post('/api/resources')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .field('title', 'Audience Default Test')
+                    .field('category', 'CV')
+                    .field('upload_type', 'link')
+                    .field('video_link', 'https://www.youtube.com/watch?v=audience-default-test')
+                    .expect(201);
+
+                expect(response.body.resource).toHaveProperty('audience', 'public');
+
+                await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+            });
+
+            test('should create a society resource', async () => {
+                const response = await request(app)
+                    .post('/api/resources')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .field('title', 'Audience Society Test')
+                    .field('category', 'Career Workshops')
+                    .field('audience', 'society')
+                    .field('upload_type', 'link')
+                    .field('video_link', 'https://www.youtube.com/watch?v=audience-society-test')
+                    .expect(201);
+
+                expect(response.body.resource).toHaveProperty('audience', 'society');
+
+                await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+            });
+
+            test('should reject invalid audience on create', async () => {
+                const response = await request(app)
+                    .post('/api/resources')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .field('title', 'Audience Invalid Test')
+                    .field('category', 'CV')
+                    .field('audience', 'everyone')
+                    .field('upload_type', 'link')
+                    .field('video_link', 'https://www.youtube.com/watch?v=audience-invalid-test')
+                    .expect(400);
+
+                expect(response.body).toHaveProperty('msg', 'Invalid audience');
+            });
+
+            test('should move a resource between audiences on update', async () => {
+                const response = await request(app)
+                    .patch(`/api/resources/${publicResourceId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .send({ audience: 'society' })
+                    .expect(200);
+
+                expect(response.body.resource).toHaveProperty('audience', 'society');
+
+                await request(app)
+                    .get(`/api/resources/${publicResourceId}`)
+                    .expect(404);
+
+                await request(app)
+                    .patch(`/api/resources/${publicResourceId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .send({ audience: 'public' })
+                    .expect(200);
+            });
+
+            test('should reject invalid audience on update', async () => {
+                const response = await request(app)
+                    .patch(`/api/resources/${publicResourceId}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .send({ audience: 'everyone' })
+                    .expect(400);
+
+                expect(response.body).toHaveProperty('msg', 'Invalid audience');
+            });
+        });
+
+        describe('GET /api/resources/categories and /stats', () => {
+            test('should exclude society-only categories', async () => {
+                const response = await request(app)
+                    .get('/api/resources/categories')
+                    .expect(200);
+
+                expect(response.body.categories).not.toContain('Career Workshops');
+            });
+
+            test('should exclude society resources from stats', async () => {
+                const response = await request(app)
+                    .get('/api/resources/stats')
+                    .expect(200);
+
+                expect(response.body.stats.by_category).not.toHaveProperty('Career Workshops');
+            });
+        });
+    });
+
+    describe('POST /api/resources is_active', () => {
+        const createLinkResource = (fields) => {
+            const req = request(app)
+                .post('/api/resources')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .field('title', 'Active Flag Test')
+                .field('category', 'CV')
+                .field('upload_type', 'link');
+
+            Object.entries(fields).forEach(([key, value]) => req.field(key, value));
+            return req;
+        };
+
+        test('should default to active on create', async () => {
+            const response = await createLinkResource({
+                video_link: 'https://www.youtube.com/watch?v=active-default-test'
+            }).expect(201);
+
+            expect(response.body.resource).toHaveProperty('is_active', true);
+
+            await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+        });
+
+        test('should create an inactive resource from a multipart form', async () => {
+            const response = await createLinkResource({
+                video_link: 'https://www.youtube.com/watch?v=inactive-form-test',
+                is_active: 'false'
+            }).expect(201);
+
+            expect(response.body.resource).toHaveProperty('is_active', false);
+
+            await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
+        });
+
+        test('should create an inactive resource from JSON', async () => {
+            const response = await request(app)
+                .post('/api/resources')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({
+                    title: 'Active Flag JSON Test',
+                    category: 'CV',
+                    upload_type: 'link',
+                    video_link: 'https://www.youtube.com/watch?v=inactive-json-test',
+                    is_active: false
+                })
+                .expect(201);
+
+            expect(response.body.resource).toHaveProperty('is_active', false);
+
+            await db.query('DELETE FROM resources WHERE resource_id = $1', [response.body.resource.resource_id]);
         });
     });
 

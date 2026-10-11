@@ -6,7 +6,7 @@ export const fetchSocieties = () => {
             s.*,
             COUNT(j.jobseeker_id) as member_count
         FROM societies s
-        LEFT JOIN jobseekers j ON s.name = j.society
+        LEFT JOIN jobseekers j ON j.society_id = s.society_id
         GROUP BY s.society_id
         ORDER BY s.name ASC
     `).then(({rows}) => {
@@ -20,14 +20,91 @@ export const fetchSocietyNames = () => {
     });
 };
 
-export const incrementSocietyMemberCount = (societyName) => {
+// Works out the society_id and society name to store for a jobseeker, from
+// whatever the caller supplied. Both columns are always written together from
+// this one result, so they can never disagree.
+//
+// Accepts either a society_id (unambiguous, preferred) or a society name.
+// A name that matches no society is kept as text with a null society_id, so a
+// student who belongs to a society that is not on the platform does not lose it.
+export const resolveSocietyLink = async ({ society_id, society } = {}) => {
+    const hasId = society_id !== undefined && society_id !== null && society_id !== '';
+
+    if (hasId) {
+        const { rows } = await db.query(
+            `SELECT society_id, name FROM societies WHERE society_id = $1`,
+            [society_id]
+        );
+        if (rows.length === 0) {
+            return Promise.reject({ status: 400, msg: 'Society not found' });
+        }
+        return { society_id: rows[0].society_id, society: rows[0].name };
+    }
+
+    const name = typeof society === 'string' ? society.trim() : society;
+
+    // 'None' is a legacy value the signup form used to send for "no society"
+    if (!name || name === 'None') {
+        return { society_id: null, society: null };
+    }
+
+    const { rows } = await db.query(
+        `SELECT society_id, name FROM societies
+         WHERE LOWER(BTRIM(name)) = LOWER(BTRIM($1))
+         ORDER BY society_id
+         LIMIT 1`,
+        [name]
+    );
+
+    // Matched: store the society's own spelling so the text and the key agree.
+    // Unmatched: keep what was given, with no link.
+    return rows.length > 0
+        ? { society_id: rows[0].society_id, society: rows[0].name }
+        : { society_id: null, society: name };
+};
+
+// What a society may see about its own members. Deliberately narrower than the
+// admin view: enough to run the members table in the design, and nothing more.
+// No phone number, LinkedIn, CV, or the demographic answers students gave to
+// FOP rather than to their society.
+const SOCIETY_MEMBER_FIELDS = [
+    'jobseeker_id',
+    'first_name',
+    'last_name',
+    'email',
+    'education_level',
+    'institution_name',
+    'uni_year',
+    'degree_type',
+    'area_of_study',
+    'role_interest_option_one',
+    'role_interest_option_two',
+    'created_at'
+];
+
+// Members of one society, with how much each has engaged.
+// Takes the id from the caller's token, never from a URL.
+//
+// application_count is the number of jobs the member has applied for through
+// the platform (rows in jobseekers_jobs_applied), and event_registration_count
+// the number of events they registered for. DISTINCT matters: joining both
+// one-to-many tables at once multiplies the rows, so a plain COUNT would
+// report each job once per event and vice versa.
+export const fetchSocietyMembers = (society_id) => {
+    const columns = SOCIETY_MEMBER_FIELDS.map(field => `j.${field}`).join(', ');
+
     return db.query(`
-        UPDATE societies 
-        SET member_count = member_count + 1 
-        WHERE name = $1
-        RETURNING *
-    `, [societyName]).then(({rows}) => {
-        return rows[0];
+        SELECT ${columns},
+               COUNT(DISTINCT a.job_id)::int AS application_count,
+               COUNT(DISTINCT e.event_id)::int AS event_registration_count
+        FROM jobseekers j
+        LEFT JOIN jobseekers_jobs_applied a ON a.jobseeker_id = j.jobseeker_id
+        LEFT JOIN jobseekers_events_applied e ON e.jobseeker_id = j.jobseeker_id
+        WHERE j.society_id = $1
+        GROUP BY j.jobseeker_id
+        ORDER BY j.created_at DESC
+    `, [society_id]).then(({rows}) => {
+        return rows;
     });
 };
 

@@ -7,6 +7,7 @@ import { societies } from './test-data/societies.js';
 import { jobs } from './test-data/jobs.js';
 import { events } from './test-data/events.js';
 import { resources } from './test-data/resources.js';
+import { LINK_JOBSEEKERS_TO_SOCIETIES, UNLINKED_JOBSEEKERS } from './society-link.js';
 import {
   jobseekerJobsApplied,
   jobseekerJobsSaved,
@@ -94,6 +95,20 @@ const insertSocieties = async () => {
   console.log(`✅ Societies seeded (${societies.length} societies)`);
 };
 
+// Jobseekers are inserted before societies exist, so the link is resolved here
+// rather than inline. Uses the same rule as the migration.
+const linkJobseekersToSocieties = async () => {
+  const { rowCount } = await db.query(LINK_JOBSEEKERS_TO_SOCIETIES);
+  const { rows: unlinked } = await db.query(UNLINKED_JOBSEEKERS);
+
+  console.log(`✅ Jobseekers linked to societies (${rowCount} linked)`);
+  if (unlinked.length > 0) {
+    const total = unlinked.reduce((sum, row) => sum + row.jobseekers, 0);
+    const values = unlinked.map(row => `"${row.unmatched_value}"`).join(', ');
+    console.log(`   ℹ️  ${total} left unlinked, society name not found: ${values}`);
+  }
+};
+
 const insertJobs = async () => {
   for (const job of jobs) {
     await db.query(
@@ -142,14 +157,14 @@ const insertResources = async () => {
       `INSERT INTO resources (
         title, description, detailed_description, whats_included, category,
         file_name, file_size, file_type, storage_key, storage_url,
-        created_by, uploaded_by, is_active, download_count
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+        created_by, uploaded_by, is_active, download_count, audience
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
       [
         resource.title, resource.description, resource.detailed_description,
         resource.whats_included, resource.category, resource.file_name,
         resource.file_size, resource.file_type, resource.storage_key,
         resource.storage_url, resource.created_by, 1, resource.is_active,
-        resource.download_count
+        resource.download_count, resource.audience || 'public'
       ]
     );
   }
@@ -222,6 +237,7 @@ const runSeed = async () => {
     await insertAdminUsers();
     await insertJobseekers();
     await insertSocieties();
+    await linkJobseekersToSocieties();
     await insertJobs();
     await insertEvents();
     await insertResources();

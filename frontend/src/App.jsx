@@ -35,10 +35,9 @@ import EventsList from './admin/Events/EventsList.jsx'
 import EventDetail from './admin/Events/EventDetail.jsx'
 import EventCreate from './admin/Events/EventCreate.jsx'
 import EventEdit from './admin/Events/EventEdit.jsx'
-import ResourcesList from './admin/Resource/ResourcesList.jsx'
+import ResourceManagement from './admin/Resource/ResourceManagement.jsx'
 import AdminResourceDetail from './admin/Resource/ResourceDetail.jsx'
-import ResourceCreate from './admin/Resource/ResourceCreate.jsx'
-import ResourceEdit from './admin/Resource/ResourceEdit.jsx'
+import ResourceForm from './admin/Resource/ResourceForm.jsx'
 import WebinarDashboard from './admin/Webinars/WebinarDashboard.jsx'
 import AdminWebinarDetail from './admin/Webinars/WebinarDetail.jsx'
 import WebinarCreate from './admin/Webinars/components/WebinarCreate.jsx'
@@ -185,11 +184,11 @@ function App() {
     },
     {
       path: "/admin/resources",
-      element: <Layout><ResourcesList /></Layout>
+      element: <Layout><ResourceManagement /></Layout>
     },
     {
       path: "/admin/resources/new",
-      element: <Layout><ResourceCreate /></Layout>
+      element: <Layout><ResourceForm key="create" /></Layout>
     },
     {
       path: "/admin/resources/:id",
@@ -197,7 +196,7 @@ function App() {
     },
     {
       path: "/admin/resources/:id/edit",
-      element: <Layout><ResourceEdit /></Layout>
+      element: <Layout><ResourceForm key="edit" /></Layout>
     },
     {
       path: "/admin/webinars",

@@ -298,5 +298,53 @@ export const resources = [
     created_by: 'FOP Team',
     is_active: true,
     download_count: 1678
+  },
+  {
+    title: 'Career Workshop: Finding Your First Internship',
+    description: 'Ready-to-deliver workshop slides for running an internship search session with your members',
+    detailed_description: 'A complete slide deck for society committees to run a 45-minute workshop on finding and applying for internships. Covers where to look, application timelines, and how to stand out.',
+    whats_included: '• 30-slide PowerPoint deck\n• Speaker notes on every slide\n• Group activity prompts\n• Application timeline handout',
+    category: 'Career Workshops',
+    file_name: 'workshop-finding-first-internship.pptx',
+    file_size: '8.4 MB',
+    file_type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    storage_key: 'resources/workshop-finding-first-internship.pptx',
+    storage_url: 'https://storage.fop.com/resources/workshop-finding-first-internship.pptx',
+    created_by: 'FOP Team',
+    is_active: true,
+    download_count: 42,
+    audience: 'society'
+  },
+  {
+    title: 'Workshop Facilitator Guide: Networking Skills',
+    description: 'Step-by-step facilitator guide for delivering a networking skills workshop',
+    detailed_description: 'Everything a society committee member needs to facilitate a networking workshop, including a session plan, icebreakers, and practice exercises for members.',
+    whats_included: '• 12-page facilitator guide\n• 60-minute session plan\n• Icebreaker activities\n• Elevator pitch exercise',
+    category: 'Career Workshops',
+    file_name: 'workshop-facilitator-guide-networking.pdf',
+    file_size: '1.2 MB',
+    file_type: 'application/pdf',
+    storage_key: 'resources/workshop-facilitator-guide-networking.pdf',
+    storage_url: 'https://storage.fop.com/resources/workshop-facilitator-guide-networking.pdf',
+    created_by: 'FOP Team',
+    is_active: true,
+    download_count: 27,
+    audience: 'society'
+  },
+  {
+    title: 'Assessment Centre Workshop Slides',
+    description: 'Workshop deck to prepare your members for assessment centre days',
+    detailed_description: 'A slide deck for running an assessment centre preparation session, with a mock group exercise and guidance on what assessors look for.',
+    whats_included: '• 40-slide PowerPoint deck\n• Mock group exercise brief\n• Assessor scoring sheet\n• Speaker notes',
+    category: 'Career Workshops',
+    file_name: 'workshop-assessment-centre-slides.pptx',
+    file_size: '12.1 MB',
+    file_type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    storage_key: 'resources/workshop-assessment-centre-slides.pptx',
+    storage_url: 'https://storage.fop.com/resources/workshop-assessment-centre-slides.pptx',
+    created_by: 'FOP Team',
+    is_active: true,
+    download_count: 18,
+    audience: 'society'
   }
 ];

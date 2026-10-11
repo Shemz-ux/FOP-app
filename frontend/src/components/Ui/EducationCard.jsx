@@ -5,6 +5,7 @@ import Toast from "../Ui/Toast";
 import { getUniversityOptions } from "../../data/universities";
 import { getSchoolsCollegesOptions } from "../../data/schools";
 import { JOB_INDUSTRIES } from "../../utils/dropdownOptions";
+import { getSocietyNames } from "../../services/Societies/societiesService";
 
 export default function EducationCard({ educationData, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -16,6 +17,7 @@ export default function EducationCard({ educationData, onSave }) {
   const [customSchool, setCustomSchool] = useState('');
   const [showCustomUniversity, setShowCustomUniversity] = useState(false);
   const [customUniversity, setCustomUniversity] = useState('');
+  const [societies, setSocieties] = useState([]);
 
   // Sync local state when prop changes
   useEffect(() => {
@@ -23,6 +25,27 @@ export default function EducationCard({ educationData, onSave }) {
       setLocalEducationData(educationData);
     }
   }, [educationData]);
+
+  // Societies are picked from a list rather than typed, so the value always
+  // matches a real society and stays linked to it
+  useEffect(() => {
+    getSocietyNames()
+      .then(setSocieties)
+      .catch(error => console.error('Error fetching societies:', error));
+  }, []);
+
+  const currentSociety = localEducationData.society;
+  const isKnownSociety = societies.some(society => society.name === currentSociety);
+
+  const societyOptions = [
+    { value: '', label: 'None' },
+    // Keep a value that is not a partner society, so opening the editor and
+    // saving cannot quietly discard what the student recorded before
+    ...(currentSociety && !isKnownSociety
+      ? [{ value: currentSociety, label: `${currentSociety} (not a partner society)` }]
+      : []),
+    ...societies.map(society => ({ value: society.name, label: society.name }))
+  ];
 
   const handleSave = async () => {
     // Validate required fields based on education level
@@ -403,12 +426,15 @@ export default function EducationCard({ educationData, onSave }) {
           </div>
 
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block text-left">Society</label>
-            <input
-              type="text"
+            <label className="text-sm text-muted-foreground mb-1 block text-left">Partner Society Membership</label>
+            <CustomSelect
               value={localEducationData.society || ''}
               onChange={(e) => setLocalEducationData({ ...localEducationData, society: e.target.value })}
-              className="w-full px-3 py-2 bg-input-background border border-input rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary text-left"
+              // societyOptions already starts with a "None" entry whose value is
+              // "", so the default placeholder would duplicate it
+              placeholder=""
+              options={societyOptions}
+              className="text-sm"
             />
           </div>
 

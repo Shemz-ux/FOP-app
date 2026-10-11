@@ -14,21 +14,24 @@ const createResource = async (resourceData) => {
         storage_key,
         storage_url,
         uploaded_by,
-        created_by
+        created_by,
+        audience,
+        is_active
     } = resourceData;
 
     const query = `
         INSERT INTO resources (
             title, description, detailed_description, whats_included, category, file_name, file_size, 
-            file_type, storage_key, storage_url, created_by, uploaded_by
+            file_type, storage_key, storage_url, created_by, uploaded_by, audience, is_active
         ) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
         RETURNING *
     `;
 
     const values = [
         title, description, detailed_description, whats_included, category, file_name, file_size,
-        file_type, storage_key, storage_url, created_by, uploaded_by
+        file_type, storage_key, storage_url, created_by, uploaded_by, audience || 'public',
+        is_active !== undefined ? is_active : true
     ];
 
     try {
@@ -44,6 +47,21 @@ const fetchResources = async (filters = {}) => {
     let whereClause = filters.include_inactive ? `WHERE 1=1` : `WHERE r.is_active = TRUE`;
     const values = [];
     let paramCount = 0;
+
+    // Add audience filter - defaults to public only, 'all' skips the filter
+    const audience = filters.audience || 'public';
+    if (audience !== 'all') {
+        paramCount++;
+        whereClause += ` AND r.audience = $${paramCount}`;
+        values.push(audience);
+    }
+
+    // Add multiple categories filter
+    if (filters.categories && filters.categories.length > 0) {
+        paramCount++;
+        whereClause += ` AND r.category = ANY($${paramCount})`;
+        values.push(filters.categories);
+    }
 
     // Add category filter
     if (filters.category) {
@@ -149,7 +167,8 @@ const updateResource = async (resourceId, updateData) => {
         'file_size',
         'file_type',
         'storage_key',
-        'storage_url'
+        'storage_url',
+        'audience'
     ];
     const updates = [];
     const values = [];
@@ -227,12 +246,12 @@ const incrementDownloadCount = async (resourceId) => {
     }
 };
 
-// Get resource categories for filters
+// Get resource categories for filters (public resources only)
 const fetchResourceCategories = async () => {
     const query = `
         SELECT DISTINCT category 
         FROM resources 
-        WHERE is_active = TRUE 
+        WHERE is_active = TRUE AND audience = 'public'
         ORDER BY category
     `;
 
@@ -244,7 +263,7 @@ const fetchResourceCategories = async () => {
     }
 };
 
-// Get resource statistics
+// Get resource statistics (public resources only)
 const fetchResourceStats = async () => {
     const totalQuery = `
         SELECT 
@@ -252,7 +271,7 @@ const fetchResourceStats = async () => {
             SUM(download_count) as total_downloads,
             COUNT(DISTINCT category) as total_categories
         FROM resources 
-        WHERE is_active = TRUE
+        WHERE is_active = TRUE AND audience = 'public'
     `;
 
     const categoryQuery = `
@@ -260,7 +279,7 @@ const fetchResourceStats = async () => {
             category,
             COUNT(*) as count
         FROM resources 
-        WHERE is_active = TRUE
+        WHERE is_active = TRUE AND audience = 'public'
         GROUP BY category
         ORDER BY count DESC
     `;

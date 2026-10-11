@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import pkg from "pg";
+import { LINK_JOBSEEKERS_TO_SOCIETIES } from './society-link.js';
 
 // Load test environment first
 dotenv.config({ path: '.env.test' });
@@ -75,6 +76,7 @@ const createJobseekersTable = () => {
             role_interest_option_one VARCHAR(255),
             role_interest_option_two VARCHAR(255),
             society VARCHAR(255),
+            society_id INT REFERENCES societies(society_id) ON DELETE SET NULL,
             linkedin VARCHAR(500),
             has_right_to_work_uk BOOLEAN,
             requires_sponsorship BOOLEAN,
@@ -328,6 +330,7 @@ const createResourcesTable = () => {
         created_by VARCHAR(255),
         uploaded_by INT REFERENCES admin_users(admin_id),
         is_active BOOLEAN DEFAULT TRUE,
+        audience VARCHAR(20) NOT NULL DEFAULT 'public' CHECK (audience IN ('public', 'society')),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
     )`).then(()=>{
@@ -1169,8 +1172,9 @@ const runTestSeed = async () => {
         await testDb.query('DROP TYPE IF EXISTS work_type_enum CASCADE');
         await testDb.query('DROP TYPE IF EXISTS resource_category_enum CASCADE');
         
-        await createJobseekersTable();
+        // Societies first: jobseekers.society_id references it
         await createSocietiesTable();
+        await createJobseekersTable();
         await createJobsTable();
         await createEventsTable();
         await createJobseekerJobApplicationsTable();
@@ -1186,6 +1190,9 @@ const runTestSeed = async () => {
         await insertAdminUsers();
         await insertJobseekers();
         await insertSocieties();
+        // Jobseekers are inserted before societies exist, so the link is
+        // resolved here, using the same rule as the migration
+        await testDb.query(LINK_JOBSEEKERS_TO_SOCIETIES);
         await insertJobs();
         await insertEvents();
         await insertResources();

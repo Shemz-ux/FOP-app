@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Trash2, ExternalLink, Pencil, FileText, User, Calendar, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Download, Trash2, ExternalLink, Pencil, Eye } from 'lucide-react';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
 import { apiGet, apiDelete } from '../../services/api';
 import { formatFileType } from '../../utils/fileTypeFormatter';
+import StatusBadge from './components/StatusBadge';
+import LoadingState from './components/LoadingState';
+import AudienceBadge from './components/AudienceBadge';
+import { isVideoResource, getListPath } from './resourceOptions';
+import { resourceDetailCopy as copy } from './resource.copy';
 
 export default function ResourceDetail() {
   const { id } = useParams();
@@ -38,15 +43,15 @@ export default function ResourceDetail() {
     try {
       await apiDelete(`/resources/${resource.resource_id}`);
       setToast({
-        message: `"${resource.title}" has been deleted successfully`,
+        message: copy.toasts.deleteSuccess(resource.title),
         type: 'success'
       });
       setTimeout(() => {
-        navigate('/admin/resources');
+        navigate(getListPath(resource.audience));
       }, 1500);
     } catch (error) {
       console.error('Error deleting resource:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to delete resource. Please try again.';
+      const errorMessage = error.response?.data?.msg || error.response?.data?.message || error.message || copy.toasts.deleteError;
       setToast({
         message: errorMessage,
         type: 'error'
@@ -63,7 +68,7 @@ export default function ResourceDetail() {
     } catch (error) {
       console.error('Error viewing resource:', error);
       setToast({
-        message: 'Failed to view resource. Please try again.',
+        message: copy.toasts.viewError,
         type: 'error'
       });
     }
@@ -77,21 +82,14 @@ export default function ResourceDetail() {
     } catch (error) {
       console.error('Error downloading resource:', error);
       setToast({
-        message: 'Failed to download resource. Please try again.',
+        message: copy.toasts.downloadError,
         type: 'error'
       });
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading resource...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState message={copy.loading} />;
   }
 
   if (!resource) {
@@ -102,47 +100,30 @@ export default function ResourceDetail() {
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>Back to Resources</span>
+          <span>{copy.back}</span>
         </button>
         <div className="text-center py-12">
-          <h2 className="text-2xl text-foreground mb-2">Resource Not Found</h2>
-          <p className="text-muted-foreground">The resource you're looking for doesn't exist.</p>
+          <h2 className="text-2xl text-foreground mb-2">{copy.notFound.title}</h2>
+          <p className="text-muted-foreground">{copy.notFound.message}</p>
         </div>
       </div>
     );
   }
 
-  const getCategoryColor = (category) => {
-    const colors = {
-      'CV': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-      'Cover Letters': 'bg-green-500/10 text-green-500 border-green-500/20',
-      'Interviews': 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-      'Assessment Centres': 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-      'LinkedIn': 'bg-teal-500/10 text-teal-500 border-teal-500/20',
-      'Graduate Schemes': 'bg-pink-500/10 text-pink-500 border-pink-500/20',
-      'Networking': 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
-      'Career Planning': 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20',
-      'Industry Insights': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-      'Internship Guides': 'bg-rose-500/10 text-rose-500 border-rose-500/20',
-      'Personal Branding': 'bg-violet-500/10 text-violet-500 border-violet-500/20',
-      'Salary & Benefits': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-      'Skills Development': 'bg-lime-500/10 text-lime-500 border-lime-500/20',
-      'First Job': 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20',
-      'Remote Work': 'bg-sky-500/10 text-sky-500 border-sky-500/20',
-    };
-    return colors[category] || 'bg-purple-500/10 text-purple-500 border-purple-500/20';
-  };
+  const isVideo = isVideoResource(resource);
+  // Return to the management page tab this resource belongs to
+  const listPath = getListPath(resource.audience);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <div className="space-y-6 text-left">
       <button
-        onClick={() => navigate('/admin/resources')}
+        onClick={() => navigate(listPath)}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
       >
         <ArrowLeft className="w-5 h-5" />
-        <span>Back to Resources</span>
+        <span>{copy.back}</span>
       </button>
       
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -160,22 +141,22 @@ export default function ResourceDetail() {
             className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm whitespace-nowrap"
           >
             <ExternalLink className="w-4 h-4" />
-            <span className="hidden sm:inline">View on Website</span>
-            <span className="sm:hidden">View</span>
+            <span className="hidden sm:inline">{copy.actions.viewOnWebsite}</span>
+            <span className="sm:hidden">{copy.actions.viewOnWebsiteShort}</span>
           </a>
           <Link
             to={`/admin/resources/${resource.resource_id}/edit`}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-green-500/50 text-green-500 rounded-lg hover:bg-secondary text-sm whitespace-nowrap"
           >
             <Pencil className="w-4 h-4" />
-            Edit
+            {copy.actions.edit}
           </Link>
           <button
             onClick={handleDeleteClick}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-red-500/50 text-red-500 rounded-lg hover:bg-red-500/10 transition-colors text-sm whitespace-nowrap"
           >
             <Trash2 className="w-4 h-4" />
-            Delete
+            {copy.actions.delete}
           </button>
         </div>
       </div>
@@ -184,58 +165,46 @@ export default function ResourceDetail() {
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Resource Type</p>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.resourceType}</p>
             <p className="text-foreground font-medium">
-              {resource.file_type === 'video/link' ? 'Video Link' : 'File'}
+              {isVideo ? copy.info.typeVideo : copy.info.typeFile}
             </p>
           </div>
           {resource.file_size && (
             <div>
-              <p className="text-sm text-muted-foreground mb-1">File Size</p>
+              <p className="text-sm text-muted-foreground mb-1">{copy.info.fileSize}</p>
               <p className="text-foreground font-medium">{resource.file_size}</p>
             </div>
           )}
           {resource.file_type && (
             <div>
-              <p className="text-sm text-muted-foreground mb-1">File Type</p>
+              <p className="text-sm text-muted-foreground mb-1">{copy.info.fileType}</p>
               <p className="text-foreground font-medium">{formatFileType(resource.file_type)}</p>
             </div>
           )}
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Downloads/Views</p>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.downloads}</p>
             <p className="text-foreground font-medium">{resource.download_count?.toLocaleString() || 0}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Created By</p>
-            <p className="text-foreground font-medium">{resource.created_by || 'FOP'}</p>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.createdBy}</p>
+            <p className="text-foreground font-medium">{resource.created_by || copy.info.createdByFallback}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Upload Date</p>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.uploadDate}</p>
             <p className="text-foreground font-medium">{new Date(resource.created_at).toLocaleDateString()}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Last Updated</p>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.lastUpdated}</p>
             <p className="text-foreground font-medium">{new Date(resource.updated_at).toLocaleDateString()}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Status</p>
-             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium ${
-              resource.is_active
-                ? 'bg-green-500/10 text-green-500 border border-green-500/20'
-                : 'bg-red-500/10 text-red-500 border border-red-500/20'
-            }`}>
-              {resource.is_active ? (
-                <>
-                  <CheckCircle className="w-3.5 h-3.5" />
-                  Active
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-3.5 h-3.5" />
-                  Inactive
-                </>
-              )}
-            </span>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.audience}</p>
+            <AudienceBadge audience={resource.audience} />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">{copy.info.status}</p>
+            <StatusBadge isActive={resource.is_active} labels={copy.status} />
           </div>
         </div>
       </div>
@@ -243,10 +212,10 @@ export default function ResourceDetail() {
       {/* Resource Access */}
       {resource.storage_url && (
         <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl text-foreground mb-4">Access Resource</h2>
-          {resource.file_type?.toLowerCase().includes('video') || resource.file_type === 'video/link' || resource.storage_url.includes('youtube.com') || resource.storage_url.includes('vimeo.com') || resource.storage_url.includes('youtu.be') ? (
+          <h2 className="text-lg sm:text-xl text-foreground mb-4">{copy.access.title}</h2>
+          {isVideo ? (
             <div className="space-y-4">
-              <p className="text-sm sm:text-base text-muted-foreground">This resource is a video hosted externally.</p>
+              <p className="text-sm sm:text-base text-muted-foreground">{copy.access.videoMessage}</p>
               <a
                 href={resource.storage_url}
                 target="_blank"
@@ -254,26 +223,26 @@ export default function ResourceDetail() {
                 className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 text-sm sm:text-base"
               >
                 <Eye className="w-4 h-4" />
-                Watch Video
+                {copy.access.watchVideo}
               </a>
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm sm:text-base text-muted-foreground">Download or view this resource file.</p>
+              <p className="text-sm sm:text-base text-muted-foreground">{copy.access.fileMessage}</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleViewResource}
                   className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-border text-foreground rounded-lg hover:bg-secondary transition-colors text-sm sm:text-base"
                 >
                   <Eye className="w-4 h-4" />
-                  View Resource
+                  {copy.access.viewResource}
                 </button>
                 <button
                   onClick={handleDownloadResource}
                   className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-primary text-primary-foreground rounded-lg hover:opacity-90 text-sm sm:text-base"
                 >
                   <Download className="w-4 h-4" />
-                  Download Resource
+                  {copy.access.downloadResource}
                 </button>
               </div>
             </div>
@@ -283,7 +252,7 @@ export default function ResourceDetail() {
 
       {/* Description */}
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
-        <h2 className="text-lg sm:text-xl text-foreground mb-4">Short Description</h2>
+        <h2 className="text-lg sm:text-xl text-foreground mb-4">{copy.sections.description}</h2>
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
           {resource.description}
         </p>
@@ -292,7 +261,7 @@ export default function ResourceDetail() {
       {/* Detailed Description */}
       {resource.detailed_description && (
         <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl text-foreground mb-4">About This Resource</h2>
+          <h2 className="text-lg sm:text-xl text-foreground mb-4">{copy.sections.detailedDescription}</h2>
           <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-line">
             {resource.detailed_description}
           </p>
@@ -302,7 +271,7 @@ export default function ResourceDetail() {
       {/* What's Included */}
       {resource.whats_included && (
         <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl text-foreground mb-4">What's Included</h2>
+          <h2 className="text-lg sm:text-xl text-foreground mb-4">{copy.sections.whatsIncluded}</h2>
           <ul className="space-y-2 sm:space-y-3">
             {resource.whats_included.split('\n').filter(item => item.trim()).map((item, index) => (
               <li key={index} className="flex items-start gap-2 sm:gap-3">
@@ -326,10 +295,10 @@ export default function ResourceDetail() {
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false })}
         onConfirm={handleDeleteConfirm}
-        title="Delete Resource"
-        message={resource ? `Are you sure you want to delete "${resource.title}"? This action cannot be undone.` : ''}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={copy.deleteModal.title}
+        message={resource ? copy.deleteModal.message(resource.title) : ''}
+        confirmText={copy.deleteModal.confirm}
+        cancelText={copy.deleteModal.cancel}
         confirmVariant="danger"
       />
 

@@ -1,5 +1,4 @@
 import { createJobseeker, fetchJobseekerById, fetchJobseekers, removeJobseeker, updateJobseeker } from "../models/jobseekers.js";
-import { incrementSocietyMemberCount } from "../models/societies.js";
 import bcrypt from "bcrypt";
 import { Parser } from 'json2csv';
 import { sendWelcomeEmail } from "../services/emailService.js";
@@ -77,11 +76,6 @@ export const postJobseeker = async (req, res, next) => {
             await sendWelcomeEmail(jobseeker.email, jobseeker.first_name);
         } catch (emailError) {
             // Email service already logs the error, registration continues successfully
-        }
-        
-        // Increment society member count if society is selected
-        if (jobseeker.society && jobseeker.society !== 'None') {
-            await incrementSocietyMemberCount(jobseeker.society);
         }
         
         res.status(201).send({newJobseeker: jobseeker});

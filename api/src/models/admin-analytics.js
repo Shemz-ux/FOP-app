@@ -114,16 +114,31 @@ export const fetchStudentsByUniversity = (university) => {
     });
 };
 
-export const fetchStudentsBySociety = (society) => {
-    // Exact (case-insensitive) match on the society name, not a substring LIKE match,
-    // so e.g. "Tech Society" doesn't also pull in "Advanced Tech Society Ltd".
-    // Selects the full jobseeker record so this can back a real ProfileView, not just a summary row.
+// Columns a member row may expose. Listed explicitly rather than SELECT *, so
+// that password_hash can never be returned and adding a sensitive column later
+// does not silently start leaking it.
+export const JOBSEEKER_MEMBER_COLUMNS = `
+    jobseeker_id, first_name, last_name, email, phone_number, linkedin,
+    education_level, institution_name, uni_year, degree_type, area_of_study,
+    subject_one, subject_two, subject_three, subject_four,
+    role_interest_option_one, role_interest_option_two,
+    society, society_id,
+    has_right_to_work_uk, requires_sponsorship,
+    school_meal_eligible, first_gen_to_go_uni,
+    cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at,
+    created_at, updated_at
+`;
+
+// Members of one society, by its id. Matching on the name would pull in
+// students of a different society that happens to share the name, and would
+// miss everyone whose stored text no longer matches after a rename.
+export const fetchStudentsBySociety = (society_id) => {
     return db.query(`
-        SELECT *
+        SELECT ${JOBSEEKER_MEMBER_COLUMNS}
         FROM jobseekers
-        WHERE LOWER(TRIM(society)) = LOWER(TRIM($1))
+        WHERE society_id = $1
         ORDER BY created_at DESC
-    `, [society]).then(({rows}) => {
+    `, [society_id]).then(({rows}) => {
         return rows;
     });
 };

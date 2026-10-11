@@ -80,13 +80,13 @@ export const getStudentsByUniversity = (req, res, next) => {
 };
 
 export const getStudentsBySociety = (req, res, next) => {
-    const { society } = req.params;
-    
-    if (!society || society.trim() === '') {
-        return res.status(400).send({ msg: 'Society parameter is required' });
+    const { society_id } = req.params;
+
+    if (!/^\d+$/.test(society_id)) {
+        return res.status(400).send({ msg: 'Society id must be a number' });
     }
-    
-    fetchStudentsBySociety(society).then((students) => {
+
+    fetchStudentsBySociety(Number(society_id)).then((students) => {
         res.status(200).send({ students, count: students.length });
     }).catch((err) => {
         next(err);

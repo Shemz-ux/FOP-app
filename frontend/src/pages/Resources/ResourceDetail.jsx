@@ -7,7 +7,7 @@ import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import ProtectedOverlay from '../../components/ProtectedOverlay/ProtectedOverlay';
 import { resourcesService } from '../../services';
-import { RESOURCE_CATEGORIES } from '../../utils/dropdownOptions';
+import { RESOURCE_CATEGORIES } from '../../admin/Resource/resourceOptions';
 import { formatTimeAgo } from '../../utils/timeFormatter';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatFileType } from '../../utils/fileTypeFormatter';
@@ -22,7 +22,7 @@ const iconMap = {
 export default function ResourceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAdmin, isLoggedIn } = useAuth();
+  const { isAdmin, isLoggedIn, isSociety } = useAuth();
   const [resource, setResource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +37,12 @@ export default function ResourceDetail() {
         setResource(data);
       } catch (err) {
         console.error('Error fetching resource:', err);
-        setError(err.message || 'Failed to load resource');
+        // A missing resource, or one this account may not see, shows the "not found" page
+        if (err.response?.status === 404) {
+          setResource(null);
+        } else {
+          setError(err.message || 'Failed to load resource');
+        }
       } finally {
         setLoading(false);
       }
@@ -125,13 +130,17 @@ export default function ResourceDetail() {
                       resource.storage_url?.includes('vimeo.com') ||
                       resource.storage_url?.includes('youtu.be');
   const IconComponent = isVideoLink ? Video : (iconMap[categoryInfo?.icon] || FileText);
+  // Societies reach society-only resources from their profile, so send them back there
+  const isFromSocietyProfile = resource.audience === 'society' && isSociety();
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
         <button
           onClick={() => {
-            if (window.history.length > 1 && document.referrer) {
+            if (isFromSocietyProfile) {
+              navigate('/profile?tab=resources');
+            } else if (window.history.length > 1 && document.referrer) {
               navigate(-1);
             } else {
               navigate('/resources');
@@ -140,7 +149,7 @@ export default function ResourceDetail() {
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>Back to Resources</span>
+          <span>{isFromSocietyProfile ? 'Back to your resources' : 'Back to Resources'}</span>
         </button>
 
         <div className="grid lg:grid-cols-3 gap-8">

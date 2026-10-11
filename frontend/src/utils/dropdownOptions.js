@@ -1,70 +1,7 @@
 // Dropdown options for admin forms with color variants and icon mappings
 // Supports predefined options + "Other" for custom entries
 
-// ==================== RESOURCES ====================
-
-export const RESOURCE_CATEGORIES = [
-  // Application Materials
-  { value: 'CV', label: 'CV', variant: 'sky', icon: 'FileText' },
-  { value: 'Cover Letters', label: 'Cover Letters', variant: 'blue', icon: 'FileText' },
-  { value: 'Application Forms', label: 'Applications', variant: 'teal', icon: 'ClipboardList' },
-  { value: 'Personal Statements', label: 'Personal Statement', variant: 'indigo', icon: 'FileEdit' },
-  { value: 'Portfolio Building', label: 'Portfolio', variant: 'violet', icon: 'Briefcase' },
-  
-  // Interview & Assessment
-  { value: 'Interviews', label: 'Interviews', variant: 'green', icon: 'MessageSquare' },
-  { value: 'Assessment Centres', label: 'Assessment Centre', variant: 'emerald', icon: 'Users' },
-  { value: 'Aptitude Tests', label: 'Aptitude Tests', variant: 'cyan', icon: 'Brain' },
-  { value: 'Group Exercises', label: 'Group Exercise', variant: 'teal', icon: 'UsersRound' },
-  
-  // Career Development
-  { value: 'Career Tips', label: 'Career Tips', variant: 'purple', icon: 'Lightbulb' },
-  { value: 'Career Planning', label: 'Career Planning', variant: 'pink', icon: 'Map' },
-  { value: 'Skills Development', label: 'Skills Dev', variant: 'orange', icon: 'BookOpen' },
-  { value: 'Professional Development', label: 'Professional Dev', variant: 'amber', icon: 'GraduationCap' },
-  { value: 'Mentorship', label: 'Mentorship', variant: 'rose', icon: 'UserCheck' },
-  
-  // Industry & Opportunities
-  { value: 'Industry Insights', label: 'Industry Insights', variant: 'cyan', icon: 'TrendingUp' },
-  { value: 'Company Research', label: 'Company Research', variant: 'blue', icon: 'Building' },
-  { value: 'Graduate Schemes', label: 'Grad Schemes', variant: 'indigo', icon: 'Award' },
-  { value: 'Internship Guides', label: 'Internship Guide', variant: 'violet', icon: 'Briefcase' },
-  { value: 'Apprenticeships', label: 'Apprenticeships', variant: 'emerald', icon: 'Tool' },
-  
-  // Networking & Personal Brand
-  { value: 'Networking', label: 'Networking', variant: 'pink', icon: 'Users' },
-  { value: 'LinkedIn', label: 'LinkedIn', variant: 'blue', icon: 'Linkedin' },
-  { value: 'Personal Branding', label: 'Personal Brand', variant: 'fuchsia', icon: 'User' },
-  { value: 'Social Media', label: 'Social Media', variant: 'purple', icon: 'Share2' },
-  
-  // Practical Resources
-  { value: 'Job Search', label: 'Job Search', variant: 'rose', icon: 'Search' },
-  { value: 'Salary & Benefits', label: 'Salary & Benefits', variant: 'amber', icon: 'DollarSign' },
-  { value: 'Negotiation', label: 'Negotiation', variant: 'orange', icon: 'Handshake' },
-  { value: 'Work-Life Balance', label: 'Work-Life Balance', variant: 'lime', icon: 'Heart' },
-  { value: 'Remote Work', label: 'Remote Work', variant: 'emerald', icon: 'Home' },
-  { value: 'First Job', label: 'First Job', variant: 'sky', icon: 'Rocket' },
-  
-  // Templates & Tools
-  { value: 'Templates', label: 'Templates', variant: 'indigo', icon: 'Layout' },
-  { value: 'Guides', label: 'Guides', variant: 'violet', icon: 'BookOpen' },
-  { value: 'Checklists', label: 'Checklists', variant: 'emerald', icon: 'CheckSquare' },
-  { value: 'Worksheets', label: 'Worksheets', variant: 'cyan', icon: 'FileSpreadsheet' },
-  
-  { value: 'Other', label: 'Other', variant: 'gray', icon: 'File' }
-];
-
-export const RESOURCE_FILE_TYPES = [
-  { value: 'pdf', label: 'PDF Document', icon: 'FileText' },
-  { value: 'docx', label: 'Word Document', icon: 'FileText' },
-  { value: 'xlsx', label: 'Excel Spreadsheet', icon: 'Sheet' },
-  { value: 'pptx', label: 'PowerPoint Presentation', icon: 'Presentation' },
-  { value: 'zip', label: 'ZIP Archive', icon: 'Archive' },
-  { value: 'mp4', label: 'Video (MP4)', icon: 'Video' },
-  { value: 'png', label: 'Image (PNG)', icon: 'Image' },
-  { value: 'jpg', label: 'Image (JPG)', icon: 'Image' },
-  { value: 'Other', label: 'Other', icon: 'File' }
-];
+// Resource options have moved to src/admin/Resource/resourceOptions.js
 
 // ==================== EVENTS ====================
 
@@ -247,10 +184,6 @@ export const normalizeFieldValue = (selectedValue, customValue = '') => {
  * Get all dropdown options for admin forms
  */
 export const getDropdownOptions = () => ({
-  resources: {
-    categories: RESOURCE_CATEGORIES,
-    fileTypes: RESOURCE_FILE_TYPES
-  },
   events: {
     industries: EVENT_INDUSTRIES,
     eventTypes: EVENT_TYPES,
@@ -282,10 +215,6 @@ export const getLabelFromOptions = (options, value) => {
 // ==================== EXPORTS ====================
 
 export default {
-  // Resources
-  RESOURCE_CATEGORIES,
-  RESOURCE_FILE_TYPES,
-  
   // Events
   EVENT_INDUSTRIES,
   EVENT_TYPES,

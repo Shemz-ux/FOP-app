@@ -46,7 +46,7 @@ adminRouter.get("/events/:event_id/applications", getEventApplicationsByEventId)
 // Jobseeker filtering endpoints
 adminRouter.get("/jobseekers/gender/:gender", getStudentsByGender);
 adminRouter.get("/jobseekers/university/:university", getStudentsByUniversity);
-adminRouter.get("/jobseekers/society/:society", getStudentsBySociety);
+adminRouter.get("/jobseekers/society/:society_id", getStudentsBySociety);
 adminRouter.get("/jobseekers/free-meals", getStudentsEligibleForFreeMeals);
 adminRouter.get("/jobseekers/first-gen", getFirstGenStudents);
 adminRouter.get("/jobseekers/education/:education_level", getStudentsByEducationStatus);
