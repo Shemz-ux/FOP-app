@@ -4,8 +4,23 @@
 const profileSharedCopy = {
   header: {
     nameFallback: 'User',
-    settings: 'Account Settings',
-    statLoading: '–'
+    settings: 'Account settings',
+    statLoading: '–',
+    greeting: {
+      morning: 'Good morning',
+      afternoon: 'Good afternoon',
+      evening: 'Good evening'
+    },
+    snapshot: 'Your snapshot',
+    term: {
+      autumn: (year) => `Autumn term ${year}`,
+      spring: (year) => `Spring term ${year}`,
+      summer: (year) => `Summer term ${year}`
+    },
+    nextEvent: (day) => `Next: ${day}`,
+    noUpcomingEvents: 'None coming up',
+    newThisMonth: (count) => `+${count} this month`,
+    noneThisMonth: 'None this month'
   },
   stats: {
     savedJobs: 'Saved Jobs',

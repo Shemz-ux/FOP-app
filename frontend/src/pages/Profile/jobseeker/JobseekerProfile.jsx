@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Bookmark, Calendar, CalendarCheck, Search, Send } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import EducationCard from '../../../components/Ui/EducationCard';
 import CVUploadCard from '../../../components/Ui/CVUploadCard';
@@ -14,8 +15,16 @@ import ProfileToast from '../components/ProfileToast';
 import { useSavedItems } from '../utils/useSavedItems';
 import { useLoadOnVisible } from '../utils/useLoadOnVisible';
 import { useToast } from '../utils/useToast';
-import { PROFILE_EVENTS_PER_PAGE, getValidSection } from '../utils/profileOptions';
+import {
+  PROFILE_EVENTS_PER_PAGE,
+  countThisMonth,
+  formatEventDay,
+  getInitials,
+  getNextEvent,
+  getValidSection,
+} from '../utils/profileOptions';
 import { jobseekerProfileCopy as copy } from './jobseekerProfile.copy';
+import { profileSharedCopy as sharedCopy } from '../profile.copy';
 import {
   DEFAULT_JOBSEEKER_SECTION,
   EMPTY_CV_DATA,
@@ -134,10 +143,45 @@ export default function JobseekerProfile() {
     />
   );
 
+  const recentApplications = countThisMonth(appliedJobs, 'applied_at');
+  const nextSavedEvent = getNextEvent(savedEvents);
+  const nextRegisteredEvent = getNextEvent(registeredEvents);
+
   const stats = [
-    { label: copy.stats.applied, value: appliedJobs.length, loading },
-    { label: copy.stats.savedJobs, value: savedJobs.length, loading: saved.loading },
-    { label: copy.stats.savedEvents, value: savedEvents.length, loading: saved.loading }
+    {
+      icon: Send,
+      label: copy.stats.applied,
+      value: appliedJobs.length,
+      loading,
+      note: recentApplications > 0
+        ? sharedCopy.header.newThisMonth(recentApplications)
+        : sharedCopy.header.noneThisMonth
+    },
+    {
+      icon: Bookmark,
+      label: copy.stats.savedJobs,
+      value: savedJobs.length,
+      loading: saved.loading,
+      note: copy.stats.notes.readyToApply
+    },
+    {
+      icon: Calendar,
+      label: copy.stats.savedEvents,
+      value: savedEvents.length,
+      loading: saved.loading,
+      note: nextSavedEvent
+        ? sharedCopy.header.nextEvent(formatEventDay(nextSavedEvent.event_date))
+        : sharedCopy.header.noUpcomingEvents
+    },
+    {
+      icon: CalendarCheck,
+      label: copy.stats.registered,
+      value: registeredEvents.length,
+      loading,
+      note: nextRegisteredEvent
+        ? sharedCopy.header.nextEvent(formatEventDay(nextRegisteredEvent.event_date))
+        : sharedCopy.header.noUpcomingEvents
+    }
   ];
 
   const sections = [
@@ -194,8 +238,18 @@ export default function JobseekerProfile() {
   return (
     <div className="min-h-screen">
       <ProfileHeader
-        name={user?.name}
-        subtitle={jobseeker && getEducationSummary(jobseeker, copy.header.student)}
+        identity={{
+          initials: getInitials(user?.name),
+          name: user?.name,
+          subtitle: jobseeker && getEducationSummary(jobseeker, copy.header.student)
+        }}
+        heading={copy.header.heading}
+        description={copy.header.description}
+        highlight={recentApplications > 0 ? {
+          text: copy.header.recentApplications(recentApplications),
+          to: `/profile?tab=${JOBSEEKER_SECTIONS.applications}`
+        } : null}
+        action={{ label: copy.header.browseJobs, to: '/jobs', icon: Search }}
         stats={stats}
       />
       <SectionTabs

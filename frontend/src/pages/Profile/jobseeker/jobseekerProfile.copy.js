@@ -4,11 +4,19 @@ import { profileSharedCopy } from '../profile.copy';
 
 const jobseekerProfileCopy = {
   header: {
-    student: 'Student'
+    student: 'Student',
+    heading: 'Welcome back to your job search',
+    description: 'This is where you keep track of it all — the jobs and events you have saved, the roles you have applied for, and the details employers see.',
+    recentApplications: (count) => `${count} ${count === 1 ? 'application' : 'applications'} sent this month`,
+    browseJobs: 'Browse jobs'
   },
   stats: {
     ...profileSharedCopy.stats,
-    applied: 'Applied'
+    applied: 'Applications',
+    registered: 'Events registered',
+    notes: {
+      readyToApply: 'Ready to apply'
+    }
   },
   sections: {
     label: 'Profile sections',

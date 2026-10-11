@@ -5,12 +5,19 @@ import { profileSharedCopy } from '../profile.copy';
 const institutionProfileCopy = {
   header: {
     accountType: 'Society',
-    subtitle: (university) => `Society • ${university}`
+    heading: 'Welcome back to your society hub',
+    description: "This is where you support your members' careers — see who's on your plan, share the jobs and events you've saved, and download ready-to-run workshop materials.",
+    newMembers: (count) => `${count} new ${count === 1 ? 'member' : 'members'} joined this month`,
+    exploreResources: 'Explore resources'
   },
   stats: {
     ...profileSharedCopy.stats,
     members: 'Members',
-    resources: 'Resources available'
+    resources: 'Resources',
+    notes: {
+      readyToShare: 'Ready to share',
+      forYourMembers: 'To use with your members'
+    }
   },
   sections: {
     label: 'Profile sections',

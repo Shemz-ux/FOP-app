@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Bookmark, BookOpen, Calendar, Sparkles, Users } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { profileService } from '../../../services';
@@ -9,7 +10,13 @@ import ProfileEventCard from '../components/ProfileEventCard';
 import { useSavedItems } from '../utils/useSavedItems';
 import { useLoadOnVisible } from '../utils/useLoadOnVisible';
 import { useToast } from '../utils/useToast';
-import { PROFILE_EVENTS_PER_PAGE, getValidSection } from '../utils/profileOptions';
+import {
+  PROFILE_EVENTS_PER_PAGE,
+  countThisMonth,
+  formatEventDay,
+  getNextEvent,
+  getValidSection,
+} from '../utils/profileOptions';
 import SectionTabs from '../components/SectionTabs';
 import TogglePanel from '../components/TogglePanel';
 import ResourcesPanel from './components/ResourcesPanel';
@@ -17,6 +24,8 @@ import MembersPanel from './components/MembersPanel';
 import { useSocietyResources } from './useSocietyResources';
 import { useSocietyMembers } from './useSocietyMembers';
 import { institutionProfileCopy as copy } from './institutionProfile.copy';
+import { profileSharedCopy as sharedCopy } from '../profile.copy';
+import { getInitials } from '../utils/profileOptions';
 import { DEFAULT_INSTITUTION_SECTION, INSTITUTION_SECTIONS, INSTITUTION_SECTION_ICONS, SAVED_TYPES } from './institutionOptions';
 
 export default function InstitutionProfile() {
@@ -37,8 +46,7 @@ export default function InstitutionProfile() {
 
     try {
       const profile = await profileService.getUserProfile(user.userId, user.userType);
-      const university = profile.society?.university;
-      setSubtitle(university ? copy.header.subtitle(university) : copy.header.accountType);
+      setSubtitle(profile.society?.university || copy.header.accountType);
     } catch (error) {
       console.error('Error fetching society profile:', error);
       setSubtitle(current => current || copy.header.accountType);
@@ -51,11 +59,40 @@ export default function InstitutionProfile() {
     setSearchParams(section === DEFAULT_INSTITUTION_SECTION ? {} : { tab: section }, { replace: true });
   };
 
+  const newMembers = countThisMonth(societyMembers.members, 'created_at');
+  const nextEvent = getNextEvent(saved.savedEvents);
+
   const stats = [
-    { label: copy.stats.members, value: societyMembers.total, loading: societyMembers.total === null },
-    { label: copy.stats.savedJobs, value: saved.savedJobs.length, loading: saved.loading },
-    { label: copy.stats.savedEvents, value: saved.savedEvents.length, loading: saved.loading },
-    { label: copy.stats.resources, value: societyResources.total, loading: societyResources.total === null }
+    {
+      icon: Users,
+      label: copy.stats.members,
+      value: societyMembers.total,
+      loading: societyMembers.total === null,
+      note: newMembers > 0 ? sharedCopy.header.newThisMonth(newMembers) : sharedCopy.header.noneThisMonth
+    },
+    {
+      icon: Bookmark,
+      label: copy.stats.savedJobs,
+      value: saved.savedJobs.length,
+      loading: saved.loading,
+      note: copy.stats.notes.readyToShare
+    },
+    {
+      icon: Calendar,
+      label: copy.stats.savedEvents,
+      value: saved.savedEvents.length,
+      loading: saved.loading,
+      note: nextEvent
+        ? sharedCopy.header.nextEvent(formatEventDay(nextEvent.event_date))
+        : sharedCopy.header.noUpcomingEvents
+    },
+    {
+      icon: BookOpen,
+      label: copy.stats.resources,
+      value: societyResources.total,
+      loading: societyResources.total === null,
+      note: copy.stats.notes.forYourMembers
+    }
   ];
 
   const sections = [
@@ -115,7 +152,21 @@ export default function InstitutionProfile() {
 
   return (
     <div className="min-h-screen">
-      <ProfileHeader name={user?.name} subtitle={subtitle} stats={stats} />
+      <ProfileHeader
+        identity={{ initials: getInitials(user?.name), name: user?.name, subtitle }}
+        heading={copy.header.heading}
+        description={copy.header.description}
+        highlight={newMembers > 0 ? {
+          text: copy.header.newMembers(newMembers),
+          to: `/profile?tab=${INSTITUTION_SECTIONS.members}`
+        } : null}
+        action={{
+          label: copy.header.exploreResources,
+          to: `/profile?tab=${INSTITUTION_SECTIONS.resources}`,
+          icon: Sparkles
+        }}
+        stats={stats}
+      />
       <SectionTabs sections={sections} value={activeSection} onChange={handleSectionChange} label={copy.sections.label} />
 
       <div className="container mx-auto px-6 py-8">
