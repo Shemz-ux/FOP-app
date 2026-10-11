@@ -20,7 +20,7 @@ Anything used by only one profile goes in that profile's folder (with its own `c
 |---|---|---|
 | `Profile.jsx` | Everyone | Picks the page for the account type. Logged-out visitors go to `/login`, admins to `/admin`. |
 | `jobseeker/JobseekerProfile.jsx` | Jobseekers | Education and CV cards, plus saved jobs, applied jobs, saved events and registered events. |
-| `institution/InstitutionProfile.jsx` | Societies | Section tabs: Saved (jobs and events) and Resources. The open section is kept in the URL as `?tab=resources`. |
+| `institution/InstitutionProfile.jsx` | Societies | Section tabs: Members, Saved (jobs and events) and Resources. Members is the default; the others are kept in the URL as `?tab=saved` / `?tab=resources`. |
 
 ## Data and text
 
@@ -34,8 +34,9 @@ Anything used by only one profile goes in that profile's folder (with its own `c
 | `jobseeker/jobseekerOptions.js` | Education labels and the helpers that shape jobseeker data. |
 | `jobseeker/jobseekerProfile.copy.js` | Text for the jobseeker profile. |
 | `institution/institutionProfile.copy.js` | Text for the institution profile. |
-| `institution/institutionOptions.js` | Sections and saved toggle options. |
+| `institution/institutionOptions.js` | Sections, saved toggle options, and the member stages with their colours. |
 | `institution/useSocietyResources.js` | Loads society-only resources (audience `society`) and their total. |
+| `institution/useSocietyMembers.js` | Loads the society's own members from `GET /societies/me/members`. |
 
 ## Shared components
 
@@ -58,8 +59,20 @@ In `institution/components/`.
 | `SavedPanel.jsx` | "Your saved": paginated grid of job or event cards. |
 | `SavedToggle.jsx` | Sliding Jobs / Events toggle. |
 | `ResourcesPanel.jsx` | "Resources for your students": society-only resources in a paginated grid with download. Chips appear for the categories in use, once there is more than one. |
-| `CategoryChips.jsx` | Filter chips. |
+| `CategoryChips.jsx` | Filter chips, used by the resources section. |
 | `SocietyResourceCard.jsx` | Resource card with Download (or Watch) and a link to the detail page. |
+| `MembersPanel.jsx` | "Your members": stage filter, search and a paginated table. |
+| `MembersTable.jsx` | The members table, with a card layout on mobile. Rows expand for email, engagement and interests. |
+| `MemberStageFilter.jsx` | Stage chips with a colour dot and a count each. |
+
+## Members
+
+A society sees the students who chose it at signup. The link is `jobseekers.society_id`, a real foreign key; the older `jobseekers.society` text column is kept only as a label for students whose society is not on the platform, and those students appear in nobody's member list.
+
+- The endpoint is `GET /societies/me/members`. **There is no id in the path** — the society is taken from its token by `api/src/middleware/societyChecker.js`, so there is no parameter to tamper with.
+- Societies see less than admins do: name, email, course, stage, year, institution, join date, job applications, event registrations and career interests. Not phone, LinkedIn, CV or the demographic answers.
+- "Applications" counts rows in `jobseekers_jobs_applied`; events count `jobseekers_events_applied`. Both use `COUNT(DISTINCT ...)` because joining the two at once multiplies the rows.
+- Stage is derived from `education_level`, except that `uni_year = 'graduated'` always shows as Graduate. Stages and their colours live in `MEMBER_STAGES`.
 
 ## Common changes
 
@@ -69,6 +82,7 @@ In `institution/components/`.
 - **Report an error:** call `showToast(message)` from `useToast`. Hooks take it as their `onError` argument. The education card is the exception: it shows its own messages, so `handleSaveEducation` throws to it.
 - **Add a society section:** add it to `INSTITUTION_SECTIONS` and `INSTITUTION_SECTION_ICONS`, add its label to the copy file, and add an entry to `sections` and its content in `InstitutionProfile.jsx`.
 - **Add a jobseeker tab:** add a value to `PROFILE_TABS`, a label to the copy file, and an entry to the page's `tabs` list.
+- **Add a member stage:** add it to `MEMBER_STAGES` with its `educationLevels`, `dot` and `badge` colours. The filter and the table badge both read from there.
 
 ## Related pages
 
@@ -76,5 +90,6 @@ In `institution/components/`.
 
 ## Known limits
 
-- The Resources tab loads at most 100 resources (`SOCIETY_RESOURCES_LIMIT`) and filters and paginates in the browser.
+- The Resources tab loads at most 100 resources (`SOCIETY_RESOURCES_LIMIT`) and filters and paginates in the browser. The Members tab loads every member at once and does the same.
+- The design's Status, Last active and Invite are not built: no column or invite system exists behind them.
 - Light theme works but cannot be reached: the theme toggle is switched off in the navbar.
