@@ -1,10 +1,20 @@
-import { createSociety, fetchSocieties, fetchSocietyById, updateSociety, removeSociety, fetchSocietyNames } from "../models/societies.js";
+import { createSociety, fetchSocieties, fetchSocietyById, updateSociety, removeSociety, fetchSocietyNames, fetchSocietyMembers } from "../models/societies.js";
 import bcrypt from "bcrypt";
 import { Parser } from 'json2csv';
 
 export const getSocietyNames = (req, res, next) => {
     fetchSocietyNames().then((societies) => {
         res.status(200).send({societies: societies});
+    }).catch((err) => {
+        next(err);
+    });
+};
+
+// The students who chose this society. The id comes from the caller's token
+// (set by societyChecker), so a society can only ever read its own members.
+export const getOwnSocietyMembers = (req, res, next) => {
+    fetchSocietyMembers(req.society_id).then((members) => {
+        res.status(200).send({ members: members, count: members.length });
     }).catch((err) => {
         next(err);
     });

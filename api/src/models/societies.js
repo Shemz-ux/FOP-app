@@ -6,7 +6,7 @@ export const fetchSocieties = () => {
             s.*,
             COUNT(j.jobseeker_id) as member_count
         FROM societies s
-        LEFT JOIN jobseekers j ON s.name = j.society
+        LEFT JOIN jobseekers j ON j.society_id = s.society_id
         GROUP BY s.society_id
         ORDER BY s.name ASC
     `).then(({rows}) => {
@@ -61,6 +61,41 @@ export const resolveSocietyLink = async ({ society_id, society } = {}) => {
     return rows.length > 0
         ? { society_id: rows[0].society_id, society: rows[0].name }
         : { society_id: null, society: name };
+};
+
+// What a society may see about its own members. Deliberately narrower than the
+// admin view: enough to run the members table in the design, and nothing more.
+// No phone number, LinkedIn, CV, or the demographic answers students gave to
+// FOP rather than to their society.
+const SOCIETY_MEMBER_FIELDS = [
+    'jobseeker_id',
+    'first_name',
+    'last_name',
+    'email',
+    'education_level',
+    'institution_name',
+    'uni_year',
+    'degree_type',
+    'area_of_study',
+    'created_at'
+];
+
+// Members of one society, with how many jobs each has applied for.
+// Takes the id from the caller's token, never from a URL.
+export const fetchSocietyMembers = (society_id) => {
+    const columns = SOCIETY_MEMBER_FIELDS.map(field => `j.${field}`).join(', ');
+
+    return db.query(`
+        SELECT ${columns},
+               COUNT(a.job_id)::int AS application_count
+        FROM jobseekers j
+        LEFT JOIN jobseekers_jobs_applied a ON a.jobseeker_id = j.jobseeker_id
+        WHERE j.society_id = $1
+        GROUP BY j.jobseeker_id
+        ORDER BY j.created_at DESC
+    `, [society_id]).then(({rows}) => {
+        return rows;
+    });
 };
 
 export const fetchSocietyById = (id) => {

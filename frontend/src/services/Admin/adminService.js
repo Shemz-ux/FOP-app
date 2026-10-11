@@ -114,9 +114,9 @@ export const getStudentsByUniversity = async (university, adminToken) => {
   return data.students;
 };
 
-// Get jobseekers by society
-export const getStudentsBySociety = async (society, adminToken) => {
-  const data = await apiGet(`/admin/analytics/jobseekers/society/${encodeURIComponent(society)}`, {
+// Get the members of one society, by its id
+export const getStudentsBySociety = async (societyId, adminToken) => {
+  const data = await apiGet(`/admin/jobseekers/society/${societyId}`, {
     headers: {
       'Authorization': `Bearer ${adminToken}`
     }

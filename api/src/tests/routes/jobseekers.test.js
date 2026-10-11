@@ -673,11 +673,20 @@ describe.only('Jobseekers API Endpoints', () => {
     let partnerSociety;
     let otherSociety;
 
+    // The test database starts with empty tables, so this block makes the
+    // societies it needs rather than relying on seeded data
     beforeAll(async () => {
-      const { rows } = await db.query(
-        'SELECT society_id, name FROM societies ORDER BY society_id LIMIT 2'
-      );
-      [partnerSociety, otherSociety] = rows;
+      const stamp = Date.now();
+      const insert = async (label) => {
+        const { rows: [society] } = await db.query(
+          `INSERT INTO societies (name, university, email, password_hash)
+           VALUES ($1, $2, $3, $4) RETURNING society_id, name`,
+          [`${label} Society ${stamp}`, 'Test University', `${label.toLowerCase()}.${stamp}@test.com`, 'hash']
+        );
+        return society;
+      };
+      partnerSociety = await insert('Partner');
+      otherSociety = await insert('Other');
     });
 
     afterAll(async () => {
@@ -688,6 +697,8 @@ describe.only('Jobseekers API Endpoints', () => {
           // Ignore cleanup errors
         }
       }
+      await db.query('DELETE FROM societies WHERE society_id = ANY($1)',
+        [[partnerSociety?.society_id, otherSociety?.society_id].filter(Boolean)]);
     });
 
     // Creates a jobseeker and remembers the id so it is cleaned up afterwards

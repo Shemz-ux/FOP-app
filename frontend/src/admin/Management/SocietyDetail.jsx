@@ -19,10 +19,9 @@ export default function SocietyDetail() {
         const societyData = societyResponse.society || societyResponse;
         setSociety(societyData);
 
-        if (societyData?.name) {
-          const membersResponse = await apiGet(`/admin/jobseekers/society/${encodeURIComponent(societyData.name)}`);
-          setMembers(membersResponse.students || []);
-        }
+        // Members are looked up by the society's id, so a rename cannot lose them
+        const membersResponse = await apiGet(`/admin/jobseekers/society/${id}`);
+        setMembers(membersResponse.students || []);
       } catch (error) {
         console.error('Error fetching society details:', error);
       } finally {

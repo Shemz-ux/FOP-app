@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../../app.js';
 import bcrypt from 'bcrypt';
 import db from '../../db/db.js';
+import { generateToken } from '../../lib/token.js';
 
 describe('Societies API Endpoints', () => {
     let testSocietyId;
@@ -340,6 +341,172 @@ describe('Societies API Endpoints', () => {
                 // Ignore cleanup errors
             }
         }
+    });
+
+    describe('GET /api/societies/me/members', () => {
+        let societyId;
+        let otherSocietyId;
+        let societyToken;
+        let otherSocietyToken;
+        const memberIds = [];
+        const jobIds = [];
+
+        // The test database starts empty, so build two societies with their
+        // own members and check one can never see the other's
+        beforeAll(async () => {
+            const stamp = Date.now();
+
+            const makeSociety = async (label) => {
+                const { rows: [society] } = await db.query(
+                    `INSERT INTO societies (name, university, email, password_hash)
+                     VALUES ($1, $2, $3, $4) RETURNING society_id`,
+                    [`${label} ${stamp}`, 'Test University', `${label.toLowerCase()}.${stamp}@test.com`, 'hash']
+                );
+                return society.society_id;
+            };
+
+            const makeMember = async (name, society_id) => {
+                const { rows: [member] } = await db.query(
+                    `INSERT INTO jobseekers
+                        (first_name, last_name, email, password_hash, education_level,
+                         institution_name, uni_year, degree_type, area_of_study, society_id)
+                     VALUES ($1, 'Member', $2, 'hash', 'undergraduate', 'Test University',
+                             '2nd', 'bsc', 'Computer Science', $3)
+                     RETURNING jobseeker_id`,
+                    [name, `${name.toLowerCase()}.${stamp}@test.com`, society_id]
+                );
+                memberIds.push(member.jobseeker_id);
+                return member.jobseeker_id;
+            };
+
+            societyId = await makeSociety('Members Society');
+            otherSocietyId = await makeSociety('Rival Society');
+            societyToken = generateToken(societyId, 'society');
+            otherSocietyToken = generateToken(otherSocietyId, 'society');
+
+            const ours = await makeMember('Ours', societyId);
+            await makeMember('AlsoOurs', societyId);
+            await makeMember('Theirs', otherSocietyId);
+
+            // Give one member two applications, so the count is not just 0.
+            // The test database is empty, so the jobs have to be made here too.
+            for (const title of ['Members Test Job A', 'Members Test Job B']) {
+                const { rows: [job] } = await db.query(
+                    `INSERT INTO jobs (title, company) VALUES ($1, $2) RETURNING job_id`,
+                    [`${title} ${stamp}`, 'Test Co']
+                );
+                jobIds.push(job.job_id);
+                await db.query(
+                    'INSERT INTO jobseekers_jobs_applied (jobseeker_id, job_id) VALUES ($1, $2)',
+                    [ours, job.job_id]
+                );
+            }
+        });
+
+        afterAll(async () => {
+            for (const id of memberIds) {
+                await db.query('DELETE FROM jobseekers WHERE jobseeker_id = $1', [id]);
+            }
+            for (const id of jobIds) {
+                await db.query('DELETE FROM jobs WHERE job_id = $1', [id]);
+            }
+            await db.query('DELETE FROM societies WHERE society_id = ANY($1)', [[societyId, otherSocietyId]]);
+        });
+
+        test('returns the calling society\'s own members', async () => {
+            const response = await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${societyToken}`)
+                .expect(200);
+
+            expect(response.body.count).toBe(2);
+            expect(response.body.members.map(m => m.first_name).sort()).toEqual(['AlsoOurs', 'Ours']);
+        });
+
+        test('a society never sees another society\'s members', async () => {
+            const response = await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${otherSocietyToken}`)
+                .expect(200);
+
+            expect(response.body.count).toBe(1);
+            expect(response.body.members[0].first_name).toBe('Theirs');
+        });
+
+        test('includes how many jobs each member has applied for', async () => {
+            const response = await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${societyToken}`)
+                .expect(200);
+
+            const ours = response.body.members.find(m => m.first_name === 'Ours');
+            const alsoOurs = response.body.members.find(m => m.first_name === 'AlsoOurs');
+            expect(ours.application_count).toBe(2);
+            expect(alsoOurs.application_count).toBe(0);
+        });
+
+        test('returns the fields the members table needs', async () => {
+            const response = await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${societyToken}`)
+                .expect(200);
+
+            const member = response.body.members[0];
+            ['jobseeker_id', 'first_name', 'last_name', 'education_level',
+             'uni_year', 'area_of_study', 'created_at', 'application_count']
+                .forEach(field => expect(member).toHaveProperty(field));
+        });
+
+        test('does not expose a member\'s password, phone, LinkedIn or CV', async () => {
+            const response = await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${societyToken}`)
+                .expect(200);
+
+            response.body.members.forEach(member => {
+                ['password_hash', 'phone_number', 'linkedin', 'cv_storage_key',
+                 'cv_storage_url', 'school_meal_eligible', 'first_gen_to_go_uni']
+                    .forEach(field => expect(member).not.toHaveProperty(field));
+            });
+        });
+
+        test('rejects a caller with no token', async () => {
+            await request(app)
+                .get('/api/societies/me/members')
+                .expect(401);
+        });
+
+        test('rejects a malformed token', async () => {
+            await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', 'Bearer not-a-real-token')
+                .expect(401);
+        });
+
+        test('rejects a jobseeker', async () => {
+            await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${generateToken(1, 'jobseeker')}`)
+                .expect(403);
+        });
+
+        test('rejects an admin, who has their own route for this', async () => {
+            await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${generateToken(1, 'admin', 'super_admin')}`)
+                .expect(403);
+        });
+
+        test('"me" is not treated as a society id', async () => {
+            // /societies/me/members must not fall through to /societies/:society_id
+            const response = await request(app)
+                .get('/api/societies/me/members')
+                .set('Authorization', `Bearer ${societyToken}`)
+                .expect(200);
+
+            expect(response.body).toHaveProperty('members');
+            expect(response.body).not.toHaveProperty('society');
+        });
     });
 
     afterAll(async () => {
