@@ -79,11 +79,15 @@ const setupDatabase = async () => {
         
         // Run all migration files in order
         const migrationsDir = path.join(__dirname, 'migrations');
+        // Migrations are also applied to databases created from tables.js, which
+        // already has these changes, so each one must be safe to re-run.
         const migrationFiles = [
             'add_password_reset_tokens.sql',
             'increase_file_type_length.sql',
             'add_webinars_table.sql',
-            'add_right_to_work_fields.sql'
+            'add_right_to_work_fields.sql',
+            'add_audience_to_resources.sql',
+            'add_society_id_to_jobseekers.sql'
         ];
 
         for (const file of migrationFiles) {

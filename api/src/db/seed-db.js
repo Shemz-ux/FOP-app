@@ -7,6 +7,7 @@ import { societies } from './test-data/societies.js';
 import { jobs } from './test-data/jobs.js';
 import { events } from './test-data/events.js';
 import { resources } from './test-data/resources.js';
+import { LINK_JOBSEEKERS_TO_SOCIETIES, UNLINKED_JOBSEEKERS } from './society-link.js';
 import {
   jobseekerJobsApplied,
   jobseekerJobsSaved,
@@ -92,6 +93,20 @@ const insertSocieties = async () => {
   }
   
   console.log(`✅ Societies seeded (${societies.length} societies)`);
+};
+
+// Jobseekers are inserted before societies exist, so the link is resolved here
+// rather than inline. Uses the same rule as the migration.
+const linkJobseekersToSocieties = async () => {
+  const { rowCount } = await db.query(LINK_JOBSEEKERS_TO_SOCIETIES);
+  const { rows: unlinked } = await db.query(UNLINKED_JOBSEEKERS);
+
+  console.log(`✅ Jobseekers linked to societies (${rowCount} linked)`);
+  if (unlinked.length > 0) {
+    const total = unlinked.reduce((sum, row) => sum + row.jobseekers, 0);
+    const values = unlinked.map(row => `"${row.unmatched_value}"`).join(', ');
+    console.log(`   ℹ️  ${total} left unlinked, society name not found: ${values}`);
+  }
 };
 
 const insertJobs = async () => {
@@ -222,6 +237,7 @@ const runSeed = async () => {
     await insertAdminUsers();
     await insertJobseekers();
     await insertSocieties();
+    await linkJobseekersToSocieties();
     await insertJobs();
     await insertEvents();
     await insertResources();

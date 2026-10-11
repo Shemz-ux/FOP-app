@@ -31,9 +31,10 @@ const seed = () => {
         return db.query('DROP TABLE IF EXISTS jobseekers CASCADE')
     })
     .then(()=>{
-        return createJobseekersTable()
-    }).then(()=>{
+        // Societies first: jobseekers.society_id references it
         return createSocietiesTable()
+    }).then(()=>{
+        return createJobseekersTable()
     }).then(()=>{
         return createJobsTable()
     }).then(()=>{
@@ -116,7 +117,10 @@ const createJobseekersTable = () => {
             subject_four VARCHAR(255),
             role_interest_option_one VARCHAR(255),
             role_interest_option_two VARCHAR(255),
+            -- society holds the name the student chose or typed; society_id is the
+            -- real link. society_id is null when the text matches no society.
             society VARCHAR(255),
+            society_id INT REFERENCES societies(society_id) ON DELETE SET NULL,
             linkedin VARCHAR(500),
             has_right_to_work_uk BOOLEAN,
             requires_sponsorship BOOLEAN,
@@ -156,6 +160,9 @@ const createJobseekersTable = () => {
                 education_level != 'undergraduate'
             )
         )`).then(()=>{
+            // Every members query filters on this
+            return db.query(`CREATE INDEX IF NOT EXISTS idx_jobseekers_society_id ON jobseekers (society_id)`)
+        }).then(()=>{
             console.log("Jobseeker table created with constraints!✅")
         })
 }
