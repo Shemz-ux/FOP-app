@@ -35,7 +35,6 @@ const institutionProfileCopy = {
   resources: {
     title: 'Resources for your students',
     description: 'Workshop materials and job-search guides to download and use with your members',
-    available: (count) => `${count} ${count === 1 ? 'resource' : 'resources'} available`,
     filterLabel: 'Filter resources by category',
     allCategories: 'All Resources',
     downloadError: 'Failed to download resource. Please try again.',

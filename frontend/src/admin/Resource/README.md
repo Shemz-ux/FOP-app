@@ -37,6 +37,7 @@ Admin screens for managing resources (files and video links). Each resource has 
 - A new resource defaults to Public. Editing loads the saved audience; changing it moves the resource between tabs without re-uploading.
 - After saving a new resource, and from the detail page's back link and delete, the admin returns to that resource's tab.
 - Colours: sky for public, violet for society (`AUDIENCE_STYLES`).
+- Society resources appear on the society profile's Resources tab (`src/pages/Profile/institution/`). Public resources appear on the Resources page.
 
 ## Common changes
 

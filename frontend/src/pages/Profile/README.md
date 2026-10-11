@@ -64,9 +64,17 @@ In `institution/components/`.
 ## Common changes
 
 - **Change what societies see:** an admin sets a resource's audience to Society in the admin resource form. Nothing in this folder needs editing.
-
 - **Change wording:** edit the copy files. Pages and components hold no text.
 - **Add a header stat:** add `{ label, value, loading }` to the page's `stats` list. It shows a dash while `loading` is true.
-- **Report an error:** call `showToast(message)` from `useToast`. Hooks take it as their `onError` argument.
+- **Report an error:** call `showToast(message)` from `useToast`. Hooks take it as their `onError` argument. The education card is the exception: it shows its own messages, so `handleSaveEducation` throws to it.
 - **Add a society section:** add it to `INSTITUTION_SECTIONS` and `INSTITUTION_SECTION_ICONS`, add its label to the copy file, and add an entry to `sections` and its content in `InstitutionProfile.jsx`.
 - **Add a jobseeker tab:** add a value to `PROFILE_TABS`, a label to the copy file, and an entry to the page's `tabs` list.
+
+## Related pages
+
+- A society resource's eye button opens `pages/Resources/ResourceDetail.jsx`. For a society viewing a society-only resource, its back link returns to `/profile?tab=resources`.
+
+## Known limits
+
+- The Resources tab loads at most 100 resources (`SOCIETY_RESOURCES_LIMIT`) and filters and paginates in the browser.
+- Light theme works but cannot be reached: the theme toggle is switched off in the navbar.

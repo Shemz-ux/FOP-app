@@ -26,7 +26,7 @@ const getCategoryOptions = (resources) => {
 export default function ResourcesPanel({ societyResources, onError }) {
   const [category, setCategory] = useState(ALL_RESOURCE_CATEGORIES);
 
-  const { resources, total, loading } = societyResources;
+  const { resources, loading } = societyResources;
   const categoryOptions = getCategoryOptions(resources);
   // Fall back to all resources if the chosen category no longer has any after a refresh
   const activeCategory = categoryOptions.some(option => option.value === category) ? category : ALL_RESOURCE_CATEGORIES;
@@ -43,7 +43,6 @@ export default function ResourcesPanel({ societyResources, onError }) {
       onError?.(copy.downloadError);
     }
   };
-
 
   return (
     <section className="text-left">

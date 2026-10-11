@@ -68,9 +68,6 @@ export const AUDIENCE_STYLES = {
   },
 };
 
-// Categories shown in the resources section of the society profile
-export const SOCIETY_RESOURCES_CATEGORIES = ['Career Workshops', 'CV', 'Cover Letters', 'Interviews'];
-
 // File extensions the API accepts, and the upload size limit
 export const RESOURCE_FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'rtf'];
 export const RESOURCE_MAX_FILE_SIZE_MB = 50;
