@@ -12,6 +12,13 @@ export const getSocietyNames = async () => {
   return data.societies || [];
 };
 
+// Get the logged-in society's own members. The society is identified by its
+// token, so there is no id to pass.
+export const getOwnMembers = async () => {
+  const data = await apiGet('/societies/me/members');
+  return data.members || [];
+};
+
 // Get single society by ID
 export const getSocietyById = async (societyId, token) => {
   const data = await apiGet(`/societies/${societyId}`, {

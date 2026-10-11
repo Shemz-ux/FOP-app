@@ -77,19 +77,29 @@ const SOCIETY_MEMBER_FIELDS = [
     'uni_year',
     'degree_type',
     'area_of_study',
+    'role_interest_option_one',
+    'role_interest_option_two',
     'created_at'
 ];
 
-// Members of one society, with how many jobs each has applied for.
+// Members of one society, with how much each has engaged.
 // Takes the id from the caller's token, never from a URL.
+//
+// application_count is the number of jobs the member has applied for through
+// the platform (rows in jobseekers_jobs_applied), and event_registration_count
+// the number of events they registered for. DISTINCT matters: joining both
+// one-to-many tables at once multiplies the rows, so a plain COUNT would
+// report each job once per event and vice versa.
 export const fetchSocietyMembers = (society_id) => {
     const columns = SOCIETY_MEMBER_FIELDS.map(field => `j.${field}`).join(', ');
 
     return db.query(`
         SELECT ${columns},
-               COUNT(a.job_id)::int AS application_count
+               COUNT(DISTINCT a.job_id)::int AS application_count,
+               COUNT(DISTINCT e.event_id)::int AS event_registration_count
         FROM jobseekers j
         LEFT JOIN jobseekers_jobs_applied a ON a.jobseeker_id = j.jobseeker_id
+        LEFT JOIN jobseekers_events_applied e ON e.jobseeker_id = j.jobseeker_id
         WHERE j.society_id = $1
         GROUP BY j.jobseeker_id
         ORDER BY j.created_at DESC

@@ -9,12 +9,50 @@ const institutionProfileCopy = {
   },
   stats: {
     ...profileSharedCopy.stats,
+    members: 'Members',
     resources: 'Resources available'
   },
   sections: {
     label: 'Profile sections',
+    members: 'Members',
     saved: 'Saved',
     resources: 'Resources'
+  },
+  members: {
+    title: 'Your members',
+    description: "Students on your society plan and how they're engaging",
+    count: (count) => `${count} ${count === 1 ? 'member' : 'members'}`,
+    filterLabel: 'Filter members by stage',
+    allStages: 'All',
+    searchLabel: 'Search members',
+    searchPlaceholder: 'Search name or course',
+    columns: {
+      student: 'Student',
+      course: 'Course',
+      stage: 'Stage',
+      year: 'Year of study',
+      applications: 'Applications',
+      since: 'Member since',
+      expand: 'Show details'
+    },
+    detail: {
+      toggle: (name) => `Show details for ${name}`,
+      email: 'Email',
+      jobsApplied: 'Jobs applied',
+      jobsAppliedvalue: (count) => `${count} applied`,
+      eventsRegistered: 'Events registered',
+      eventsRegisteredValue: (count) => `${count} registered`,
+      interests: 'Interests'
+    },
+    notGiven: '—',
+    empty: {
+      title: 'No members yet',
+      message: 'Students who choose your society when they sign up will appear here.'
+    },
+    noMatches: {
+      title: 'No members match',
+      message: 'Try a different stage, year or search.'
+    }
   },
   saved: {
     title: 'Your saved',
@@ -53,6 +91,7 @@ const institutionProfileCopy = {
     }
   },
   errors: {
+    loadMembers: 'Failed to load your members.',
     loadResources: 'Failed to load resources.'
   }
 };

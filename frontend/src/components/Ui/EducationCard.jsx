@@ -430,7 +430,9 @@ export default function EducationCard({ educationData, onSave }) {
             <CustomSelect
               value={localEducationData.society || ''}
               onChange={(e) => setLocalEducationData({ ...localEducationData, society: e.target.value })}
-              placeholder="Select a society"
+              // societyOptions already starts with a "None" entry whose value is
+              // "", so the default placeholder would duplicate it
+              placeholder=""
               options={societyOptions}
               className="text-sm"
             />

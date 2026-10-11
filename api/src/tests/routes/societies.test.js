@@ -350,6 +350,7 @@ describe('Societies API Endpoints', () => {
         let otherSocietyToken;
         const memberIds = [];
         const jobIds = [];
+        const eventIds = [];
 
         // The test database starts empty, so build two societies with their
         // own members and check one can never see the other's
@@ -388,8 +389,9 @@ describe('Societies API Endpoints', () => {
             await makeMember('AlsoOurs', societyId);
             await makeMember('Theirs', otherSocietyId);
 
-            // Give one member two applications, so the count is not just 0.
-            // The test database is empty, so the jobs have to be made here too.
+            // Give one member 2 job applications and 3 event registrations, so
+            // the counts are not just 0 and the two cannot be confused.
+            // The test database is empty, so the jobs and events are made here.
             for (const title of ['Members Test Job A', 'Members Test Job B']) {
                 const { rows: [job] } = await db.query(
                     `INSERT INTO jobs (title, company) VALUES ($1, $2) RETURNING job_id`,
@@ -401,6 +403,19 @@ describe('Societies API Endpoints', () => {
                     [ours, job.job_id]
                 );
             }
+
+            for (const title of ['Members Test Event A', 'Members Test Event B', 'Members Test Event C']) {
+                const { rows: [event] } = await db.query(
+                    `INSERT INTO events (title, organiser, event_date, event_start_time, event_end_time)
+                     VALUES ($1, $2, '2026-01-01', '10:00', '11:00') RETURNING event_id`,
+                    [`${title} ${stamp}`, 'Test Organiser']
+                );
+                eventIds.push(event.event_id);
+                await db.query(
+                    'INSERT INTO jobseekers_events_applied (jobseeker_id, event_id) VALUES ($1, $2)',
+                    [ours, event.event_id]
+                );
+            }
         });
 
         afterAll(async () => {
@@ -409,6 +424,9 @@ describe('Societies API Endpoints', () => {
             }
             for (const id of jobIds) {
                 await db.query('DELETE FROM jobs WHERE job_id = $1', [id]);
+            }
+            for (const id of eventIds) {
+                await db.query('DELETE FROM events WHERE event_id = $1', [id]);
             }
             await db.query('DELETE FROM societies WHERE society_id = ANY($1)', [[societyId, otherSocietyId]]);
         });
@@ -433,7 +451,7 @@ describe('Societies API Endpoints', () => {
             expect(response.body.members[0].first_name).toBe('Theirs');
         });
 
-        test('includes how many jobs each member has applied for', async () => {
+        test('counts job applications and event registrations separately', async () => {
             const response = await request(app)
                 .get('/api/societies/me/members')
                 .set('Authorization', `Bearer ${societyToken}`)
@@ -441,8 +459,13 @@ describe('Societies API Endpoints', () => {
 
             const ours = response.body.members.find(m => m.first_name === 'Ours');
             const alsoOurs = response.body.members.find(m => m.first_name === 'AlsoOurs');
+
+            // 2 jobs and 3 events. Joining both one-to-many tables at once
+            // multiplies the rows, so without DISTINCT these would both be 6.
             expect(ours.application_count).toBe(2);
+            expect(ours.event_registration_count).toBe(3);
             expect(alsoOurs.application_count).toBe(0);
+            expect(alsoOurs.event_registration_count).toBe(0);
         });
 
         test('returns the fields the members table needs', async () => {
@@ -453,7 +476,8 @@ describe('Societies API Endpoints', () => {
 
             const member = response.body.members[0];
             ['jobseeker_id', 'first_name', 'last_name', 'education_level',
-             'uni_year', 'area_of_study', 'created_at', 'application_count']
+             'uni_year', 'area_of_study', 'created_at', 'application_count',
+             'event_registration_count', 'role_interest_option_one', 'role_interest_option_two']
                 .forEach(field => expect(member).toHaveProperty(field));
         });
 
