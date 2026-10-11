@@ -28,7 +28,6 @@ const jobseekerProfileCopy = {
   },
   errors: {
     loadProfile: 'Failed to load your profile.',
-    saveEducation: 'Failed to save education details. Please try again.',
     uploadCV: 'Failed to save your CV. Please try again.',
     deleteCV: 'Failed to delete your CV. Please try again.'
   }

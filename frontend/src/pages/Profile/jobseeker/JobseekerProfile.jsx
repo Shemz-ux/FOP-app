@@ -70,17 +70,13 @@ export default function JobseekerProfile() {
 
   useLoadOnVisible(loadJobseekerData);
 
+  // Errors are thrown to the education card, which shows its own success and failure messages
   const handleSaveEducation = async (newData) => {
-    try {
-      await profileService.updateUserProfile(user.userId, user.userType, cleanEducationData(newData));
+    await profileService.updateUserProfile(user.userId, user.userType, cleanEducationData(newData));
 
-      // Refetch so the page shows what the backend stored
-      const updatedProfile = await profileService.getUserProfile(user.userId, user.userType);
-      if (updatedProfile.jobseeker) applyJobseeker(updatedProfile.jobseeker);
-    } catch (error) {
-      console.error('Error saving education:', error);
-      showToast(copy.errors.saveEducation);
-    }
+    // Refetch so the page shows what the backend stored
+    const updatedProfile = await profileService.getUserProfile(user.userId, user.userType);
+    if (updatedProfile.jobseeker) applyJobseeker(updatedProfile.jobseeker);
   };
 
   const handleCVUpload = async (cvData) => {
