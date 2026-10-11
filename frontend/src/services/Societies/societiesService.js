@@ -6,6 +6,12 @@ export const getSocieties = async () => {
   return data.societies;
 };
 
+// Get just id and name for every society, for the society dropdowns
+export const getSocietyNames = async () => {
+  const data = await apiGet('/societies/names');
+  return data.societies || [];
+};
+
 // Get single society by ID
 export const getSocietyById = async (societyId, token) => {
   const data = await apiGet(`/societies/${societyId}`, {
