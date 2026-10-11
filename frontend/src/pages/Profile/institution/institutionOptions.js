@@ -16,11 +16,6 @@ export const INSTITUTION_SECTION_ICONS = {
   resources: BookOpen,
 };
 
-// Returns a valid section value, falling back to the default for anything else
-export const getValidSection = (value) => {
-  return Object.values(INSTITUTION_SECTIONS).includes(value) ? value : DEFAULT_INSTITUTION_SECTION;
-};
-
 // Options of the toggle in the saved section
 export const SAVED_TYPES = {
   jobs: 'jobs',

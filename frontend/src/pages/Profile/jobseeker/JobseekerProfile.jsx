@@ -1,23 +1,27 @@
 import { useCallback, useState } from 'react';
-import { Briefcase, Calendar } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import EducationCard from '../../../components/Ui/EducationCard';
 import CVUploadCard from '../../../components/Ui/CVUploadCard';
 import { useAuth } from '../../../contexts/AuthContext';
 import { dashboardService, profileService } from '../../../services';
 import { addJobTagsToList, addEventTagsToList } from '../../../utils/tagGenerator';
 import ProfileHeader from '../components/ProfileHeader';
-import ProfileTabs from '../components/ProfileTabs';
-import PaginatedGrid from '../components/PaginatedGrid';
+import SectionTabs from '../components/SectionTabs';
+import TogglePanel from '../components/TogglePanel';
 import ProfileJobCard from '../components/ProfileJobCard';
 import ProfileEventCard from '../components/ProfileEventCard';
 import ProfileToast from '../components/ProfileToast';
 import { useSavedItems } from '../utils/useSavedItems';
 import { useLoadOnVisible } from '../utils/useLoadOnVisible';
 import { useToast } from '../utils/useToast';
-import { PROFILE_TABS } from '../utils/profileOptions';
+import { PROFILE_EVENTS_PER_PAGE, getValidSection } from '../utils/profileOptions';
 import { jobseekerProfileCopy as copy } from './jobseekerProfile.copy';
 import {
+  DEFAULT_JOBSEEKER_SECTION,
   EMPTY_CV_DATA,
+  JOBSEEKER_SECTIONS,
+  JOBSEEKER_SECTION_ICONS,
+  LIST_TYPES,
   cleanEducationData,
   getEducationSummary,
   toCvData,
@@ -29,7 +33,7 @@ export default function JobseekerProfile() {
   const { toast, showToast, hideToast } = useToast();
   const saved = useSavedItems(showToast);
   const { savedJobs, savedEvents, savedJobIds, savedEventIds, toggleSavedJob, toggleSavedEvent } = saved;
-  const [activeTab, setActiveTab] = useState(PROFILE_TABS.savedJobs);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [jobseeker, setJobseeker] = useState(null);
   const [educationData, setEducationData] = useState(null);
   const [uploadedCV, setUploadedCV] = useState(null);
@@ -105,12 +109,19 @@ export default function JobseekerProfile() {
     }
   };
 
+  const activeSection = getValidSection(JOBSEEKER_SECTIONS, searchParams.get('tab'), DEFAULT_JOBSEEKER_SECTION);
+
+  const handleSectionChange = (section) => {
+    setSearchParams(section === DEFAULT_JOBSEEKER_SECTION ? {} : { tab: section }, { replace: true });
+  };
+
   const renderJob = (job) => (
     <ProfileJobCard
       key={job.job_id}
       job={job}
       isFavorite={savedJobIds.has(job.job_id)}
       onFavoriteClick={toggleSavedJob}
+      compact
     />
   );
 
@@ -129,54 +140,54 @@ export default function JobseekerProfile() {
     { label: copy.stats.savedEvents, value: savedEvents.length, loading: saved.loading }
   ];
 
-  const tabs = [
+  const sections = [
     {
-      value: PROFILE_TABS.savedJobs,
-      label: copy.tabs.savedJobs,
-      content: (
-        <PaginatedGrid
-          items={savedJobs}
-          renderItem={renderJob}
-          loading={saved.loading}
-          empty={{ icon: Briefcase, ...copy.empty.savedJobs }}
-        />
-      )
+      value: JOBSEEKER_SECTIONS.saved,
+      label: copy.sections.saved,
+      icon: JOBSEEKER_SECTION_ICONS.saved,
+      count: saved.loading ? null : savedJobs.length + savedEvents.length
     },
     {
-      value: PROFILE_TABS.appliedJobs,
-      label: copy.tabs.appliedJobs,
-      content: (
-        <PaginatedGrid
-          items={appliedJobs}
-          renderItem={renderJob}
-          loading={loading}
-          empty={{ icon: Briefcase, ...copy.empty.appliedJobs }}
-        />
-      )
+      value: JOBSEEKER_SECTIONS.applications,
+      label: copy.sections.applications,
+      icon: JOBSEEKER_SECTION_ICONS.applications,
+      count: loading ? null : appliedJobs.length + registeredEvents.length
+    }
+  ];
+
+  const savedOptions = [
+    {
+      value: LIST_TYPES.jobs,
+      label: copy.saved.jobs,
+      items: savedJobs,
+      empty: { ...copy.saved.empty.jobs, to: '/jobs' },
+      renderItem: renderJob
     },
     {
-      value: PROFILE_TABS.savedEvents,
-      label: copy.tabs.savedEvents,
-      content: (
-        <PaginatedGrid
-          items={savedEvents}
-          renderItem={renderEvent}
-          loading={saved.loading}
-          empty={{ icon: Calendar, ...copy.empty.savedEvents }}
-        />
-      )
+      value: LIST_TYPES.events,
+      label: copy.saved.events,
+      items: savedEvents,
+      itemsPerPage: PROFILE_EVENTS_PER_PAGE,
+      empty: { ...copy.saved.empty.events, to: '/events' },
+      renderItem: renderEvent
+    }
+  ];
+
+  const applicationOptions = [
+    {
+      value: LIST_TYPES.jobs,
+      label: copy.applications.jobs,
+      items: appliedJobs,
+      empty: { ...copy.applications.empty.jobs, to: '/jobs' },
+      renderItem: renderJob
     },
     {
-      value: PROFILE_TABS.registeredEvents,
-      label: copy.tabs.registeredEvents,
-      content: (
-        <PaginatedGrid
-          items={registeredEvents}
-          renderItem={renderEvent}
-          loading={loading}
-          empty={{ icon: Calendar, ...copy.empty.registeredEvents }}
-        />
-      )
+      value: LIST_TYPES.events,
+      label: copy.applications.events,
+      items: registeredEvents,
+      itemsPerPage: PROFILE_EVENTS_PER_PAGE,
+      empty: { ...copy.applications.empty.events, to: '/events' },
+      renderItem: renderEvent
     }
   ];
 
@@ -187,8 +198,14 @@ export default function JobseekerProfile() {
         subtitle={jobseeker && getEducationSummary(jobseeker, copy.header.student)}
         stats={stats}
       />
+      <SectionTabs
+        sections={sections}
+        value={activeSection}
+        onChange={handleSectionChange}
+        label={copy.sections.label}
+      />
 
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1 space-y-6">
             <EducationCard
@@ -204,7 +221,22 @@ export default function JobseekerProfile() {
           </div>
 
           <div className="lg:col-span-3">
-            <ProfileTabs tabs={tabs} value={activeTab} onChange={setActiveTab} />
+            {activeSection === JOBSEEKER_SECTIONS.saved && (
+              <TogglePanel
+                title={copy.saved.title}
+                toggleLabel={copy.saved.toggleLabel}
+                options={savedOptions}
+                loading={saved.loading}
+              />
+            )}
+            {activeSection === JOBSEEKER_SECTIONS.applications && (
+              <TogglePanel
+                title={copy.applications.title}
+                toggleLabel={copy.applications.toggleLabel}
+                options={applicationOptions}
+                loading={loading}
+              />
+            )}
           </div>
         </div>
       </div>

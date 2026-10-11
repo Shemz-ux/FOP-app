@@ -1,6 +1,6 @@
 // Two-option toggle with a highlight that slides to the selected option.
 // options is a list of exactly two { value, label }.
-export default function SavedToggle({ options, value, onChange, label }) {
+export default function ToggleSwitch({ options, value, onChange, label }) {
   const isSecondSelected = options[1].value === value;
 
   return (

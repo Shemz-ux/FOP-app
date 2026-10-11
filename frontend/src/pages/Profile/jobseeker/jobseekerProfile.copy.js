@@ -10,20 +10,41 @@ const jobseekerProfileCopy = {
     ...profileSharedCopy.stats,
     applied: 'Applied'
   },
-  tabs: {
-    ...profileSharedCopy.tabs,
-    appliedJobs: 'Applied Jobs',
-    registeredEvents: 'Registered Events'
+  sections: {
+    label: 'Profile sections',
+    saved: 'Saved',
+    applications: 'Applications'
   },
-  empty: {
-    ...profileSharedCopy.empty,
-    appliedJobs: {
-      title: 'No applications yet',
-      message: 'Jobs you apply for will appear here.'
-    },
-    registeredEvents: {
-      title: 'No registered events yet',
-      message: 'Events you register for will appear here.'
+  saved: {
+    title: 'Your saved',
+    toggleLabel: 'Saved item type',
+    jobs: 'Jobs',
+    events: 'Events',
+    empty: {
+      jobs: {
+        message: 'No saved jobs yet.',
+        link: 'Browse jobs'
+      },
+      events: {
+        message: 'No saved events yet.',
+        link: 'Browse events'
+      }
+    }
+  },
+  applications: {
+    title: 'Your applications',
+    toggleLabel: 'Application type',
+    jobs: 'Jobs',
+    events: 'Events',
+    empty: {
+      jobs: {
+        message: 'No applications yet.',
+        link: 'Find jobs'
+      },
+      events: {
+        message: 'No registered events yet.',
+        link: 'Browse events'
+      }
     }
   },
   errors: {

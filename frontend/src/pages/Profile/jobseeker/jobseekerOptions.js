@@ -1,4 +1,26 @@
 // Settings and data helpers for the jobseeker profile.
+import { Bookmark, Send } from 'lucide-react';
+
+// Sections of the profile, in the order of the tab bar. The active one is kept
+// in the URL (?tab=), matching the institution profile.
+export const JOBSEEKER_SECTIONS = {
+  saved: 'saved',
+  applications: 'applications',
+};
+
+export const DEFAULT_JOBSEEKER_SECTION = JOBSEEKER_SECTIONS.saved;
+
+export const JOBSEEKER_SECTION_ICONS = {
+  saved: Bookmark,
+  applications: Send,
+};
+
+// Options of the toggle inside each section
+export const LIST_TYPES = {
+  jobs: 'jobs',
+  events: 'events',
+};
+
 
 // Display names for education levels that are not simply capitalised
 export const EDUCATION_LEVEL_LABELS = {

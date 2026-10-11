@@ -1,17 +1,16 @@
-import { INSTITUTION_SECTION_ICONS } from '../institutionOptions';
-
 // Tab bar under the profile header that switches between the profile's sections.
-// sections is a list of { value, label, count }. A count is hidden while it is null.
+// sections is a list of { value, label, count, icon }. A count is hidden while
+// it is null, and the icon is a lucide component.
 export default function SectionTabs({ sections, value, onChange, label }) {
   return (
-    <div className="container mx-auto px-6 pt-12 text-left">
+    <div className="container mx-auto px-6 pt-8 text-left">
       <div
         role="tablist"
         aria-label={label}
         className="inline-flex max-w-full gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1"
       >
         {sections.map(section => {
-          const Icon = INSTITUTION_SECTION_ICONS[section.value];
+          const Icon = section.icon;
           const isSelected = section.value === value;
 
           return (
