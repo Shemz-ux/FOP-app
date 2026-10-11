@@ -668,6 +668,170 @@ describe.only('Jobseekers API Endpoints', () => {
     });
   });
 
+  describe('Society link (society + society_id)', () => {
+    const createdIds = [];
+    let partnerSociety;
+    let otherSociety;
+
+    beforeAll(async () => {
+      const { rows } = await db.query(
+        'SELECT society_id, name FROM societies ORDER BY society_id LIMIT 2'
+      );
+      [partnerSociety, otherSociety] = rows;
+    });
+
+    afterAll(async () => {
+      for (const id of createdIds) {
+        try {
+          await db.query('DELETE FROM jobseekers WHERE jobseeker_id = $1', [id]);
+        } catch (err) {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    // Creates a jobseeker and remembers the id so it is cleaned up afterwards
+    const createWith = async (fields) => {
+      const response = await request(app)
+        .post('/api/jobseekers')
+        .send({
+          first_name: 'Society',
+          last_name: 'Link',
+          email: `society.link.${Date.now()}.${Math.random().toString(36).slice(2, 8)}@test.com`,
+          password: testPassword,
+          ...fields
+        })
+        .expect(201);
+
+      createdIds.push(response.body.newJobseeker.jobseeker_id);
+      return response.body.newJobseeker;
+    };
+
+    test('signing up with a society name links it to that society', async () => {
+      const jobseeker = await createWith({ society: partnerSociety.name });
+
+      expect(jobseeker.society).toBe(partnerSociety.name);
+      expect(jobseeker.society_id).toBe(partnerSociety.society_id);
+    });
+
+    test('a society name in the wrong case still links, and is stored in the society\'s own spelling', async () => {
+      const jobseeker = await createWith({ society: `  ${partnerSociety.name.toUpperCase()}  ` });
+
+      expect(jobseeker.society).toBe(partnerSociety.name);
+      expect(jobseeker.society_id).toBe(partnerSociety.society_id);
+    });
+
+    // The students this protects already exist: some belong to societies that
+    // have no account here, and their answer must not be thrown away
+    test('a society that is not on the platform is kept as text, with no link', async () => {
+      const jobseeker = await createWith({ society: 'Totally Unaffiliated Society' });
+
+      expect(jobseeker.society).toBe('Totally Unaffiliated Society');
+      expect(jobseeker.society_id).toBeNull();
+    });
+
+    test('no society given stores null for both', async () => {
+      const jobseeker = await createWith({});
+
+      expect(jobseeker.society).toBeNull();
+      expect(jobseeker.society_id).toBeNull();
+    });
+
+    test('the legacy "None" value stores null for both', async () => {
+      const jobseeker = await createWith({ society: 'None' });
+
+      expect(jobseeker.society).toBeNull();
+      expect(jobseeker.society_id).toBeNull();
+    });
+
+    test('signing up with a society_id derives the name from it', async () => {
+      const jobseeker = await createWith({ society_id: otherSociety.society_id });
+
+      expect(jobseeker.society).toBe(otherSociety.name);
+      expect(jobseeker.society_id).toBe(otherSociety.society_id);
+    });
+
+    test('changing the society name moves the link with it', async () => {
+      const jobseeker = await createWith({ society: partnerSociety.name });
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${jobseeker.jobseeker_id}`)
+        .send({ society: otherSociety.name })
+        .expect(200);
+
+      expect(response.body.jobseeker.society).toBe(otherSociety.name);
+      expect(response.body.jobseeker.society_id).toBe(otherSociety.society_id);
+    });
+
+    test('moving to a society that is not on the platform clears the link', async () => {
+      const jobseeker = await createWith({ society: partnerSociety.name });
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${jobseeker.jobseeker_id}`)
+        .send({ society: 'Some Other Club' })
+        .expect(200);
+
+      expect(response.body.jobseeker.society).toBe('Some Other Club');
+      expect(response.body.jobseeker.society_id).toBeNull();
+    });
+
+    test('clearing the society clears both columns', async () => {
+      const jobseeker = await createWith({ society: partnerSociety.name });
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${jobseeker.jobseeker_id}`)
+        .send({ society: '' })
+        .expect(200);
+
+      expect(response.body.jobseeker.society).toBeNull();
+      expect(response.body.jobseeker.society_id).toBeNull();
+    });
+
+    // Opening the profile editor and saving must not disturb a society the
+    // student cannot reselect, which is how the unlinked records would be lost
+    test('updating an unrelated field leaves an unlinked society untouched', async () => {
+      const jobseeker = await createWith({ society: 'Unlisted Society' });
+
+      const response = await request(app)
+        .patch(`/api/jobseekers/${jobseeker.jobseeker_id}`)
+        .send({ first_name: 'Renamed' })
+        .expect(200);
+
+      expect(response.body.jobseeker.first_name).toBe('Renamed');
+      expect(response.body.jobseeker.society).toBe('Unlisted Society');
+      expect(response.body.jobseeker.society_id).toBeNull();
+    });
+
+    test('a society_id that does not exist is rejected', async () => {
+      const jobseeker = await createWith({ society: partnerSociety.name });
+
+      await request(app)
+        .patch(`/api/jobseekers/${jobseeker.jobseeker_id}`)
+        .send({ society_id: 999999 })
+        .expect(400);
+    });
+
+    test('deleting a society clears its members\' link but keeps the name they chose', async () => {
+      const { rows: [temp] } = await db.query(
+        `INSERT INTO societies (name, university, email, password_hash)
+         VALUES ($1, $2, $3, $4) RETURNING society_id, name`,
+        [`Temp Society ${Date.now()}`, 'Test University', `temp.society.${Date.now()}@test.com`, 'hash']
+      );
+
+      const jobseeker = await createWith({ society_id: temp.society_id });
+      expect(jobseeker.society_id).toBe(temp.society_id);
+
+      await db.query('DELETE FROM societies WHERE society_id = $1', [temp.society_id]);
+
+      const { rows: [after] } = await db.query(
+        'SELECT society, society_id FROM jobseekers WHERE jobseeker_id = $1',
+        [jobseeker.jobseeker_id]
+      );
+      expect(after.society_id).toBeNull();
+      expect(after.society).toBe(temp.name);
+    });
+  });
+
   afterAll(async () => {
     // Close database connection to prevent Jest from hanging
     await db.end();

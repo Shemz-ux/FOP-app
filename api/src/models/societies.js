@@ -20,15 +20,47 @@ export const fetchSocietyNames = () => {
     });
 };
 
-export const incrementSocietyMemberCount = (societyName) => {
-    return db.query(`
-        UPDATE societies 
-        SET member_count = member_count + 1 
-        WHERE name = $1
-        RETURNING *
-    `, [societyName]).then(({rows}) => {
-        return rows[0];
-    });
+// Works out the society_id and society name to store for a jobseeker, from
+// whatever the caller supplied. Both columns are always written together from
+// this one result, so they can never disagree.
+//
+// Accepts either a society_id (unambiguous, preferred) or a society name.
+// A name that matches no society is kept as text with a null society_id, so a
+// student who belongs to a society that is not on the platform does not lose it.
+export const resolveSocietyLink = async ({ society_id, society } = {}) => {
+    const hasId = society_id !== undefined && society_id !== null && society_id !== '';
+
+    if (hasId) {
+        const { rows } = await db.query(
+            `SELECT society_id, name FROM societies WHERE society_id = $1`,
+            [society_id]
+        );
+        if (rows.length === 0) {
+            return Promise.reject({ status: 400, msg: 'Society not found' });
+        }
+        return { society_id: rows[0].society_id, society: rows[0].name };
+    }
+
+    const name = typeof society === 'string' ? society.trim() : society;
+
+    // 'None' is a legacy value the signup form used to send for "no society"
+    if (!name || name === 'None') {
+        return { society_id: null, society: null };
+    }
+
+    const { rows } = await db.query(
+        `SELECT society_id, name FROM societies
+         WHERE LOWER(BTRIM(name)) = LOWER(BTRIM($1))
+         ORDER BY society_id
+         LIMIT 1`,
+        [name]
+    );
+
+    // Matched: store the society's own spelling so the text and the key agree.
+    // Unmatched: keep what was given, with no link.
+    return rows.length > 0
+        ? { society_id: rows[0].society_id, society: rows[0].name }
+        : { society_id: null, society: name };
 };
 
 export const fetchSocietyById = (id) => {

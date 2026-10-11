@@ -1,4 +1,5 @@
 import db from "../db/db.js";
+import { resolveSocietyLink } from "./societies.js";
 
 export const fetchJobseekers = () => {
     return db.query(`SELECT * FROM jobseekers`).then(({rows}) => {
@@ -26,7 +27,7 @@ export const fetchJobseekerByEmail = (email) => {
     });
 };
 
-export const createJobseeker = (newJobseeker) => {
+export const createJobseeker = async (newJobseeker) => {
     const {
         first_name, 
         last_name, 
@@ -60,6 +61,10 @@ export const createJobseeker = (newJobseeker) => {
         cv_uploaded_at = null
     } = newJobseeker;
 
+    // The society name and its key are always derived together, so the two
+    // columns cannot disagree
+    const link = await resolveSocietyLink({ society_id: newJobseeker.society_id, society });
+
     return db.query(`
         INSERT INTO jobseekers (
             first_name, last_name, email, password_hash, phone_number,
@@ -67,18 +72,18 @@ export const createJobseeker = (newJobseeker) => {
             first_gen_to_go_uni, education_level, institution_name,
             uni_year, degree_type, area_of_study,
             subject_one, subject_two, subject_three, subject_four,
-            role_interest_option_one, role_interest_option_two, society,
+            role_interest_option_one, role_interest_option_two, society, society_id,
             linkedin, has_right_to_work_uk, requires_sponsorship,
             cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
         RETURNING *`,
         [first_name, last_name, email, password_hash, phone_number,
          date_of_birth, gender, ethnicity, school_meal_eligible,
          first_gen_to_go_uni, education_level, institution_name,
          uni_year, degree_type, area_of_study,
          subject_one, subject_two, subject_three, subject_four,
-         role_interest_option_one, role_interest_option_two, society,
+         role_interest_option_one, role_interest_option_two, link.society, link.society_id,
          linkedin, has_right_to_work_uk, requires_sponsorship,
          cv_file_name, cv_file_size, cv_storage_key, cv_storage_url, cv_uploaded_at]
     ).then(({rows}) => {
@@ -86,7 +91,7 @@ export const createJobseeker = (newJobseeker) => {
     });
 };
 
-export const updateJobseeker = (updateJobseeker, id) => {
+export const updateJobseeker = async (updateJobseeker, id) => {
     const fields = [];
     const values = [];
     const validFields = [
@@ -94,13 +99,21 @@ export const updateJobseeker = (updateJobseeker, id) => {
         "gender", "ethnicity", "school_meal_eligible", "first_gen_to_go_uni", 
         "education_level", "institution_name", "uni_year", 
         "degree_type", "area_of_study", "subject_one", "subject_two",
-        "subject_three", "subject_four", "role_interest_option_one", "role_interest_option_two", "society",
+        "subject_three", "subject_four", "role_interest_option_one", "role_interest_option_two",
+        "society", "society_id",
         "linkedin", "has_right_to_work_uk", "requires_sponsorship",
         "cv_file_name", "cv_file_size", "cv_storage_key", "cv_storage_url", "cv_uploaded_at"
     ];
     let index = 1;
 
-    for (const [key, value] of Object.entries(updateJobseeker)) {
+    // A change to either society field rewrites both, from one resolved result,
+    // so the name and the key always describe the same society
+    const touchesSociety = "society" in updateJobseeker || "society_id" in updateJobseeker;
+    const payload = touchesSociety
+        ? { ...updateJobseeker, ...(await resolveSocietyLink(updateJobseeker)) }
+        : updateJobseeker;
+
+    for (const [key, value] of Object.entries(payload)) {
         if (value !== undefined && validFields.includes(key)) {
             fields.push(`${key} = $${index}`);
             values.push(value);
