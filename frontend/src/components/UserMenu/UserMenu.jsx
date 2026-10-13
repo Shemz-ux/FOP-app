@@ -36,13 +36,6 @@ export default function UserMenu() {
     return 'U';
   };
 
-  const getUserTypeLabel = () => {
-    if (user?.userType === 'jobseeker') return 'Jobseeker';
-    if (user?.userType === 'society') return 'Society';
-    if (user?.userType === 'admin') return user?.role === 'super_admin' ? 'Super Admin' : 'Admin';
-    return 'User';
-  };
-
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -67,15 +60,15 @@ export default function UserMenu() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium text-foreground">{getUserTypeLabel()}</p>
-                <p className="text-xs text-muted-foreground">ID: {user?.userId}</p>
+                <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                <p className="text-xs text-muted-foreground">Signed in</p>
               </div>
             </div>
           </div>
 
           {/* Menu Items */}
           <div className="py-2">
-            {isAdmin() && (
+            {isAdmin() ? (
               <Link
                 to="/admin"
                 onClick={() => setIsOpen(false)}
@@ -84,16 +77,16 @@ export default function UserMenu() {
                 <Shield className="w-4 h-4 text-primary" />
                 <span className="text-sm text-foreground">Admin Dashboard</span>
               </Link>
+            ) : (
+              <Link
+                to="/profile"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-4 py-2 hover:bg-secondary transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span className="text-sm text-foreground">Dashboard</span>
+              </Link>
             )}
-
-            <Link
-              to="/profile"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-2 hover:bg-secondary transition-colors"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span className="text-sm text-foreground">Dashboard</span>
-            </Link>
 
             <Link
               to="/settings"
