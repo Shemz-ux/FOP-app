@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Heart, MapPin } from 'lucide-react';
+import { Bookmark, Clock, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import JobBadge from '../Ui/JobBadge';
 import CompanyLogo from '../Ui/CompanyLogo';
@@ -63,7 +63,7 @@ export default function JobCard({
               aria-label={isFavorite ? 'Remove from saved' : 'Save job'}
               aria-pressed={isFavorite}
             >
-              <Heart
+              <Bookmark
                 className={`w-5 h-5 transition-all duration-200 ${
                   isFavorite
                     ? 'fill-primary stroke-primary scale-110'
