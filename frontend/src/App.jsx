@@ -54,8 +54,8 @@ function App() {
   const Layout = ({ children }) => (
     <NavigateProvider>
       <ScrollToTop />
-      <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
-      {children}
+      <Navbar />
+      <div className="page-shell">{children}</div>
       <Footer />
     </NavigateProvider>
   );
@@ -64,8 +64,8 @@ function App() {
     // TODO: Needs to not pass down username if not logged in
     <NavigateProvider>
       <ScrollToTop />
-      <Navbar userName="John Doe" onNotificationClick={() => console.log('Notifications clicked')} />
-      {children}
+      <Navbar />
+      <div className="page-shell">{children}</div>
     </NavigateProvider>
   );
 
