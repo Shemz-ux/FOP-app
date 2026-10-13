@@ -1,4 +1,5 @@
   import React from 'react';
+import { toDateInputValue } from '../../utils/timeFormatter';
 import { ArrowLeft } from 'lucide-react';
 import CustomDropdown from '../../components/Admin/CustomDropdown';
 import SelectWithAddNew from '../../components/Admin/SelectWithAddNew';
@@ -26,7 +27,7 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
     role_type: job?.role_type || '',
     work_type: job?.work_type || job?.work_mode || '',
     job_link: job?.job_link || '',
-    deadline: job?.deadline || '',
+    deadline: toDateInputValue(job?.deadline),
     is_active: job?.is_active !== undefined ? job.is_active : true,
     descriptionSections: job?.description_sections || parseDescriptionToSections(job?.description) || [
       { header: 'About the Role', content: [''] },

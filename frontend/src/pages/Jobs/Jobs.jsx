@@ -389,6 +389,7 @@ export default function Jobs() {
                     companyColor={job.company_color}
                     description={job.description}
                     postedTime={job.created_at}
+                    deadline={job.deadline}
                     tags={job.tags || []}
                     isFavorite={favorites.has(job.job_id)}
                     onFavoriteClick={() => toggleFavorite(job.job_id)}

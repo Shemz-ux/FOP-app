@@ -13,6 +13,7 @@ export default function ProfileJobCard({ job, isFavorite, onFavoriteClick, compa
       location={job.location}
       description={job.description}
       postedTime={job.job_created_at || job.created_at}
+      deadline={job.deadline}
       tags={job.tags || []}
       isFavorite={isFavorite}
       onFavoriteClick={() => onFavoriteClick(job.job_id)}

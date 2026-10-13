@@ -1,56 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function CompanyLogo({ logo, color = '#0D7DFF', companyName, size = 'default' }) {
-  const getInitial = () => {
-    if (companyName && typeof companyName === 'string' && companyName.length > 0) {
-      return companyName.charAt(0).toUpperCase();
-    }
-    return 'C';
-  };
+// Used when a job has no brand colour, or has one the browser cannot read
+const DEFAULT_COLOR = '#0D7DFF';
 
-  // Size variants
-  const sizeClasses = {
-    small: 'w-10 h-10 text-lg',
-    default: 'w-12 h-12 text-xl',
-    large: 'w-16 h-16 text-2xl',
-    xlarge: 'w-20 h-20 text-3xl'
-  };
+const SIX_DIGIT_HEX = /^#[0-9a-f]{6}$/i;
 
-  const sizeClass = sizeClasses[size] || sizeClasses.default;
+// company_color is null for plenty of jobs, so anything unusable falls back
+const resolveColor = (value) => {
+  const trimmed = typeof value === 'string' ? value.trim() : '';
+  return trimmed === '' ? DEFAULT_COLOR : trimmed;
+};
 
-  if (logo) {
+// Only a 6-digit hex can take an "dd" alpha suffix; anything else keeps one flat
+// colour rather than producing CSS the browser drops, leaving an invisible tile
+const buildGradient = (color) => {
+  const end = SIX_DIGIT_HEX.test(color) ? `${color}dd` : color;
+  return `linear-gradient(135deg, ${color} 0%, ${end} 100%)`;
+};
+
+// Size variants: tile size and the initial's type scale
+const SIZE_CLASSES = {
+  small: 'w-10 h-10 text-lg',
+  default: 'w-12 h-12 text-xl',
+  large: 'w-16 h-16 text-2xl',
+  xlarge: 'w-20 h-20 text-3xl',
+};
+
+export default function CompanyLogo({ logo, color, companyName, size = 'default' }) {
+  // The logo URL that failed to load, so a 404 falls back to the initial tile.
+  // Storing the URL rather than a flag means a card recycled for another job
+  // retries that job's own logo instead of inheriting the failure.
+  const [failedSrc, setFailedSrc] = useState(null);
+
+  const src = typeof logo === 'string' ? logo.trim() : '';
+
+  const sizeClass = SIZE_CLASSES[size] || SIZE_CLASSES.default;
+  const tileClass = `${sizeClass} rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center`;
+
+  const initial =
+    companyName && typeof companyName === 'string' && companyName.trim().length > 0
+      ? companyName.trim().charAt(0).toUpperCase()
+      : 'C';
+
+  if (src && src !== failedSrc) {
     return (
-      <div className={`${sizeClass} rounded-xl overflow-hidden flex-shrink-0 bg-white border border-border shadow-sm flex items-center justify-center p-2`}>
-        <img 
-          src={logo} 
-          alt={`${companyName} logo`}
+      <div className={`${tileClass} bg-white border border-border shadow-sm p-2`}>
+        <img
+          src={src}
+          alt={`${companyName || 'Company'} logo`}
           className="w-full h-full object-contain"
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.nextSibling.style.display = 'flex';
-          }}
+          loading="lazy"
+          // Logo CDNs commonly reject requests that carry a referrer
+          referrerPolicy="no-referrer"
+          onError={() => setFailedSrc(src)}
         />
-        <div 
-          className={`${sizeClass} rounded-xl flex items-center justify-center text-white font-bold shadow-inner`}
-          style={{ 
-            background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
-            display: 'none' 
-          }}
-        >
-          {getInitial()}
-        </div>
       </div>
     );
   }
 
+  const brandColor = resolveColor(color);
+
   return (
-    <div 
-      className={`${sizeClass} rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0 shadow-md`}
-      style={{ 
-        background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`
-      }}
+    <div
+      className={`${tileClass} text-white font-bold shadow-md`}
+      style={{ background: buildGradient(brandColor) }}
+      aria-label={`${companyName || 'Company'} logo`}
+      role="img"
     >
-      {getInitial()}
+      {initial}
     </div>
   );
 }

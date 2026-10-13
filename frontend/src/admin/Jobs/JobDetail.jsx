@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatCalendarDate } from '../../utils/timeFormatter';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil, Download } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
@@ -289,13 +290,7 @@ export default function JobDetail() {
           <div>
             <p className="text-sm text-muted-foreground mb-1">Deadline</p>
             <p className="text-foreground font-medium">
-              {job.deadline 
-                ? new Date(job.deadline).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric', 
-                    year: 'numeric' 
-                  })
-                : 'Rolling Deadline'}
+              {job.deadline ? formatCalendarDate(job.deadline) : 'Rolling Deadline'}
             </p>
           </div>
           <div>

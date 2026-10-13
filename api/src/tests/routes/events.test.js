@@ -112,7 +112,8 @@ describe('Events API Endpoints', () => {
                 .expect(201);
 
             expect(response.body.newEvent.title).toBe('Minimal Event');
-            expect(response.body.newEvent.event_date).toBe('2024-12-20T00:00:00.000Z');
+            // DATE columns come back as the calendar date they hold, unchanged
+            expect(response.body.newEvent.event_date).toBe('2024-12-20');
             expect(response.body.newEvent.is_active).toBe(true); // Default value
         });
     });

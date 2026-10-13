@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { parseCalendarDate } from '../../utils/timeFormatter';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Eye, BarChart, Trash2, Edit, Home, CheckCircle, XCircle, Briefcase } from 'lucide-react';
 import AdminSelect from '../Components/AdminSelect';
@@ -69,10 +70,11 @@ export default function JobsList() {
     if (job.is_active) {
       // Check if deadline has passed
       if (job.deadline) {
-        const deadlineDate = new Date(job.deadline);
+        // A job stays open until 11:59pm on its deadline day
+        const deadlineDay = parseCalendarDate(job.deadline);
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Reset time to start of day
-        jobStatus = deadlineDate < today ? 'closed' : 'active';
+        jobStatus = deadlineDay && deadlineDay < today ? 'closed' : 'active';
       } else {
         // No deadline means rolling deadline - it's active
         jobStatus = 'active';

@@ -8,7 +8,7 @@ import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import { jobsService, jobActionsService } from '../../services';
 import { generateJobTags } from '../../utils/tagGenerator';
-import { formatTimeAgo } from '../../utils/timeFormatter';
+import { formatTimeAgo, formatCalendarDate } from '../../utils/timeFormatter';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function JobDetails() {
@@ -403,9 +403,7 @@ export default function JobDetails() {
                       Application Deadline
                     </div>
                     <div className="text-foreground">
-                      {job.deadline 
-                        ? new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                        : 'Rolling Deadline'}
+                      {job.deadline ? formatCalendarDate(job.deadline) : 'Rolling Deadline'}
                     </div>
                   </div>
                 </div>
