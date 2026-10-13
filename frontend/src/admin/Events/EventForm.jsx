@@ -331,6 +331,7 @@ export function EventForm({ event, onSubmit, onCancel, isEdit = false }) {
                     onRemoveImage={handleRemoveLogo}
                     label="Organiser Logo (optional)"
                     required={false}
+                    variant="logo"
                   />
                 </div>
 

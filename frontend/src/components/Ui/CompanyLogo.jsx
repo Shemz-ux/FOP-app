@@ -26,6 +26,16 @@ const SIZE_CLASSES = {
   xlarge: 'w-20 h-20 text-3xl',
 };
 
+// Padding scales with the tile, so a logo keeps the same proportions at every
+// size. It stays a sixth of the tile, which is what the logo cropper frames
+// against, so an uploaded logo lands in the tile exactly as it was positioned.
+const PADDING_CLASSES = {
+  small: 'p-1.5',
+  default: 'p-2',
+  large: 'p-2.5',
+  xlarge: 'p-3.5',
+};
+
 export default function CompanyLogo({ logo, color, companyName, size = 'default' }) {
   // The logo URL that failed to load, so a 404 falls back to the initial tile.
   // Storing the URL rather than a flag means a card recycled for another job
@@ -35,6 +45,7 @@ export default function CompanyLogo({ logo, color, companyName, size = 'default'
   const src = typeof logo === 'string' ? logo.trim() : '';
 
   const sizeClass = SIZE_CLASSES[size] || SIZE_CLASSES.default;
+  const paddingClass = PADDING_CLASSES[size] || PADDING_CLASSES.default;
   const tileClass = `${sizeClass} rounded-xl flex-shrink-0 overflow-hidden flex items-center justify-center`;
 
   const initial =
@@ -44,7 +55,7 @@ export default function CompanyLogo({ logo, color, companyName, size = 'default'
 
   if (src && src !== failedSrc) {
     return (
-      <div className={`${tileClass} bg-white border border-border shadow-sm p-2`}>
+      <div className={`${tileClass} bg-white border border-border shadow-sm ${paddingClass}`}>
         <img
           src={src}
           alt={`${companyName || 'Company'} logo`}

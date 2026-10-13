@@ -365,6 +365,7 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                 onRemoveImage={handleRemoveLogo}
                 label="Company Logo (optional)"
                 required={false}
+                variant="logo"
               />
             </div>
 
@@ -398,7 +399,7 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
               />
             </div>
 
-            <div className="md:col-span-2">
+            {/* <div className="md:col-span-2">
               <label htmlFor="company-color" className="block text-sm mb-2 text-foreground">
                 Company Brand Color
               </label>
@@ -409,7 +410,7 @@ export default function JobForm({ job, onSubmit, onCancel, isEdit = false }) {
                 onChange={(e) => setFormData({ ...formData, companyColor: e.target.value })}
                 className="w-20 h-10 rounded-lg border border-input cursor-pointer"
               />
-            </div>
+            </div> */}
 
             <div className="md:col-span-2 space-y-6">
               <div className="flex justify-between items-center">

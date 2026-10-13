@@ -1,9 +1,49 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ZoomIn, ZoomOut, Move, Check, X, RotateCcw } from 'lucide-react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { ZoomIn, ZoomOut, Move, Check, X, RotateCcw, Maximize } from 'lucide-react';
 
-export default function ImageCropper({ image, onCropComplete, onCancel, aspectRatio = 1 }) {
-  console.log('ImageCropper rendering, image:', image?.substring(0, 50));
-  
+// A logo tile on a card is a padded square: w-12 with p-2 leaves two thirds of
+// the tile for the image, which is then object-contain'ed into it. The crop
+// frame here stands for that inner box, so a square export lands in it 1:1 and
+// what the cropper shows is what the card and the details page will render.
+const LOGO_CONTENT_RATIO = 2 / 3;
+const LOGO_TILE_RATIO = 0.8;
+const IMAGE_FRAME_RATIO = 0.85;
+
+// Logos render between 40px and 80px, so 512 is already generous; the old
+// 1200px JPEG only added weight and lost the alpha channel.
+const LOGO_OUTPUT_SIZE = 512;
+const IMAGE_OUTPUT_SIZE = 1200;
+
+const MIN_SCALE = 0.05;
+const MAX_SCALE = 8;
+const ZOOM_STEP = 1.1;
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const roundRectPath = (ctx, x, y, width, height, radius) => {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, width, height, r);
+    return;
+  }
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+};
+
+export default function ImageCropper({
+  image,
+  onCropComplete,
+  onCancel,
+  aspectRatio = 1,
+  variant = 'image',
+}) {
+  const isLogo = variant === 'logo';
+
   const canvasRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -11,198 +51,246 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imageObj, setImageObj] = useState(null);
 
+  // Fixed once per mount: the canvas is a bitmap, so resizing it mid-session
+  // would invalidate the stored position and scale
+  const [canvasSize] = useState(() =>
+    Math.min(500, (typeof window === 'undefined' ? 500 : window.innerWidth) - 80)
+  );
+
+  // The tile the card draws, and the crop frame inside it
+  const geometry = useMemo(() => {
+    if (isLogo) {
+      const tileSize = canvasSize * LOGO_TILE_RATIO;
+      const contentSize = tileSize * LOGO_CONTENT_RATIO;
+      return {
+        tile: {
+          x: (canvasSize - tileSize) / 2,
+          y: (canvasSize - tileSize) / 2,
+          size: tileSize,
+        },
+        crop: {
+          x: (canvasSize - contentSize) / 2,
+          y: (canvasSize - contentSize) / 2,
+          width: contentSize,
+          height: contentSize,
+        },
+      };
+    }
+
+    const width =
+      aspectRatio === 1 ? canvasSize * LOGO_TILE_RATIO : canvasSize * IMAGE_FRAME_RATIO;
+    const height = aspectRatio === 1 ? width : width * (9 / 16);
+    return {
+      tile: null,
+      crop: {
+        x: (canvasSize - width) / 2,
+        y: (canvasSize - height) / 2,
+        width,
+        height,
+      },
+    };
+  }, [aspectRatio, canvasSize, isLogo]);
+
+  // A logo opens fully visible inside the frame; photography opens filling it
+  const framingScale = useCallback(
+    (img, mode) => {
+      const { crop } = geometry;
+      const fit = Math.min(crop.width / img.width, crop.height / img.height);
+      const fill = Math.max(crop.width / img.width, crop.height / img.height);
+      return mode === 'fit' ? fit : fill;
+    },
+    [geometry]
+  );
+
+  const centreAt = useCallback(
+    (img, nextScale) => {
+      const { crop } = geometry;
+      setScale(nextScale);
+      setPosition({
+        x: crop.x + (crop.width - img.width * nextScale) / 2,
+        y: crop.y + (crop.height - img.height * nextScale) / 2,
+      });
+    },
+    [geometry]
+  );
+
   useEffect(() => {
-    console.log('ImageCropper useEffect - loading image');
     const img = new Image();
     img.crossOrigin = 'anonymous'; // Prevent canvas tainting
     img.onload = () => {
       setImageObj(img);
-      // Center the image initially
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        const canvasSize = Math.min(canvas.width, canvas.height);
-        const imgSize = Math.min(img.width, img.height);
-        const initialScale = canvasSize / imgSize;
-        setScale(initialScale);
-        setPosition({
-          x: (canvas.width - img.width * initialScale) / 2,
-          y: (canvas.height - img.height * initialScale) / 2
-        });
-      }
+      centreAt(img, framingScale(img, isLogo ? 'fit' : 'fill'));
     };
     img.src = image;
-  }, [image]);
+  }, [image, centreAt, framingScale, isLogo]);
 
-  useEffect(() => {
-    if (imageObj && canvasRef.current) {
-      drawCanvas();
-    }
-  }, [imageObj, scale, position]);
-
-  const drawCanvas = () => {
+  const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw image
-    ctx.save();
-    ctx.drawImage(
-      imageObj,
-      position.x,
-      position.y,
-      imageObj.width * scale,
-      imageObj.height * scale
-    );
-    ctx.restore();
+    if (!canvas || !imageObj) return;
 
-    // Draw crop overlay based on aspect ratio
-    let cropWidth, cropHeight;
-    if (aspectRatio === 1) {
-      // Square crop for logos
-      const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
-      cropWidth = cropSize;
-      cropHeight = cropSize;
-    } else {
-      // 16:9 aspect ratio for event images
-      cropWidth = canvas.width * 0.85;
-      cropHeight = cropWidth * (9 / 16);
+    const ctx = canvas.getContext('2d');
+    const { crop, tile } = geometry;
+    const drawWidth = imageObj.width * scale;
+    const drawHeight = imageObj.height * scale;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (isLogo) {
+      // Ghost of everything outside the tile, so dragging stays orientated
+      ctx.globalAlpha = 0.14;
+      ctx.drawImage(imageObj, position.x, position.y, drawWidth, drawHeight);
+      ctx.globalAlpha = 1;
+
+      // The card tile itself: white, rounded, and the padding ring around the
+      // crop frame is the card's own padding
+      roundRectPath(ctx, tile.x, tile.y, tile.size, tile.size, tile.size * 0.18);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(crop.x, crop.y, crop.width, crop.height);
+      ctx.clip();
+      ctx.drawImage(imageObj, position.x, position.y, drawWidth, drawHeight);
+      ctx.restore();
+
+      roundRectPath(ctx, tile.x, tile.y, tile.size, tile.size, tile.size * 0.18);
+      ctx.strokeStyle = 'rgba(15, 23, 42, 0.18)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.setLineDash([6, 4]);
+      ctx.strokeStyle = 'rgba(13, 125, 255, 0.85)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(crop.x, crop.y, crop.width, crop.height);
+      ctx.setLineDash([]);
+      return;
     }
-    const cropX = (canvas.width - cropWidth) / 2;
-    const cropY = (canvas.height - cropHeight) / 2;
+
+    ctx.drawImage(imageObj, position.x, position.y, drawWidth, drawHeight);
 
     // Darken outside crop area
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, canvas.width, cropY);
-    ctx.fillRect(0, cropY, cropX, cropHeight);
-    ctx.fillRect(cropX + cropWidth, cropY, canvas.width - cropX - cropWidth, cropHeight);
-    ctx.fillRect(0, cropY + cropHeight, canvas.width, canvas.height - cropY - cropHeight);
+    ctx.fillRect(0, 0, canvas.width, crop.y);
+    ctx.fillRect(0, crop.y, crop.x, crop.height);
+    ctx.fillRect(crop.x + crop.width, crop.y, canvas.width - crop.x - crop.width, crop.height);
+    ctx.fillRect(0, crop.y + crop.height, canvas.width, canvas.height - crop.y - crop.height);
 
-    // Draw crop border
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
-    ctx.strokeRect(cropX, cropY, cropWidth, cropHeight);
+    ctx.strokeRect(crop.x, crop.y, crop.width, crop.height);
 
-    // Draw corner guides
     const guideLength = 20;
     ctx.strokeStyle = '#0D7DFF';
     ctx.lineWidth = 3;
-    
-    // Top-left
-    ctx.beginPath();
-    ctx.moveTo(cropX, cropY + guideLength);
-    ctx.lineTo(cropX, cropY);
-    ctx.lineTo(cropX + guideLength, cropY);
-    ctx.stroke();
-
-    // Top-right
-    ctx.beginPath();
-    ctx.moveTo(cropX + cropWidth - guideLength, cropY);
-    ctx.lineTo(cropX + cropWidth, cropY);
-    ctx.lineTo(cropX + cropWidth, cropY + guideLength);
-    ctx.stroke();
-
-    // Bottom-left
-    ctx.beginPath();
-    ctx.moveTo(cropX, cropY + cropHeight - guideLength);
-    ctx.lineTo(cropX, cropY + cropHeight);
-    ctx.lineTo(cropX + guideLength, cropY + cropHeight);
-    ctx.stroke();
-
-    // Bottom-right
-    ctx.beginPath();
-    ctx.moveTo(cropX + cropWidth - guideLength, cropY + cropHeight);
-    ctx.lineTo(cropX + cropWidth, cropY + cropHeight);
-    ctx.lineTo(cropX + cropWidth, cropY + cropHeight - guideLength);
-    ctx.stroke();
-  };
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    const rect = canvasRef.current.getBoundingClientRect();
-    setDragStart({
-      x: e.clientX - rect.left - position.x,
-      y: e.clientY - rect.top - position.y
+    const corners = [
+      [crop.x, crop.y, 1, 1],
+      [crop.x + crop.width, crop.y, -1, 1],
+      [crop.x, crop.y + crop.height, 1, -1],
+      [crop.x + crop.width, crop.y + crop.height, -1, -1],
+    ];
+    corners.forEach(([cx, cy, dx, dy]) => {
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + guideLength * dy);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx + guideLength * dx, cy);
+      ctx.stroke();
     });
+  }, [geometry, imageObj, isLogo, position, scale]);
+
+  useEffect(() => {
+    drawCanvas();
+  }, [drawCanvas]);
+
+  const pointerPosition = (clientX, clientY) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    // The canvas is capped by max-w-full, so CSS pixels and bitmap pixels
+    // diverge on narrow screens
+    const ratioX = canvasRef.current.width / rect.width;
+    const ratioY = canvasRef.current.height / rect.height;
+    return {
+      x: (clientX - rect.left) * ratioX,
+      y: (clientY - rect.top) * ratioY,
+    };
   };
+
+  const startDrag = (clientX, clientY) => {
+    const point = pointerPosition(clientX, clientY);
+    setIsDragging(true);
+    setDragStart({ x: point.x - position.x, y: point.y - position.y });
+  };
+
+  const moveDrag = (clientX, clientY) => {
+    const point = pointerPosition(clientX, clientY);
+    setPosition({ x: point.x - dragStart.x, y: point.y - dragStart.y });
+  };
+
+  const handleMouseDown = (e) => startDrag(e.clientX, e.clientY);
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    setPosition({
-      x: e.clientX - rect.left - dragStart.x,
-      y: e.clientY - rect.top - dragStart.y
-    });
+    moveDrag(e.clientX, e.clientY);
   };
 
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+  const handleMouseUp = () => setIsDragging(false);
 
-  const handleZoomIn = () => {
-    setScale(prev => Math.min(prev + 0.05, 5));
-  };
-
-  const handleZoomOut = () => {
-    setScale(prev => Math.max(prev - 0.05, 0.25));
-  };
-
-  const handleReset = () => {
-    const canvas = canvasRef.current;
-    if (canvas && imageObj) {
-      const canvasSize = Math.min(canvas.width, canvas.height);
-      const imgSize = Math.min(imageObj.width, imageObj.height);
-      const initialScale = canvasSize / imgSize;
-      setScale(initialScale);
+  // Zoom around the centre of the crop frame, so the framing the user has
+  // chosen stays put instead of drifting towards the canvas corner
+  const zoomBy = useCallback(
+    (factor) => {
+      if (!imageObj) return;
+      const next = clamp(scale * factor, MIN_SCALE, MAX_SCALE);
+      if (next === scale) return;
+      const ratio = next / scale;
+      const { crop } = geometry;
+      const centreX = crop.x + crop.width / 2;
+      const centreY = crop.y + crop.height / 2;
       setPosition({
-        x: (canvas.width - imageObj.width * initialScale) / 2,
-        y: (canvas.height - imageObj.height * initialScale) / 2
+        x: centreX - (centreX - position.x) * ratio,
+        y: centreY - (centreY - position.y) * ratio,
       });
-    }
+      setScale(next);
+    },
+    [geometry, imageObj, position, scale]
+  );
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    zoomBy(e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP);
+  };
+
+  const handleFrame = (mode) => {
+    if (!imageObj) return;
+    centreAt(imageObj, framingScale(imageObj, mode));
   };
 
   const handleCrop = () => {
-    const canvas = canvasRef.current;
-    let cropWidth, cropHeight;
-    if (aspectRatio === 1) {
-      // Square crop for logos/images
-      const cropSize = Math.min(canvas.width, canvas.height) * 0.8;
-      cropWidth = cropSize;
-      cropHeight = cropSize;
-    } else {
-      // 16:9 aspect ratio for event images
-      cropWidth = canvas.width * 0.85;
-      cropHeight = cropWidth * (9 / 16);
-    }
-    const cropX = (canvas.width - cropWidth) / 2;
-    const cropY = (canvas.height - cropHeight) / 2;
+    if (!imageObj) return;
+    const { crop } = geometry;
 
-    // Calculate the source coordinates on the original image
-    const sourceX = (cropX - position.x) / scale;
-    const sourceY = (cropY - position.y) / scale;
-    const sourceWidth = cropWidth / scale;
-    const sourceHeight = cropHeight / scale;
+    // Source coordinates on the original image
+    const sourceX = (crop.x - position.x) / scale;
+    const sourceY = (crop.y - position.y) / scale;
+    const sourceWidth = crop.width / scale;
+    const sourceHeight = crop.height / scale;
 
-    // Determine output resolution based on aspect ratio
-    // For 1:1 square images (event images): output at 1200px for high quality
-    // For other ratios: output at 800px
-    const OUTPUT_SIZE = aspectRatio === 1 ? 1200 : 800;
-    const outputWidth = aspectRatio === 1 ? OUTPUT_SIZE : OUTPUT_SIZE;
-    const outputHeight = aspectRatio === 1 ? OUTPUT_SIZE : (OUTPUT_SIZE * (9 / 16));
+    const outputWidth = isLogo ? LOGO_OUTPUT_SIZE : IMAGE_OUTPUT_SIZE;
+    const outputHeight = Math.round(outputWidth * (crop.height / crop.width));
 
-    // Create a new canvas for the cropped image at high resolution
     const croppedCanvas = document.createElement('canvas');
     croppedCanvas.width = outputWidth;
     croppedCanvas.height = outputHeight;
     const ctx = croppedCanvas.getContext('2d');
 
-    // Enable high quality image scaling
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    // Draw the cropped portion directly from the original image at high resolution
+    // JPEG has no alpha, so transparent source pixels would come out black
+    if (!isLogo) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, outputWidth, outputHeight);
+    }
+
     ctx.drawImage(
       imageObj,
       sourceX,
@@ -215,85 +303,93 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
       outputHeight
     );
 
-    // Convert to blob with high quality
-    // Use JPEG for smaller file size on photos, PNG for logos (transparency)
-    const mimeType = aspectRatio === 1 ? 'image/jpeg' : 'image/png';
-    const quality = aspectRatio === 1 ? 0.92 : 0.95;
+    // Logos keep their transparency as PNG; photography stays JPEG for weight
+    const mimeType = isLogo ? 'image/png' : 'image/jpeg';
+    const quality = isLogo ? undefined : 0.92;
 
-    croppedCanvas.toBlob((blob) => {
-      onCropComplete(blob);
-    }, mimeType, quality);
+    croppedCanvas.toBlob((blob) => onCropComplete(blob), mimeType, quality);
   };
 
-  // Touch event handlers for mobile
   const handleTouchStart = (e) => {
-    if (e.touches.length === 1) {
-      const touch = e.touches[0];
-      const rect = canvasRef.current.getBoundingClientRect();
-      setIsDragging(true);
-      setDragStart({
-        x: touch.clientX - rect.left - position.x,
-        y: touch.clientY - rect.top - position.y
-      });
-    }
+    if (e.touches.length !== 1) return;
+    startDrag(e.touches[0].clientX, e.touches[0].clientY);
   };
 
   const handleTouchMove = (e) => {
     if (!isDragging || e.touches.length !== 1) return;
     e.preventDefault();
-    const touch = e.touches[0];
-    const rect = canvasRef.current.getBoundingClientRect();
-    setPosition({
-      x: touch.clientX - rect.left - dragStart.x,
-      y: touch.clientY - rect.top - dragStart.y
-    });
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
   };
 
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
+  const handleTouchEnd = () => setIsDragging(false);
+
+  const heading = isLogo
+    ? 'Position logo'
+    : aspectRatio === 1
+      ? 'Adjust image'
+      : 'Adjust event image';
+
+  const subheading = isLogo
+    ? 'The white square is the tile used on cards and job pages. Keep the whole logo inside the dashed guide.'
+    : aspectRatio === 1
+      ? 'Position your image inside the square frame (1:1 ratio)'
+      : 'Position your image to match the event card preview (16:9 ratio)';
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-card rounded-2xl p-3 sm:p-6 max-w-2xl w-full max-h-[95vh] overflow-y-auto">
-        <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">{aspectRatio === 1 ? 'Adjust Logo Position' : 'Adjust Event Image'}</h3>
-        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{aspectRatio === 1 ? 'Position your logo (square 1:1 ratio)' : 'Position your image to match the event card preview (16:9 ratio)'}</p>
-        
-        {/* Canvas */}
-        <div className="mb-3 sm:mb-4 flex justify-center">
-          <canvas
-            ref={canvasRef}
-            width={Math.min(500, window.innerWidth - 80)}
-            height={Math.min(500, window.innerWidth - 80)}
-            className="border border-border rounded-lg cursor-move touch-none max-w-full"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          />
+      <div className="bg-card rounded-2xl p-3 sm:p-6 max-w-3xl w-full max-h-[95vh] overflow-y-auto">
+        <h3 className="text-base sm:text-lg font-medium text-foreground mb-1">{heading}</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">{subheading}</p>
+
+        <div className="flex flex-col lg:flex-row lg:items-start gap-4 mb-3 sm:mb-4">
+          <div className="flex justify-center flex-shrink-0">
+            <canvas
+              ref={canvasRef}
+              width={canvasSize}
+              height={canvasSize}
+              className={`border border-border rounded-lg cursor-move touch-none max-w-full ${
+                isLogo ? 'bg-secondary/40' : ''
+              }`}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onWheel={handleWheel}
+            />
+          </div>
+
+          {isLogo && imageObj && (
+            <LogoSizePreview
+              image={image}
+              imageObj={imageObj}
+              scale={scale}
+              position={position}
+              crop={geometry.crop}
+            />
+          )}
         </div>
 
         {/* Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-3 sm:mb-4">
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
           <button
             type="button"
-            onClick={handleZoomOut}
+            onClick={() => zoomBy(1 / ZOOM_STEP)}
             className="p-2 sm:p-2.5 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors touch-manipulation"
             title="Zoom out"
           >
             <ZoomOut className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
-          
-          <div className="px-3 sm:px-4 py-2 bg-secondary rounded-lg text-xs sm:text-sm font-medium">
+
+          <div className="px-3 sm:px-4 py-2 bg-secondary rounded-lg text-xs sm:text-sm font-medium tabular-nums">
             {Math.round(scale * 100)}%
           </div>
-          
+
           <button
             type="button"
-            onClick={handleZoomIn}
+            onClick={() => zoomBy(ZOOM_STEP)}
             className="p-2 sm:p-2.5 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors touch-manipulation"
             title="Zoom in"
           >
@@ -304,7 +400,17 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
 
           <button
             type="button"
-            onClick={handleReset}
+            onClick={() => handleFrame('fit')}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-secondary hover:bg-secondary/80 rounded-lg transition-colors touch-manipulation"
+            title={isLogo ? 'Fit the whole logo inside the tile' : 'Fit the whole image in the frame'}
+          >
+            <Maximize className="w-4 h-4" />
+            Fit
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleFrame(isLogo ? 'fit' : 'fill')}
             className="p-2 sm:p-2.5 bg-secondary hover:bg-secondary/80 rounded-lg transition-colors touch-manipulation"
             title="Reset position"
           >
@@ -314,7 +420,7 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
 
         <p className="text-xs sm:text-sm text-muted-foreground text-center mb-3 sm:mb-4">
           <Move className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" />
-          Drag to reposition • Zoom to adjust size
+          Drag to reposition • Scroll or use the buttons to zoom
         </p>
 
         {/* Action Buttons */}
@@ -325,8 +431,7 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
             className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
           >
             <X className="w-4 h-4" />
-            <span className="hidden sm:inline">Cancel</span>
-            <span className="sm:hidden">Cancel</span>
+            Cancel
           </button>
           <button
             type="button"
@@ -334,10 +439,58 @@ export default function ImageCropper({ image, onCropComplete, onCancel, aspectRa
             className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base touch-manipulation"
           >
             <Check className="w-4 h-4" />
-            <span className="hidden sm:inline">Apply</span>
-            <span className="sm:hidden">Apply</span>
+            Apply
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// The tile sizes CompanyLogo renders at, so the cropper answers "how small
+// will this be?" rather than only "what is in frame?"
+const PREVIEW_TILES = [
+  { label: 'Card · 48px', tile: 48 },
+  { label: 'Large · 64px', tile: 64 },
+  { label: 'Small · 40px', tile: 40 },
+];
+
+function LogoSizePreview({ image, imageObj, scale, position, crop }) {
+  return (
+    <div className="flex-1 min-w-0">
+      <div className="text-xs text-muted-foreground mb-2 text-left">Live preview</div>
+      <div className="flex flex-wrap items-end gap-4 p-3 rounded-xl bg-secondary/30 border border-border">
+        {PREVIEW_TILES.map(({ label, tile }) => {
+          // The tile's inner box is two thirds of it, and that box holds the
+          // crop frame, which is how the exported square gets laid out
+          const padding = tile / 6;
+          const content = tile - padding * 2;
+          const ratio = content / crop.width;
+
+          return (
+            <div key={label} className="flex flex-col items-center gap-1.5">
+              <div
+                className="rounded-xl bg-white border border-border shadow-sm flex-shrink-0"
+                style={{ width: tile, height: tile, padding }}
+              >
+                <div className="relative w-full h-full overflow-hidden">
+                  <img
+                    src={image}
+                    alt=""
+                    className="absolute max-w-none"
+                    style={{
+                      left: (position.x - crop.x) * ratio,
+                      top: (position.y - crop.y) * ratio,
+                      width: imageObj.width * scale * ratio,
+                      height: imageObj.height * scale * ratio,
+                    }}
+                  />
+                </div>
+              </div>
+              <span className="text-[10px] text-muted-foreground whitespace-nowrap">{label}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

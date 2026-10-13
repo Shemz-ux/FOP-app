@@ -221,12 +221,12 @@ export default function JobDetails() {
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 text-left">
             <div className="flex items-start gap-4">
-              {/* <CompanyLogo 
+              <CompanyLogo 
                 logo={job.company_logo} 
                 color={job.company_color} 
                 companyName={job.company}
                 size="large"
-              /> */}
+              />
               <div>
                 <h1 className="text-3xl mb-2 text-foreground font-semibold">
                   {job.title}
