@@ -985,6 +985,7 @@ export default function SignUp() {
               value={jobSeekerData.society}
               onChange={(e) => setJobSeekerData({ ...jobSeekerData, society: e.target.value === 'none' ? 'None' : e.target.value })}
               placeholder="Select a society"
+              searchable
               options={[
                 { value: 'none', label: 'None' },
                 ...societies.map(society => ({ value: society.name, label: society.name }))
