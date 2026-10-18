@@ -20,6 +20,7 @@ export const RESOURCE_CATEGORIES = [
   { value: 'Career Planning', label: 'Career Planning', variant: 'pink', icon: 'Map', badgeClass: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20' },
   { value: 'Industry Insights', label: 'Industry Insights', variant: 'cyan', icon: 'TrendingUp', badgeClass: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
   { value: 'Internship Guides', label: 'Internship Guides', variant: 'violet', icon: 'Briefcase', badgeClass: 'bg-rose-500/10 text-rose-500 border-rose-500/20' },
+  { value: 'Job Search', label: 'Job Search', variant: 'rose', icon: 'Search', badgeClass: 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/20' },
   { value: 'Personal Branding', label: 'Personal Branding', variant: 'fuchsia', icon: 'User', badgeClass: 'bg-violet-500/10 text-violet-500 border-violet-500/20' },
   { value: 'Salary & Benefits', label: 'Salary & Benefits', variant: 'amber', icon: 'DollarSign', badgeClass: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
   { value: 'Skills Development', label: 'Skills Development', variant: 'orange', icon: 'BookOpen', badgeClass: 'bg-lime-500/10 text-lime-500 border-lime-500/20' },
