@@ -115,13 +115,14 @@ const insertJobs = async () => {
       `INSERT INTO jobs (
         title, company, company_logo, company_color, company_description, company_website,
         description, industry, location, experience_level, role_type, work_type, job_link,
-        deadline, is_active, applicant_count
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+        deadline, is_active, is_featured, applicant_count
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`,
       [
         job.title, job.company, job.company_logo, job.company_color,
         job.company_description, job.company_website, job.description,
         job.industry, job.location, job.experience_level, job.role_type,
-        job.work_type, job.job_link, job.deadline, job.is_active, job.applicant_count
+        job.work_type, job.job_link, job.deadline, job.is_active,
+        job.is_featured, job.applicant_count
       ]
     );
   }

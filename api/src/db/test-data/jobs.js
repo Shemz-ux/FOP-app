@@ -33,6 +33,7 @@ Benefits:
     job_link: 'https://careers.google.com/jobs/results/123456789',
     deadline: '2025-03-31',
     is_active: true,
+    is_featured: true,
     applicant_count: 247
   },
   {
@@ -69,6 +70,7 @@ Benefits:
     job_link: 'https://stripe.com/jobs/listing/software-engineer',
     deadline: '2025-04-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 189
   },
   {
@@ -107,6 +109,7 @@ Benefits:
     job_link: 'https://www2.deloitte.com/uk/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 356
   },
   {
@@ -145,6 +148,7 @@ Benefits:
     job_link: 'https://www.metacareers.com/jobs',
     deadline: '2025-01-15',
     is_active: true,
+    is_featured: true,
     applicant_count: 298
   },
   {
@@ -183,6 +187,7 @@ Benefits:
     job_link: 'https://www.hsbc.com/careers/students-and-graduates',
     deadline: '2025-03-31',
     is_active: true,
+    is_featured: true,
     applicant_count: 203
   },
   {
@@ -222,6 +227,7 @@ Benefits:
     job_link: 'https://www.gchq-careers.co.uk/apprenticeships',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 523
   },
   {
@@ -258,6 +264,7 @@ Benefits:
     job_link: 'https://www.unilever.com/careers/students-graduates',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 445
   },
   {
@@ -294,6 +301,7 @@ Benefits:
     job_link: 'https://careers.rolls-royce.com/graduates',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 278
   },
   {
@@ -331,6 +339,7 @@ What's Included:
     job_link: 'https://www.amazon.jobs/students',
     deadline: '2025-01-20',
     is_active: true,
+    is_featured: false,
     applicant_count: 412
   },
   {
@@ -368,6 +377,7 @@ Contract Details:
     job_link: 'https://careers.bbc.co.uk/jobs',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 156
   },
   {
@@ -406,6 +416,7 @@ Benefits:
     job_link: 'https://www.cliffordchance.com/careers/students-graduates',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 567
   },
   {
@@ -445,6 +456,7 @@ Benefits:
     job_link: 'https://www.imperial.ac.uk/jobs/research',
     deadline: '2025-03-01',
     is_active: true,
+    is_featured: false,
     applicant_count: 87
   },
   {
@@ -484,6 +496,7 @@ Benefits:
     job_link: 'https://www.mckinsey.com/careers/students',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 678
   },
   {
@@ -523,6 +536,7 @@ Benefits:
     job_link: 'https://www.goldmansachs.com/careers/students',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 892
   },
   {
@@ -562,6 +576,7 @@ Benefits:
     job_link: 'https://www.bain.com/careers/find-a-role',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 534
   },
   {
@@ -601,6 +616,7 @@ Benefits:
     job_link: 'https://monzo.com/careers',
     deadline: '2025-03-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 234
   },
   {
@@ -640,6 +656,7 @@ Benefits:
     job_link: 'https://www.unilever.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 312
   },
   {
@@ -679,6 +696,7 @@ Benefits:
     job_link: 'https://careers.microsoft.com/apprenticeships',
     deadline: '2025-03-01',
     is_active: true,
+    is_featured: true,
     applicant_count: 445
   },
   {
@@ -718,6 +736,7 @@ Benefits:
     job_link: 'https://www.ey.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 267
   },
   {
@@ -757,6 +776,7 @@ Benefits:
     job_link: 'https://www.rockstargames.com/careers',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 678
   },
   {
@@ -796,6 +816,7 @@ Benefits:
     job_link: 'https://www.aviva.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 189
   },
   {
@@ -835,6 +856,7 @@ Benefits:
     job_link: 'https://careers.sky.com/early-careers',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 423
   },
   {
@@ -874,6 +896,7 @@ Benefits:
     job_link: 'https://careers.astrazeneca.com/students',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 234
   },
   {
@@ -913,6 +936,7 @@ Benefits:
     job_link: 'https://www.fosterandpartners.com/careers',
     deadline: '2025-03-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 345
   },
   {
@@ -952,6 +976,7 @@ Benefits:
     job_link: 'https://www.tesco-careers.com/graduates',
     deadline: '2025-03-01',
     is_active: true,
+    is_featured: false,
     applicant_count: 178
   },
   {
@@ -991,6 +1016,7 @@ Benefits:
     job_link: 'https://orsted.com/careers',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 156
   },
   {
@@ -1030,6 +1056,7 @@ Benefits:
     job_link: 'https://www.ogilvy.com/careers/apprenticeships',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 512
   },
   {
@@ -1069,6 +1096,7 @@ Benefits:
     job_link: 'https://www.citadel.com/careers',
     deadline: '2025-03-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 234
   },
   {
@@ -1108,6 +1136,7 @@ Benefits:
     job_link: 'https://www.faststream.gov.uk',
     deadline: '2025-02-01',
     is_active: true,
+    is_featured: false,
     applicant_count: 1234
   },
   {
@@ -1147,6 +1176,7 @@ Benefits:
     job_link: 'https://www.deepmind.com/careers',
     deadline: '2025-04-30',
     is_active: true,
+    is_featured: false,
     applicant_count: 456
   },
   {
@@ -1186,6 +1216,7 @@ Benefits:
     job_link: 'https://www.asos.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 389
   },
   {
@@ -1225,6 +1256,7 @@ Benefits:
     job_link: 'https://www.baesystems.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 267
   }
 ];
