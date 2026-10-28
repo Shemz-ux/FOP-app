@@ -55,6 +55,8 @@ const seed = () => {
         return createAdminUsersTable()
     }).then(()=>{
         return createResourcesTable()
+    }).then(()=>{
+        return createWebinarsTable()
     })
 }
 
@@ -129,6 +131,8 @@ const createJobseekersTable = () => {
             cv_storage_key VARCHAR(500),
             cv_storage_url VARCHAR(1000),
             cv_uploaded_at TIMESTAMP,
+            password_reset_token_hash VARCHAR(255),
+            password_reset_expires_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT NOW(),
             updated_at TIMESTAMP DEFAULT NOW(),
             
@@ -163,6 +167,8 @@ const createJobseekersTable = () => {
             // Every members query filters on this
             return db.query(`CREATE INDEX IF NOT EXISTS idx_jobseekers_society_id ON jobseekers (society_id)`)
         }).then(()=>{
+            return db.query(`CREATE INDEX IF NOT EXISTS idx_jobseekers_reset_token ON jobseekers(password_reset_token_hash)`)
+        }).then(()=>{
             console.log("Jobseeker table created with constraints!✅")
         })
 }
@@ -176,9 +182,13 @@ const createSocietiesTable = () => {
         email VARCHAR(255) NOT NULL unique,
         password_hash VARCHAR(255) NOT NULL,
         member_count INT DEFAULT 0,
+        password_reset_token_hash VARCHAR(255),
+        password_reset_expires_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
         )`).then(()=>{
+            return db.query(`CREATE INDEX IF NOT EXISTS idx_societies_reset_token ON societies(password_reset_token_hash)`)
+        }).then(()=>{
             console.log("Society table created!✅")
         })
 }
@@ -360,10 +370,14 @@ const createAdminUsersTable = () => {
         role VARCHAR(50) DEFAULT 'admin' CHECK (role IN ('admin', 'super_admin')),
         is_active BOOLEAN DEFAULT TRUE,
         created_by INT REFERENCES admin_users(admin_id),
+        password_reset_token_hash VARCHAR(255),
+        password_reset_expires_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
         last_login TIMESTAMP
     )`).then(()=>{
+            return db.query(`CREATE INDEX IF NOT EXISTS idx_admin_users_reset_token ON admin_users(password_reset_token_hash)`)
+        }).then(()=>{
             console.log("Admin users table created!✅")
         })
 }
@@ -393,6 +407,51 @@ const createResourcesTable = () => {
     )`).then(()=>{
         console.log("Resources table created!✅")
     })
+}
+
+const createWebinarsTable = () => {
+    return db.query(`CREATE TABLE IF NOT EXISTS webinars (
+        -- YouTube source
+        webinar_id SERIAL PRIMARY KEY,
+        youtube_video_id VARCHAR(11) NOT NULL UNIQUE,
+        youtube_url TEXT NOT NULL,
+
+        -- Video metadata
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        category VARCHAR(100) NOT NULL,
+        thumbnail_url TEXT NOT NULL,
+        duration INTEGER NOT NULL,
+        published_at TIMESTAMP,
+
+        -- Engagement metrics
+        view_count INT DEFAULT 0,
+        like_count INT DEFAULT 0,
+
+        -- Tracking
+        metadata_synced_at TIMESTAMP,
+        uploaded_by INT REFERENCES admin_users(admin_id),
+        is_published BOOLEAN DEFAULT FALSE,
+        is_featured BOOLEAN DEFAULT FALSE,
+
+        -- Timestamps
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+        )`).then(()=>{
+        return db.query(`CREATE INDEX IF NOT EXISTS idx_webinars_category ON webinars(category)`)
+    }).then(()=>{
+        return db.query(`CREATE INDEX IF NOT EXISTS idx_webinars_is_published ON webinars(is_published)`)
+    }).then(()=>{
+        return db.query(`CREATE INDEX IF NOT EXISTS idx_webinars_is_featured ON webinars(is_featured)`)
+    }).then(()=>{
+        return db.query(`CREATE INDEX IF NOT EXISTS idx_webinars_created_at ON webinars(created_at DESC)`)
+    }).then(()=>{
+        return db.query(`CREATE INDEX IF NOT EXISTS idx_webinars_title ON webinars(title)`)
+    }).then(()=>{
+        return db.query(`CREATE INDEX IF NOT EXISTS idx_webinars_youtube_video_id ON webinars(youtube_video_id)`)
+    }).then(()=>{
+            console.log("Webinars table created!✅")
+        })
 }
 
 export default seed;

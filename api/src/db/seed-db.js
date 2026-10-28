@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import db from './db.js';
+import assertLocalDatabase from './assert-local-db.js';
 import bcrypt from 'bcrypt';
 import { adminUsers } from './test-data/admins.js';
 import { universityStudents, schoolStudents } from './test-data/jobseekers.js';
@@ -18,6 +19,10 @@ import {
 } from './test-data/relationships.js';
 
 dotenv.config();
+
+// Guard before anything else: this inserts admin accounts whose password is
+// published in TEST_CREDENTIALS.md, so it must never reach a real database.
+assertLocalDatabase('seed the database');
 
 console.log('🌱 Starting comprehensive database seed...\n');
 
