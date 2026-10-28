@@ -1,4 +1,9 @@
-import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions } from '../models/jobs-advanced.js';
+import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions, fetchFeaturedJobs } from '../models/jobs-advanced.js';
+
+// Maximum featured jobs returned with the jobs page. A payload guard, not a product cap:
+// the carousel bounds the layout at any count, but an unbounded query would ship every
+// featured row on every landing-page load, which would defeat the point of the feature.
+const FEATURED_LIMIT = 24;
 
 /**
  * Get jobs with advanced filtering and sorting
@@ -18,6 +23,11 @@ import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions } from '../models/
  * - limit: Number of results per page (default: 50, max: 100)
  * - page: Page number (default: 1)
  * - active: Filter by active status (default: true)
+ *
+ * Response also carries `featuredJobs`: the admin-curated Featured Jobs section for the
+ * public jobs page. Populated only on the unfiltered first page (see `wantsFeatured`),
+ * so a filtered, searched or paginated request costs exactly the same two queries it did
+ * before this feature existed.
  */
 export const getJobsAdvanced = async (req, res) => {
     try {
@@ -59,10 +69,25 @@ export const getJobsAdvanced = async (req, res) => {
             active: isActive
         };
 
-        // Get jobs and total count in parallel
-        const [jobs, totalCount] = await Promise.all([
+        // The featured section is only rendered on the unfiltered first page, so only
+        // query for it there. Keeps query count identical to pre-feature behaviour on
+        // every other request. The client gates rendering on the same conditions.
+        const wantsFeatured = parsedPage === 1
+            && isActive
+            && !search
+            && !company
+            && !industry
+            && !location
+            && !experience_level
+            && !role_type
+            && !work_type;
+
+        // Get jobs, total count and featured jobs in parallel. The featured query runs
+        // concurrently on the same pool, so it adds no serial round trip to the response.
+        const [jobs, totalCount, featuredJobs] = await Promise.all([
             fetchJobsAdvanced(filters),
-            getJobsCount(filters)
+            getJobsCount(filters),
+            wantsFeatured ? fetchFeaturedJobs({ limit: FEATURED_LIMIT }) : Promise.resolve([])
         ]);
 
         // Calculate pagination metadata
@@ -72,6 +97,7 @@ export const getJobsAdvanced = async (req, res) => {
 
         res.status(200).json({
             jobs,
+            featuredJobs,
             pagination: {
                 currentPage: parsedPage,
                 totalPages,

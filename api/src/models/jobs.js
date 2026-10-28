@@ -54,20 +54,21 @@ export const createJob = (newJob) => {
         work_type,
         job_link,
         deadline,
-        is_active = true
+        is_active = true,
+        is_featured = false
     } = newJob;
     
     return db.query(`
         INSERT INTO jobs (
             title, company, company_logo, company_color, company_description, company_website, 
             description, industry, location, experience_level, role_type, work_type, job_link, 
-            deadline, is_active
+            deadline, is_active, is_featured
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
         RETURNING *`, 
         [title, company, company_logo, company_color, company_description, company_website, 
          description, industry, location, experience_level, role_type, work_type, job_link, 
-         deadline, is_active]
+         deadline, is_active, is_featured]
     ).then(({rows}) => {
         return rows[0];
     });
@@ -79,7 +80,7 @@ export const updateJob = (updateJob, id) => {
     const validFields = [
         "title", "company", "company_logo", "company_color", "company_description", "company_website", 
         "description", "industry", "location", "experience_level", "role_type", "work_type", "job_link", 
-        "deadline", "is_active"
+        "deadline", "is_active", "is_featured"
     ];
     let index = 1;
 

@@ -199,6 +199,7 @@ export const fetchJobsAdvanced = (filters = {}) => {
             job_link,
             deadline,
             is_active,
+            is_featured,
             applicant_count,
             created_at,
             updated_at
@@ -208,13 +209,45 @@ export const fetchJobsAdvanced = (filters = {}) => {
         ${limitClause}
     `;
 
-    console.log('🔍 Jobs Query:', query);
-    console.log('📊 Query Params:', params);
+    return db.query(query, params).then(({ rows }) => rows);
+};
 
-    return db.query(query, params).then(({ rows }) => {
-        console.log('✅ Jobs Found:', rows.length);
-        return rows;
-    });
+/**
+ * @param {Object} options
+ * @param {number} options.limit - Maximum rows to return. A payload guard, not a product
+ *   cap: the carousel bounds the layout at any count, but an unbounded query would ship
+ *   every featured row on every landing-page load.
+ */
+export const fetchFeaturedJobs = ({ limit = 24 } = {}) => {
+    return db.query(`
+        SELECT 
+            job_id,
+            title,
+            company,
+            company_logo,
+            company_color,
+            company_description,
+            company_website,
+            description,
+            industry,
+            location,
+            experience_level,
+            role_type,
+            work_type,
+            job_link,
+            deadline,
+            is_active,
+            is_featured,
+            applicant_count,
+            created_at,
+            updated_at
+        FROM jobs
+        WHERE is_active = true
+          AND is_featured = true
+          AND (deadline IS NULL OR deadline >= CURRENT_DATE)
+        ORDER BY created_at DESC
+        LIMIT $1
+    `, [limit]).then(({ rows }) => rows);
 };
 
 /**
