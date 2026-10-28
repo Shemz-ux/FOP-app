@@ -7,8 +7,8 @@ import JobSearchFilter from './components/JobSearchFilter';
 import JobsTable from './components/JobsTable';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
-import { deriveJobStatus } from '../../utils/jobHelpers';
-import { apiGet, apiDelete } from '../../services/api';
+import { deriveJobStatus, isFeaturedLive, isFeaturedExpired } from '../../utils/jobHelpers';
+import { apiGet, apiDelete, apiPatch } from '../../services/api';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -16,8 +16,12 @@ export default function JobsDashboard() {
   const [jobs, setJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [filterFeatured, setFilterFeatured] = useState('all');
   const [loading, setLoading] = useState(true);
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, job: null });
+  const [clearExpiredModal, setClearExpiredModal] = useState(false);
+  const [clearingExpired, setClearingExpired] = useState(false);
+  const [togglingId, setTogglingId] = useState(null);
   const [toast, setToast] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -61,6 +65,79 @@ export default function JobsDashboard() {
     }
   };
 
+  const handleToggleFeatured = async (job) => {
+    if (togglingId) return;
+
+    const next = !job.is_featured;
+    setTogglingId(job.job_id);
+
+    // Optimistic, then reconciled from the response.
+    setJobs((prev) => prev.map((j) =>
+      j.job_id === job.job_id ? { ...j, is_featured: next } : j
+    ));
+
+    try {
+      const response = await apiPatch(`/jobs/${job.job_id}`, { is_featured: next });
+      const updated = response.job || response;
+
+      // Merge the single field rather than replacing the row. This list comes from
+      // GET /jobs, which recomputes applicant_count from the applications table, while
+      // PATCH returns the stale raw column -- replacing the row would visibly zero the
+      // Applicants figure on every toggle.
+      setJobs((prev) => prev.map((j) =>
+        j.job_id === job.job_id ? { ...j, is_featured: updated.is_featured } : j
+      ));
+
+      setToast({
+        message: next
+          ? `"${job.title}" is now featured`
+          : `"${job.title}" removed from featured`,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error toggling featured status:', error);
+      // Revert just the field we touched.
+      setJobs((prev) => prev.map((j) =>
+        j.job_id === job.job_id ? { ...j, is_featured: job.is_featured } : j
+      ));
+      setToast({
+        message: jobsDashboardCopy.toast.featureFailed,
+        type: 'error'
+      });
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const handleClearExpiredConfirm = async () => {
+    try {
+      setClearingExpired(true);
+      // One atomic request: a batch of individual PATCHes could half-succeed and leave a
+      // result that does not match the count the admin confirmed.
+      const response = await apiPatch('/jobs/featured/expired', {});
+      const clearedIds = response.clearedJobIds || [];
+
+      setJobs((prev) => prev.map((j) =>
+        clearedIds.includes(j.job_id) ? { ...j, is_featured: false } : j
+      ));
+
+      setToast({
+        message: clearedIds.length > 0
+          ? `Cleared ${clearedIds.length} expired featured ${clearedIds.length === 1 ? 'job' : 'jobs'}`
+          : jobsDashboardCopy.toast.clearExpiredNone,
+        type: 'success'
+      });
+    } catch (error) {
+      console.error('Error clearing expired featured jobs:', error);
+      setToast({
+        message: jobsDashboardCopy.toast.clearExpiredFailed,
+        type: 'error'
+      });
+    } finally {
+      setClearingExpired(false);
+    }
+  };
+
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
       const query = searchTerm.trim().toLowerCase();
@@ -69,11 +146,18 @@ export default function JobsDashboard() {
         (job.company || '').toLowerCase().includes(query) ||
         (job.location || '').toLowerCase().includes(query);
 
-      const matchesFilter = filterStatus === 'all' || deriveJobStatus(job) === filterStatus;
+      const matchesStatus = filterStatus === 'all' || deriveJobStatus(job) === filterStatus;
 
-      return matchesSearch && matchesFilter;
+      // Featured is orthogonal to status, so it filters independently.
+      const matchesFeatured =
+        filterFeatured === 'all' ||
+        (filterFeatured === 'featured-live' && isFeaturedLive(job)) ||
+        (filterFeatured === 'featured-expired' && isFeaturedExpired(job)) ||
+        (filterFeatured === 'not-featured' && !job.is_featured);
+
+      return matchesSearch && matchesStatus && matchesFeatured;
     });
-  }, [jobs, searchTerm, filterStatus]);
+  }, [jobs, searchTerm, filterStatus, filterFeatured]);
 
   // Pagination
   const totalPages = Math.ceil(filteredJobs.length / ITEMS_PER_PAGE);
@@ -83,7 +167,7 @@ export default function JobsDashboard() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterStatus]);
+  }, [searchTerm, filterStatus, filterFeatured]);
 
   if (loading) {
     return (
@@ -130,7 +214,12 @@ export default function JobsDashboard() {
           </div>
 
           {/* Summary stats */}
-          <JobStats jobs={jobs} copy={jobsDashboardCopy.stats} />
+          <JobStats
+            jobs={jobs}
+            onClearExpired={() => setClearExpiredModal(true)}
+            clearingExpired={clearingExpired}
+            copy={jobsDashboardCopy.stats}
+          />
 
           {/* Search + filter */}
           <JobSearchFilter
@@ -138,6 +227,8 @@ export default function JobsDashboard() {
             onSearchChange={setSearchTerm}
             statusValue={filterStatus}
             onStatusChange={setFilterStatus}
+            featuredValue={filterFeatured}
+            onFeaturedChange={setFilterFeatured}
             copy={jobsDashboardCopy.search}
           />
 
@@ -150,7 +241,9 @@ export default function JobsDashboard() {
             itemsPerPage={ITEMS_PER_PAGE}
             onPageChange={setCurrentPage}
             onDelete={handleDeleteClick}
-            isFiltered={Boolean(searchTerm) || filterStatus !== 'all'}
+            onToggleFeatured={handleToggleFeatured}
+            togglingId={togglingId}
+            isFiltered={Boolean(searchTerm) || filterStatus !== 'all' || filterFeatured !== 'all'}
             copy={jobsDashboardCopy.table}
           />
         </div>
@@ -168,6 +261,17 @@ export default function JobsDashboard() {
         confirmText={jobsDashboardCopy.deleteConfirm.confirmButton}
         cancelText={jobsDashboardCopy.deleteConfirm.cancelButton}
         confirmVariant="danger"
+      />
+
+      {/* Clear Expired Featured Modal */}
+      <ConfirmModal
+        isOpen={clearExpiredModal}
+        onClose={() => setClearExpiredModal(false)}
+        onConfirm={handleClearExpiredConfirm}
+        title={jobsDashboardCopy.clearExpiredConfirm.title}
+        message={`Unfeature ${jobs.filter(isFeaturedExpired).length} job(s) whose deadline has passed? They stay published and keep appearing in the main job list. Jobs currently shown in the Featured Jobs section are not affected.`}
+        confirmText={jobsDashboardCopy.clearExpiredConfirm.confirmButton}
+        cancelText={jobsDashboardCopy.clearExpiredConfirm.cancelButton}
       />
 
       {/* Toast */}

@@ -1,4 +1,5 @@
 import { fetchJobsAdvanced, getJobsCount, getJobFilterOptions, fetchFeaturedJobs } from '../models/jobs-advanced.js';
+import { clearExpiredFeaturedJobs } from '../models/jobs.js';
 
 // Maximum featured jobs returned with the jobs page. A payload guard, not a product cap:
 // the carousel bounds the layout at any count, but an unbounded query would ship every
@@ -157,6 +158,32 @@ export const getJobFilters = async (req, res) => {
         res.status(500).json({ 
             error: 'Internal server error',
             message: 'Failed to fetch filter options'
+        });
+    }
+};
+
+/**
+ * Unfeature every job whose deadline has passed.
+ *
+ * Exists because the public featured query filters by deadline at read time rather than
+ * rewriting is_featured, which keeps admin intent intact when a deadline is extended but
+ * leaves the stored flag set on jobs that are no longer shown. This lets an admin clear
+ * that backlog deliberately, in one atomic statement, instead of a scheduled job deciding
+ * for them.
+ */
+export const clearExpiredFeatured = async (req, res) => {
+    try {
+        const clearedJobIds = await clearExpiredFeaturedJobs();
+
+        res.status(200).json({
+            clearedCount: clearedJobIds.length,
+            clearedJobIds
+        });
+    } catch (err) {
+        console.error('Error clearing expired featured jobs:', err);
+        res.status(500).json({
+            error: 'Internal server error',
+            message: 'Failed to clear expired featured jobs'
         });
     }
 };

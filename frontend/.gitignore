@@ -26,3 +26,4 @@ node_modules/*
 *.sw?
 PASSWORD_RESET_SETUP.md
 docs/
+.playwright-cli

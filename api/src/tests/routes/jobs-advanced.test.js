@@ -911,6 +911,109 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
         });
     });
 
+    describe('PATCH /api/jobs/featured/expired', () => {
+        // Creates its own jobs rather than reusing the beforeAll fixtures, because this
+        // endpoint mutates rows and would otherwise break the assertions above.
+        let liveId, expiredId, rollingId, todayId;
+
+        beforeEach(async () => {
+            const create = async (job) => {
+                const response = await request(app)
+                    .post('/api/jobs')
+                    .set('Authorization', `Bearer ${backdoorToken}`)
+                    .send(job);
+                return response.body.newJob.job_id;
+            };
+
+            liveId = await create({ title: 'Clear Live', company: 'ClearLive Co', deadline: '2099-12-31', is_featured: true });
+            expiredId = await create({ title: 'Clear Expired', company: 'ClearExpired Co', deadline: '2020-01-01', is_featured: true });
+            rollingId = await create({ title: 'Clear Rolling', company: 'ClearRolling Co', deadline: null, is_featured: true });
+            todayId = await create({ title: 'Clear Today', company: 'ClearToday Co', deadline: today, is_featured: true });
+        });
+
+        afterEach(async () => {
+            for (const id of [liveId, expiredId, rollingId, todayId]) {
+                await request(app)
+                    .delete(`/api/jobs/${id}`)
+                    .set('Authorization', `Bearer ${backdoorToken}`);
+            }
+        });
+
+        const featuredOf = async (id) => {
+            const response = await request(app).get(`/api/jobs/${id}`).expect(200);
+            return response.body.job.is_featured;
+        };
+
+        it('should require admin authorisation', async () => {
+            const response = await request(app).patch('/api/jobs/featured/expired');
+            expect([401, 403]).toContain(response.status);
+        });
+
+        it('should unfeature a job whose deadline has passed', async () => {
+            await request(app)
+                .patch('/api/jobs/featured/expired')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(await featuredOf(expiredId)).toBe(false);
+        });
+
+        it('should NOT unfeature jobs the featured section is still showing', async () => {
+            // The whole point of the endpoint's predicate. If this fails, the clear action
+            // is pulling live jobs out of the public carousel.
+            await request(app)
+                .patch('/api/jobs/featured/expired')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(await featuredOf(liveId)).toBe(true);
+            expect(await featuredOf(rollingId)).toBe(true);
+            expect(await featuredOf(todayId)).toBe(true);
+        });
+
+        it('should report how many jobs it cleared', async () => {
+            const response = await request(app)
+                .patch('/api/jobs/featured/expired')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(response.body).toHaveProperty('clearedCount');
+            expect(response.body.clearedJobIds).toContain(expiredId);
+            expect(response.body.clearedJobIds).not.toContain(liveId);
+            expect(response.body.clearedJobIds).not.toContain(rollingId);
+            expect(response.body.clearedJobIds).not.toContain(todayId);
+        });
+
+        it('should be idempotent and report zero on a second run', async () => {
+            await request(app)
+                .patch('/api/jobs/featured/expired')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            const second = await request(app)
+                .patch('/api/jobs/featured/expired')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            expect(second.body.clearedCount).toBe(0);
+        });
+
+        it('should remove the cleared job from the featured section', async () => {
+            const before = await request(app).get('/api/jobs/search').expect(200);
+            expect(before.body.featuredJobs.map((j) => j.company)).toContain('ClearLive Co');
+
+            await request(app)
+                .patch('/api/jobs/featured/expired')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .expect(200);
+
+            const after = await request(app).get('/api/jobs/search').expect(200);
+            const companies = after.body.featuredJobs.map((j) => j.company);
+            expect(companies).toContain('ClearLive Co');
+            expect(companies).not.toContain('ClearExpired Co');
+        });
+    });
+
     describe('Performance and edge cases', () => {
         it('should handle empty results gracefully', async () => {
             const response = await request(app)

@@ -36,7 +36,25 @@ export function isFeaturedLive(job) {
   return Boolean(job?.is_featured) && deriveJobStatus(job) === 'active';
 }
 
-/** Featured and flagged, but not currently shown to members. */
+/**
+ * Featured and past its deadline.
+ *
+ * Mirrors the predicate of PATCH /api/jobs/featured/expired exactly
+ * (is_featured AND deadline IS NOT NULL AND deadline < CURRENT_DATE), so the count the
+ * admin is shown always equals the number the clear action will actually change.
+ *
+ * Note this is NOT simply "featured and not live". A featured job that is inactive but
+ * whose deadline is still in the future is neither live nor expired: it is featured but
+ * unpublished, and the clear action deliberately leaves it alone rather than discarding
+ * the flag on a draft an admin is still preparing. Its row already reads "Draft", so the
+ * state is visible without a third counter.
+ */
 export function isFeaturedExpired(job) {
-  return Boolean(job?.is_featured) && !isFeaturedLive(job);
+  if (!job?.is_featured || !job.deadline) return false;
+
+  const deadlineDay = parseCalendarDate(job.deadline);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return Boolean(deadlineDay) && deadlineDay < today;
 }

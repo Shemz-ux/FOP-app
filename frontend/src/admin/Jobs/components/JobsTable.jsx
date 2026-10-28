@@ -1,6 +1,15 @@
 import { Link } from 'react-router-dom';
-import { Eye, BarChart, Trash2, Edit, CheckCircle, XCircle, Briefcase } from 'lucide-react';
+import { Eye, BarChart, Trash2, Edit, CheckCircle, XCircle, Briefcase, FileEdit, Star } from 'lucide-react';
 import Pagination from '../../../components/Ui/Pagination';
+import { deriveJobStatus, isFeaturedExpired } from '../../../utils/jobHelpers';
+
+// Status is derived, never stored: a job closes when its deadline passes, with no write.
+// Keyed to the same vocabulary as the status filter so the two cannot disagree.
+const STATUS_STYLES = {
+  active: { tone: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle },
+  closed: { tone: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
+  draft: { tone: 'bg-muted text-muted-foreground border-border', icon: FileEdit }
+};
 
 /**
  * Presentational jobs table. Renders a desktop table and a mobile card list over the same
@@ -14,6 +23,8 @@ export default function JobsTable({
   itemsPerPage,
   onPageChange,
   onDelete,
+  onToggleFeatured,
+  togglingId,
   isFiltered,
   copy
 }) {
@@ -27,26 +38,73 @@ export default function JobsTable({
     </>
   );
 
-  const statusPill = (job, iconSize) => (
-    <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium ${
-        job.is_active
-          ? 'bg-green-500/10 text-green-500 border border-green-500/20'
-          : 'bg-red-500/10 text-red-500 border border-red-500/20'
-      }`}
+  const statusLabels = {
+    active: copy.statusActive,
+    closed: copy.statusClosed,
+    draft: copy.statusDraft
+  };
+
+  const statusPill = (job, iconSize) => {
+    const status = deriveJobStatus(job);
+    const { tone, icon: StatusIcon } = STATUS_STYLES[status];
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border ${tone}`}>
+        <StatusIcon className={iconSize} />
+        {statusLabels[status]}
+      </span>
+    );
+  };
+
+  // Featured marker shown beside the job title. An expired featured job gets the explicit
+  // pill rather than a bare star, because a star alone would imply it is live on the
+  // public page -- which is the confusion this is here to prevent.
+  const featuredMarker = (job) => {
+    if (!job.is_featured) return null;
+
+    if (isFeaturedExpired(job)) {
+      return (
+        <span
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300 whitespace-nowrap"
+          title={copy.tooltips.featuredExpired}
+        >
+          <Star className="w-3 h-3 fill-current" aria-hidden="true" />
+          {copy.featuredExpiredLabel}
+        </span>
+      );
+    }
+
+    return (
+      <>
+        <Star
+          className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 fill-current"
+          aria-hidden="true"
+        />
+        <span className="sr-only">{copy.featuredLabel}</span>
+      </>
+    );
+  };
+
+  // aria-pressed + a job-specific aria-label, following the bookmark button on the public
+  // JobCard. A title attribute alone is not announced reliably and is invisible to
+  // keyboard users.
+  const featuredToggle = (job, className) => (
+    <button
+      type="button"
+      onClick={() => onToggleFeatured(job)}
+      disabled={togglingId === job.job_id}
+      aria-pressed={Boolean(job.is_featured)}
+      aria-label={job.is_featured
+        ? `${copy.tooltips.unfeature}: ${job.title}`
+        : `${copy.tooltips.feature}: ${job.title}`}
+      title={job.is_featured ? copy.tooltips.unfeature : copy.tooltips.feature}
+      className={className}
     >
-      {job.is_active ? (
-        <>
-          <CheckCircle className={iconSize} />
-          {copy.statusActive}
-        </>
-      ) : (
-        <>
-          <XCircle className={iconSize} />
-          {copy.statusInactive}
-        </>
-      )}
-    </span>
+      <Star
+        className={`w-4 h-4 ${job.is_featured
+          ? 'text-amber-600 dark:text-amber-400 fill-current'
+          : 'text-muted-foreground'}`}
+      />
+    </button>
   );
 
   const pagination = jobs.length > 0 && (
@@ -81,7 +139,12 @@ export default function JobsTable({
               <tbody className="divide-y divide-border">
                 {currentJobs.map((job) => (
                   <tr key={job.job_id} className="hover:bg-secondary/50 transition-colors">
-                    <td className="px-6 py-4 text-foreground">{job.title}</td>
+                    <td className="px-6 py-4 text-foreground">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {featuredMarker(job)}
+                        <span>{job.title}</span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-muted-foreground">{job.company}</td>
                     <td className="px-6 py-4 text-muted-foreground">{job.location || copy.notAvailable}</td>
                     <td className="px-6 py-4 text-muted-foreground">{job.applicant_count || 0}</td>
@@ -95,6 +158,7 @@ export default function JobsTable({
                         >
                           <BarChart className="w-4 h-4 text-foreground" />
                         </Link>
+                        {featuredToggle(job, 'p-2 hover:bg-secondary rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed')}
                         <Link
                           to={`/admin/jobs/${job.job_id}/edit`}
                           className="p-2 hover:bg-secondary rounded-lg transition-colors"
@@ -132,7 +196,10 @@ export default function JobsTable({
             <div key={job.job_id} className="bg-card border border-border rounded-xl p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-medium text-foreground mb-1 truncate">{job.title}</h3>
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    {featuredMarker(job)}
+                    <h3 className="text-base font-medium text-foreground truncate">{job.title}</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground truncate">{job.company}</p>
                 </div>
                 {statusPill(job, 'w-3 h-3')}
@@ -149,24 +216,42 @@ export default function JobsTable({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2 border-t border-border">
+              {/* 2x2 grid rather than a flex row: a fourth action crowds at 360px. */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
                 <Link
                   to={`/admin/jobs/${job.job_id}`}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
+                  className="flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
                 >
                   <BarChart className="w-4 h-4" />
                   {copy.mobileActions.view}
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => onToggleFeatured(job)}
+                  disabled={togglingId === job.job_id}
+                  aria-pressed={Boolean(job.is_featured)}
+                  aria-label={job.is_featured
+                    ? `${copy.tooltips.unfeature}: ${job.title}`
+                    : `${copy.tooltips.feature}: ${job.title}`}
+                  className={`flex items-center justify-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm disabled:opacity-40 disabled:cursor-not-allowed ${
+                    job.is_featured
+                      ? 'border-amber-500/30 bg-amber-100/60 dark:bg-amber-400/10 text-amber-700 dark:text-amber-300'
+                      : 'border-border hover:bg-secondary'
+                  }`}
+                >
+                  <Star className={`w-4 h-4 ${job.is_featured ? 'fill-current' : ''}`} />
+                  {job.is_featured ? copy.mobileActions.featured : copy.mobileActions.feature}
+                </button>
                 <Link
                   to={`/admin/jobs/${job.job_id}/edit`}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
+                  className="flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
                 >
                   <Edit className="w-4 h-4" />
                   {copy.mobileActions.edit}
                 </Link>
                 <button
                   onClick={() => onDelete(job)}
-                  className="px-3 py-2 border border-red-500/20 bg-red-500/10 rounded-lg hover:bg-red-500/20 transition-colors"
+                  className="flex items-center justify-center gap-2 px-3 py-2 border border-red-500/20 bg-red-500/10 rounded-lg hover:bg-red-500/20 transition-colors"
                 >
                   <Trash2 className="w-4 h-4 text-red-500" />
                 </button>

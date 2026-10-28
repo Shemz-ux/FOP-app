@@ -6,6 +6,8 @@ export default function JobSearchFilter({
   onSearchChange,
   statusValue,
   onStatusChange,
+  featuredValue,
+  onFeaturedChange,
   copy
 }) {
   return (
@@ -32,6 +34,21 @@ export default function JobSearchFilter({
             { value: 'draft', label: copy.filterDraft }
           ]}
           className="w-full md:w-[180px]"
+        />
+        {/* Separate from status on purpose: featured is orthogonal to it. A job can be
+            featured and closed, or featured and draft, so folding the two together would
+            make "Featured" wrongly exclusive with "Active". */}
+        <AdminSelect
+          value={featuredValue}
+          onValueChange={onFeaturedChange}
+          placeholder={copy.featuredAll}
+          options={[
+            { value: 'all', label: copy.featuredAll },
+            { value: 'featured-live', label: copy.featuredLive },
+            { value: 'featured-expired', label: copy.featuredExpired },
+            { value: 'not-featured', label: copy.featuredNone }
+          ]}
+          className="w-full md:w-[190px]"
         />
       </div>
     </div>
