@@ -5,9 +5,17 @@ import '../utils/setup.js';
 
 describe('Jobs Advanced Filtering API Endpoints', () => {
     let testJobIds = [];
+    let today;
     const backdoorToken = process.env.ADMIN_BACKDOOR_TOKEN || "admin_backdoor_2024";
 
     beforeAll(async () => {
+        // Ask the database for its own CURRENT_DATE rather than computing it in JS.
+        // fetchFeaturedJobs compares against CURRENT_DATE, so a timezone difference
+        // between this process and the Postgres server would make the deadline-boundary
+        // test flake around midnight.
+        const { rows } = await db.query('SELECT CURRENT_DATE::text AS today');
+        today = rows[0].today;
+
         // Create test jobs with diverse data for filtering
         const testJobs = [
             {
@@ -72,7 +80,55 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
                 experience_level: 'Mid',
                 role_type: 'Full-time',
                 description: 'An inactive job used to test active-only location scoping',
-                is_active: false
+                is_active: false,
+                // Featured but inactive: must never reach the featured section.
+                is_featured: true
+            },
+            // --- Featured-jobs fixtures. Companies are deliberately distinctive so the
+            // --- assertions below can be existence-based rather than count-based.
+            {
+                title: 'Featured Future Role',
+                company: 'FeatFuture Co',
+                industry: 'Technology',
+                location: 'Bristol',
+                experience_level: 'Mid',
+                role_type: 'Full-time',
+                description: 'Featured with a deadline comfortably in the future',
+                deadline: '2099-12-31',
+                is_featured: true
+            },
+            {
+                title: 'Featured Expired Role',
+                company: 'FeatExpired Co',
+                industry: 'Technology',
+                location: 'Bristol',
+                experience_level: 'Mid',
+                role_type: 'Full-time',
+                description: 'Featured but past its deadline, so excluded from the section',
+                deadline: '2020-01-15',
+                is_featured: true
+            },
+            {
+                title: 'Featured Rolling Role',
+                company: 'FeatRolling Co',
+                industry: 'Technology',
+                location: 'Bristol',
+                experience_level: 'Mid',
+                role_type: 'Full-time',
+                description: 'Featured with a rolling (null) deadline',
+                deadline: null,
+                is_featured: true
+            },
+            {
+                title: 'Featured Today Role',
+                company: 'FeatToday Co',
+                industry: 'Technology',
+                location: 'Bristol',
+                experience_level: 'Mid',
+                role_type: 'Full-time',
+                description: 'Featured with a deadline of exactly today, the >= boundary',
+                deadline: today,
+                is_featured: true
             }
         ];
 
@@ -634,6 +690,224 @@ describe('Jobs Advanced Filtering API Endpoints', () => {
             expect(response.body.filterOptions.locations).toContain('Edinburgh');
             // Active locations should still be present too
             expect(response.body.filterOptions.locations).toContain('London');
+        });
+    });
+
+    describe('Featured jobs', () => {
+        // Helper: the companies present in a response's featuredJobs array.
+        const featuredCompanies = (body) => body.featuredJobs.map((job) => job.company);
+
+        it('should return a featuredJobs array on the unfiltered first page', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(response.body).toHaveProperty('featuredJobs');
+            expect(Array.isArray(response.body.featuredJobs)).toBe(true);
+        });
+
+        it('should only include jobs that are both featured and active', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(response.body.featuredJobs.every((job) => job.is_featured === true)).toBe(true);
+            expect(response.body.featuredJobs.every((job) => job.is_active === true)).toBe(true);
+        });
+
+        it('should include a featured job whose deadline is in the future', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(featuredCompanies(response.body)).toContain('FeatFuture Co');
+        });
+
+        it('should include a featured job with a rolling (null) deadline', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(featuredCompanies(response.body)).toContain('FeatRolling Co');
+        });
+
+        it('should include a featured job whose deadline is exactly today', async () => {
+            // The predicate is `deadline >= CURRENT_DATE`, not `>`: a job stays open
+            // until 11:59pm on its deadline day, so it is still featured that day.
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(featuredCompanies(response.body)).toContain('FeatToday Co');
+        });
+
+        it('should exclude a featured job whose deadline has passed', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(featuredCompanies(response.body)).not.toContain('FeatExpired Co');
+        });
+
+        it('should exclude a featured job that is inactive', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(featuredCompanies(response.body)).not.toContain('Legacy Corp');
+        });
+
+        it('should exclude jobs that are not featured', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search')
+                .expect(200);
+
+            expect(featuredCompanies(response.body)).not.toContain('Google');
+            expect(featuredCompanies(response.body)).not.toContain('Microsoft');
+        });
+
+        it('should keep an expired featured job in the main results, not orphan it', async () => {
+            // Dropping out of the featured section must not remove a job from the
+            // paginated list, or it would be unreachable anywhere in the UI.
+            const response = await request(app)
+                .get('/api/jobs/search?company=FeatExpired&limit=100')
+                .expect(200);
+
+            expect(response.body.jobs.some((job) => job.company === 'FeatExpired Co')).toBe(true);
+        });
+
+        it('should also return featured jobs inside the main results array', async () => {
+            // Featured jobs appear in BOTH the section and the grid, by design. Excluding
+            // them from the grid would make them unreachable on page 2+, where the
+            // section is not rendered. Locking this in so a future "fix" breaks a test.
+            const response = await request(app)
+                .get('/api/jobs/search?company=FeatFuture&limit=100')
+                .expect(200);
+
+            expect(response.body.jobs.some((job) => job.company === 'FeatFuture Co')).toBe(true);
+        });
+
+        it('should expose is_featured on main result rows so they can be badged', async () => {
+            const response = await request(app)
+                .get('/api/jobs/search?limit=100')
+                .expect(200);
+
+            expect(response.body.jobs.every((job) => typeof job.is_featured === 'boolean')).toBe(true);
+
+            const featured = response.body.jobs.find((job) => job.company === 'FeatFuture Co');
+            const plain = response.body.jobs.find((job) => job.company === 'Google');
+            expect(featured.is_featured).toBe(true);
+            expect(plain.is_featured).toBe(false);
+        });
+
+        describe('Server-side gating', () => {
+            // The featured query is skipped unless the request is the unfiltered first
+            // page, so a filtered or paginated request costs the same two queries it did
+            // before this feature existed.
+
+            it('should return an empty featuredJobs on page 2', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?page=2&limit=1')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when a keyword search is active', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?search=engineer')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when a company filter is active', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?company=FeatFuture')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when a location filter is active', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?location=Bristol')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when a role_type filter is active', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?role_type=Full-time')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when an industry filter is active', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?industry=Technology')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when an experience_level filter is active', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?experience_level=Mid')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should return an empty featuredJobs when requesting inactive jobs', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?active=false')
+                    .expect(200);
+
+                expect(response.body.featuredJobs).toEqual([]);
+            });
+
+            it('should still populate featuredJobs when only paging explicitly to page 1', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?page=1')
+                    .expect(200);
+
+                expect(featuredCompanies(response.body)).toContain('FeatFuture Co');
+            });
+
+            it('should still populate featuredJobs when only a sort is applied', async () => {
+                // Sorting is not filtering: the member is still on the landing view.
+                const response = await request(app)
+                    .get('/api/jobs/search?sort=title')
+                    .expect(200);
+
+                expect(featuredCompanies(response.body)).toContain('FeatFuture Co');
+            });
+        });
+
+        describe('Pagination integrity', () => {
+            it('should not change totalCount because of the featured section', async () => {
+                // Featured jobs are counted once, in the main result set. The section is
+                // additive and must not affect pagination maths.
+                const response = await request(app)
+                    .get('/api/jobs/search?limit=100')
+                    .expect(200);
+
+                expect(response.body.pagination.totalCount).toBe(response.body.jobs.length);
+            });
+
+            it('should keep featured jobs inside the counted result set', async () => {
+                const response = await request(app)
+                    .get('/api/jobs/search?limit=100')
+                    .expect(200);
+
+                const ids = response.body.jobs.map((job) => job.job_id);
+                for (const job of response.body.featuredJobs) {
+                    expect(ids).toContain(job.job_id);
+                }
+            });
         });
     });
 
