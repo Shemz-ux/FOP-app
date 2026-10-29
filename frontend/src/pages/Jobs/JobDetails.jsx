@@ -4,7 +4,6 @@ import { ArrowLeft, Bookmark, BookmarkCheck, Share2, MapPin, DollarSign, Users, 
 import JobBadge from '../../components/Ui/JobBadge';
 import CompanyLogo from '../../components/Ui/CompanyLogo';
 import StructuredDescription from '../../components/Ui/StructuredDescription';
-import LoadingSpinner from '../../components/Ui/LoadingSpinner';
 import ErrorMessage from '../../components/Ui/ErrorMessage';
 import { jobsService, jobActionsService } from '../../services';
 import { generateJobTags } from '../../utils/tagGenerator';
@@ -51,9 +50,50 @@ export default function JobDetails() {
   }, [jobId, isLoggedIn, user, isJobseeker]);
 
   if (loading) {
+    // Mirrors the real layout below (header strip, then a 2/1 column split) rather
+    // than a centred spinner on an empty screen, which made opening a job from the
+    // grid flash blank before snapping into place.
+    const block = 'rounded bg-secondary';
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="xl" />
+      <div className="min-h-screen animate-pulse motion-reduce:animate-none" aria-busy="true">
+        <div className="border-b border-border bg-secondary/30">
+          <div className="container mx-auto px-6 py-6">
+            <div className={`h-5 w-28 mb-6 ${block}`} />
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-xl bg-secondary flex-shrink-0" />
+              <div className="flex-1 space-y-3 pt-1">
+                <div className={`h-7 w-2/3 ${block}`} />
+                <div className={`h-4 w-1/3 ${block}`} />
+                <div className="flex gap-2 pt-1">
+                  <div className="h-[30px] w-24 rounded-full bg-secondary" />
+                  <div className="h-[30px] w-20 rounded-full bg-secondary" />
+                  <div className="h-[30px] w-28 rounded-full bg-secondary" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+              <div className={`h-6 w-40 mb-2 ${block}`} />
+              {['w-full', 'w-full', 'w-11/12', 'w-full', 'w-4/5', 'w-full', 'w-3/4'].map(
+                (width, index) => (
+                  <div key={index} className={`h-4 ${width} ${block}`} />
+                )
+              )}
+            </div>
+            <div className="lg:col-span-1">
+              <div className="rounded-2xl border border-border p-6 space-y-4">
+                <div className={`h-11 w-full ${block}`} />
+                <div className={`h-4 w-1/2 ${block}`} />
+                <div className={`h-4 w-2/3 ${block}`} />
+                <div className={`h-4 w-1/2 ${block}`} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

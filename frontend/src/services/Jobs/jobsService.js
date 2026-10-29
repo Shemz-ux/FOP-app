@@ -14,7 +14,11 @@ export const getJobsAdvanced = async (filters = {}) => {
   const data = await apiGet(`/jobs/search${queryString}`);
   return {
     ...data,
-    jobs: addJobTagsToList(data.jobs || [])
+    jobs: addJobTagsToList(data.jobs || []),
+    // The featured carousel renders the same JobCard as the grid, so it needs the
+    // same derived tags. The spread above passes featuredJobs through untouched,
+    // which would render every featured card with no tags at all.
+    featuredJobs: addJobTagsToList(data.featuredJobs || [])
   };
 };
 
