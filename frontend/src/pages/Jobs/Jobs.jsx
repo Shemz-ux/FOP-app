@@ -1,24 +1,34 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Hero from "../../components/Hero/Hero";
 import FilterSidebar from "../../components/FilterSideBar/FilterSideBar";
 import FilterButton from "../../components/Ui/FilterButton";
 import JobCard from "../../components/JobCard/JobCard";
+import FeaturedJobsSection from "../../components/JobCard/FeaturedJobsSection";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import Pagination from "../../components/Pagination/Pagination";
-import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import JobCardSkeleton from "../../components/JobCard/JobCardSkeleton";
 import ErrorMessage from "../../components/Ui/ErrorMessage";
 import EmptyState from "../../components/Ui/EmptyState";
 import { jobsService } from "../../services";
 import { useAuth } from "../../contexts/AuthContext";
 import * as jobActionsService from "../../services/Jobs/jobActions";
 import { JOB_INDUSTRIES, JOB_ROLE_TYPES, JOB_WORK_TYPES, JOB_EXPERIENCE_LEVELS } from "../../utils/dropdownOptions";
+import { jobsCopy } from "./jobs.copy";
 
 const toFilterOptions = (options) =>
   options.map(({ label, value }) => ({ label, value, checked: false }));
 
 export default function Jobs() {
   const { user, isLoggedIn, isAdmin } = useAuth();
+  // toggleFavorite below already called navigate('/login') for logged-out users,
+  // but it was never defined, so saving a job did nothing at all instead of
+  // sending them to log in. The featured carousel adds a second save-button call
+  // site for that path, so it is wired up here.
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
+  // Returned by the API only on the unfiltered first page; [] on every other request
+  const [featuredJobs, setFeaturedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState(new Set());
@@ -198,6 +208,9 @@ export default function Jobs() {
       });
 
       setJobs(response.jobs || []);
+      setFeaturedJobs(response.featuredJobs || []);
+      // Deliberately the unfiltered main count: featured jobs also appear in the
+      // grid below, so counting them again here would overstate the total.
       setTotalJobs(response.pagination?.totalCount || 0);
     } catch (err) {
       console.error('Error fetching jobs:', err);
@@ -232,14 +245,35 @@ export default function Jobs() {
     const checkedExpLevels = experienceLevels.filter(level => level.checked).length;
     const checkedWorkTypes = workTypes.filter(type => type.checked).length;
     const checkedLocations = locations.filter(loc => loc.checked).length;
-    return checkedJobTypes + checkedExpLevels + checkedWorkTypes + checkedLocations;
+    // Industries were omitted here, so filtering by industry alone left the count
+    // at 0, the heading reading "Recommended jobs" and the mobile filter button
+    // showing no badge. It now also gates the featured section below.
+    const checkedIndustries = industries.filter(industry => industry.checked).length;
+    return checkedJobTypes + checkedExpLevels + checkedWorkTypes + checkedLocations + checkedIndustries;
   };
 
   const totalPages = Math.ceil(totalJobs / jobsPerPage);
 
+  // Only the very first load has nothing to show. Every later fetch keeps the
+  // previous results on screen and dims them, rather than swapping the grid for a
+  // spinner, which collapsed the page height and sprang it back on each change.
+  const isInitialLoad = loading && jobs.length === 0;
+
+  // Mirrors the server's `wantsFeatured` gate in controllers/jobs-advanced.js. The
+  // two must agree: if the client renders when the server did not query, the
+  // section silently disappears; the other way round the query is wasted work.
+  const showFeaturedSection =
+    !error &&
+    currentPage === 1 &&
+    !searchFilters.query &&
+    getActiveFilterCount() === 0 &&
+    featuredJobs.length > 0;
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Instant, not smooth: leaving page 1 unmounts the featured carousel, so a
+    // smooth scroll was animating towards a target that moved underneath it.
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   return (
@@ -250,6 +284,12 @@ export default function Jobs() {
         onSearch={handleSearch}
         showLocation={false}
       />
+
+      {/* Featured carousel: full width between the hero and the two-column layout,
+          so it spans the page rather than sitting inside the results column */}
+      {showFeaturedSection && (
+        <FeaturedJobsSection jobs={featuredJobs} copy={jobsCopy.featured} />
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-10">
@@ -326,14 +366,20 @@ export default function Jobs() {
                   <h2 className="text-foreground">
                     {getActiveFilterCount() > 0 ? 'Filtered jobs' : 'Recommended jobs'}
                   </h2>
-                  <p className="text-muted-foreground text-sm mt-1">
-                    {totalJobs} job{totalJobs !== 1 ? 's' : ''} found
-                    {getActiveFilterCount() > 0 && (
-                      <span className="ml-2 text-primary">
-                        ({getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''} active)
-                      </span>
-                    )}
-                  </p>
+                  {/* No count until there is one: this read "0 jobs found" for the
+                      whole of the first load */}
+                  {isInitialLoad ? (
+                    <div className="h-4 w-28 mt-2 rounded bg-secondary animate-pulse motion-reduce:animate-none" />
+                  ) : (
+                    <p className="text-muted-foreground text-sm mt-1">
+                      {totalJobs} job{totalJobs !== 1 ? 's' : ''} found
+                      {getActiveFilterCount() > 0 && (
+                        <span className="ml-2 text-primary">
+                          ({getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''} active)
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </div>
                 <SortDropdown
                   value={sortBy}
@@ -347,9 +393,13 @@ export default function Jobs() {
                   <h2 className="text-foreground">
                     Recommended jobs
                   </h2>
-                  <p className="text-muted-foreground text-sm mt-1">
-                    {totalJobs} job{totalJobs !== 1 ? 's' : ''} found
-                  </p>
+                  {isInitialLoad ? (
+                    <div className="h-4 w-28 mt-2 rounded bg-secondary animate-pulse motion-reduce:animate-none" />
+                  ) : (
+                    <p className="text-muted-foreground text-sm mt-1">
+                      {totalJobs} job{totalJobs !== 1 ? 's' : ''} found
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <FilterButton
@@ -365,19 +415,26 @@ export default function Jobs() {
             </div>
 
             {/* Job Grid */}
-            {loading ? (
-              <div className="py-20">
-                <LoadingSpinner size="lg" />
-              </div>
-            ) : error ? (
+            {error ? (
               <ErrorMessage message={error} onRetry={fetchJobs} />
+            ) : isInitialLoad ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {Array.from({ length: jobsPerPage }, (_, index) => (
+                  <JobCardSkeleton key={index} />
+                ))}
+              </div>
             ) : jobs.length === 0 ? (
               <EmptyState 
                 title="No jobs found"
                 message="Try adjusting your filters or search terms to find more opportunities"
               />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 transition-opacity duration-200 ${
+                  loading ? 'opacity-50 pointer-events-none' : 'opacity-100'
+                }`}
+                aria-busy={loading}
+              >
                 {jobs.map((job) => (
                   <JobCard
                     key={job.job_id}
@@ -399,8 +456,9 @@ export default function Jobs() {
               </div>
             )}
 
-            {/* Pagination */}
-            {!loading && !error && jobs.length > 0 && (
+            {/* Pagination stays mounted while refetching, so the controls do not
+                disappear and reappear under the cursor between pages */}
+            {!error && jobs.length > 0 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

@@ -54,20 +54,21 @@ export const createJob = (newJob) => {
         work_type,
         job_link,
         deadline,
-        is_active = true
+        is_active = true,
+        is_featured = false
     } = newJob;
     
     return db.query(`
         INSERT INTO jobs (
             title, company, company_logo, company_color, company_description, company_website, 
             description, industry, location, experience_level, role_type, work_type, job_link, 
-            deadline, is_active
+            deadline, is_active, is_featured
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) 
         RETURNING *`, 
         [title, company, company_logo, company_color, company_description, company_website, 
          description, industry, location, experience_level, role_type, work_type, job_link, 
-         deadline, is_active]
+         deadline, is_active, is_featured]
     ).then(({rows}) => {
         return rows[0];
     });
@@ -79,7 +80,7 @@ export const updateJob = (updateJob, id) => {
     const validFields = [
         "title", "company", "company_logo", "company_color", "company_description", "company_website", 
         "description", "industry", "location", "experience_level", "role_type", "work_type", "job_link", 
-        "deadline", "is_active"
+        "deadline", "is_active", "is_featured"
     ];
     let index = 1;
 
@@ -112,6 +113,30 @@ export const updateJob = (updateJob, id) => {
         }
         return rows[0];
     });
+};
+
+/**
+ * Unfeature every job whose deadline has already passed.
+ *
+ * The condition is the exact complement of fetchFeaturedJobs' eligibility predicate
+ * (is_active AND (deadline IS NULL OR deadline >= CURRENT_DATE)), so this can never
+ * unfeature a job the public carousel is currently showing: rolling-deadline jobs are
+ * excluded by `deadline IS NOT NULL`, and a job on its deadline day by `< CURRENT_DATE`.
+ *
+ * Deliberately ignores is_active. An inactive featured job past its deadline is still
+ * stale data worth clearing, and it is not on the public page either way.
+ *
+ * Done as a single statement so the admin cannot end up with a partial result.
+ */
+export const clearExpiredFeaturedJobs = () => {
+    return db.query(`
+        UPDATE jobs
+        SET is_featured = false, updated_at = NOW()
+        WHERE is_featured = true
+          AND deadline IS NOT NULL
+          AND deadline < CURRENT_DATE
+        RETURNING job_id`
+    ).then(({rows}) => rows.map((row) => row.job_id));
 };
 
 export const removeJob = (id) => {

@@ -1,29 +1,31 @@
-import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { EditJobForm } from './EditJobForm';
-import { apiGet } from '../../services/api';
-import { parseDescriptionToSections } from '../../utils/jobDescriptionParser';
+import { useNavigate, useParams } from 'react-router-dom';
+import { JobForm } from './JobForm';
+import { apiGet, apiPatch } from '../../../services/api';
+import { parseDescriptionToSections } from '../../../utils/jobDescriptionParser';
 
+/**
+ * Edit-mode configuration for JobForm: loads the job, owns persistence and navigation.
+ * Replaces the former JobEdit + EditJobForm pair.
+ */
 export default function JobEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchJob = async () => {
       try {
         setLoading(true);
         const response = await apiGet(`/jobs/${id}`);
         const jobData = response.job || response;
-        console.log('Edit job data:', jobData);
-        
-        // Parse description into sections if not already structured
+
+        // The API stores one flat description string, so rebuild the editable sections.
         if (jobData.description && !jobData.description_sections) {
           jobData.description_sections = parseDescriptionToSections(jobData.description);
-          console.log('Parsed description sections:', jobData.description_sections);
         }
-        
+
         setJob(jobData);
       } catch (error) {
         console.error('Error fetching job:', error);
@@ -31,9 +33,17 @@ export default function JobEdit() {
         setLoading(false);
       }
     };
-    
+
     fetchJob();
   }, [id]);
+
+  // Rejections propagate to JobForm, which renders the error toast and keeps the entered
+  // values, because we only navigate away on success.
+  const handleSubmit = async (jobData) => {
+    await apiPatch(`/jobs/${id}`, jobData);
+    // JobForm shows the success toast; delay so it is visible before we navigate away.
+    setTimeout(() => navigate(`/admin/jobs/${id}`), 2000);
+  };
 
   if (loading) {
     return (
@@ -45,7 +55,7 @@ export default function JobEdit() {
       </div>
     );
   }
-  
+
   if (!job) {
     return (
       <div className="text-center py-12">
@@ -55,5 +65,12 @@ export default function JobEdit() {
     );
   }
 
-  return <EditJobForm job={job} onCancel={() => navigate(`/admin/jobs/${job.job_id}`)} />;
+  return (
+    <JobForm
+      job={job}
+      onSubmit={handleSubmit}
+      onCancel={() => navigate(`/admin/jobs/${job.job_id}`)}
+      isEdit={true}
+    />
+  );
 }

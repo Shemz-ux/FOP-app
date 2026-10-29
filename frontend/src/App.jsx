@@ -27,10 +27,10 @@ import Login from './pages/Login/Login.jsx';
 import SignUp from './pages/SignUp/SignUp.jsx'
 import ResetPassword from './pages/ResetPassword/ResetPassword.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
-import JobsList from './admin/Jobs/JobsList.jsx'
+import JobsDashboard from './admin/Jobs/JobsDashboard.jsx'
 import JobDetail from './admin/Jobs/JobDetail.jsx'
-import JobCreate from './admin/Jobs/JobCreate.jsx'
-import JobEdit from './admin/Jobs/JobEdit.jsx'
+import JobCreate from './admin/Jobs/components/JobCreate.jsx'
+import JobEdit from './admin/Jobs/components/JobEdit.jsx'
 import EventsList from './admin/Events/EventsList.jsx'
 import EventDetail from './admin/Events/EventDetail.jsx'
 import EventCreate from './admin/Events/EventCreate.jsx'
@@ -152,7 +152,7 @@ function App() {
     },
     {
       path: "/admin/jobs",
-      element: <Layout><JobsList /></Layout>
+      element: <Layout><JobsDashboard /></Layout>
     },
     {
       path: "/admin/jobs/new",

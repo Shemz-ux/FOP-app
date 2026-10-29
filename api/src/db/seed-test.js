@@ -154,6 +154,7 @@ const createJobsTable = () => {
         job_link VARCHAR(255),
         deadline DATE,
         is_active BOOLEAN DEFAULT TRUE,
+        is_featured BOOLEAN DEFAULT FALSE,
         applicant_count INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()

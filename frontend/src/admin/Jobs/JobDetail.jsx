@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { formatCalendarDate } from '../../utils/timeFormatter';
+import { isFeaturedLive } from '../../utils/jobHelpers';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil, Download } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Eye, Trash2, Pencil, Download, Star } from 'lucide-react';
 import { ProfileView } from '../Components/ProfileView';
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
@@ -303,13 +304,26 @@ export default function JobDetail() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-1">Status</p>
-            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-              job.is_active
-                ? 'bg-green-500/20 text-green-500'
-                : 'bg-red-500/20 text-red-500'
-            }`}>
-              {job.is_active ? 'Active' : 'Inactive'}
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                job.is_active
+                  ? 'bg-green-500/20 text-green-500'
+                  : 'bg-red-500/20 text-red-500'
+              }`}>
+                {job.is_active ? 'Active' : 'Inactive'}
+              </span>
+              {job.is_featured && (
+                <span
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300"
+                  title={isFeaturedLive(job)
+                    ? 'Shown in the Featured Jobs section'
+                    : 'Flagged as featured, but past its deadline so not currently shown'}
+                >
+                  <Star className="w-3 h-3 fill-current" aria-hidden="true" />
+                  {isFeaturedLive(job) ? 'Featured' : 'Featured · expired'}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

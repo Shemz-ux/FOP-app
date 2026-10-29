@@ -59,7 +59,8 @@ describe('Jobs API Endpoints', () => {
                 work_type: 'Remote',
                 job_link: 'https://testcorp.com/jobs/123',
                 deadline: '2024-12-31',
-                is_active: true
+                is_active: true,
+                is_featured: true
             };
 
             const response = await request(app)
@@ -75,9 +76,25 @@ describe('Jobs API Endpoints', () => {
             expect(response.body.newJob.company_color).toBe('#3B82F6');
             expect(response.body.newJob.experience_level).toBe('Mid-level');
             expect(response.body.newJob.work_type).toBe('Remote');
+            expect(response.body.newJob.is_featured).toBe(true);
 
             // Store the job ID for other tests
             testJobId = response.body.newJob.job_id;
+        });
+
+        test('should default is_featured to false when not provided', async () => {
+            const timestamp = Date.now();
+            const response = await request(app)
+                .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({ title: 'Unfeatured Job', company: `UnfeaturedCorp ${timestamp}` })
+                .expect(201);
+
+            expect(response.body.newJob.is_featured).toBe(false);
+
+            await request(app)
+                .delete(`/api/jobs/${response.body.newJob.job_id}`)
+                .set('Authorization', `Bearer ${backdoorToken}`);
         });
 
         test('should handle missing required fields', async () => {
@@ -199,6 +216,70 @@ describe('Jobs API Endpoints', () => {
             expect(response.body.job.company_color).toBe('#10B981');
             expect(response.body.job.experience_level).toBe('Senior');
             expect(response.body.job.work_type).toBe('Hybrid');
+        });
+
+        test('should toggle is_featured when it is the only field provided', async () => {
+            const timestamp = Date.now();
+            const createResponse = await request(app)
+                .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({ title: 'Feature Toggle Job', company: `ToggleCorp ${timestamp}` })
+                .expect(201);
+            const jobId = createResponse.body.newJob.job_id;
+
+            expect(createResponse.body.newJob.is_featured).toBe(false);
+
+            // Single-key PATCH: guards against is_featured being absent from the
+            // updateJob whitelist, which would silently drop it and return 400.
+            const onResponse = await request(app)
+                .patch(`/api/jobs/${jobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({ is_featured: true })
+                .expect(200);
+
+            expect(onResponse.body.job.is_featured).toBe(true);
+
+            const offResponse = await request(app)
+                .patch(`/api/jobs/${jobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({ is_featured: false })
+                .expect(200);
+
+            expect(offResponse.body.job.is_featured).toBe(false);
+
+            await request(app)
+                .delete(`/api/jobs/${jobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`);
+        });
+
+        test('should not disturb other fields when only is_featured is updated', async () => {
+            const timestamp = Date.now();
+            const createResponse = await request(app)
+                .post('/api/jobs')
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({
+                    title: 'Untouched Fields Job',
+                    company: `UntouchedCorp ${timestamp}`,
+                    location: 'Bristol',
+                    is_active: true
+                })
+                .expect(201);
+            const jobId = createResponse.body.newJob.job_id;
+
+            const response = await request(app)
+                .patch(`/api/jobs/${jobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`)
+                .send({ is_featured: true })
+                .expect(200);
+
+            expect(response.body.job.is_featured).toBe(true);
+            expect(response.body.job.title).toBe('Untouched Fields Job');
+            expect(response.body.job.location).toBe('Bristol');
+            expect(response.body.job.is_active).toBe(true);
+
+            await request(app)
+                .delete(`/api/jobs/${jobId}`)
+                .set('Authorization', `Bearer ${backdoorToken}`);
         });
 
         test('should handle non-existent job update', async () => {

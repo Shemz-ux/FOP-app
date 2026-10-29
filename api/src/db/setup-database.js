@@ -87,7 +87,8 @@ const setupDatabase = async () => {
             'add_webinars_table.sql',
             'add_right_to_work_fields.sql',
             'add_audience_to_resources.sql',
-            'add_society_id_to_jobseekers.sql'
+            'add_society_id_to_jobseekers.sql',
+            'add_is_featured_to_jobs.sql'
         ];
 
         for (const file of migrationFiles) {

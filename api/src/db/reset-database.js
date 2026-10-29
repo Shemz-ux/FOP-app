@@ -1,7 +1,12 @@
 import db from "./db.js";
 import dotenv from 'dotenv';
+import assertLocalDatabase from "./assert-local-db.js";
 
 dotenv.config();
+
+// Guard before anything else: this drops every table. Called at module scope,
+// outside the try/catch below, so it cannot be caught and logged as a soft failure.
+assertLocalDatabase('reset the database');
 
 const resetDatabase = async () => {
     try {
@@ -20,6 +25,7 @@ const resetDatabase = async () => {
         await db.query('DROP TABLE IF EXISTS jobseekers CASCADE');
         await db.query('DROP TABLE IF EXISTS admin_users CASCADE');
         await db.query('DROP TABLE IF EXISTS resources CASCADE');
+        await db.query('DROP TABLE IF EXISTS webinars CASCADE');
         
         console.log('✅ All tables dropped');
         

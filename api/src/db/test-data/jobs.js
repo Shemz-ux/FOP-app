@@ -1,3 +1,19 @@
+/**
+ * Deadlines for the featured showcase jobs at the end of this file are computed
+ * relative to the seed date rather than hardcoded.
+ *
+ * Every other job here carries a fixed 2025 date, which means a database seeded
+ * today contains nothing but expired jobs - so the public Featured Jobs carousel,
+ * which only shows jobs whose deadline has not passed, is permanently empty. These
+ * stay live however long after this file was written it is run.
+ */
+const daysFromNow = (days) => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
 export const jobs = [
   {
     title: 'Software Engineering Summer Intern',
@@ -33,6 +49,7 @@ Benefits:
     job_link: 'https://careers.google.com/jobs/results/123456789',
     deadline: '2025-03-31',
     is_active: true,
+    is_featured: true,
     applicant_count: 247
   },
   {
@@ -69,6 +86,7 @@ Benefits:
     job_link: 'https://stripe.com/jobs/listing/software-engineer',
     deadline: '2025-04-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 189
   },
   {
@@ -107,6 +125,7 @@ Benefits:
     job_link: 'https://www2.deloitte.com/uk/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 356
   },
   {
@@ -145,6 +164,7 @@ Benefits:
     job_link: 'https://www.metacareers.com/jobs',
     deadline: '2025-01-15',
     is_active: true,
+    is_featured: true,
     applicant_count: 298
   },
   {
@@ -183,6 +203,7 @@ Benefits:
     job_link: 'https://www.hsbc.com/careers/students-and-graduates',
     deadline: '2025-03-31',
     is_active: true,
+    is_featured: true,
     applicant_count: 203
   },
   {
@@ -222,6 +243,7 @@ Benefits:
     job_link: 'https://www.gchq-careers.co.uk/apprenticeships',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 523
   },
   {
@@ -258,6 +280,7 @@ Benefits:
     job_link: 'https://www.unilever.com/careers/students-graduates',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 445
   },
   {
@@ -294,6 +317,7 @@ Benefits:
     job_link: 'https://careers.rolls-royce.com/graduates',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 278
   },
   {
@@ -331,6 +355,7 @@ What's Included:
     job_link: 'https://www.amazon.jobs/students',
     deadline: '2025-01-20',
     is_active: true,
+    is_featured: false,
     applicant_count: 412
   },
   {
@@ -368,6 +393,7 @@ Contract Details:
     job_link: 'https://careers.bbc.co.uk/jobs',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 156
   },
   {
@@ -406,6 +432,7 @@ Benefits:
     job_link: 'https://www.cliffordchance.com/careers/students-graduates',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 567
   },
   {
@@ -445,6 +472,7 @@ Benefits:
     job_link: 'https://www.imperial.ac.uk/jobs/research',
     deadline: '2025-03-01',
     is_active: true,
+    is_featured: false,
     applicant_count: 87
   },
   {
@@ -484,6 +512,7 @@ Benefits:
     job_link: 'https://www.mckinsey.com/careers/students',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 678
   },
   {
@@ -523,6 +552,7 @@ Benefits:
     job_link: 'https://www.goldmansachs.com/careers/students',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 892
   },
   {
@@ -562,6 +592,7 @@ Benefits:
     job_link: 'https://www.bain.com/careers/find-a-role',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 534
   },
   {
@@ -601,6 +632,7 @@ Benefits:
     job_link: 'https://monzo.com/careers',
     deadline: '2025-03-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 234
   },
   {
@@ -640,6 +672,7 @@ Benefits:
     job_link: 'https://www.unilever.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 312
   },
   {
@@ -679,6 +712,7 @@ Benefits:
     job_link: 'https://careers.microsoft.com/apprenticeships',
     deadline: '2025-03-01',
     is_active: true,
+    is_featured: true,
     applicant_count: 445
   },
   {
@@ -718,6 +752,7 @@ Benefits:
     job_link: 'https://www.ey.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 267
   },
   {
@@ -757,6 +792,7 @@ Benefits:
     job_link: 'https://www.rockstargames.com/careers',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 678
   },
   {
@@ -796,6 +832,7 @@ Benefits:
     job_link: 'https://www.aviva.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 189
   },
   {
@@ -835,6 +872,7 @@ Benefits:
     job_link: 'https://careers.sky.com/early-careers',
     deadline: '2025-01-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 423
   },
   {
@@ -874,6 +912,7 @@ Benefits:
     job_link: 'https://careers.astrazeneca.com/students',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 234
   },
   {
@@ -913,6 +952,7 @@ Benefits:
     job_link: 'https://www.fosterandpartners.com/careers',
     deadline: '2025-03-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 345
   },
   {
@@ -952,6 +992,7 @@ Benefits:
     job_link: 'https://www.tesco-careers.com/graduates',
     deadline: '2025-03-01',
     is_active: true,
+    is_featured: false,
     applicant_count: 178
   },
   {
@@ -991,6 +1032,7 @@ Benefits:
     job_link: 'https://orsted.com/careers',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 156
   },
   {
@@ -1030,6 +1072,7 @@ Benefits:
     job_link: 'https://www.ogilvy.com/careers/apprenticeships',
     deadline: '2025-02-15',
     is_active: true,
+    is_featured: false,
     applicant_count: 512
   },
   {
@@ -1069,6 +1112,7 @@ Benefits:
     job_link: 'https://www.citadel.com/careers',
     deadline: '2025-03-31',
     is_active: true,
+    is_featured: false,
     applicant_count: 234
   },
   {
@@ -1108,6 +1152,7 @@ Benefits:
     job_link: 'https://www.faststream.gov.uk',
     deadline: '2025-02-01',
     is_active: true,
+    is_featured: false,
     applicant_count: 1234
   },
   {
@@ -1147,6 +1192,7 @@ Benefits:
     job_link: 'https://www.deepmind.com/careers',
     deadline: '2025-04-30',
     is_active: true,
+    is_featured: false,
     applicant_count: 456
   },
   {
@@ -1186,6 +1232,7 @@ Benefits:
     job_link: 'https://www.asos.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 389
   },
   {
@@ -1225,6 +1272,204 @@ Benefits:
     job_link: 'https://www.baesystems.com/careers/graduates',
     deadline: '2025-02-28',
     is_active: true,
+    is_featured: false,
     applicant_count: 267
+  },
+  // ---------------------------------------------------------------------------
+  // Featured showcase jobs. All live (future or rolling deadline) and flagged
+  // featured, so a freshly seeded database always has a populated Featured Jobs
+  // carousel on the public jobs page.
+  //
+  // company_logo is deliberately null rather than a logo.clearbit.com URL like the
+  // jobs above: that service no longer resolves, so those all 404 and fall back to
+  // the initial tile anyway. Null skips the dead request and renders the branded
+  // tile straight away, which is what the design shows.
+  // ---------------------------------------------------------------------------
+  {
+    title: 'Backend Engineer, Platform',
+    company: 'Spotify',
+    company_logo: null,
+    company_color: '#1DB954',
+    company_description: 'Spotify is the world\'s most popular audio streaming service, connecting millions of listeners with artists and creators.',
+    company_website: 'https://www.lifeatspotify.com',
+    description: `Join the Platform team building the services that keep audio streaming to hundreds of millions of listeners every day. You will work on high-throughput backend systems where performance and reliability genuinely matter.
+
+Responsibilities:
+• Design and build distributed backend services handling millions of requests
+• Improve latency and reliability across core playback infrastructure
+• Partner with client teams to shape pragmatic, well-documented APIs
+• Take part in on-call rotation with full support from the team
+
+Requirements:
+• Experience with a backend language such as Java, Scala, Go or Python
+• Understanding of distributed systems and data storage trade-offs
+• Comfortable reasoning about performance and failure modes
+• Clear written communication, as the team works across time zones
+
+Benefits:
+• Fully flexible remote working
+• Generous learning budget and conference allowance
+• Private healthcare and enhanced parental leave
+• Spotify Premium for you and a family member`,
+    industry: 'Technology & IT',
+    location: 'Remote',
+    experience_level: 'Mid Level',
+    role_type: 'Full-time',
+    work_type: 'Remote',
+    job_link: 'https://www.lifeatspotify.com/jobs',
+    // Rolling: no closing date, so it is always eligible for the carousel
+    deadline: null,
+    is_active: true,
+    is_featured: true,
+    applicant_count: 184
+  },
+  {
+    title: 'Product Analyst Graduate Scheme',
+    company: 'Revolut',
+    company_logo: null,
+    company_color: '#0666EB',
+    company_description: 'Revolut is a global financial technology company building a single app for all things money, used by millions of customers worldwide.',
+    company_website: 'https://www.revolut.com/careers',
+    description: `A two-year rotational graduate scheme for analytically minded graduates who want to shape financial products used at serious scale. You will rotate across product, growth and risk teams.
+
+Responsibilities:
+• Turn product and transaction data into clear recommendations
+• Design and read experiments that inform real product decisions
+• Build dashboards and reporting the wider team relies on
+• Present findings directly to product leads
+
+Requirements:
+• Degree in a numerate discipline, or equivalent practical experience
+• Confident with SQL and at least one of Python or R
+• Able to explain a technical finding to a non-technical audience
+• Genuine interest in financial products and how people use them
+
+Benefits:
+• Structured rotations with a dedicated mentor in each
+• Salary review at the end of each rotation
+• Hybrid working from the London office
+• Equity from your first day`,
+    industry: 'Technology & IT',
+    location: 'London',
+    experience_level: 'Graduate',
+    role_type: 'Graduate Scheme',
+    work_type: 'Hybrid',
+    job_link: 'https://www.revolut.com/careers/',
+    // Closing soon, so the card shows the amber "closing" treatment
+    deadline: daysFromNow(6),
+    is_active: true,
+    is_featured: true,
+    applicant_count: 412
+  },
+  {
+    title: 'Structural Engineering Placement',
+    company: 'Arup',
+    company_logo: null,
+    company_color: '#E61E2A',
+    company_description: 'Arup is an independent firm of designers, planners, engineers and consultants working on the built environment across 140 countries.',
+    company_website: 'https://www.arup.com/careers',
+    description: `A twelve-month industrial placement for engineering undergraduates, working alongside chartered engineers on live building and infrastructure projects across the North West.
+
+Responsibilities:
+• Support structural analysis and design on live projects
+• Produce calculations, drawings and technical documentation
+• Join site visits and client design meetings
+• Contribute to sustainability assessments on current schemes
+
+Requirements:
+• Working towards a degree in Civil or Structural Engineering
+• Familiarity with structural analysis principles
+• Some exposure to CAD or BIM software is helpful but not essential
+• Methodical, safety-conscious approach to work
+
+Benefits:
+• Mentoring from chartered engineers throughout
+• Counts towards professional chartership experience
+• Competitive placement salary with travel covered
+• Strong record of placement students returning as graduates`,
+    industry: 'Engineering & Energy & Infrastructure',
+    location: 'Manchester',
+    experience_level: 'Student',
+    role_type: 'Placement',
+    work_type: 'Hybrid',
+    job_link: 'https://www.arup.com/careers/students-and-graduates/',
+    deadline: daysFromNow(45),
+    is_active: true,
+    is_featured: true,
+    applicant_count: 96
+  },
+  {
+    title: 'Clinical Data Science Intern',
+    company: 'GSK',
+    company_logo: null,
+    company_color: '#F36633',
+    company_description: 'GSK is a global biopharma company researching and delivering vaccines and medicines that help people do more, feel better and live longer.',
+    company_website: 'https://www.gsk.com/en-gb/careers',
+    description: `A twelve-week summer internship within the clinical data science group, supporting the analysis that underpins late-stage trials. Suited to students with a quantitative background and an interest in health.
+
+Responsibilities:
+• Prepare and quality-check clinical trial datasets
+• Build reproducible analysis pipelines in R or Python
+• Support statisticians in producing trial reporting
+• Present your project to the wider group at the end of the internship
+
+Requirements:
+• Studying a quantitative subject such as statistics, maths or data science
+• Working knowledge of R or Python
+• Careful, well-documented approach to handling sensitive data
+• Interest in healthcare and clinical research
+
+Benefits:
+• Competitive internship salary plus relocation support
+• Direct mentorship from senior statisticians
+• Access to internal training and the graduate scheme fast track
+• On-site facilities including gym and subsidised restaurant`,
+    industry: 'Pharmaceuticals & Science',
+    location: 'London',
+    experience_level: 'Student',
+    role_type: 'Internship',
+    work_type: 'On-site',
+    job_link: 'https://www.gsk.com/en-gb/careers/students-and-graduates/',
+    deadline: daysFromNow(90),
+    is_active: true,
+    is_featured: true,
+    applicant_count: 238
+  },
+  {
+    title: 'Customer Operations Apprentice',
+    company: 'Octopus Energy',
+    company_logo: null,
+    company_color: '#EF4C8E',
+    company_description: 'Octopus Energy is a renewable energy retailer using technology to make green power cheaper and simpler for households across the UK.',
+    company_website: 'https://octopus.energy/careers',
+    description: `A level 3 apprenticeship combining paid work with a recognised qualification. You will join a customer operations team and learn how a modern energy retailer actually runs, with no prior experience required.
+
+Responsibilities:
+• Help customers with billing, tariffs and account questions
+• Investigate and resolve metering and account discrepancies
+• Suggest improvements to internal tools and processes
+• Work towards your qualification alongside day-to-day work
+
+Requirements:
+• No prior experience needed, full training provided
+• GCSEs in English and Maths at grade 4 or above
+• Clear, friendly communication, written and spoken
+• Genuine interest in the energy transition
+
+Benefits:
+• Paid apprenticeship with a recognised qualification
+• Dedicated study time during working hours
+• Remote-first with regular paid team meet-ups
+• Permanent role on successful completion`,
+    industry: 'Engineering & Energy & Infrastructure',
+    location: 'Remote',
+    experience_level: 'School Leaver',
+    role_type: 'Apprenticeship',
+    work_type: 'Remote',
+    job_link: 'https://octopus.energy/careers/',
+    deadline: daysFromNow(120),
+    is_active: true,
+    is_featured: true,
+    applicant_count: 157
   }
 ];
