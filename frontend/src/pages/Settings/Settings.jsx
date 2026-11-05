@@ -18,9 +18,10 @@ import {
   AlertDialogTrigger,
 } from "../../components/Ui/alert-dialog";
 import ForgotPassword from "../../components/Ui/ForgotPassword";
+import ProtectedOverlay from "../../components/ProtectedOverlay/ProtectedOverlay";
 
 export default function Settings() {
-  const { user, isJobseeker } = useAuth();
+  const { user, isJobseeker, isLoggedIn, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -55,8 +56,17 @@ export default function Settings() {
   // Fetch user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!user) return;
-      
+      // Auth is still reading localStorage, so hold the spinner rather than
+      // deciding there is no user yet.
+      if (authLoading) return;
+
+      // No user to fetch for (signed out, or a half-cleared session). Clearing
+      // the flag here is what stops the spinner running forever.
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         const profile = await profileService.getUserProfile(user.userId, user.userType);
@@ -110,7 +120,7 @@ export default function Settings() {
     };
     
     fetchUserData();
-  }, [user, isJobseeker]);
+  }, [user, isJobseeker, authLoading]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -214,6 +224,10 @@ export default function Settings() {
       alert('Failed to delete account. Please try again.');
     }
   };
+
+  if (!authLoading && !isLoggedIn()) {
+    return <ProtectedOverlay message="Sign in to manage your account settings" />;
+  }
 
   if (loading) {
     return (

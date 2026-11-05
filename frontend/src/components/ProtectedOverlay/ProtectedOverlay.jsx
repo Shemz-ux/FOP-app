@@ -1,14 +1,25 @@
 import { Lock, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-export default function ProtectedOverlay({ message = "Sign in to access this content" }) {
+export default function ProtectedOverlay({ message = "Sign in to access this content", onClose }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else if (location.key === 'default') {
+      navigate('/');
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
     <div className="fixed inset-0 backdrop-blur-lg bg-background/50 z-50 flex items-center justify-center">
         <div className="bg-card border border-border rounded-2xl p-10 max-w-lg mx-4 text-center shadow-2xl relative">
           <button
-            onClick={() => navigate('/')}
+            onClick={handleClose}
             className="absolute top-4 right-4 p-2 hover:bg-secondary rounded-lg transition-colors"
             aria-label="Close"
           >

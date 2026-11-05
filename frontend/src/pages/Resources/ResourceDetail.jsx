@@ -119,7 +119,12 @@ export default function ResourceDetail() {
 
   // Show protected overlay when user tries to download without being logged in
   if (showProtectedOverlay) {
-    return <ProtectedOverlay message="Sign in to download resources" />;
+    return (
+      <ProtectedOverlay
+        message="Sign in to download resources"
+        onClose={() => setShowProtectedOverlay(false)}
+      />
+    );
   }
 
   const categoryInfo = RESOURCE_CATEGORIES.find(c => c.value === resource.category);
