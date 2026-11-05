@@ -62,6 +62,7 @@ function App() {
     </NavigateProvider>
   );
 
+  // Login and sign up only: every other page gets the footer via Layout.
   const AuthLayout = ({ children }) => (
     // TODO: Needs to not pass down username if not logged in
     <NavigateProvider>
@@ -138,7 +139,7 @@ function App() {
     },
     {
       path: "/profile",
-      element: <AuthLayout><Profile /></AuthLayout>
+      element: <Layout><Profile /></Layout>
     },
     {
       path: "/settings",
