@@ -214,6 +214,7 @@ export default function Events() {
               queryPlaceholder="Event name or topic" 
               showLocation={false}
               onSearch={handleSearch}
+              onQueryChange={(query) => handleSearch({ query })}
             />
           </div>
         </div>

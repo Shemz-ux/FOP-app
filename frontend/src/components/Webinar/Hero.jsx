@@ -1,28 +1,34 @@
 import { Video } from "lucide-react";
+import SearchBar from "../SearchBar/SearchBar";
 
-export default function Hero({ copy }) {
+// Matches the hero on the jobs, events and resources pages: left-aligned
+// title row, text-xl subtitle, then the shared search bar.
+export default function Hero({ copy, searchPlaceholder, onSearch, onQueryChange }) {
   return (
     <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border">
-      <div className="container mx-auto px-6 py-16 sm:py-20 lg:py-24">
-        <div className="max-w-3xl mx-auto text-center">
+      <div className="container mx-auto px-6 py-16">
+        <div className="max-w-3xl">
           {/* Icon and Title */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Video className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl text-foreground font-regular">
+          <div className="flex items-center gap-3 mb-4">
+            <Video className="w-10 h-10 text-primary" />
+            <h1 className="text-4xl text-foreground text-left">
               {copy.title}
             </h1>
           </div>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 text-left">
             {copy.subtitle}
           </p>
+
+          <SearchBar
+            queryPlaceholder={searchPlaceholder}
+            showLocation={false}
+            onSearch={onSearch}
+            onQueryChange={onQueryChange}
+          />
         </div>
       </div>
     </section>
   );
 }
-
-

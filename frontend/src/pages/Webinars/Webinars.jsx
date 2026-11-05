@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import Hero from "../../components/Webinar/Hero";
 import FeaturedSection from "../../components/Webinar/FeaturedSection";
-import SearchBar from "../../components/Webinar/SearchBar";
 import CategoryFilter from "../../components/Webinar/CategoryFilter";
 import Grid from "../../components/Webinar/Grid";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
@@ -105,7 +104,12 @@ export default function Webinars() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <Hero copy={webinarsCopy.hero} />
+      <Hero
+        copy={webinarsCopy.hero}
+        searchPlaceholder={webinarsCopy.search.placeholder}
+        onSearch={({ query }) => setSearch(query)}
+        onQueryChange={setSearch}
+      />
 
       <div className="container mx-auto px-6 py-12">
         {/* Featured Section */}
@@ -115,15 +119,6 @@ export default function Webinars() {
             copy={webinarsCopy.featured}
           />
         )}
-
-        {/* Search Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <SearchBar 
-            value={search}
-            onChange={setSearch}
-            placeholder={webinarsCopy.search.placeholder}
-          />
-        </div>
 
         {/* Category Filter */}
         <CategoryFilter 
