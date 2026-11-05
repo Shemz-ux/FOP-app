@@ -16,13 +16,13 @@ export default function Hero({
           {/* Title */}
           <div className="flex items-center gap-3 mb-4">
             <ZoomInIcon className="w-10 h-10 text-primary" />
-            <h1 className="text-4xl text-foreground">
+            <h1 className="text-4xl text-foreground text-left">
               {title}
             </h1>
           </div>
 
           {subtitle && (
-            <p className="text-muted-foreground text-lg mb-8">
+            <p className="text-xl text-muted-foreground mb-8 text-left">
               {subtitle}
             </p>
           )}

@@ -280,7 +280,8 @@ export default function Jobs() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero
-        // backgroundImage="https://images.unsplash.com/photo-1718220216044-006f43e3a9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080"
+        title={jobsCopy.hero.title}
+        subtitle={jobsCopy.hero.subtitle}
         onSearch={handleSearch}
         showLocation={false}
       />
