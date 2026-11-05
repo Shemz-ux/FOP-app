@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../Ui/Button';
 
 export default function Pagination({
@@ -58,14 +59,23 @@ export default function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-12">
+    // Buttons never shrink (shrink-0 comes from Button), so a row too wide for
+    // its container used to overflow and get clipped at both ends by
+    // justify-center. Wrapping is the backstop; narrow screens also drop the
+    // Previous/Next wording for arrows so the row normally still fits on one line.
+    <nav
+      aria-label="Pagination"
+      className="flex flex-wrap items-center justify-center gap-2 mt-12"
+    >
       <Button
         variant="outline"
         onClick={handlePrevious}
         disabled={currentPage === 1}
-        className="px-4 py-2"
+        aria-label="Previous page"
+        className="px-3 sm:px-4 py-2"
       >
-        Previous
+        <ChevronLeft className="sm:hidden" aria-hidden="true" />
+        <span className="hidden sm:inline">Previous</span>
       </Button>
 
       {pageNumbers.map((page) => (
@@ -73,7 +83,9 @@ export default function Pagination({
           key={page}
           variant={currentPage === page ? 'default' : 'outline'}
           onClick={() => handlePageClick(page)}
-          className="px-4 py-2"
+          aria-label={`Page ${page}`}
+          aria-current={currentPage === page ? 'page' : undefined}
+          className="px-3 sm:px-4 py-2"
         >
           {page}
         </Button>
@@ -83,10 +95,12 @@ export default function Pagination({
         variant="outline"
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        className="px-4 py-2"
+        aria-label="Next page"
+        className="px-3 sm:px-4 py-2"
       >
-        Next
+        <span className="hidden sm:inline">Next</span>
+        <ChevronRight className="sm:hidden" aria-hidden="true" />
       </Button>
-    </div>
+    </nav>
   );
 }
