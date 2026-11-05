@@ -642,8 +642,7 @@ export const terms_of_use = {
             </a>{' '}
             (the <strong>"Website"</strong>) is operated by FO Perspectives Ltd (
             <strong>"FO Perspectives"</strong>, "we", "us" or "our"), a company registered in
-            England and Wales under company number 15959959. Our registered office is [TO CONFIRM:
-            registered office address].
+            England and Wales under company number 15959959.
           </p>
           <p>
             We provide career information, employer opportunities, events, application support and
