@@ -62,11 +62,13 @@ export default function Webinars() {
       
       // Search filter
       const query = search.toLowerCase();
+      // description is nullable in the schema, so guard every field: an
+      // unguarded null throws on each keystroke once the title stops matching.
       const matchSearch =
         !query ||
-        w.title.toLowerCase().includes(query) ||
-        w.description.toLowerCase().includes(query) ||
-        w.category.toLowerCase().includes(query);
+        w.title?.toLowerCase().includes(query) ||
+        w.description?.toLowerCase().includes(query) ||
+        w.category?.toLowerCase().includes(query);
       
       return matchCategory && matchSearch;
     });
