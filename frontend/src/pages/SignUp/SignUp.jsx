@@ -1421,7 +1421,14 @@ export default function SignUp() {
               required
             />
             <label htmlFor="terms_review" className="text-sm text-foreground">
-              I confirm that all information provided is accurate and I agree to the Terms of Service and Privacy Policy
+              I confirm that all information provided is accurate and I agree to the{' '}
+              <Link to="/terms" className="text-primary hover:opacity-80" target="_blank" rel="noopener noreferrer">
+                Terms of Use
+              </Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="text-primary hover:opacity-80" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </Link>
             </label>
           </div>
           <button

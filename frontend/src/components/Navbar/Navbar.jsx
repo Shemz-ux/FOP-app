@@ -49,7 +49,7 @@ export default function Navbar({ logo }) {
     }`;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 py-3 sm:px-6">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 py-3 sm:px-6 print:hidden">
       <div className="container mx-auto">
         <div className="flex items-center justify-between gap-4 pl-4 pr-2 py-[11px] rounded-[24px] border border-border bg-card/75 backdrop-blur-[24px] shadow-lg shadow-black/20">
           {/* Logo */}

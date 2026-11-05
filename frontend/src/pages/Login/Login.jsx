@@ -193,7 +193,14 @@ export default function Login() {
 
         {/* Footer */}
         <p className="text-center text-muted-foreground text-sm mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy
+          By continuing, you agree to our{' '}
+          <Link to="/terms" className="text-primary hover:opacity-80" target="_blank" rel="noopener noreferrer">
+            Terms of Use
+          </Link>{' '}
+          and{' '}
+          <Link to="/privacy" className="text-primary hover:opacity-80" target="_blank" rel="noopener noreferrer">
+            Privacy Policy
+          </Link>
         </p>
       </div>
     </div>
