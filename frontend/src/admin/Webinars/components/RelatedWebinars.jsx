@@ -42,10 +42,10 @@ export default function RelatedWebinars({ webinars, currentWebinarId, copy }) {
               <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                 <Clock className="w-3 h-3" />
                 {formatDuration(related.duration)}
-                <span className="ml-1 flex items-center gap-0.5">
+                {/* <span className="ml-1 flex items-center gap-0.5">
                   <Eye className="w-3 h-3" />
                   {formatViewCount(related.view_count)}
-                </span>
+                </span> */}
               </div>
             </div>
           </Link>

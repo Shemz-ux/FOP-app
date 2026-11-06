@@ -14,7 +14,7 @@ export default function FeaturedCard({ webinar }) {
           alt={webinar.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
         
         {/* Play button overlay */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -38,6 +38,12 @@ export default function FeaturedCard({ webinar }) {
           <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary-foreground transition-colors text-left">
             {webinar.title}
           </h3>
+          {/* description is nullable, so only take up the space when there is one */}
+          {webinar.description && (
+            <p className="text-sm text-white/80 line-clamp-2 text-left">
+              {webinar.description}
+            </p>
+          )}
           {/* <div className="flex items-center gap-4 text-white/80 text-sm">
             <div className="flex items-center gap-1.5">
               <Eye className="w-4 h-4" />
