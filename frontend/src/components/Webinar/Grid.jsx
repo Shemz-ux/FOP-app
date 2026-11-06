@@ -1,24 +1,26 @@
 import { Play, Filter } from "lucide-react";
 import Card from "./Card";
 
-export default function Grid({ webinars, activeCategory, searchQuery, copy }) {
+export default function Grid({ webinars, activeCategory, searchQuery, copy, totalCount }) {
   const showingFiltered = activeCategory !== 'All' || searchQuery;
+  // webinars is the current page; total is every match across all pages.
+  const total = totalCount ?? webinars.length;
 
   return (
     <>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-foreground text-left">
-          {showingFiltered ? `${copy.resultsTitle} (${webinars.length})` : copy.allWebinarsTitle}
+          {showingFiltered ? `${copy.resultsTitle} (${total})` : copy.allWebinarsTitle}
         </h2>
         <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
           <Filter className="w-3.5 h-3.5" />
-          {webinars.length} {webinars.length !== 1 ? copy.filterLabelPlural : copy.filterLabel}
+          {total} {total !== 1 ? copy.filterLabelPlural : copy.filterLabel}
         </div>
       </div>
 
       {/* Empty state */}
-      {webinars.length === 0 ? (
+      {total === 0 ? (
         <div className="text-center py-20 text-muted-foreground">
           <Play className="w-12 h-12 mx-auto mb-4 opacity-30" />
           <p className="text-lg">{copy.emptyState.title}</p>

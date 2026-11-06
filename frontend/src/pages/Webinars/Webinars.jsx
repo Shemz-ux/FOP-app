@@ -4,6 +4,7 @@ import FeaturedSection from "../../components/Webinar/FeaturedSection";
 import CategoryFilter from "../../components/Webinar/CategoryFilter";
 import Grid from "../../components/Webinar/Grid";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
+import Pagination from "../../components/Pagination/Pagination";
 import { webinarsCopy } from "./webinars.copy";
 import { 
   listWebinars, 
@@ -14,10 +15,13 @@ import {
 export default function Webinars() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
   const [webinars, setWebinars] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const webinarsPerPage = 9;
 
   useEffect(() => {
     fetchWebinars();
@@ -73,6 +77,24 @@ export default function Webinars() {
       return matchCategory && matchSearch;
     });
   }, [webinars, activeCategory, search]);
+
+  const totalPages = Math.ceil(filteredWebinars.length / webinarsPerPage);
+
+  const paginatedWebinars = useMemo(() => {
+    const start = (currentPage - 1) * webinarsPerPage;
+    return filteredWebinars.slice(start, start + webinarsPerPage);
+  }, [filteredWebinars, currentPage]);
+
+  // Searching or switching category shortens the list, so go back to page 1
+  // rather than stranding the reader on a page that no longer exists.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, activeCategory]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Calculate stats for hero
   const totalWebinars = webinars.filter(w => w.is_published).length;
@@ -131,11 +153,20 @@ export default function Webinars() {
 
         {/* Grid */}
         <Grid 
-          webinars={filteredWebinars}
+          webinars={paginatedWebinars}
+          totalCount={filteredWebinars.length}
           activeCategory={activeCategory}
           searchQuery={search}
           copy={webinarsCopy.grid}
         />
+
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
     </div>
   );
