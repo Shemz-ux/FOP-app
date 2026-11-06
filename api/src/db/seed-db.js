@@ -8,6 +8,7 @@ import { societies } from './test-data/societies.js';
 import { jobs } from './test-data/jobs.js';
 import { events } from './test-data/events.js';
 import { resources } from './test-data/resources.js';
+import { webinars } from './test-data/webinars.js';
 import { LINK_JOBSEEKERS_TO_SOCIETIES, UNLINKED_JOBSEEKERS } from './society-link.js';
 import {
   jobseekerJobsApplied,
@@ -178,6 +179,28 @@ const insertResources = async () => {
   console.log(`✅ Resources seeded (${resources.length} career resources)`);
 };
 
+const insertWebinars = async () => {
+  for (const webinar of webinars) {
+    await db.query(
+      `INSERT INTO webinars (
+        youtube_video_id, youtube_url, title, description, category,
+        thumbnail_url, duration, published_at, view_count, like_count,
+        metadata_synced_at, uploaded_by, is_published, is_featured, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), $11, $12, $13, $14)`,
+      [
+        webinar.youtube_video_id, webinar.youtube_url, webinar.title,
+        webinar.description, webinar.category, webinar.thumbnail_url,
+        webinar.duration, webinar.published_at, webinar.view_count,
+        webinar.like_count, 1, webinar.is_published, webinar.is_featured,
+        webinar.created_at
+      ]
+    );
+  }
+
+  const published = webinars.filter((w) => w.is_published).length;
+  console.log(`✅ Webinars seeded (${webinars.length} webinars, ${published} published)`);
+};
+
 const insertRelationships = async () => {
   // Jobseeker jobs applied
   for (const relation of jobseekerJobsApplied) {
@@ -247,6 +270,7 @@ const runSeed = async () => {
     await insertJobs();
     await insertEvents();
     await insertResources();
+    await insertWebinars();
     await insertRelationships();
     
     console.log('\n🎉 Database seeded successfully with comprehensive test data!');
@@ -257,6 +281,7 @@ const runSeed = async () => {
     console.log(`   • ${jobs.length} jobs`);
     console.log(`   • ${events.length} events`);
     console.log(`   • ${resources.length} resources`);
+    console.log(`   • ${webinars.length} webinars (${webinars.filter((w) => w.is_published).length} published)`);
     console.log(`   • ${jobseekerJobsApplied.length + jobseekerJobsSaved.length + jobseekerEventsApplied.length + jobseekerEventsSaved.length + societyJobsSaved.length + societyEventsSaved.length} relationship records\n`);
     console.log('📄 See TEST_CREDENTIALS.md for login details\n');
     
