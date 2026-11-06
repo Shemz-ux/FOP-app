@@ -1,14 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
-import Hero from "../../components/Webinar/Hero";
-import FeaturedSection from "../../components/Webinar/FeaturedSection";
-import CategoryFilter from "../../components/Webinar/CategoryFilter";
-import Grid from "../../components/Webinar/Grid";
+import Hero from "./components/Hero";
+import FeaturedSection from "./components/FeaturedSection";
+import CategoryFilter from "./components/CategoryFilter";
+import Grid from "./components/Grid";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
 import Pagination from "../../components/Pagination/Pagination";
 import { webinarsCopy } from "./webinars.copy";
 import { 
   listWebinars, 
-  getFeaturedWebinars,
   getWebinarCategories 
 } from "../../services/Webinars/webinarsService";
 
@@ -95,11 +94,6 @@ export default function Webinars() {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // Calculate stats for hero
-  const totalWebinars = webinars.filter(w => w.is_published).length;
-  const totalViews = webinars.reduce((sum, w) => sum + (w.view_count || 0), 0);
-  const formattedTotalViews = totalViews >= 1000 ? `${Math.floor(totalViews / 1000)}k` : totalViews;
 
   if (loading) {
     return (

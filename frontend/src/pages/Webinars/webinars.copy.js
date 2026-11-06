@@ -2,13 +2,7 @@
 const webinarsCopy = {
   hero: {
     title: 'Career Replay Hub',
-    subtitle: 'On-demand career workshops, employer events and industry insights to help you along the journey',
-    statsLabels: {
-      sessions: 'sessions',
-      views: 'total views',
-      free: 'Free',
-      freeSubtext: 'always'
-    }
+    subtitle: 'On-demand career workshops, employer events and industry insights to help you along the journey'
   },
   featured: {
     title: 'Featured Webinars',

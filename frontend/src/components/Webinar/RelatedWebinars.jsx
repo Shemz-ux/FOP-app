@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Play, Eye, Clock } from "lucide-react";
-import { formatDuration, formatViewCount } from "../../../utils/webinarHelpers";
+import { formatDuration, formatViewCount } from "../../utils/webinarHelpers";
 
-export default function RelatedWebinars({ webinars, currentWebinarId, copy }) {
+// Shared by the public webinar page and the admin dashboard, so the link
+// target is supplied by the caller rather than hardcoded.
+export default function RelatedWebinars({ webinars, currentWebinarId, copy, linkBase = '/webinars' }) {
   // Filter out current webinar and unpublished ones
   const filteredWebinars = webinars.filter(
     w => w.webinar_id !== currentWebinarId && w.is_published
@@ -20,7 +22,7 @@ export default function RelatedWebinars({ webinars, currentWebinarId, copy }) {
         {filteredWebinars.map((related) => (
           <Link
             key={related.webinar_id}
-            to={`/admin/webinars/${related.webinar_id}`}
+            to={`${linkBase}/${related.webinar_id}`}
             className="group flex gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
           >
             <div className="relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">

@@ -38,11 +38,6 @@ export default function FeaturedSection({ webinars, copy }) {
     }
   };
 
-  const visibleWebinars = webinars.slice(
-    currentIndex * itemsPerPage,
-    (currentIndex + 1) * itemsPerPage
-  );
-
   return (
     <section className="mb-14">
       {/* Header - Mobile Layout */}

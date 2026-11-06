@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Play, ArrowLeft, ThumbsUp, Eye, Clock, Calendar, Lock } from "lucide-react";
 import { webinarDetailCopy } from "./webinarDetail.copy";
 import { formatDuration, formatViewCount, formatDate } from "../../utils/webinarHelpers";
 import LoadingSpinner from "../../components/Ui/LoadingSpinner";
-import RelatedWebinars from "../../admin/Webinars/components/RelatedWebinars";
+import RelatedWebinars from "../../components/Webinar/RelatedWebinars";
 import { useAuth } from "../../contexts/AuthContext";
 import { 
   getWebinar, 
@@ -14,7 +14,6 @@ import {
 
 export default function WebinarDetail() {
   const { webinarId } = useParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const [webinar, setWebinar] = useState(null);
   const [relatedWebinars, setRelatedWebinars] = useState([]);

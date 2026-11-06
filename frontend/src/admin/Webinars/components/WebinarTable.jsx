@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Video, Clock, Star, Edit, Trash2, Globe, FileEdit, Eye, BarChart } from "lucide-react";
-import { formatDuration, formatViewCount, formatDate } from "../../../utils/webinarHelpers";
+import { formatDuration, formatViewCount } from "../../../utils/webinarHelpers";
 import ConfirmModal from "../../../components/Ui/ConfirmModal";
 
 export default function WebinarTable({ 
   webinars, 
   onToggleStatus, 
   onToggleFeatured, 
-  onEdit, 
   onDelete,
   copy 
 }) {

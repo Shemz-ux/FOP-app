@@ -1,6 +1,6 @@
 import { Play, Eye, ThumbsUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { formatDuration, formatViewCount } from "../../utils/webinarHelpers";
+import { formatDuration, formatViewCount } from "../../../utils/webinarHelpers";
 
 export default function FeaturedCard({ webinar }) {
   return (

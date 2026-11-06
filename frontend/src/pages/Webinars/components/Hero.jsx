@@ -1,8 +1,6 @@
 import { Video } from "lucide-react";
-import SearchBar from "../SearchBar/SearchBar";
+import SearchBar from "../../../components/SearchBar/SearchBar";
 
-// Matches the hero on the jobs, events and resources pages: left-aligned
-// title row, text-xl subtitle, then the shared search bar.
 export default function Hero({ copy, searchPlaceholder, onSearch, onQueryChange }) {
   return (
     <section className="relative bg-gradient-to-br from-primary/20 via-primary/5 to-background border-b border-border">

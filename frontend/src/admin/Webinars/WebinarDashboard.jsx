@@ -103,11 +103,6 @@ export default function WebinarDashboard() {
     }
   };
 
-  const handleEdit = (webinar) => {
-    // Navigation handled by Link in table
-    console.log('Edit webinar:', webinar);
-  };
-
   const handleDelete = async (id) => {
     try {
       await deleteWebinar(id);
@@ -187,7 +182,6 @@ export default function WebinarDashboard() {
             webinars={filteredWebinars}
             onToggleStatus={handleToggleStatus}
             onToggleFeatured={handleToggleFeatured}
-            onEdit={handleEdit}
             onDelete={handleDelete}
             copy={{
               ...webinarDashboardCopy.table,

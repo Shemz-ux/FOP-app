@@ -20,7 +20,7 @@ import { formatDuration, formatViewCount, formatDate } from '../../utils/webinar
 import ConfirmModal from '../../components/Ui/ConfirmModal';
 import Toast from '../../components/Ui/Toast';
 import LoadingSpinner from '../../components/Ui/LoadingSpinner';
-import RelatedWebinars from './components/RelatedWebinars';
+import RelatedWebinars from '../../components/Webinar/RelatedWebinars';
 import { 
   getWebinarAdmin, 
   deleteWebinar,
@@ -427,6 +427,7 @@ export default function WebinarDetail() {
                 webinars={relatedWebinars}
                 currentWebinarId={webinar.webinar_id}
                 copy={adminWebinarDetailCopy.sections.relatedTitle}
+                linkBase="/admin/webinars"
               />
             </div>
           </div>

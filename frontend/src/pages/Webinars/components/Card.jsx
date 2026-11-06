@@ -1,6 +1,6 @@
 import { Play, Eye, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { formatDuration, formatViewCount, formatDate } from "../../utils/webinarHelpers";
+import { formatDuration, formatViewCount, formatDate } from "../../../utils/webinarHelpers";
 
 export default function Card({ webinar }) {
   return (
